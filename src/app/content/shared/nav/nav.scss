@@ -1,0 +1,98 @@
+@import '../../../constants';
+@import '~@angular/material/theming';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 250px;
+}
+
+.app-title {
+  color: #a4a7aa;
+  font-size: 16px;
+  height: 64px;
+  text-align: center;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile {
+  font-size: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 16px 4px 16px 8px;
+}
+
+.user-email {
+  word-break: break-all;
+}
+
+.pic {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  background-repeat: no-repeat;
+  background-size: 40px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.logout {
+  font-size: 14px;
+  padding: 0 8px;
+  width: 100%;
+  text-align: left;
+}
+
+.link-list {
+  flex: 1;
+  overflow: auto;
+  padding-top: 4px;
+}
+
+.info {
+  flex: 1;
+}
+
+.link {
+  height: 48px;
+  width: 100%;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  display: flex;
+  align-items: center;
+  opacity: .8;
+
+  @media (max-width: $mobile-width - 1) {
+    height: 56px;
+  }
+
+  mat-icon {
+    margin: 0 16px;
+  }
+
+  &.active {
+    opacity: 1;
+  }
+}
+
+.link-text {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.link-highlight {
+  position: absolute;
+  top: 0;
+  left: -32px;
+  right: 4px;
+  bottom: 0;
+  border-radius: 32px;
+}

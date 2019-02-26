@@ -1,0 +1,7 @@
+<button mat-icon-button class="close" (click)="clearSelection()">
+  <mat-icon>close</mat-icon>
+</button>
+
+<div class="count" [style.visibility]="!!getSelectionCount() ? 'visible' : 'hidden'">
+  {{getSelectionCount()}} Selected
+</div>

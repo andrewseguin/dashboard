@@ -1,0 +1,16 @@
+<mat-sidenav-container>
+  <mat-sidenav [autoFocus]="false" #sidenav>
+    <nav-content [sidenav]="sidenav"></nav-content>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <selection-header></selection-header>
+    <app-header [sidenav]="sidenav"></app-header>
+
+    <updater></updater>
+
+    <div class="router-content" #routerContent>
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

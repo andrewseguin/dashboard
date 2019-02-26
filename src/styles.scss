@@ -1,0 +1,31 @@
+@import 'app/constants';
+
+body {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  margin: 0;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  // Remove blue highlight on android
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+// iOS wants to zoom on input unless it is at least 16px font size
+@media screen and (-webkit-min-device-pixel-ratio:0) and (max-device-width : $mobile-width)  {
+  select,
+  textarea,
+  input {
+    font-size: 16px !important;
+  }
+}
+
+/* Material Styles */
+/* Rules for sizing the icon. */
+.material-icons.md-14 { font-size: 14px; height: 14px; width: 14px; }
+.material-icons.md-18 { font-size: 18px; height: 18px; width: 18px; }
+.material-icons.md-24 { font-size: 24px; height: 18px; width: 18px; }
+.material-icons.md-36 { font-size: 36px; height: 18px; width: 18px; }
+.material-icons.md-48 { font-size: 48px; height: 18px; width: 18px; }
