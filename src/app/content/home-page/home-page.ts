@@ -1,7 +1,5 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {Github} from 'app/service/github';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {IssuesDao} from 'app/service/issues-dao';
-import {DB} from 'idb';
 
 
 @Component({
@@ -10,13 +8,5 @@ import {DB} from 'idb';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomePage {
-  constructor(public github: Github, private issuesDao: IssuesDao) {}
-
-  getAllIssues() {
-    this.github.getAllIssues().subscribe(result => {
-      if (result.completed === result.total) {
-        this.issuesDao.addIssues(result.currentResults);
-      }
-    });
-  }
+  constructor(public issuesDao: IssuesDao) {}
 }

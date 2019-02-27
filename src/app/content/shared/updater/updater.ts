@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, Input, ChangeDetectorRef} from '@angular/core';
-import {IssuesDao, Issue} from 'app/service/issues-dao';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {Github} from 'app/service/github';
+import {Issue, IssuesDao} from 'app/service/issues-dao';
 
 @Component({
   selector: 'updater',
@@ -13,7 +13,13 @@ export class Updater {
 
   lastUpdated = '';
 
-  constructor(public github: Github, private issuesDao: IssuesDao, private cd: ChangeDetectorRef) {
+  status: 'updating'|'storing'|'' = '';
+
+  loadState: {completed: number, total: number} = {completed: 0, total: 0};
+
+  constructor(
+      public github: Github, private issuesDao: IssuesDao,
+      private cd: ChangeDetectorRef) {
     // TODO: check every minute or so
     this.issuesDao.issues.subscribe(issues => {
       if (!issues) {
@@ -35,9 +41,16 @@ export class Updater {
   }
 
   getAllIssues() {
-    this.github.getAllIssues(this.lastUpdated).subscribe(result => {
+    this.status = 'updating';
+    this.github.getIssues(this.lastUpdated).subscribe(result => {
+      this.loadState = {completed: result.completed, total: result.total};
+      this.cd.markForCheck();
+
       if (result.completed === result.total) {
-        this.issuesDao.addIssues(result.currentResults);
+        this.issuesDao.addIssues(result.current).then(() => {
+          this.status = 'storing';
+          this.cd.markForCheck();
+        });
       }
     })
   }
