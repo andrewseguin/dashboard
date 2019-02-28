@@ -1,9 +1,8 @@
-import {Injectable} from "@angular/core";
-import {RepoDao} from "app/service/repo-dao";
-import {Github} from "app/service/github";
-import {take, mergeMap} from "rxjs/operators";
-import {of} from "rxjs";
-
+import {Injectable} from '@angular/core';
+import {RepoDao} from 'app/service/repo-dao';
+import {Github} from 'app/service/github';
+import {take, mergeMap} from 'rxjs/operators';
+import {of} from 'rxjs';
 
 @Injectable()
 export class Updater {

@@ -21,13 +21,13 @@ export class Github {
     }
     const url = this.constructUrl('search/issues', query);
     return this.query(url).pipe(
-      map(result => (result.body as any).total_count));
+        map(result => (result.body as any).total_count));
   }
 
   getIssues(repo: string, since?: string):
-    Observable<CombinedPagedResults<Issue>> {
+      Observable<CombinedPagedResults<Issue>> {
     const query = since ? `per_page=100&state=all&since=${since}` :
-      'per_page=100&state=all';
+                          'per_page=100&state=all';
     const url = this.constructUrl(`repos/${repo}/issues`, query);
     return this.getPagedResults<GithubIssue, Issue>(url, githubIssueToIssue);
   }
@@ -40,30 +40,32 @@ export class Github {
   getContributors(repo: string): Observable<CombinedPagedResults<Contributor>> {
     const url = this.constructUrl(`repos/${repo}/contributors`, `per_page=100`);
     return this.getPagedResults<GithubContributor, Contributor>(
-      url, githubContributorToContributor);
+        url, githubContributorToContributor);
   }
 
   private getPagedResults<T, R>(url: string, transform: (values: T) => R):
-    Observable<CombinedPagedResults<R>> {
+      Observable<CombinedPagedResults<R>> {
     let completed = 0;
     let total = 0;
     let current = [];
 
     return this.get<T>(url).pipe(
-      expand(result => (result.next && completed < 3) ? this.get(result.next) : empty()),
-      map(result => {
-        completed++;
-        const transformedResponse = result.response.map(transform);
-        current = current.concat(transformedResponse);
+        expand(
+            result => (result.next && completed < 3) ? this.get(result.next) :
+                                                       empty()),
+        map(result => {
+          completed++;
+          const transformedResponse = result.response.map(transform);
+          current = current.concat(transformedResponse);
 
-        // Determine this on the first pass but not subsequent ones. The last
-        // page will have result.numPages equal to 1 since it is missing.
-        if (!total) {
-          total = Math.min(result.numPages, 3);
-        }
+          // Determine this on the first pass but not subsequent ones. The last
+          // page will have result.numPages equal to 1 since it is missing.
+          if (!total) {
+            total = Math.min(result.numPages, 3);
+          }
 
-        return {completed, total, current};
-      }));
+          return {completed, total, current};
+        }));
   }
 
   private constructUrl(path: string, query: string) {
@@ -90,7 +92,7 @@ export class Github {
   }
 
   get<T>(url: string):
-    Observable<{response: T[], next: string | null, numPages: number}> {
+      Observable<{response: T[], next: string|null, numPages: number}> {
     return this.query<T[]>(url).pipe(map(result => {
       const response = result.body;
       const linkMap = getLinkMap(result.headers);
@@ -203,6 +205,7 @@ export interface GithubContributor {
 export interface Issue {
   assignees: string[];
   body: string;
+  title: string;
   comments: number;
   labels: string[];
   number: number;
@@ -232,6 +235,7 @@ function githubIssueToIssue(o: GithubIssue): Issue {
   return {
     assignees: o.assignees.map(a => a.login),
     body: o.body,
+    title: o.title,
     comments: o.comments,
     labels: o.labels.map(l => l.id),
     number: o.number,
@@ -245,12 +249,7 @@ function githubIssueToIssue(o: GithubIssue): Issue {
 }
 
 function githubLabelToLabel(o: GithubLabel): Label {
-  return {
-    id: o.id,
-    name: o.name,
-    description: o.description,
-    color: o.color
-  };
+  return {id: o.id, name: o.name, description: o.description, color: o.color};
 }
 
 

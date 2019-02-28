@@ -1,1 +1,15 @@
-Pre-triage {{preTriageIssues?.length}}
+<div class="heading">
+  Issues to pre-triage: {{preTriageIssues?.length}}
+</div>
+
+<div class="issue" *ngFor="let preTriageIssue of preTriageIssues; trackBy: trackByNumber">
+  <div class="title">
+    {{preTriageIssue.issue.title}}
+  </div>
+
+  <div class="recommendations">
+    <div class="recommendation" *ngFor="let recommendation of preTriageIssue.recommendations">
+      Assign to {{recommendation.assignee}}
+    </div>
+  </div>
+</div>
