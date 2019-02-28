@@ -1,0 +1,33 @@
+<h1 mat-dialog-title> Create Store for {{data.repo}}?</h1>
+
+<div mat-dialog-content (keydown.Enter)="save(); $event.preventDefault()">
+  <div class="description">
+    <div> Would you like to store the repository {{data.repo}}? </div>
+
+    <div *ngIf="totalIssueCount"> Includes {{ totalIssueCount }} issues </div>
+
+
+  </div>
+
+  <div class="state" *ngIf="state && state.label">
+    {{state.label}}
+  </div>
+
+  <ng-container *ngIf="state?.progress; let progress">
+    <mat-progress-bar *ngIf="progress.type === 'determinate'" mode="determinate" [value]="state.progress.value">
+    </mat-progress-bar>
+
+    <mat-progress-bar *ngIf="progress.type === 'indeterminate'" mode="indeterminate">
+    </mat-progress-bar>
+  </ng-container>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close *ngIf="state?.id !== 'complete'"> Cancel </button>
+
+  <button mat-raised-button color="primary" *ngIf="!state" (click)="store()"> Store </button>
+
+  <button mat-raised-button color="primary" *ngIf="state" [disabled]="state.id !== 'complete'" mat-dialog-close="true">
+    {{state.id === 'complete' ? 'Close' : 'Storing...'}}
+  </button>
+</div>

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {IssuesDao} from 'app/service/issues-dao';
+import {RepoDao} from 'app/service/repo-dao';
 
 
 @Component({
@@ -8,5 +8,7 @@ import {IssuesDao} from 'app/service/issues-dao';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomePage {
-  constructor(public issuesDao: IssuesDao) {}
+  repo = 'angular/material2';
+
+  constructor(public issuesDao: RepoDao) {}
 }

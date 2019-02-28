@@ -7,7 +7,8 @@ import {Header, Selection} from './services';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
 import {SelectionHeaderModule} from './shared/selection-header/selection-header.module';
-import {UpdaterModule} from './shared/updater/updater.module';
+import {Updater} from './services/updater';
+import {CreateStoreModule} from './shared/dialog/create-store/create-store.module';
 
 
 const routes: Routes = [{
@@ -19,13 +20,9 @@ const routes: Routes = [{
       loadChildren: 'app/content/home-page/home-page.module#HomePageModule'
     },
     {
-      path: 'home/home',
-      loadChildren: 'app/content/home-page/home-page.module#HomePageModule'
-    },
-    {
-      path: 'another-page',
+      path: 'pre-triage',
       loadChildren:
-        'app/content/another-page/another-page.module#AnotherPageModule'
+        'app/content/pre-triage-page/pre-triage-page.module#PreTriagePageModule'
     },
 
     {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -45,13 +42,14 @@ export class ContentRoutingModule {
     SelectionHeaderModule,
     RouterModule,
     ContentRoutingModule,
-    UpdaterModule,
+    CreateStoreModule,
   ],
   declarations: [Content],
   exports: [Content],
   providers: [
     Selection,
     Header,
+    Updater,
   ]
 })
 export class ContentModule {

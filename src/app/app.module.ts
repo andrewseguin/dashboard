@@ -16,7 +16,7 @@ import {App} from './app';
 import {FIREBASE_CONFIG} from './firebase.config';
 import {UsersDao} from './service/users-dao';
 import {HttpClientModule} from '@angular/common/http';
-import {IssuesDao} from './service/issues-dao';
+import {RepoDao} from './service/repo-dao';
 
 @NgModule({
   declarations: [App],
@@ -38,7 +38,7 @@ import {IssuesDao} from './service/issues-dao';
     UsersDao,
     GlobalConfigDao,
     Theme,
-    IssuesDao,
+    RepoDao,
     {provide: FirestoreSettingsToken, useValue: {}},
   ],
   bootstrap: [App]

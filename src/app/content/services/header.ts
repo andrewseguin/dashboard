@@ -7,7 +7,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {filter, takeUntil} from 'rxjs/operators';
 
 const SECTIONS = new Map<string, string>(
-    [['home', 'Home'], ['another-page', 'Another Page']]);
+  [['home', 'Home'], ['pre-triage', 'Pretriage']]);
 
 
 @Injectable()
@@ -20,14 +20,14 @@ export class Header {
 
   constructor(private windowTitle: WindowTitle, private router: Router) {
     this.title.pipe(takeUntil(this.destroyed))
-        .subscribe(title => this.windowTitle.setTitle(title));
+      .subscribe(title => this.windowTitle.setTitle(title));
     this.router.events
-        .pipe(
-            filter(e => e instanceof NavigationEnd), takeUntil(this.destroyed))
-        .subscribe((e: NavigationEnd) => {
-          const section = e.urlAfterRedirects.split('/')[1];
-          this.title.next(SECTIONS.get(section));
-        });
+      .pipe(
+        filter(e => e instanceof NavigationEnd), takeUntil(this.destroyed))
+      .subscribe((e: NavigationEnd) => {
+        const section = e.urlAfterRedirects.split('/')[1];
+        this.title.next(SECTIONS.get(section));
+      });
   }
 
   ngOnDestroy() {

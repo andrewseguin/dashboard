@@ -22,12 +22,12 @@ export interface NavLink {
 })
 export class Nav {
   user = this.afAuth.authState.pipe(
-      filter(auth => !!auth), mergeMap(auth => this.usersDao.get(auth.uid)));
+    filter(auth => !!auth), mergeMap(auth => this.usersDao.get(auth.uid)));
   isUserProfileExpanded = false;
 
   links: NavLink[] = [
     {route: '/home', label: 'Home', icon: 'home'},
-    {route: '/another-page', label: 'another-page', icon: 'home'},
+    {route: '/pre-triage', label: 'Pretriage', icon: 'home'},
   ];
 
   @Input() sidenav: MatSidenav;
@@ -35,9 +35,9 @@ export class Nav {
   private destroyed = new Subject();
 
   constructor(
-      public afAuth: AngularFireAuth, public usersDao: UsersDao,
-      public cd: ChangeDetectorRef, public theme: Theme,
-      public router: Router) {}
+    public afAuth: AngularFireAuth, public usersDao: UsersDao,
+    public cd: ChangeDetectorRef, public theme: Theme,
+    public router: Router) {}
 
   ngOnDestroy() {
     this.destroyed.next();
