@@ -207,7 +207,7 @@ export interface Issue {
   body: string;
   title: string;
   comments: number;
-  labels: string[];
+  labels: number[];
   number: number;
   state: string;
   reporter: string;
@@ -224,6 +224,7 @@ export interface Label {
   description: string;
   color: string;
   textColor: string;
+  borderColor: string;
 }
 
 export interface Contributor {
@@ -253,12 +254,14 @@ function githubIssueToIssue(o: GithubIssue): Issue {
 
 function githubLabelToLabel(o: GithubLabel): Label {
   const textColor = getTextColor(o.color);
+  const borderColor = getBorderColor(o.color);
   return {
     id: o.id,
     name: o.name,
     description: o.description,
     color: o.color,
-    textColor
+    textColor,
+    borderColor
   };
 }
 
@@ -278,4 +281,15 @@ function getTextColor(color: string) {
   const B = parseInt(color.slice(0, 2), 16);
 
   return (R * 0.299 + G * 0.587 + B * 0.114) > 186 ? 'black' : 'white';
+}
+
+
+function getBorderColor(color: string) {
+  // TODO get a better function for this; something the value is something
+  // like 9.e where it becomes "9."
+  let R = (parseInt(color.slice(0, 2), 16) * .9).toString(16).slice(0, 2);
+  let G = (parseInt(color.slice(2, 4), 16) * .9).toString(16).slice(0, 2);
+  let B = (parseInt(color.slice(4, 6), 16) * .9).toString(16).slice(0, 2);
+
+  return R + G + B;
 }

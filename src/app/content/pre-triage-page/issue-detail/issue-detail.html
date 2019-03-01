@@ -16,20 +16,14 @@
   </div>
 </div>
 
-<div class="priority-label-list">
-  <div *ngFor="let label of priorityLabels" class="priority-label" [style.color]="label.textColor"
-    [style.backgroundColor]="'#' + label.color">
-    {{label.name}}
-  </div>
-</div>
+<label-list *ngIf="issue.labels.length" [labelIds]="issue.labels" class="issue-labels"></label-list>
 
-<div class="recommendations">
-  <div class="needs-pre-triage" *ngIf="!issue.assignees.length">
+<ng-container *ngFor="let recommendation of recommendations | async">
+  <mat-divider></mat-divider>
 
-  </div>
-</div>
+  <recommendation-action [recommendation]="recommendation" [issue]="issue"></recommendation-action>
+</ng-container>
 
+<mat-divider class="last-divider"></mat-divider>
 
-<mat-divider></mat-divider>
-
-<div class="body" [innerHTML]="bodyMarkdown"></div>
+<div class="body theme-border theme-background-card" [innerHTML]="bodyMarkdown"></div>

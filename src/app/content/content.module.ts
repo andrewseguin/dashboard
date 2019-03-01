@@ -9,6 +9,8 @@ import {NavModule} from './shared/nav/nav.module';
 import {SelectionHeaderModule} from './shared/selection-header/selection-header.module';
 import {Updater} from './services/updater';
 import {CreateStoreModule} from './shared/dialog/create-store/create-store.module';
+import {Markdown} from './services/markdown';
+import {IssueRecommendations} from './services/issue-recommendations';
 
 
 const routes: Routes = [{
@@ -50,6 +52,8 @@ export class ContentRoutingModule {
     Selection,
     Header,
     Updater,
+    IssueRecommendations,
+    Markdown,
   ]
 })
 export class ContentModule {

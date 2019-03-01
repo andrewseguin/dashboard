@@ -25,6 +25,7 @@
   .theme-background-warn { background: mat-color($warn); }
   .theme-background-app-bar { background: mat-color($background, app-bar); }
   .theme-background-card { background: mat-color($background, card); }
+  .theme-background-hover { background: mat-color($background, hover); }
   .theme-hover:hover { background: mat-color($background, hover); }
 
   .theme-primary { color: mat-color($primary); }

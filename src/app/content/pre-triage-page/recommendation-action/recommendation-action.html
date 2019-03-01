@@ -1,0 +1,5 @@
+<div class="labels-recommendation">
+  <mat-icon [class.theme-warn]="recommendation.warn"> {{recommendation.icon}} </mat-icon>
+  <span class="message"> {{recommendation.message}} </span>
+  <label-list [labelIds]="recommendation.labels" [selectable]="true" (selected)="addLabel($event)"></label-list>
+</div>
