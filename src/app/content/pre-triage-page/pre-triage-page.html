@@ -1,15 +1,22 @@
-<div class="heading">
-  Issues to pre-triage: {{preTriageIssues?.length}}
+<div class="master">
+  <div class="heading">
+    Issues to pre-triage: {{(issues | async)?.length}}
+  </div>
+
+  <div class="issue-container" *ngFor="let issue of issues | async; trackBy: trackByNumber">
+    <div class="issue" (click)="selectedIssue = issue" mat-ripple>
+      <div class="title">
+        {{issue.title}}
+        <span class="issue-number">
+          (<a class="theme-primary" [href]="issue.url">#{{issue.number}}</a>)
+        </span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+  </div>
 </div>
 
-<div class="issue" *ngFor="let preTriageIssue of preTriageIssues; trackBy: trackByNumber">
-  <div class="title">
-    {{preTriageIssue.issue.title}}
-  </div>
-
-  <div class="recommendations">
-    <div class="recommendation" *ngFor="let recommendation of preTriageIssue.recommendations">
-      Assign to {{recommendation.assignee}}
-    </div>
-  </div>
+<div class="detail" *ngIf="selectedIssue; let issue">
+  <issue-detail [issue]="selectedIssue"></issue-detail>
 </div>

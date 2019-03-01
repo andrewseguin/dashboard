@@ -215,6 +215,7 @@ export interface Issue {
   updated: string;
   reactions: Reactions;
   pr: boolean;
+  url: string;
 }
 
 export interface Label {
@@ -222,6 +223,7 @@ export interface Label {
   name: string;
   description: string;
   color: string;
+  textColor: string;
 }
 
 export interface Contributor {
@@ -244,12 +246,20 @@ function githubIssueToIssue(o: GithubIssue): Issue {
     created: o.created_at,
     updated: o.updated_at,
     reactions: o.reactions,
-    pr: !!o.pull_request
+    pr: !!o.pull_request,
+    url: o.html_url,
   };
 }
 
 function githubLabelToLabel(o: GithubLabel): Label {
-  return {id: o.id, name: o.name, description: o.description, color: o.color};
+  const textColor = getTextColor(o.color);
+  return {
+    id: o.id,
+    name: o.name,
+    description: o.description,
+    color: o.color,
+    textColor
+  };
 }
 
 
@@ -260,4 +270,12 @@ function githubContributorToContributor(o: GithubContributor): Contributor {
     avatar_url: o.avatar_url,
     contributions: o.contributions
   };
+}
+
+function getTextColor(color: string) {
+  const R = parseInt(color.slice(0, 2), 16);
+  const G = parseInt(color.slice(0, 2), 16);
+  const B = parseInt(color.slice(0, 2), 16);
+
+  return (R * 0.299 + G * 0.587 + B * 0.114) > 186 ? 'black' : 'white';
 }

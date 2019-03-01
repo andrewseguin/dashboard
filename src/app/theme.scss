@@ -66,4 +66,8 @@
   ));
 
   @include themed-styles($theme);
+
+  a {
+    color: #2196f3;
+  }
 }

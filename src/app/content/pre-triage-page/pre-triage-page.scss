@@ -1,13 +1,35 @@
-.heading {
-  text-align: center;
-  padding: 16px;
-  font-size: 20px;
+:host {
+  display: flex;
+  overflow: hidden;
+  height: 100%;
 }
 
-.issue {
+.master {
+  width: 400px;
+  border-right: 1px solid;
+  overflow: auto;
+
+  .heading {
+    text-align: center;
+    padding: 16px;
+    font-size: 20px;
+  }
+
+  .issue {
+    padding: 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .title {
+    padding-bottom: 8px;
+    position: sticky;
+    top: 0;
+  }
+}
+
+.detail {
+  flex: 1;
   padding: 16px;
-  border: 1px solid;
-  border-radius: 4px;
-  max-width: 650px;
-  margin: 16px auto;
+  overflow: auto;
 }

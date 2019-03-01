@@ -1,0 +1,35 @@
+<div class="header">
+  <div class="title">
+    {{issue.title}}
+    <span class="issue-number">
+      (<a class="theme-primary" [href]="issue.url">#{{issue.number}}</a>)
+    </span>
+  </div>
+</div>
+
+<div class="context">
+  <div class="created">
+    Reported by {{issue.reporter}} on {{issue.created | date}}
+    <ng-container *ngIf="issue.created != issue.updated">
+      - issue was last updated {{issue.updated | timeAgo}}
+    </ng-container>
+  </div>
+</div>
+
+<div class="priority-label-list">
+  <div *ngFor="let label of priorityLabels" class="priority-label" [style.color]="label.textColor"
+    [style.backgroundColor]="'#' + label.color">
+    {{label.name}}
+  </div>
+</div>
+
+<div class="recommendations">
+  <div class="needs-pre-triage" *ngIf="!issue.assignees.length">
+
+  </div>
+</div>
+
+
+<mat-divider></mat-divider>
+
+<div class="body" [innerHTML]="bodyMarkdown"></div>

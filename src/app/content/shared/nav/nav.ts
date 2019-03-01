@@ -6,6 +6,7 @@ import {Theme} from 'app/content/services/theme';
 import {UsersDao} from 'app/service/users-dao';
 import {Observable, Subject} from 'rxjs';
 import {filter, mergeMap} from 'rxjs/operators';
+import {Updater} from 'app/content/services/updater';
 
 export interface NavLink {
   route: string;
@@ -21,6 +22,8 @@ export interface NavLink {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Nav {
+  repo = 'angular/material2';
+
   user = this.afAuth.authState.pipe(
     filter(auth => !!auth), mergeMap(auth => this.usersDao.get(auth.uid)));
   isUserProfileExpanded = false;
@@ -37,10 +40,16 @@ export class Nav {
   constructor(
     public afAuth: AngularFireAuth, public usersDao: UsersDao,
     public cd: ChangeDetectorRef, public theme: Theme,
-    public router: Router) {}
+    public router: Router, public updater: Updater) {}
 
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
+  }
+
+  updateCache() {
+    this.updater.updateLabels(this.repo);
+    this.updater.updateContributors(this.repo);
+    this.updater.updateIssues(this.repo);
   }
 }
