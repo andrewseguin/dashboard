@@ -3,6 +3,8 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
+import {AdvancedSearchModule} from '../shared/advanced-search/advanced-search.module';
+
 import {IssueDetailModule} from './issue-detail/issue-detail.module';
 import {IssuesPage} from './issues-page';
 
@@ -14,7 +16,11 @@ export class IssuesPageRoutingModule {
 
 @NgModule({
   imports: [
-    CommonModule, IssuesPageRoutingModule, MaterialModule, IssueDetailModule
+    CommonModule,
+    IssuesPageRoutingModule,
+    MaterialModule,
+    IssueDetailModule,
+    AdvancedSearchModule,
   ],
   declarations: [IssuesPage],
   exports: [IssuesPage],

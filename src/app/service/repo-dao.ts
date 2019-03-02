@@ -1,7 +1,8 @@
 import {DB, openDb} from 'idb';
 import {BehaviorSubject} from 'rxjs';
-import {Issue, Label, Contributor} from './github';
 import {map} from 'rxjs/operators';
+
+import {Contributor, Issue, Label} from './github';
 
 export interface Repo {
   empty: boolean;
@@ -16,7 +17,7 @@ const DB_VERSION = 1;
 export class RepoDao {
   id: string;
 
-  repo: BehaviorSubject<Repo | null>;
+  repo: BehaviorSubject<Repo|null>;
 
   private db: Promise<DB>;
 
@@ -24,8 +25,8 @@ export class RepoDao {
 
   initialize(repoId: string) {
     this.id = repoId;
-    this.repo = new BehaviorSubject<Repo | null>(null);
-    this.db = openDb(this.id, DB_VERSION, function (db) {
+    this.repo = new BehaviorSubject<Repo|null>(null);
+    this.db = openDb(this.id, DB_VERSION, function(db) {
       if (!db.objectStoreNames.contains('issues')) {
         db.createObjectStore('issues', {keyPath: 'number'});
       }
@@ -60,29 +61,41 @@ export class RepoDao {
   }
 
   private setValues(values: any[], objectStore: string) {
-    return this.db.then(db => {
-      const transaction = db.transaction(objectStore, 'readwrite');
-      const store = transaction.objectStore(objectStore);
-      values.forEach(v => store.put(v));
-      return transaction.complete;
-    }).then(() => this.update());
+    return this.db
+        .then(db => {
+          const transaction = db.transaction(objectStore, 'readwrite');
+          const store = transaction.objectStore(objectStore);
+          values.forEach(v => store.put(v));
+          return transaction.complete;
+        })
+        .then(() => this.update());
   }
 
   private update() {
-    this.db.then(db => {
-      return Promise.all([
-        db.transaction('issues', 'readonly').objectStore('issues').getAll(),
-        db.transaction('labels', 'readonly').objectStore('labels').getAll(),
-        db.transaction('contributors', 'readonly').objectStore('contributors').getAll()
-      ]);
-    }).then(result => {
-      const empty = ![...result[0], ...result[1], ...result[2]].length;
+    this.db
+        .then(db => {
+          return Promise.all([
+            db.transaction('issues', 'readonly').objectStore('issues').getAll(),
+            db.transaction('labels', 'readonly').objectStore('labels').getAll(),
+            db.transaction('contributors', 'readonly')
+                .objectStore('contributors')
+                .getAll()
+          ]);
+        })
+        .then(result => {
+          const empty = ![...result[0], ...result[1], ...result[2]].length;
 
-      const issues = result[0];
-      const issuesMap = new Map<number, Issue>();
-      issues.forEach(issue => issuesMap.set(issue.number, issue));
+          const issues = result[0].filter((issue: Issue) => !issue.pr);
+          const issuesMap = new Map<number, Issue>();
+          issues.forEach(issue => issuesMap.set(issue.number, issue));
 
-      this.repo.next({issues, issuesMap, labels: result[1], contributors: result[2], empty});
-    });
+          this.repo.next({
+            issues,
+            issuesMap,
+            labels: result[1],
+            contributors: result[2],
+            empty
+          });
+        });
   }
 }

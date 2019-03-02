@@ -1,0 +1,15 @@
+<ng-container [formGroup]="form">
+  <mat-select formControlName="equality">
+    <mat-option *ngFor="let e of equalities" [value]="e.id">
+      {{e.label}}
+    </mat-option>
+  </mat-select>
+
+  <input formControlName="input" [matAutocomplete]="auto">
+  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+    <mat-option *ngFor="let option of (filteredOptions | async)?.slice(0, 100)"
+                [value]="option">
+      {{option}}
+    </mat-option>
+  </mat-autocomplete>
+</ng-container>
