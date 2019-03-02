@@ -23,6 +23,16 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
     }
   ],
 
+  [
+    'body', {
+      displayName: 'Body',
+      queryType: 'input',
+      matcher: (c: MatcherContext, q: InputQuery) => {
+        return stringContainsQuery(c.issue.body, q);
+      },
+    }
+  ],
+
   /** NumberQuery Filters */
 
   [
