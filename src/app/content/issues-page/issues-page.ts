@@ -6,15 +6,15 @@ import {map} from 'rxjs/operators';
 import {IssueRecommendations} from '../services/issue-recommendations';
 
 @Component({
-  styleUrls: ['pre-triage-page.scss'],
-  templateUrl: 'pre-triage-page.html',
+  styleUrls: ['issues-page.scss'],
+  templateUrl: 'issues-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PreTriagePage {
+export class IssuesPage {
   issues: Observable<Issue[]> = this.repoDao.repo.pipe(map(repo => {
     if (repo) {
       return repo.issues.filter(issue => !issue.pr)
-        .sort((a, b) => a.created < b.created ? 1 : -1);
+          .sort((a, b) => a.created < b.created ? 1 : -1);
     }
   }));
 
@@ -22,5 +22,7 @@ export class PreTriagePage {
 
   trackByNumber = (_i, issue: Issue) => issue.number;
 
-  constructor(private repoDao: RepoDao, public issueRecommendations: IssueRecommendations) {}
+  constructor(
+      private repoDao: RepoDao,
+      public issueRecommendations: IssueRecommendations) {}
 }

@@ -3,10 +3,10 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {MatSidenav} from '@angular/material';
 import {Router} from '@angular/router';
 import {Theme} from 'app/content/services/theme';
+import {Updater} from 'app/content/services/updater';
 import {UsersDao} from 'app/service/users-dao';
 import {Observable, Subject} from 'rxjs';
 import {filter, mergeMap} from 'rxjs/operators';
-import {Updater} from 'app/content/services/updater';
 
 export interface NavLink {
   route: string;
@@ -25,12 +25,12 @@ export class Nav {
   repo = 'angular/material2';
 
   user = this.afAuth.authState.pipe(
-    filter(auth => !!auth), mergeMap(auth => this.usersDao.get(auth.uid)));
+      filter(auth => !!auth), mergeMap(auth => this.usersDao.get(auth.uid)));
   isUserProfileExpanded = false;
 
   links: NavLink[] = [
     {route: '/home', label: 'Home', icon: 'home'},
-    {route: '/pre-triage', label: 'Pretriage', icon: 'home'},
+    {route: '/issues', label: 'Issues', icon: 'home'},
   ];
 
   @Input() sidenav: MatSidenav;
@@ -38,9 +38,9 @@ export class Nav {
   private destroyed = new Subject();
 
   constructor(
-    public afAuth: AngularFireAuth, public usersDao: UsersDao,
-    public cd: ChangeDetectorRef, public theme: Theme,
-    public router: Router, public updater: Updater) {}
+      public afAuth: AngularFireAuth, public usersDao: UsersDao,
+      public cd: ChangeDetectorRef, public theme: Theme, public router: Router,
+      public updater: Updater) {}
 
   ngOnDestroy() {
     this.destroyed.next();

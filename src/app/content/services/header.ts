@@ -7,7 +7,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {filter, takeUntil} from 'rxjs/operators';
 
 const SECTIONS = new Map<string, string>(
-  [['home', 'Home'], ['pre-triage', 'Pretriage']]);
+  [['home', 'Home'], ['issues', 'Issues']]);
 
 
 @Injectable()

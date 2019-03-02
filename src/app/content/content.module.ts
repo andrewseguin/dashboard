@@ -4,13 +4,13 @@ import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 import {Content} from './content';
 import {Header, Selection} from './services';
+import {IssueRecommendations} from './services/issue-recommendations';
+import {Markdown} from './services/markdown';
+import {Updater} from './services/updater';
+import {CreateStoreModule} from './shared/dialog/create-store/create-store.module';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
 import {SelectionHeaderModule} from './shared/selection-header/selection-header.module';
-import {Updater} from './services/updater';
-import {CreateStoreModule} from './shared/dialog/create-store/create-store.module';
-import {Markdown} from './services/markdown';
-import {IssueRecommendations} from './services/issue-recommendations';
 
 
 const routes: Routes = [{
@@ -22,12 +22,12 @@ const routes: Routes = [{
       loadChildren: 'app/content/home-page/home-page.module#HomePageModule'
     },
     {
-      path: 'pre-triage',
+      path: 'issues',
       loadChildren:
-        'app/content/pre-triage-page/pre-triage-page.module#PreTriagePageModule'
+        'app/content/issues-page/issues-page.module#IssuesPageModule'
     },
 
-    {path: '', redirectTo: 'home', pathMatch: 'full'},
+    {path: '', redirectTo: 'issues', pathMatch: 'full'},
   ]
 }];
 
