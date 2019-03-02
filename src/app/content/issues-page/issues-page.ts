@@ -4,6 +4,7 @@ import {Repo, RepoDao} from 'app/service/repo-dao';
 import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {IssueRecommendations} from '../services/issue-recommendations';
+import {getIssuesMatchingSearch} from '../utility/get-issues-matching-search';
 import {Filter, MatcherContext} from '../utility/search/filter';
 import {IssuesFilterMetadata} from './issues-filter-metadata';
 
@@ -62,6 +63,9 @@ export class IssuesPage {
         });
   }
 
+  /**
+   * Returns the list of issues that match the provided filters.
+   */
   filter(repo: Repo, filters: Filter[]) {
     return repo.issues.filter(issue => {
       return filters.every(filter => {
@@ -79,24 +83,4 @@ export class IssuesPage {
       });
     });
   }
-}
-
-export function getIssuesMatchingSearch(
-    items: Issue[], repo: Repo, query: string): Issue[] {
-  const tokens = query.split(' ');
-  return items.filter(item => {
-    return tokens.every(token => {
-      return tokenizeIssue(item).indexOf(token.toLowerCase()) != -1;
-    });
-  });
-}
-
-/**
- * Returns a lower-cased string that contains the searchable tokens of Issue.
- * TODO: Fill in more info, including labels
- */
-export function tokenizeIssue(issue: Issue) {
-  const issueStr =
-      (issue.title || '') + (issue.body || '') + (issue.reporter || '');
-  return issueStr.toLowerCase();
 }
