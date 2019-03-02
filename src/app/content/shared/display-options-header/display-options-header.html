@@ -1,0 +1,20 @@
+<div class="buttons">
+  <button mat-button [mat-menu-trigger-for]="sortingMenu">
+    <div class="button-content">
+      <div class="sort-by"> Sort by: {{sorts.get(sorting)}} </div>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </div>
+  </button>
+</div>
+
+<!-- Sort Menu -->
+<mat-menu #sortingMenu="matMenu">
+  <button mat-menu-item *ngFor="let sort of sortIds" [class.selected]="sorting == sort"
+          (click)="setSort(sort)">
+    <div class="button-content">
+      <mat-icon *ngIf="!reverseSort">arrow_downward</mat-icon>
+      <mat-icon *ngIf="reverseSort">arrow_upward</mat-icon>
+      {{sorts.get(sort)}}
+    </div>
+  </button>
+</mat-menu>

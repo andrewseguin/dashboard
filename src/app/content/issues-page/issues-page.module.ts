@@ -4,6 +4,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
 import {AdvancedSearchModule} from '../shared/advanced-search/advanced-search.module';
+import {DisplayOptionsHeaderModule} from '../shared/display-options-header/display-options-header.module';
 
 import {IssueDetailModule} from './issue-detail/issue-detail.module';
 import {IssuesPage} from './issues-page';
@@ -21,6 +22,7 @@ export class IssuesPageRoutingModule {
     MaterialModule,
     IssueDetailModule,
     AdvancedSearchModule,
+    DisplayOptionsHeaderModule,
   ],
   declarations: [IssuesPage],
   exports: [IssuesPage],

@@ -2,6 +2,7 @@
   <advanced-search [metadata]="issueFilterMetadata" [search]="search" [filters]="filters"
                    (searchChanged)="search = $event" (filtersChanged)="filters = $event">
   </advanced-search>
+  <display-options-header></display-options-header>
 
   <div class="issue-container" *ngFor="let issue of issues; trackBy: trackByNumber">
     <div class="issue theme-hover" [ngClass]="{'theme-background-hover': issue.number === selectedIssue, 'selected': issue.number === selectedIssue}"
