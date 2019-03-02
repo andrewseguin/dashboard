@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {Recommendation} from 'app/content/services/issue-recommendations';
-import {Issue} from 'app/service/github';
+import {Issue, Github} from 'app/service/github';
 import {RepoDao} from 'app/service/repo-dao';
 
 @Component({
@@ -14,14 +14,13 @@ export class RecommendationAction {
 
   @Input() recommendation: Recommendation;
 
-  constructor(private repoDao: RepoDao, private cd: ChangeDetectorRef) {
-    this.repoDao.repo.subscribe(repo => {
-
-    });
-  }
+  constructor(private repoDao: RepoDao, private cd: ChangeDetectorRef, private github: Github) {}
 
   addLabel(labelId: number) {
     // TODO: Send to github
-    this.issue.labels = [...this.issue.labels, labelId];
+    const newIssue = {...this.issue};
+    newIssue.labels = [...this.issue.labels, labelId];
+
+    this.repoDao.setIssues([newIssue]);
   }
 }

@@ -1,15 +1,16 @@
 <div class="master">
   <div class="issue-container" *ngFor="let issue of issues | async; trackBy: trackByNumber">
     <div class="issue theme-hover"
-      [ngClass]="{'theme-background-hover': issue === selectedIssue, 'selected': issue === selectedIssue}"
-      (click)="selectedIssue = issue" mat-ripple>
+      [ngClass]="{'theme-background-hover': issue.number === selectedIssue, 'selected': issue.number === selectedIssue}"
+      (click)="selectedIssue = issue.number" mat-ripple>
       <div class="title">
         {{issue.title}}
         <span class="issue-number">
           (<a class="theme-primary" [href]="issue.url">#{{issue.number}}</a>)
         </span>
       </div>
-      <mat-icon class="has-recommendations theme-warn" *ngIf="(issueRecommendations.get(issue.number) | async)?.length"> warning </mat-icon>
+      <mat-icon class="has-recommendations theme-warn" *ngIf="(issueRecommendations.get(issue.number) | async)?.length">
+        warning </mat-icon>
       <mat-icon class="selected-indicator">keyboard_arrow_right</mat-icon>
     </div>
 
@@ -17,6 +18,6 @@
   </div>
 </div>
 
-<div class="detail" *ngIf="selectedIssue; let issue">
-  <issue-detail [issue]="selectedIssue"></issue-detail>
+<div class="detail" *ngIf="selectedIssue">
+  <issue-detail [issueId]="selectedIssue"></issue-detail>
 </div>

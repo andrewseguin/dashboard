@@ -1,10 +1,12 @@
 import {DB, openDb} from 'idb';
 import {BehaviorSubject} from 'rxjs';
 import {Issue, Label, Contributor} from './github';
+import {map} from 'rxjs/operators';
 
 export interface Repo {
   empty: boolean;
   issues: Issue[];
+  issuesMap: Map<number, Issue>;
   labels: Label[];
   contributors: Contributor[];
 }
@@ -37,6 +39,14 @@ export class RepoDao {
     this.db.then(() => this.update());
   }
 
+  getIssue(issueId: number) {
+    return this.repo.pipe(map(repo => {
+      if (repo) {
+        return repo.issuesMap.get(issueId);
+      }
+    }));
+  }
+
   setIssues(issues: Issue[]): Promise<void> {
     return this.setValues(issues, 'issues');
   }
@@ -67,7 +77,12 @@ export class RepoDao {
       ]);
     }).then(result => {
       const empty = ![...result[0], ...result[1], ...result[2]].length;
-      this.repo.next({issues: result[0], labels: result[1], contributors: result[2], empty});
+
+      const issues = result[0];
+      const issuesMap = new Map<number, Issue>();
+      issues.forEach(issue => issuesMap.set(issue.number, issue));
+
+      this.repo.next({issues, issuesMap, labels: result[1], contributors: result[2], empty});
     });
   }
 }

@@ -3,7 +3,8 @@ import {SafeHtml} from '@angular/platform-browser';
 import {IssueRecommendations, Recommendation} from 'app/content/services/issue-recommendations';
 import {Markdown} from 'app/content/services/markdown';
 import {Issue} from 'app/service/github';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
+import {RepoDao} from 'app/service/repo-dao';
 
 @Component({
   selector: 'issue-detail',
@@ -12,20 +13,20 @@ import {Observable} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IssueDetail {
-  bodyMarkdown: SafeHtml;
+  @Input() issueId: number;
 
-  @Input() issue: Issue;
+  bodyMarkdown: Observable<SafeHtml>;
 
   recommendations: Observable<Recommendation[]>;
 
   constructor(
-    private markdown: Markdown,
+    private markdown: Markdown, private repoDao: RepoDao,
     private issueRecommendations: IssueRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['issue'] && this.issue) {
-      this.bodyMarkdown = this.markdown.render(this.issue.body);
-      this.recommendations = this.issueRecommendations.get(this.issue.number);
+    if (simpleChanges['issueId'] && this.issueId) {
+      this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.issueId);
+      this.recommendations = this.issueRecommendations.get(this.issueId);
     }
   }
 }

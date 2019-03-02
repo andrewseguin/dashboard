@@ -1,29 +1,31 @@
-<div class="header">
-  <div class="title">
-    {{issue.title}}
-    <span class="issue-number">
-      (<a class="theme-primary" [href]="issue.url">#{{issue.number}}</a>)
-    </span>
+<ng-container *ngIf="repoDao.getIssue(issueId) | async; let issue">
+  <div class="header">
+    <div class="title">
+      {{issue.title}}
+      <span class="issue-number">
+        (<a class="theme-primary" [href]="issue.url">#{{issue.number}}</a>)
+      </span>
+    </div>
   </div>
-</div>
 
-<div class="context">
-  <div class="created">
-    Reported by {{issue.reporter}} on {{issue.created | date}}
-    <ng-container *ngIf="issue.created != issue.updated">
-      - issue was last updated {{issue.updated | timeAgo}}
-    </ng-container>
+  <div class="context">
+    <div class="created">
+      Reported by {{issue.reporter}} on {{issue.created | date}}
+      <ng-container *ngIf="issue.created != issue.updated">
+        - issue was last updated {{issue.updated | timeAgo}}
+      </ng-container>
+    </div>
   </div>
-</div>
 
-<label-list *ngIf="issue.labels.length" [labelIds]="issue.labels" class="issue-labels"></label-list>
+  <label-list *ngIf="issue.labels.length" [labelIds]="issue.labels" class="issue-labels"></label-list>
 
-<ng-container *ngFor="let recommendation of recommendations | async">
-  <mat-divider></mat-divider>
+  <ng-container *ngFor="let recommendation of recommendations | async">
+    <mat-divider></mat-divider>
 
-  <recommendation-action [recommendation]="recommendation" [issue]="issue"></recommendation-action>
+    <recommendation-action [recommendation]="recommendation" [issue]="issue"></recommendation-action>
+  </ng-container>
+
+  <mat-divider class="last-divider"></mat-divider>
+
+  <div class="body theme-border theme-background-card" [innerHTML]="bodyMarkdown | async"></div>
 </ng-container>
-
-<mat-divider class="last-divider"></mat-divider>
-
-<div class="body theme-border theme-background-card" [innerHTML]="bodyMarkdown"></div>

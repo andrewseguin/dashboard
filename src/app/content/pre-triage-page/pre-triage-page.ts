@@ -18,7 +18,7 @@ export class PreTriagePage {
     }
   }));
 
-  selectedIssue = null;
+  selectedIssue: number;
 
   trackByNumber = (_i, issue: Issue) => issue.number;
 
