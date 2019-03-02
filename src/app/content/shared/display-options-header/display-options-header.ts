@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {Sort, SortId} from 'app/content/issues-page/issues-page';
 import {Subject} from 'rxjs';
 
 @Component({
@@ -8,9 +9,11 @@ import {Subject} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DisplayOptionsHeader {
-  reverseSort = false;
+  @Input() reverseSort = false;
 
-  sorting = 'created';
+  @Input() sort: SortId = 'created';
+
+  @Output() sortChanged = new EventEmitter<Sort>();
 
   sorts = new Map<string, string>([
     ['created', 'Date created'],
@@ -26,12 +29,14 @@ export class DisplayOptionsHeader {
     this.destroyed.complete();
   }
 
-  setSort(sort: string) {
-    if (this.sorting === sort) {
+  setSort(sort: SortId) {
+    if (this.sort === sort) {
       this.reverseSort = !this.reverseSort;
     } else {
-      this.sorting = sort;
+      this.sort = sort;
       this.reverseSort = false;
     }
+
+    this.sortChanged.emit({id: sort, reverse: this.reverseSort});
   }
 }

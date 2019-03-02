@@ -1,12 +1,23 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {MatSortBase} from '@angular/material';
 import {Issue} from 'app/service/github';
 import {Repo, RepoDao} from 'app/service/repo-dao';
 import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+
 import {IssueRecommendations} from '../services/issue-recommendations';
 import {getIssuesMatchingSearch} from '../utility/get-issues-matching-search';
 import {Filter, MatcherContext} from '../utility/search/filter';
+
+import {getSortFunction} from './issue-sorter';
 import {IssuesFilterMetadata} from './issues-filter-metadata';
+
+export type SortId = 'created';
+
+export interface Sort {
+  id: SortId;
+  reverse: boolean;
+}
 
 @Component({
   styleUrls: ['issues-page.scss'],
@@ -32,6 +43,14 @@ export class IssuesPage {
   }
   _filters = new BehaviorSubject<Filter[]>([]);
 
+  set sort(v: Sort) {
+    this._sort.next(v);
+  }
+  get sort(): Sort {
+    return this._sort.value;
+  }
+  _sort = new BehaviorSubject<Sort>({id: 'created', reverse: false});
+
   issueFilterMetadata = IssuesFilterMetadata;
 
   selectedIssue: number;
@@ -47,6 +66,7 @@ export class IssuesPage {
       this.repoDao.repo,
       this._search,
       this._filters,
+      this._sort,
     ];
     combineLatest(changes)
         .pipe(takeUntil(this._destroyed))
@@ -54,10 +74,18 @@ export class IssuesPage {
           const repo = result[0] as Repo;
           const search = result[1] as string;
           const filters = result[2] as Filter[];
+          const sort = result[3] as Sort;
 
           if (repo) {
             const filteredIssues = this.filter(repo, filters);
-            this.issues = getIssuesMatchingSearch(filteredIssues, repo, search);
+            const searchIssues =
+                getIssuesMatchingSearch(filteredIssues, repo, search);
+            this.issues = searchIssues.sort(getSortFunction(sort.id, repo));
+
+            if (sort.reverse) {
+              this.issues = this.issues.reverse();
+            }
+
             this.cd.markForCheck();
           }
         });
@@ -83,4 +111,8 @@ export class IssuesPage {
       });
     });
   }
+}
+
+function sortIssues(issues: Issue[], sort: Sort): Issue[] {
+  return issues;
 }
