@@ -10,7 +10,13 @@
 .buttons {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin: 8px;
+}
+
+.length {
+  padding-left: 8px;
+  font-size: 20px;
 }
 
 button.mat-button {
@@ -24,10 +30,11 @@ button.mat-button {
   align-items: center;
 }
 
-.group-by, .sort-by {
+.options-menu-trigger {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  font-size: 12px;
 }
 
 button.mat-menu-item {

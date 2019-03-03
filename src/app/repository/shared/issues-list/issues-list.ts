@@ -2,10 +2,10 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Event
 import {Selection} from 'app/repository/services';
 import {IssueGroup} from 'app/repository/services/issues-renderer/issue-grouping';
 import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer/issue-renderer-options';
+import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, takeUntil} from 'rxjs/operators';
-import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 
 @Component({
   selector: 'issues-list',
@@ -29,6 +29,8 @@ export class IssuesList {
   issuesToDisplay = 20;
 
   issueFilterMetadata = IssuesFilterMetadata;
+
+  listLength = 0;
 
   @Input()
   set issuesRendererOptionsState(state: IssueRendererOptionsState) {
@@ -81,6 +83,12 @@ export class IssuesList {
     this.issuesRenderer.issueGroups.pipe(takeUntil(this.destroyed))
         .subscribe(issueGroups => {
           this.issueGroups = issueGroups;
+
+          this.listLength = 0;
+          if (issueGroups) {
+            issueGroups.forEach(g => this.listLength += g.issues.length);
+          }
+
           this.render();
         });
   }

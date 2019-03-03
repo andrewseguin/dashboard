@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {Group, Sort} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {Subject} from 'rxjs';
@@ -16,12 +16,13 @@ export class DisplayOptionsHeader {
   ]);
   groupIds = Array.from(this.groups.keys());
 
-
   sorts = new Map<Sort, string>([
     ['created', 'Date created'],
     ['title', 'Title'],
   ]);
   sortIds = Array.from(this.sorts.keys());
+
+  @Input() listLength: number;
 
   private destroyed = new Subject();
 

@@ -20,8 +20,6 @@ export class IssueGrouping {
   }
 
   getGroupAll(): IssueGroup[] {
-    return [
-      {id: 'all', title: `${this.issues.length} issues`, issues: this.issues}
-    ];
+    return [{id: 'all', title: ``, issues: this.issues}];
   }
 }
