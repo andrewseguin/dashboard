@@ -1,28 +1,29 @@
 <div class="master theme-border">
-  <advanced-search [metadata]="issueFilterMetadata" [search]="search" [filters]="filters"
-                   (searchChanged)="search = $event" (filtersChanged)="filters = $event">
-  </advanced-search>
-  <display-options-header [sort]="sort.id" [reverseSort]="sort.reverse"
-                          (sortChanged)="sort = $event"></display-options-header>
 
-  <div class="issue-container" *ngFor="let issue of issues; trackBy: trackByNumber">
-    <div class="issue theme-hover" [ngClass]="{'theme-background-hover': issue.number === selectedIssue, 'selected': issue.number === selectedIssue}"
-         (click)="selectedIssue = issue.number" mat-ripple>
-      <div class="title">
-        {{issue.title}}
-        <span class="issue-number">
-          (<a class="theme-primary" [href]="issue.url">#{{issue.number}}</a>)
-        </span>
-      </div>
-      <mat-icon class="has-recommendations theme-warn" *ngIf="(issueRecommendations.get(issue.number) | async)?.length">
-        warning </mat-icon>
-      <mat-icon class="selected-indicator">keyboard_arrow_right</mat-icon>
-    </div>
+  <requests-list *ngIf="report?.options"
+                 [requestRendererOptionsState]="report.options"
+                 (requestRendererOptionsChanged)="currentOptions = $event">
+  </requests-list>
 
-    <mat-divider></mat-divider>
-  </div>
+  <ng-template cdkPortal>
+    <ng-container *ngIf="report">
+      <button mat-raised-button color="primary" *ngIf="!report.id"
+              (click)="saveAs()">
+        Save As
+      </button>
+
+      <button mat-raised-button color="primary" *ngIf="report.id"
+              (click)="save()" [disabled]="!canSave">
+        {{canSave ? 'Save' : 'Saved'}}
+      </button>
+
+      <report-menu [report]="report" icon="settings"
+                   [optionsOverride]="currentOptions">
+      </report-menu>
+    </ng-container>
+  </ng-template>
 </div>
 
-<div class="detail" *ngIf="selectedIssue">
-  <issue-detail [issueId]="selectedIssue"></issue-detail>
+<div class="detail">
+  <router-outlet></router-outlet>
 </div>

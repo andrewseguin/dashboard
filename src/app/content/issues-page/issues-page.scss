@@ -5,6 +5,10 @@
 }
 
 .master {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
   width: 500px;
   border-right-width: 1px;
   border-right-style: solid;

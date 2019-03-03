@@ -1,17 +1,22 @@
+// Import your custom theme
+@import '../common';
+
 :host {
+  @include content-width;
   display: block;
   margin: auto;
-  padding: 0 8px;
 }
 
 .buttons {
   display: flex;
   justify-content: space-between;
+  margin: 8px;
 }
 
 button.mat-button {
   min-width: 0;
   display: block;
+  padding: 0 8px;
 }
 
 .button-content {
@@ -19,7 +24,7 @@ button.mat-button {
   align-items: center;
 }
 
-.sort-by {
+.group-by, .sort-by {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;

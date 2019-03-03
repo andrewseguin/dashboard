@@ -1,0 +1,26 @@
+:host {
+  overflow: auto;
+  flex: 1;
+}
+
+.requests-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+mat-spinner {
+  margin: 16px;
+}
+
+.loading-more {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+advanced-search {
+  display: block;
+  margin: 16px 16px 0 16px;
+  margin: 8px 8px 0 8px;
+}

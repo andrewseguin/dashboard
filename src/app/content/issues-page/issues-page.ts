@@ -1,22 +1,21 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {MatSortBase} from '@angular/material';
-import {Issue} from 'app/service/github';
-import {Repo, RepoDao} from 'app/service/repo-dao';
-import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {CdkPortal} from '@angular/cdk/portal';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {MatSnackBar} from '@angular/material';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Subject, Subscription} from 'rxjs';
+import {Header} from '../services';
+import {areOptionStatesEqual, RequestRendererOptions, RequestRendererOptionsState} from '../services/requests-renderer/request-renderer-options';
 
-import {IssueRecommendations} from '../services/issue-recommendations';
-import {getIssuesMatchingSearch} from '../utility/get-issues-matching-search';
-import {Filter, MatcherContext} from '../utility/search/filter';
-
-import {getSortFunction} from './issue-sorter';
-import {IssuesFilterMetadata} from './issues-filter-metadata';
-
-export type SortId = 'created';
-
-export interface Sort {
-  id: SortId;
-  reverse: boolean;
+export interface Report {
+  id?: string;
+  name?: string;
+  group?: string;
+  createdBy?: string;
+  createdDate?: string;
+  modifiedBy?: string;
+  modifiedDate?: string;
+  season?: string;
+  options?: RequestRendererOptionsState;
 }
 
 @Component({
@@ -25,94 +24,95 @@ export interface Sort {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IssuesPage {
-  issues: Issue[] = [];
-
-  set search(v: string) {
-    this._search.next(v);
+  set report(report: Report) {
+    // When a report is set, the options state should be updated to be
+    // whatever the report is, and the title should always match
+    this._report = report;
+    this.currentOptions = this.report.options;
+    this.header.title.next(this.report.name);
   }
-  get search(): string {
-    return this._search.value;
+  get report(): Report {
+    return this._report;
   }
-  _search = new BehaviorSubject<string>('');
+  private _report: Report;
 
-  set filters(v: Filter[]) {
-    this._filters.next(v);
+  set currentOptions(currentOptions: RequestRendererOptionsState) {
+    // When current options change, a check should be evaluated if they differ
+    // from the current report's options. If so, the save button should display.
+    this._currentOptions = currentOptions;
+    this.canSave = this.report && this.report.options && this.currentOptions &&
+        !areOptionStatesEqual(this.report.options, this.currentOptions);
   }
-  get filters(): Filter[] {
-    return this._filters.value;
+  get currentOptions(): RequestRendererOptionsState {
+    return this._currentOptions;
   }
-  _filters = new BehaviorSubject<Filter[]>([]);
+  private _currentOptions: RequestRendererOptionsState;
 
-  set sort(v: Sort) {
-    this._sort.next(v);
-  }
-  get sort(): Sort {
-    return this._sort.value;
-  }
-  _sort = new BehaviorSubject<Sort>({id: 'created', reverse: false});
+  canSave: boolean;
 
-  issueFilterMetadata = IssuesFilterMetadata;
+  private destroyed = new Subject();
+  private reportGetSubscription: Subscription;
 
-  selectedIssue: number;
-
-  private _destroyed = new Subject();
-
-  trackByNumber = (_i, issue: Issue) => issue.number;
+  @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private repoDao: RepoDao, private cd: ChangeDetectorRef,
-      public issueRecommendations: IssueRecommendations) {
-    const changes = [
-      this.repoDao.repo,
-      this._search,
-      this._filters,
-      this._sort,
-    ];
-    combineLatest(changes)
-        .pipe(takeUntil(this._destroyed))
-        .subscribe(result => {
-          const repo = result[0] as Repo;
-          const search = result[1] as string;
-          const filters = result[2] as Filter[];
-          const sort = result[3] as Sort;
+      private router: Router,
+      private activatedRoute: ActivatedRoute,
+      // private activatedSeason: ActivatedRepository,
+      private header: Header,
+      private snackbar: MatSnackBar,
+      private cd: ChangeDetectorRef,
+  ) {
+    this.report = createNewReport();
+    /* this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
+      const id = params['id'];
+      this.canSave = false;
 
-          if (repo) {
-            const filteredIssues = this.filter(repo, filters);
-            const searchIssues =
-                getIssuesMatchingSearch(filteredIssues, repo, search);
-            this.issues = searchIssues.sort(getSortFunction(sort.id, repo));
+      if (this.reportGetSubscription) {
+        this.reportGetSubscription.unsubscribe();
+      }
 
-            if (sort.reverse) {
-              this.issues = this.issues.reverse();
+      if (id === 'new') {
+        this.report = createNewReport();
+        this.cd.markForCheck();
+      } else {
+        this.reportGetSubscription = this.reportsDao.get(id)
+          .pipe(takeUntil(this.destroyed))
+          .subscribe(report => {
+            if (report) {
+              this.report = report;
+            } else {
+              this.router.navigate([`reports`],
+                  {relativeTo: this.activatedRoute.parent});
             }
-
             this.cd.markForCheck();
-          }
-        });
-  }
-
-  /**
-   * Returns the list of issues that match the provided filters.
-   */
-  filter(repo: Repo, filters: Filter[]) {
-    return repo.issues.filter(issue => {
-      return filters.every(filter => {
-        if (!filter.query) {
-          return true;
-        }
-
-        const context: MatcherContext = {
-          issue: issue,
-          labels: repo.labels,
-          contributors: repo.contributors
-        };
-        return this.issueFilterMetadata.get(filter.type)
-            .matcher(context, filter.query);
-      });
+          });
+      }
     });
-  }
+ */  }
+
+    ngOnInit() {
+      this.header.toolbarOutlet.next(this.toolbarActions);
+    }
+
+    ngOnDestroy() {
+      this.header.toolbarOutlet.next(null);
+      this.destroyed.next();
+      this.destroyed.complete();
+    }
+
+    saveAs() {
+      // this.reportDialog.saveAsReport(
+      //     this.currentOptions, this.activatedSeason.season.value);
+    }
+
+    save() {
+      // this.reportsDao.update(this.report.id, {options: this.currentOptions});
+    }
 }
 
-function sortIssues(issues: Issue[], sort: Sort): Issue[] {
-  return issues;
+function createNewReport() {
+  const options = new RequestRendererOptions();
+  options.showProjectName = true;
+  return {name: 'New Report', options: options.getState()};
 }

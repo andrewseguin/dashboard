@@ -1,0 +1,60 @@
+@import '../../../../constants';
+
+:host {
+  display: block;
+  overflow: hidden;
+}
+
+.request {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  padding: 8px;
+  position: relative;
+  cursor: pointer;
+  page-break-inside: avoid;
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+
+  .name {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+  }
+}
+
+.details {
+  padding: 0 16px 0 32px;
+  font-size: 13px;
+}
+
+.tags {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-right: -8px;
+  min-height: 8px;
+
+  .tag {
+    word-wrap: normal;
+    word-break: break-all;
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    padding: 4px 10px;
+  }
+}
+
+.section {
+  display: inline-block;
+  padding: 2px 4px;
+  border-radius: 2px;
+
+  :host.can-edit &.theme-hover {
+    cursor: pointer;
+  }
+}

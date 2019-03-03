@@ -1,0 +1,8 @@
+<div class="title" (click)="selectGroup.emit()">
+  <span matTooltip="Click to select these requests">{{title}}</span>
+</div>
+<ng-container *ngFor="let issue of issues; trackBy:trackByIssueNumber">
+  <mat-divider></mat-divider>
+  <request [issue]="issue" [id]="issue.number">
+  </request>
+</ng-container>

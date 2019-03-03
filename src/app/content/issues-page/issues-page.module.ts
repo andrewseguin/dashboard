@@ -3,13 +3,18 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
-import {AdvancedSearchModule} from '../shared/advanced-search/advanced-search.module';
-import {DisplayOptionsHeaderModule} from '../shared/display-options-header/display-options-header.module';
+import {ReportMenuModule} from '../shared/report-menu/report-menu.module';
+import {RequestsListModule} from '../shared/requests-list/requests-list.module';
 
+import {IssueDetail} from './issue-detail/issue-detail';
 import {IssueDetailModule} from './issue-detail/issue-detail.module';
 import {IssuesPage} from './issues-page';
 
-const routes: Routes = [{path: '', component: IssuesPage}];
+const routes: Routes = [{
+  path: '',
+  component: IssuesPage,
+  children: [{path: ':id', component: IssueDetail}]
+}];
 
 @NgModule({imports: [RouterModule.forChild(routes)], exports: [RouterModule]})
 export class IssuesPageRoutingModule {
@@ -21,8 +26,8 @@ export class IssuesPageRoutingModule {
     IssuesPageRoutingModule,
     MaterialModule,
     IssueDetailModule,
-    AdvancedSearchModule,
-    DisplayOptionsHeaderModule,
+    RequestsListModule,
+    ReportMenuModule,
   ],
   declarations: [IssuesPage],
   exports: [IssuesPage],

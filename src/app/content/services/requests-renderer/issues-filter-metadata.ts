@@ -1,7 +1,8 @@
+import {dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery} from 'app/content/utility/search/query-matcher';
 import {map} from 'rxjs/operators';
-import {AutocompleteContext, IFilterMetadata, MatcherContext} from '../utility/search/filter';
-import {DateQuery, InputQuery, NumberQuery, StateQuery} from '../utility/search/query';
-import {dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery} from '../utility/search/query-matcher';
+
+import {AutocompleteContext, IFilterMetadata, MatcherContext} from '../../utility/search/filter';
+import {DateQuery, InputQuery, NumberQuery, StateQuery} from '../../utility/search/query';
 
 
 export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([

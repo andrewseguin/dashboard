@@ -31,7 +31,7 @@ export class SelectionHeader {
 
   constructor(private selection: Selection, private cd: ChangeDetectorRef) {
     merge(
-        this.selection.selectableA.changed, this.selection.selectableB.changed)
+        this.selection.issues.changed, this.selection.selectableB.changed)
         .pipe(takeUntil(this.destroyed))
         .subscribe(() => this.cd.markForCheck());
   }
@@ -46,12 +46,12 @@ export class SelectionHeader {
   }
 
   getSelectionCount() {
-    return this.selection.selectableA.selected.length ||
+    return this.selection.issues.selected.length ||
         this.selection.selectableB.selected.length;
   }
 
   getSelectionType(): SelectionType {
-    if (this.selection.selectableA.selected.length) {
+    if (this.selection.issues.selected.length) {
       return 'request';
     } else if (this.selection.selectableB.selected.length) {
       return 'item';
@@ -61,7 +61,7 @@ export class SelectionHeader {
   }
 
   clearSelection() {
-    this.selection.selectableA.clear();
+    this.selection.issues.clear();
     this.selection.selectableB.clear();
   }
 }

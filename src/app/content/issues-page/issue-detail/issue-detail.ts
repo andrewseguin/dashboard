@@ -1,10 +1,11 @@
-import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
+import {ActivatedRoute} from '@angular/router';
 import {IssueRecommendations, Recommendation} from 'app/content/services/issue-recommendations';
 import {Markdown} from 'app/content/services/markdown';
-import {Issue} from 'app/service/github';
-import {Observable, Subscription} from 'rxjs';
 import {RepoDao} from 'app/service/repo-dao';
+import {Observable, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'issue-detail',
@@ -13,20 +14,29 @@ import {RepoDao} from 'app/service/repo-dao';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IssueDetail {
-  @Input() issueId: number;
+  issueId: number;
 
   bodyMarkdown: Observable<SafeHtml>;
 
   recommendations: Observable<Recommendation[]>;
 
-  constructor(
-    private markdown: Markdown, private repoDao: RepoDao,
-    private issueRecommendations: IssueRecommendations) {}
+  private destroyed = new Subject();
 
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['issueId'] && this.issueId) {
-      this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.issueId);
-      this.recommendations = this.issueRecommendations.get(this.issueId);
-    }
+  constructor(
+      private activatedRoute: ActivatedRoute, private markdown: Markdown,
+      private repoDao: RepoDao, private cd: ChangeDetectorRef,
+      private issueRecommendations: IssueRecommendations) {
+    this.activatedRoute.params.pipe(takeUntil(this.destroyed))
+        .subscribe(params => {
+          this.issueId = +params['id'];
+          this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.issueId);
+          this.recommendations = this.issueRecommendations.get(this.issueId);
+          this.cd.markForCheck();
+        });
+  }
+
+  ngOnDestroy() {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 }

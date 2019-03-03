@@ -9,7 +9,9 @@ export interface Repo {
   issues: Issue[];
   issuesMap: Map<number, Issue>;
   labels: Label[];
+  labelsMap: Map<number, Label>;
   contributors: Contributor[];
+  contributorsMap: Map<number, Contributor>;
 }
 
 const DB_VERSION = 1;
@@ -83,18 +85,26 @@ export class RepoDao {
           ]);
         })
         .then(result => {
-          const empty = ![...result[0], ...result[1], ...result[2]].length;
-
           const issues = result[0].filter((issue: Issue) => !issue.pr);
           const issuesMap = new Map<number, Issue>();
-          issues.forEach(issue => issuesMap.set(issue.number, issue));
+          issues.forEach(o => issuesMap.set(o.number, o));
+
+          const labels = result[1];
+          const labelsMap = new Map<number, Label>();
+          labels.forEach(o => issuesMap.set(o.id, o));
+
+          const contributors = result[2];
+          const contributorsMap = new Map<number, Contributor>();
+          contributors.forEach(o => contributorsMap.set(o.id, o));
 
           this.repo.next({
             issues,
             issuesMap,
-            labels: result[1],
-            contributors: result[2],
-            empty
+            labels,
+            labelsMap,
+            contributors,
+            contributorsMap,
+            empty: ![...issues, ...labels, ...contributors].length
           });
         });
   }
