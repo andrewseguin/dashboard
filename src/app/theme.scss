@@ -1,7 +1,7 @@
 @import '~@angular/material/theming';
 
-@import './content/shared/nav/nav-theme';
-@import './content/shared/selection-header/selection-header-theme';
+@import './repository/shared/nav/nav-theme';
+@import './repository/shared/selection-header/selection-header-theme';
 
 @mixin themed-styles($theme) {
   @include angular-material-theme($theme);
