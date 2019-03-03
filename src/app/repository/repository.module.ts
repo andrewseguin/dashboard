@@ -18,7 +18,7 @@ const routes: Routes = [{
   component: Repository,
   children: [
     {
-      path: 'home',
+      path: 'reports',
       loadChildren: 'app/repository/home-page/home-page.module#HomePageModule'
     },
     {

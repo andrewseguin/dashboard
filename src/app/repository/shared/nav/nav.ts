@@ -29,7 +29,7 @@ export class Nav {
   isUserProfileExpanded = false;
 
   links: NavLink[] = [
-    {route: '/home', label: 'Home', icon: 'home'},
+    {route: '/reports', label: 'Reports', icon: 'report'},
     {route: '/issues', label: 'Issues', icon: 'home'},
   ];
 
