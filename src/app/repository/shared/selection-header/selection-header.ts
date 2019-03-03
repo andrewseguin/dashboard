@@ -4,7 +4,7 @@ import {Selection} from 'app/repository/services';
 import {merge, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
-export type SelectionType = 'request'|'item';
+export type SelectionType = 'issue';
 
 @Component({
   selector: 'selection-header',
@@ -30,8 +30,7 @@ export class SelectionHeader {
   private destroyed = new Subject();
 
   constructor(private selection: Selection, private cd: ChangeDetectorRef) {
-    merge(
-        this.selection.issues.changed, this.selection.selectableB.changed)
+    merge(this.selection.issues.changed, this.selection.selectableB.changed)
         .pipe(takeUntil(this.destroyed))
         .subscribe(() => this.cd.markForCheck());
   }
@@ -52,9 +51,7 @@ export class SelectionHeader {
 
   getSelectionType(): SelectionType {
     if (this.selection.issues.selected.length) {
-      return 'request';
-    } else if (this.selection.selectableB.selected.length) {
-      return 'item';
+      return 'issue';
     }
 
     return null;
@@ -62,6 +59,5 @@ export class SelectionHeader {
 
   clearSelection() {
     this.selection.issues.clear();
-    this.selection.selectableB.clear();
   }
 }

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {Group, Sort} from 'app/repository/services/requests-renderer/request-renderer-options';
-import {RequestsRenderer} from 'app/repository/services/requests-renderer/requests-renderer';
+import {Group, Sort} from 'app/repository/services/issues-renderer/issue-renderer-options';
+import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 
@@ -24,9 +24,9 @@ export class DisplayOptionsHeader {
 
   private destroyed = new Subject();
 
-  constructor(public requestsRenderer: RequestsRenderer,
+  constructor(public issuesRenderer: IssuesRenderer,
               private cd: ChangeDetectorRef) {
-    this.requestsRenderer.options.changed
+    this.issuesRenderer.options.changed
         .pipe(takeUntil(this.destroyed))
         .subscribe(() => {
           this.cd.markForCheck();
@@ -39,7 +39,7 @@ export class DisplayOptionsHeader {
   }
 
   setSort(sort: Sort) {
-    const options = this.requestsRenderer.options;
+    const options = this.issuesRenderer.options;
     if (options.sorting === sort) {
       options.reverseSort = !options.reverseSort;
     } else {

@@ -1,0 +1,25 @@
+<ng-container
+              *ngIf="(issuesRenderer.issueGroups | async) !== null; else loading">
+  <advanced-search [search]="issuesRenderer.options.search"
+                   [filters]="issuesRenderer.options.filters"
+                   [metadata]="issueFilterMetadata"
+                   (searchChanged)="issuesRenderer.options.search = $event"
+                   (filtersChanged)="issuesRenderer.options.filters = $event">
+  </advanced-search>
+  <display-options-header></display-options-header>
+
+  <div class="issues-container">
+    <issues-group *ngFor="let issueGroup of renderedIssueGroups; let index = index; trackBy:getIssueGroupKey"
+                  [issues]="issueGroup.issues" [title]="issueGroup.title"
+                  (selectGroup)="selectGroup(index)">
+    </issues-group>
+  </div>
+
+  <div *ngIf="loadingIssues" class="loading-more">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+</ng-container>
+
+<ng-template #loading>
+  <loading label="issues"></loading>
+</ng-template>

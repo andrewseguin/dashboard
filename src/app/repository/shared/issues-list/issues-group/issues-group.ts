@@ -1,13 +1,13 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Issue} from 'app/service/github';
 
 @Component({
-  selector: 'requests-group',
-  templateUrl: 'requests-group.html',
-  styleUrls: ['requests-group.scss'],
+  selector: 'issues-group',
+  templateUrl: 'issues-group.html',
+  styleUrls: ['issues-group.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RequestsGroup {
+export class IssuesGroup {
   @Input() issues: Issue[];
 
   @Input() title: string;

@@ -1,4 +1,4 @@
-<div class="request theme-hover">
+<div class="issue theme-hover">
   <div class="top-row theme-text">
     <div class="name">
       <span class="section">
@@ -11,13 +11,6 @@
     <div>
       <span class="section">
         Assignee: {{issue.reporter}}
-      </span>
-    </div>
-
-    <div class="tags">
-      <span class="section theme-hover tag" *ngFor="let tag of issue.labels"
-            (click)="edit('tag', $event)">
-        {{label}}
       </span>
     </div>
   </div>

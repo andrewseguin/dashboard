@@ -4,7 +4,7 @@ import {MatSnackBar} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
 import {Header} from '../services';
-import {areOptionStatesEqual, RequestRendererOptions, RequestRendererOptionsState} from '../services/requests-renderer/request-renderer-options';
+import {areOptionStatesEqual, IssueRendererOptions, IssueRendererOptionsState} from '../services/issues-renderer/issue-renderer-options';
 
 export interface Report {
   id?: string;
@@ -15,7 +15,7 @@ export interface Report {
   modifiedBy?: string;
   modifiedDate?: string;
   season?: string;
-  options?: RequestRendererOptionsState;
+  options?: IssueRendererOptionsState;
 }
 
 @Component({
@@ -36,17 +36,17 @@ export class IssuesPage {
   }
   private _report: Report;
 
-  set currentOptions(currentOptions: RequestRendererOptionsState) {
+  set currentOptions(currentOptions: IssueRendererOptionsState) {
     // When current options change, a check should be evaluated if they differ
     // from the current report's options. If so, the save button should display.
     this._currentOptions = currentOptions;
     this.canSave = this.report && this.report.options && this.currentOptions &&
         !areOptionStatesEqual(this.report.options, this.currentOptions);
   }
-  get currentOptions(): RequestRendererOptionsState {
+  get currentOptions(): IssueRendererOptionsState {
     return this._currentOptions;
   }
-  private _currentOptions: RequestRendererOptionsState;
+  private _currentOptions: IssueRendererOptionsState;
 
   canSave: boolean;
 
@@ -112,7 +112,7 @@ export class IssuesPage {
 }
 
 function createNewReport() {
-  const options = new RequestRendererOptions();
+  const options = new IssueRendererOptions();
   options.showProjectName = true;
   return {name: 'New Report', options: options.getState()};
 }

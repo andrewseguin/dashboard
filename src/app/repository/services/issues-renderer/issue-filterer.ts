@@ -2,10 +2,10 @@ import {MatcherContext} from 'app/repository/utility/search/filter';
 import {Repo} from 'app/service/repo-dao';
 
 import {IssuesFilterMetadata} from './issues-filter-metadata';
-import {RequestRendererOptions} from './request-renderer-options';
+import {IssueRendererOptions} from './issue-renderer-options';
 
-export class RequestFilterer {
-  constructor(private options: RequestRendererOptions) {}
+export class IssueFilterer {
+  constructor(private options: IssueRendererOptions) {}
 
   filter(repo: Repo) {
     return repo.issues.filter(issue => {

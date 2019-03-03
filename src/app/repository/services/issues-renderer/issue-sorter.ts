@@ -1,7 +1,7 @@
-import {Sort} from './request-renderer-options';
+import {Sort} from './issue-renderer-options';
 import {Issue} from 'app/service/github';
 
-export class RequestSorter {
+export class IssueSorter {
   getSortFunction(sort: Sort) {
     switch (sort) {
       case 'created':

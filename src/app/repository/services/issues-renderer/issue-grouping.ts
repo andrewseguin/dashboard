@@ -1,15 +1,15 @@
 import {Issue} from 'app/service/github';
 import {Repo} from 'app/service/repo-dao';
 
-import {Group} from './request-renderer-options';
+import {Group} from './issue-renderer-options';
 
-export class RequestGroup {
+export class IssueGroup {
   id: string;
   title: string;
   issues: Issue[];
 }
 
-export class RequestGrouping {
+export class IssueGrouping {
   constructor(private issues: Issue[], private repo: Repo) {}
 
   getGroup(group: Group) {
@@ -19,7 +19,7 @@ export class RequestGrouping {
     }
   }
 
-  getGroupAll(): RequestGroup[] {
+  getGroupAll(): IssueGroup[] {
     return [
       {id: 'all', title: `${this.issues.length} issues`, issues: this.issues}
     ];

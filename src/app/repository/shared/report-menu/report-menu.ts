@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
 import {Report} from 'app/repository/issues-page/issues-page';
-import {RequestRendererOptionsState} from 'app/repository/services/requests-renderer/request-renderer-options';
+import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer/issue-renderer-options';
 
 @Component({
   selector: 'report-menu',
@@ -13,7 +13,7 @@ export class ReportMenu {
 
   @Input() icon: 'settings'|'more_vert';
 
-  @Input() optionsOverride: RequestRendererOptionsState;
+  @Input() optionsOverride: IssueRendererOptionsState;
 
   constructor(  // private reportDialog: ReportDialog,
                 //   private activatedSeason: ActivatedSeason,

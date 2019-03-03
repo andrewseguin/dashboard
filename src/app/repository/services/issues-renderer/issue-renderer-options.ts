@@ -5,7 +5,7 @@ export type Group = 'all';
 
 export type Sort = 'created';
 
-export interface RequestRendererOptionsState {
+export interface IssueRendererOptionsState {
   filters: Filter[];
   search: string;
   grouping: Group;
@@ -14,7 +14,7 @@ export interface RequestRendererOptionsState {
   showProjectName: boolean;
 }
 
-export class RequestRendererOptions {
+export class IssueRendererOptions {
   set filters(v: Filter[]) {
     if (this._filters === v) { return; }
     this._filters = v;
@@ -65,7 +65,7 @@ export class RequestRendererOptions {
 
   changed = new Subject<void>();
 
-  setState(options: RequestRendererOptionsState) {
+  setState(options: IssueRendererOptionsState) {
     this._filters = options.filters;
     this._search = options.search;
     this._grouping = options.grouping;
@@ -87,8 +87,8 @@ export class RequestRendererOptions {
   }
 }
 
-export function areOptionStatesEqual(o1: RequestRendererOptionsState,
-                                     o2: RequestRendererOptionsState) {
+export function areOptionStatesEqual(o1: IssueRendererOptionsState,
+                                     o2: IssueRendererOptionsState) {
   return o1.grouping === o2.grouping &&
     o1.reverseSort === o2.reverseSort &&
     o1.sorting === o2.sorting &&

@@ -6,9 +6,9 @@ import {MaterialModule} from 'app/material.module';
 import {IssueDetail} from '../shared/issue-detail/issue-detail';
 import {IssueDetailModule} from '../shared/issue-detail/issue-detail.module';
 import {ReportMenuModule} from '../shared/report-menu/report-menu.module';
-import {RequestsListModule} from '../shared/requests-list/requests-list.module';
 
 import {IssuesPage} from './issues-page';
+import {IssuesListModule} from '../shared/issues-list/issues-list.module';
 
 const routes: Routes = [{
   path: '',
@@ -26,7 +26,7 @@ export class IssuesPageRoutingModule {
     IssuesPageRoutingModule,
     MaterialModule,
     IssueDetailModule,
-    RequestsListModule,
+    IssuesListModule,
     ReportMenuModule,
   ],
   declarations: [IssuesPage],

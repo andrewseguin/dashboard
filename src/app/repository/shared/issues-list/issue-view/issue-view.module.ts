@@ -2,15 +2,15 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
 
-import {RequestView} from './request-view';
+import {IssueView} from './issue-view';
 
 @NgModule({
   imports: [
     CommonModule,
     MaterialModule,
   ],
-  declarations: [RequestView],
-  exports: [RequestView],
+  declarations: [IssueView],
+  exports: [IssueView],
 })
-export class RequestViewModule {
+export class IssueViewModule {
 }

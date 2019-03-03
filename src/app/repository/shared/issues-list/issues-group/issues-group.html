@@ -1,0 +1,9 @@
+<div class="title">
+  {{title}}
+</div>
+
+<ng-container *ngFor="let issue of issues; trackBy:trackByIssueNumber">
+  <mat-divider></mat-divider>
+  <issue [issue]="issue" [id]="issue.number">
+  </issue>
+</ng-container>
