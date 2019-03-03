@@ -12,4 +12,12 @@ export class SeasonHeader {
   @Input() sidenav: MatSidenav;
 
   constructor(public header: Header) {}
+
+  leftButtonClicked() {
+    if (this.header.goBack) {
+      this.header.goBack();
+    } else {
+      this.sidenav.open();
+    }
+  }
 }
