@@ -113,6 +113,5 @@ export class IssuesPage {
 
 function createNewReport() {
   const options = new IssueRendererOptions();
-  options.showProjectName = true;
   return {name: 'New Report', options: options.getState()};
 }
