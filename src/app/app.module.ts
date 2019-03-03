@@ -37,7 +37,15 @@ export class TimeAgoPipeModule {
     HttpClientModule,
     RouterModule.forRoot([
       {path: 'login', component: Login},
-      {path: '', loadChildren: 'app/repository/repository.module#RepositoryModule'},
+      {
+        path: ':org/:name',
+        loadChildren: 'app/repository/repository.module#RepositoryModule'
+      },
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'angular/material2',
+      },
     ]),
   ],
   providers: [

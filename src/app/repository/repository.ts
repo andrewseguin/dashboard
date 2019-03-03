@@ -1,10 +1,13 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {MatDialog} from '@angular/material';
+import {ActivatedRoute} from '@angular/router';
 import {RepoDao} from 'app/service/repo-dao';
 import {interval, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+
+import {ActivatedRepository} from './services/activated-repository';
 import {Updater} from './services/updater';
 import {CreateStore} from './shared/dialog/create-store/create-store';
-import {takeUntil} from 'rxjs/operators';
 
 @Component({
   templateUrl: 'repository.html',
@@ -12,10 +15,22 @@ import {takeUntil} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Repository {
-  repo = 'angular/material2';
+  repository = 'angular/material2';
 
-  constructor(public repoStoreDao: RepoDao, private dialog: MatDialog, private updater: Updater) {
-    this.repoStoreDao.initialize(this.repo);
+  destroyed = new Subject();
+
+  constructor(
+      public repoStoreDao: RepoDao, private dialog: MatDialog,
+      private updater: Updater, private activatedRoute: ActivatedRoute,
+      private activatedRepository: ActivatedRepository) {
+    this.activatedRoute.params.pipe(takeUntil(this.destroyed))
+        .subscribe(params => {
+          const org = params['org'];
+          const name = params['name'];
+          this.repository = `${org}/${name}`;
+          this.repoStoreDao.initialize(this.repository);
+          this.activatedRepository.repository.next(this.repository);
+        });
 
     const checked = new Subject();
     this.repoStoreDao.repo.pipe(takeUntil(checked)).subscribe(result => {
@@ -34,20 +49,22 @@ export class Repository {
     });
   }
 
+  ngOnDestroy() {
+    this.destroyed.next();
+    this.destroyed.complete();
+  }
+
   private initializeAutoUpdates() {
     interval(20 * 1000).subscribe(() => {
       console.log('updating');
-      this.updater.updateLabels(this.repo);
-      this.updater.updateContributors(this.repo);
-      this.updater.updateIssues(this.repo);
+      this.updater.updateLabels(this.repository);
+      this.updater.updateContributors(this.repository);
+      this.updater.updateIssues(this.repository);
     });
   }
 
   private requestCreateStore() {
-    const config = {
-      data: {repo: this.repo},
-      width: '500px'
-    };
+    const config = {data: {repo: this.repository}, width: '500px'};
     this.dialog.open(CreateStore, config).afterClosed().subscribe(created => {
       if (created) {
         this.initializeAutoUpdates();

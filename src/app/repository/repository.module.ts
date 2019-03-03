@@ -11,6 +11,7 @@ import {CreateStoreModule} from './shared/dialog/create-store/create-store.modul
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
 import {SelectionHeaderModule} from './shared/selection-header/selection-header.module';
+import {ActivatedRepository} from './services/activated-repository';
 
 
 const routes: Routes = [{
@@ -19,7 +20,8 @@ const routes: Routes = [{
   children: [
     {
       path: 'reports',
-      loadChildren: 'app/repository/home-page/home-page.module#HomePageModule'
+      loadChildren:
+          'app/repository/reports-page/reports-page.module#ReportsPageModule'
     },
     {
       path: 'issues',
@@ -60,6 +62,7 @@ export class RepositoryRoutingModule {
     Updater,
     IssueRecommendations,
     Markdown,
+    ActivatedRepository,
   ]
 })
 export class RepositoryModule {

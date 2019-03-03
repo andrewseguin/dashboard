@@ -29,8 +29,8 @@ export class Nav {
   isUserProfileExpanded = false;
 
   links: NavLink[] = [
-    {route: '/reports', label: 'Reports', icon: 'report'},
-    {route: '/issues', label: 'Issues', icon: 'home'},
+    {route: 'reports', label: 'Reports', icon: 'report'},
+    {route: 'issues', label: 'Issues', icon: 'home'},
   ];
 
   @Input() sidenav: MatSidenav;
