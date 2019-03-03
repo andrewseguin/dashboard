@@ -38,9 +38,11 @@
           [class.selected]="issuesRenderer.options.sorting == sort"
           (click)="setSort(sort)">
     <div class="button-content">
-      <mat-icon *ngIf="!issuesRenderer.options.reverseSort">arrow_downward
+      <mat-icon *ngIf="!issuesRenderer.options.reverseSort">
+        arrow_upward
       </mat-icon>
-      <mat-icon *ngIf="issuesRenderer.options.reverseSort">arrow_upward
+      <mat-icon *ngIf="issuesRenderer.options.reverseSort">
+        arrow_downward
       </mat-icon>
       {{sorts.get(sort)}}
     </div>

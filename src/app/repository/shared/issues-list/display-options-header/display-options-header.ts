@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {Group, Sort} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
-import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'display-options-header',
@@ -19,15 +19,15 @@ export class DisplayOptionsHeader {
 
   sorts = new Map<Sort, string>([
     ['created', 'Date created'],
+    ['title', 'Title'],
   ]);
   sortIds = Array.from(this.sorts.keys());
 
   private destroyed = new Subject();
 
-  constructor(public issuesRenderer: IssuesRenderer,
-              private cd: ChangeDetectorRef) {
-    this.issuesRenderer.options.changed
-        .pipe(takeUntil(this.destroyed))
+  constructor(
+      public issuesRenderer: IssuesRenderer, private cd: ChangeDetectorRef) {
+    this.issuesRenderer.options.changed.pipe(takeUntil(this.destroyed))
         .subscribe(() => {
           this.cd.markForCheck();
         });

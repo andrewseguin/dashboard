@@ -3,7 +3,7 @@ import {Filter} from 'app/repository/utility/search/filter';
 
 export type Group = 'all';
 
-export type Sort = 'created';
+export type Sort = 'created' | 'title';
 
 export interface IssueRendererOptionsState {
   filters: Filter[];
@@ -53,7 +53,7 @@ export class IssueRendererOptions {
     this.changed.next();
   }
   get reverseSort(): boolean { return this._reverseSort; }
-  private _reverseSort = false;
+  private _reverseSort = true;
 
   set showProjectName(v: boolean) {
     if (this._showProjectName === v) { return; }
