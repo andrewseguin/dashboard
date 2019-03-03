@@ -4,6 +4,6 @@
 
 <ng-container *ngFor="let issue of issues; trackBy:trackByIssueNumber">
   <mat-divider></mat-divider>
-  <issue [issue]="issue" [id]="issue.number">
-  </issue>
+  <issue-summary [issue]="issue" [id]="issue.number">
+  </issue-summary>
 </ng-container>

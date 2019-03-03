@@ -1,8 +1,12 @@
 <div class="master theme-border">
 
+  <div class="report-name">
+    My Report of Issues
+  </div>
+
   <issues-list *ngIf="report?.options"
-                 [issuesRendererOptionsState]="report.options"
-                 (issuesRendererOptionsChanged)="currentOptions = $event">
+               [issuesRendererOptionsState]="report.options"
+               (issuesRendererOptionsChanged)="currentOptions = $event">
   </issues-list>
 
   <ng-template cdkPortal>

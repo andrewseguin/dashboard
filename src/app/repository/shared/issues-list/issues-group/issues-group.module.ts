@@ -1,16 +1,19 @@
-import {NgModule} from '@angular/core';
-import {IssuesGroup} from './issues-group';
 import {CommonModule} from '@angular/common';
-import {IssueViewModule} from '../issue-view/issue-view.module';
+import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
+
+import {IssueSummaryModule} from '../issue-summary/issue-summary.module';
+
+import {IssuesGroup} from './issues-group';
 
 @NgModule({
   imports: [
-    IssueViewModule,
+    IssueSummaryModule,
     CommonModule,
     MaterialModule,
   ],
   declarations: [IssuesGroup],
   exports: [IssuesGroup]
 })
-export class IssuesGroupModule { }
+export class IssuesGroupModule {
+}
