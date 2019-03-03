@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {IssueRecommendations, Recommendation} from 'app/repository/services/issue-recommendations';
@@ -14,25 +14,24 @@ import {takeUntil} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IssueDetail {
-  issueId: number;
-
   bodyMarkdown: Observable<SafeHtml>;
 
   recommendations: Observable<Recommendation[]>;
+
+  @Input() issueId: number;
 
   private destroyed = new Subject();
 
   constructor(
       private activatedRoute: ActivatedRoute, private markdown: Markdown,
-      private repoDao: RepoDao, private cd: ChangeDetectorRef,
-      private issueRecommendations: IssueRecommendations) {
-    this.activatedRoute.params.pipe(takeUntil(this.destroyed))
-        .subscribe(params => {
-          this.issueId = +params['id'];
-          this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.issueId);
-          this.recommendations = this.issueRecommendations.get(this.issueId);
-          this.cd.markForCheck();
-        });
+      public repoDao: RepoDao, private cd: ChangeDetectorRef,
+      private issueRecommendations: IssueRecommendations) {}
+
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    if (simpleChanges['issueId'] && this.issueId) {
+      this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.issueId);
+      this.recommendations = this.issueRecommendations.get(this.issueId);
+    }
   }
 
   ngOnDestroy() {

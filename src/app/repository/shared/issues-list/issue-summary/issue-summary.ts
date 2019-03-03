@@ -1,8 +1,10 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {query} from '@angular/animations';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {Issue} from 'app/service/github';
 import {Subject} from 'rxjs';
+import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'issue-summary',
@@ -11,10 +13,13 @@ import {Subject} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {'(click)': 'selectIssue()'}
 })
-export class IssueSummary implements OnInit {
+export class IssueSummary {
   private destroyed = new Subject();
 
   @Input() issue: Issue;
+
+  active = this.activatedRoute.queryParamMap.pipe(
+      map(queryParamMap => +queryParamMap.get('issue') === this.issue.number));
 
   constructor(
       private activatedRoute: ActivatedRoute,
@@ -28,7 +33,10 @@ export class IssueSummary implements OnInit {
   }
 
   selectIssue() {
-    this.router.navigate(
-        [this.issue.number], {relativeTo: this.activatedRoute});
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute.parent,
+      queryParams: {issue: this.issue.number},
+      queryParamsHandling: 'merge',
+    });
   }
 }

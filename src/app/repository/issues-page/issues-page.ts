@@ -3,6 +3,8 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '
 import {MatSnackBar} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+
 import {Header} from '../services';
 import {areOptionStatesEqual, IssueRendererOptions, IssueRendererOptionsState} from '../services/issues-renderer/issue-renderer-options';
 
@@ -50,6 +52,8 @@ export class IssuesPage {
 
   canSave: boolean;
 
+  issueId: number;
+
   private destroyed = new Subject();
   private reportGetSubscription: Subscription;
 
@@ -64,6 +68,13 @@ export class IssuesPage {
       private cd: ChangeDetectorRef,
   ) {
     this.report = createNewReport();
+    this.activatedRoute.queryParamMap.pipe(takeUntil(this.destroyed))
+        .subscribe(params => {
+          this.issueId = +params.get('issue');
+        });
+
+
+
     /* this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
       this.canSave = false;

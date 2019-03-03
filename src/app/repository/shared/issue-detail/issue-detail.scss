@@ -24,3 +24,8 @@
 .issue-number {
   font-size: 12px;
 }
+
+// For images that are too large
+::ng-deep img {
+  max-width: 100%;
+}

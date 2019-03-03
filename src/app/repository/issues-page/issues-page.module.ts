@@ -13,7 +13,6 @@ import {IssuesListModule} from '../shared/issues-list/issues-list.module';
 const routes: Routes = [{
   path: '',
   component: IssuesPage,
-  children: [{path: ':id', component: IssueDetail}]
 }];
 
 @NgModule({imports: [RouterModule.forChild(routes)], exports: [RouterModule]})

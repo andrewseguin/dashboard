@@ -23,6 +23,12 @@ const routes: Routes = [{
     },
     {
       path: 'issues',
+      redirectTo: 'issues/new',
+      loadChildren:
+          'app/repository/issues-page/issues-page.module#IssuesPageModule'
+    },
+    {
+      path: 'issues/:reportId',
       loadChildren:
           'app/repository/issues-page/issues-page.module#IssuesPageModule'
     },
