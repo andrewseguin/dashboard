@@ -59,7 +59,5 @@ function getSortedGroups(issueQueries: IssueQuery[]) {
     sortedGroups.push({name: group, issueQueries});
   });
 
-  console.log(sortedGroups)
-
   return sortedGroups;
 }

@@ -1,8 +1,8 @@
-import {Injectable} from "@angular/core";
-import {Issue, Label} from "app/service/github";
-import {Repo, RepoDao} from "app/service/repo-dao";
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import {Injectable} from '@angular/core';
+import {Issue, Label} from 'app/service/github';
+import {Repo, RepoDao} from 'app/service/repo-dao';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 export interface AssignmentRecommendation {
   action: 'assign';
@@ -65,7 +65,7 @@ export class IssueRecommendations {
       if (label.name === 'docs') {
         docsLabel = label.id;
       }
-    })
+    });
     if (mentionsDocs && docsLabel &&
       issue.labels.indexOf(docsLabel) === -1) {
       recommendations.push({

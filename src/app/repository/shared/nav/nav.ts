@@ -39,7 +39,7 @@ export class Nav {
 
   constructor(
       public afAuth: AngularFireAuth, public usersDao: UsersDao,
-      private activatedRepository: ActivatedRepository,
+      public activatedRepository: ActivatedRepository,
       public cd: ChangeDetectorRef, public theme: Theme, public router: Router,
       public updater: Updater) {}
 

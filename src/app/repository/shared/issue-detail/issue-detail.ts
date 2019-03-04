@@ -26,7 +26,6 @@ export class IssueDetail {
       private issueRecommendations: IssueRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    console.log(this.issueId)
     if (simpleChanges['issueId'] && this.issueId) {
       this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.issueId);
       this.recommendations = this.issueRecommendations.get(this.issueId);

@@ -1,10 +1,10 @@
-import {Injectable} from "@angular/core";
-import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
+import {Injectable} from '@angular/core';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import * as hljs from 'highlight.js';
 import * as Remarkable from 'remarkable';
-import {RepoDao} from "app/service/repo-dao";
-import {map} from "rxjs/operators";
-import {Observable} from "rxjs";
+import {RepoDao} from 'app/service/repo-dao';
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 @Injectable()
 export class Markdown {

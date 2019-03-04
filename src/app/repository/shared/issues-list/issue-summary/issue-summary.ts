@@ -23,7 +23,7 @@ export class IssueSummary {
       map(queryParamMap => +queryParamMap.get('issue') === this.issue.number));
 
   constructor(
-      private activatedRoute: ActivatedRoute, private issueRecommendations: IssueRecommendations,
+      private activatedRoute: ActivatedRoute, public issueRecommendations: IssueRecommendations,
       public issuesRenderer: IssuesRenderer, private router: Router) {}
 
   ngOnInit() {}
