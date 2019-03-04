@@ -2,66 +2,69 @@ import {Injectable} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
-import {Report, ReportsDao} from 'app/repository/services/dao/reports-dao';
+import {IssueQueriesDao, IssueQuery} from 'app/repository/services/dao/issue-queries-dao';
 import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
 
-import {ReportEdit} from './report-edit/report-edit';
+import {IssueQueryEdit} from './issue-query-edit/issue-query-edit';
+
 
 @Injectable()
-export class ReportDialog {
+export class IssueQueryDialog {
   constructor(
       private dialog: MatDialog, private snackbar: MatSnackBar,
       private router: Router, private afAuth: AngularFireAuth,
-      private reportsDao: ReportsDao) {}
+      private issueQueriesDao: IssueQueriesDao) {}
 
-  /** Shows the edit report dialog to change the name/group.*/
-  editReport(report: Report) {
+  /** Shows the edit issue query dialog to change the name/group.*/
+  editIssueQuery(issueQuery: IssueQuery) {
     const data = {
-      name: report.name,
-      group: report.group,
+      name: issueQuery.name,
+      group: issueQuery.group,
     };
 
-    this.dialog.open(ReportEdit, {data})
+    this.dialog.open(IssueQueryEdit, {data})
         .afterClosed()
         .pipe(take(1))
         .subscribe(result => {
           if (result) {
-            this.reportsDao.update(
-                report.id, {name: result['name'], group: result['group']});
+            this.issueQueriesDao.update(
+                issueQuery.id, {name: result['name'], group: result['group']});
           }
         });
   }
 
   /**
-   * Shows delete report dialog. If user confirms deletion, remove the report
-   * and navigate to the reports page.
+   * Shows delete issue query dialog. If user confirms deletion, remove the
+   * issue query and navigate to the issue queries page.
    */
-  deleteReport(report: Report) {
-    const data = {name: of(report.name)};
+  deleteIssueQuery(issueQuery: IssueQuery) {
+    const data = {name: of(issueQuery.name)};
 
     this.dialog.open(DeleteConfirmation, {data})
         .afterClosed()
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.reportsDao.remove(report.id);
+            this.issueQueriesDao.remove(issueQuery.id);
             this.snackbar.open(
-                `Report "${report.name}" deleted`, null, {duration: 2000});
+                `Issue query "${issueQuery.name}" deleted`, null,
+                {duration: 2000});
           }
         });
   }
 
   /**
-   * Shows edit report dialog to enter the name/group. If user enters a name,
-   * save the report and automatically navigate to the report page with $key,
-   * replacing the current URL.
+   * Shows edit issue query dialog to enter the name/group. If user enters a
+   * name, save the issue query and automatically navigate to the issue query
+   * page with $key, replacing the current URL.
    */
-  saveAsReport(currentOptions: IssueRendererOptionsState, repository: string) {
-    this.dialog.open(ReportEdit)
+  saveAsIssueQuery(
+      currentOptions: IssueRendererOptionsState, repository: string) {
+    this.dialog.open(IssueQueryEdit)
         .afterClosed()
         .pipe(take(1))
         .subscribe(result => {
@@ -69,13 +72,13 @@ export class ReportDialog {
             return;
           }
 
-          const report = {
+          const issueQuery: IssueQuery = {
             name: result['name'],
             group: result['group'],
             options: currentOptions
           };
 
-          this.reportsDao.add(report).then(id => {
+          this.issueQueriesDao.add(issueQuery).then(id => {
             this.router.navigate(
                 [`${repository}/issue-query/${id}`],
                 {replaceUrl: true, queryParamsHandling: 'merge'});

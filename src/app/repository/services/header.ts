@@ -7,7 +7,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {filter, take, takeUntil} from 'rxjs/operators';
 
 import {ActivatedRepository} from './activated-repository';
-import {ReportsDao} from './dao/reports-dao';
+import {IssueQueriesDao} from './dao/issue-queries-dao';
 
 const SECTIONS = new Map<string, string>([['issue-queries', 'Issue Queries']]);
 
@@ -24,7 +24,6 @@ export class Header {
 
   constructor(
       private windowTitle: WindowTitle, private router: Router,
-      private reportsDao: ReportsDao,
       private activatedRepository: ActivatedRepository) {
     this.title.pipe(takeUntil(this.destroyed))
         .subscribe(title => this.windowTitle.setTitle(title));
@@ -34,10 +33,9 @@ export class Header {
         .subscribe((e: NavigationEnd) => {
           this.goBack = null;
           const section = e.urlAfterRedirects.split('/')[3];
-          const id = e.urlAfterRedirects.split('/')[4];
 
           if (section === 'issue-query') {
-            this.onReportRoute(id);
+            this.onIssueQueryRoute();
           } else {
             this.title.next(SECTIONS.get(section));
           }
@@ -49,7 +47,7 @@ export class Header {
     this.destroyed.complete();
   }
 
-  onReportRoute(reportId: string) {
+  onIssueQueryRoute() {
     const repository = this.activatedRepository.repository.value;
     this.goBack = () => this.router.navigate([`/${repository}/issue-queries`]);
   }

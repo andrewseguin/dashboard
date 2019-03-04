@@ -1,23 +1,25 @@
-<button mat-fab (click)="createReport()" [matTooltip]="'Create New Report'">
+<button mat-fab (click)="createIssueQuery()"
+        [matTooltip]="'Create New Issue Query'">
   <mat-icon>add</mat-icon>
 </button>
 
-<ng-container *ngIf="reportGroups | async; let reportGroups; else loading">
-  <div class="group" *ngFor="let reportGroup of reportGroups">
+<ng-container
+              *ngIf="issueQueryGroups | async; let issueQueryGroups; else loading">
+  <div class="group" *ngFor="let issueQuery of issueQueryGroups">
     <div class="group-title">
-      {{reportGroup.name}}
+      {{issueQuery.name}}
     </div>
 
-    <div class="reports">
+    <div class="issue-queries">
       <ng-container
-                    *ngFor="let report of reportGroup.reports; trackBy: reportKeyTrackBy">
-        <div class="report theme-hover" mat-ripple
-             (click)="navigateToReport(report.id)">
-          <div class="name"> {{report.name}} </div>
+                    *ngFor="let issueQuery of issueQuery.issueQueries; trackBy: issueQueryKeyTrackBy">
+        <div class="issueQuery theme-hover" mat-ripple
+             (click)="navigateToIssueQuery(issueQuery.id)">
+          <div class="name"> {{issueQuery.name}} </div>
 
-          <report-menu [report]="report" icon="more_vert"
-                       (click)="$event.stopPropagation()">
-          </report-menu>
+          <issue-query-menu [issueQuery]="issueQuery" icon="more_vert"
+                            (click)="$event.stopPropagation()">
+          </issue-query-menu>
         </div>
         <mat-divider></mat-divider>
       </ng-container>
@@ -27,5 +29,5 @@
 
 
 <ng-template #loading>
-  <loading label="reports"></loading>
+  <loading label="issue queries"></loading>
 </ng-template>

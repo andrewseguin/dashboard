@@ -4,10 +4,10 @@
 </button>
 
 <mat-menu #editMenu="matMenu">
-  <button mat-menu-item *ngIf="report.id" (click)="openEditNameDialog()">
+  <button mat-menu-item *ngIf="issueQuery.id" (click)="openEditNameDialog()">
     <mat-icon> edit </mat-icon> Edit
   </button>
-  <button mat-menu-item *ngIf="report.id" (click)="deleteReport()">
+  <button mat-menu-item *ngIf="issueQuery.id" (click)="deleteIssueQuery()">
     <mat-icon> delete </mat-icon> Delete
   </button>
 </mat-menu>

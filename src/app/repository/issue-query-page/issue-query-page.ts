@@ -6,9 +6,9 @@ import {filter, map, takeUntil} from 'rxjs/operators';
 
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
-import {Report, ReportsDao} from '../services/dao/reports-dao';
+import {IssueQuery, IssueQueriesDao} from '../services/dao/issue-queries-dao';
 import {areOptionStatesEqual, IssueRendererOptions, IssueRendererOptionsState} from '../services/issues-renderer/issue-renderer-options';
-import {ReportDialog} from '../shared/dialog/report/report-dialog';
+import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
 
 @Component({
   styleUrls: ['issue-query-page.scss'],
@@ -16,24 +16,24 @@ import {ReportDialog} from '../shared/dialog/report/report-dialog';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IssueQueryPage {
-  set report(report: Report) {
-    // When a report is set, the options state should be updated to be
-    // whatever the report is, and the title should always match
-    this._report = report;
-    this.currentOptions = this.report.options;
-    this.header.title.next(this.report.name);
+  set issueQuery(issueQuery: IssueQuery) {
+    // When a issue query is set, the options state should be updated to be
+    // whatever the issue query is, and the title should always match
+    this._issueQuery = issueQuery;
+    this.currentOptions = this.issueQuery.options;
+    this.header.title.next(this.issueQuery.name);
   }
-  get report(): Report {
-    return this._report;
+  get issueQuery(): IssueQuery {
+    return this._issueQuery;
   }
-  private _report: Report;
+  private _issueQuery: IssueQuery;
 
   set currentOptions(currentOptions: IssueRendererOptionsState) {
     // When current options change, a check should be evaluated if they differ
-    // from the current report's options. If so, the save button should display.
+    // from the current issue query's options. If so, the save button should display.
     this._currentOptions = currentOptions;
-    this.canSave = this.report && this.report.options && this.currentOptions &&
-        !areOptionStatesEqual(this.report.options, this.currentOptions);
+    this.canSave = this.issueQuery && this.issueQuery.options && this.currentOptions &&
+        !areOptionStatesEqual(this.issueQuery.options, this.currentOptions);
   }
   get currentOptions(): IssueRendererOptionsState {
     return this._currentOptions;
@@ -46,34 +46,34 @@ export class IssueQueryPage {
       map(queryParamsMap => +queryParamsMap.get('issue')));
 
   private destroyed = new Subject();
-  private reportGetSubscription: Subscription;
+  private getSubscription: Subscription;
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
       private activatedRepository: ActivatedRepository, private header: Header,
-      private reportsDao: ReportsDao, private reportDialog: ReportDialog,
+      private issueQueriesDao: IssueQueriesDao, private issueQueryDialog: IssueQueryDialog,
       private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed))
         .subscribe(params => {
           const id = params['id'];
           this.canSave = false;
 
-          if (this.reportGetSubscription) {
-            this.reportGetSubscription.unsubscribe();
+          if (this.getSubscription) {
+            this.getSubscription.unsubscribe();
           }
 
           if (id === 'new') {
-            this.report = createNewReport();
+            this.issueQuery = createNewIssueQuery();
             this.cd.markForCheck();
           } else {
-            this.reportGetSubscription =
-                this.reportsDao.map
+            this.getSubscription =
+                this.issueQueriesDao.map
                     .pipe(takeUntil(this.destroyed), filter(map => !!map))
                     .subscribe(map => {
                       if (map.get(id)) {
-                        this.report = map.get(id);
+                        this.issueQuery = map.get(id);
                       } else {
                         this.router.navigate([`${
                             this.activatedRepository.repository
@@ -96,16 +96,16 @@ export class IssueQueryPage {
   }
 
   saveAs() {
-    this.reportDialog.saveAsReport(
+    this.issueQueryDialog.saveAsIssueQuery(
         this.currentOptions, this.activatedRepository.repository.value);
   }
 
   save() {
-    this.reportsDao.update(this.report.id, {options: this.currentOptions});
+    this.issueQueriesDao.update(this.issueQuery.id, {options: this.currentOptions});
   }
 }
 
-function createNewReport() {
+function createNewIssueQuery() {
   const options = new IssueRendererOptions();
-  return {name: 'New Report', options: options.getState()};
+  return {name: 'New Issue Query', options: options.getState()};
 }

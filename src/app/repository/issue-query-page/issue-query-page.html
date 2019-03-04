@@ -1,24 +1,24 @@
 <div class="master theme-border">
-  <issues-list *ngIf="report?.options"
-               [issuesRendererOptionsState]="report.options"
+  <issues-list *ngIf="issueQuery?.options"
+               [issuesRendererOptionsState]="issueQuery.options"
                (issuesRendererOptionsChanged)="currentOptions = $event">
   </issues-list>
 
   <ng-template cdkPortal>
-    <ng-container *ngIf="report">
-      <button mat-raised-button color="primary" *ngIf="!report.id"
+    <ng-container *ngIf="issueQuery">
+      <button mat-raised-button color="primary" *ngIf="!issueQuery.id"
               (click)="saveAs()">
         Save As
       </button>
 
-      <button mat-raised-button color="primary" *ngIf="report.id"
+      <button mat-raised-button color="primary" *ngIf="issueQuery.id"
               (click)="save()" [disabled]="!canSave">
         {{canSave ? 'Save' : 'Saved'}}
       </button>
 
-      <report-menu [report]="report" icon="settings"
+      <issue-query-menu [issueQuery]="issueQuery" icon="settings"
                    [optionsOverride]="currentOptions">
-      </report-menu>
+      </issue-query-menu>
     </ng-container>
   </ng-template>
 </div>

@@ -6,7 +6,8 @@
 
 <div class="link-list">
   <ng-container *ngFor="let link of links">
-    <div mat-button class="link theme-text" (click)="sidenav.close()" routerLinkActive="active" [routerLink]="link.route">
+    <div mat-button class="link theme-text" (click)="sidenav.close()"
+         routerLinkActive="active" [routerLink]="link.route">
       <div class="link-highlight"></div>
       <div class="link-text">
         <mat-icon>{{link.icon}}</mat-icon>
@@ -37,7 +38,7 @@
   </button>
 
   <button mat-menu-item (click)="updateCache()">
-    <mat-icon> wb_sunny </mat-icon>
+    <mat-icon> cached </mat-icon>
     Update cache
   </button>
 

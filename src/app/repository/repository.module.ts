@@ -6,7 +6,7 @@ import {MaterialModule} from 'app/material.module';
 import {Repository} from './repository';
 import {Header, Selection} from './services';
 import {ActivatedRepository} from './services/activated-repository';
-import {ReportsDao} from './services/dao/reports-dao';
+import {IssueQueriesDao} from './services/dao/issue-queries-dao';
 import {IssueRecommendations} from './services/issue-recommendations';
 import {Markdown} from './services/markdown';
 import {Updater} from './services/updater';
@@ -59,7 +59,7 @@ export class RepositoryRoutingModule {
     IssueRecommendations,
     Markdown,
     ActivatedRepository,
-    ReportsDao,
+    IssueQueriesDao,
   ]
 })
 export class RepositoryModule {

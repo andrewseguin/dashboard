@@ -2,22 +2,22 @@ import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 
-export interface ReportEditData {
+export interface IssueQueryEditData {
   name: string;
   group: string;
 }
 
 @Component({
-  styleUrls: ['report-edit.scss'],
-  templateUrl: 'report-edit.html',
+  styleUrls: ['issue-query-edit.scss'],
+  templateUrl: 'issue-query-edit.html',
   host: {
     '(keyup.Enter)': 'save()'
   },
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ReportEdit {
-  constructor(public dialogRef: MatDialogRef<ReportEdit>,
-              @Inject(MAT_DIALOG_DATA) public data: ReportEditData) {
+export class IssueQueryEdit {
+  constructor(public dialogRef: MatDialogRef<IssueQueryEdit>,
+              @Inject(MAT_DIALOG_DATA) public data: IssueQueryEditData) {
     if (data && data.name) {
       this.formGroup.get('name').setValue(data.name);
     }

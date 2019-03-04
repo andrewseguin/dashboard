@@ -93,9 +93,7 @@ export class Github {
     let current = [];
 
     return this.get<T>(url).pipe(
-        expand(
-            result => (result.next && completed < 3) ? this.get(result.next) :
-                                                       empty()),
+        expand(result => result.next ? this.get(result.next) : empty()),
         map(result => {
           completed++;
           const transformedResponse = result.response.map(transform);
@@ -105,7 +103,7 @@ export class Github {
           // last page will have result.numPages equal to 1 since it is
           // missing.
           if (!total) {
-            total = Math.min(result.numPages, 3);
+            total = result.numPages;
           }
 
           return {completed, total, current};

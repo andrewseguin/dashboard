@@ -3,11 +3,11 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
-import {ReportEditModule} from '../shared/dialog/report/report-edit/report-edit.module';
+import {IssueQueryEditModule} from '../shared/dialog/issue-query/issue-query-edit/issue-query-edit.module';
+import {IssueQueryMenuModule} from '../shared/issue-query-menu/issue-query-menu.module';
 import {LoadingModule} from '../shared/loading/loading.module';
 
-import {IssueQueriesPage as IssueQueriesPage} from './issue-queries-page';
-import {ReportMenuModule} from '../shared/report-menu/report-menu.module';
+import {IssueQueriesPage} from './issue-queries-page';
 
 const routes: Routes = [{path: '', component: IssueQueriesPage}];
 
@@ -21,8 +21,8 @@ export class IssueQueriesPageRoutingModule {
     IssueQueriesPageRoutingModule,
     MaterialModule,
     LoadingModule,
-    ReportEditModule,
-    ReportMenuModule,
+    IssueQueryEditModule,
+    IssueQueryMenuModule,
   ],
   declarations: [IssueQueriesPage],
   exports: [IssueQueriesPage],

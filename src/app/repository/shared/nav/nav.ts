@@ -29,7 +29,7 @@ export class Nav {
   isUserProfileExpanded = false;
 
   links: NavLink[] = [
-    {route: 'issue-queries', label: 'Issue Queries', icon: 'report'},
+    {route: 'issue-queries', label: 'Issue Queries', icon: 'find_in_page'},
   ];
 
   @Input() sidenav: MatSidenav;

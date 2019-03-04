@@ -2,10 +2,12 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
-import {ReportDialogModule} from '../shared/dialog/report/report-dialog.module';
+
+import {IssueQueryDialogModule} from '../shared/dialog/issue-query/issue-query-dialog.module';
 import {IssueDetailModule} from '../shared/issue-detail/issue-detail.module';
 import {IssuesListModule} from '../shared/issues-list/issues-list.module';
-import {ReportMenuModule} from '../shared/report-menu/report-menu.module';
+import {IssueQueryMenuModule} from '../shared/issue-query-menu/issue-query-menu.module';
+
 import {IssueQueryPage} from './issue-query-page';
 
 
@@ -26,8 +28,8 @@ export class IssueQueryPageRoutingModule {
     MaterialModule,
     IssueDetailModule,
     IssuesListModule,
-    ReportMenuModule,
-    ReportDialogModule,
+    IssueQueryMenuModule,
+    IssueQueryDialogModule,
   ],
   declarations: [IssueQueryPage],
   exports: [IssueQueryPage],

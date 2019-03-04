@@ -35,7 +35,7 @@ export class Login implements OnDestroy {
       if (hash) {
         this.route.navigate([hash]);
       } else {
-        this.route.navigate(['reports']);
+        this.route.navigate(['']);
       }
     });
   }
