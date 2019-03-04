@@ -5,6 +5,7 @@ import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-ren
 import {Issue} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
+import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
 
 @Component({
   selector: 'issue-summary',
@@ -22,7 +23,7 @@ export class IssueSummary {
       map(queryParamMap => +queryParamMap.get('issue') === this.issue.number));
 
   constructor(
-      private activatedRoute: ActivatedRoute,
+      private activatedRoute: ActivatedRoute, private issueRecommendations: IssueRecommendations,
       public issuesRenderer: IssuesRenderer, private router: Router) {}
 
   ngOnInit() {}

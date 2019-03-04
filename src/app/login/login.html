@@ -1,7 +1,6 @@
 <div class="center">
-  <div class="app-title">Skeleton App</div>
-
-  <mat-progress-spinner *ngIf="checkingAuth | async; else loginButton" mode="indeterminate">
+  <mat-progress-spinner *ngIf="checkingAuth | async; else loginButton"
+                        mode="indeterminate">
   </mat-progress-spinner>
 
   <ng-template #loginButton>
