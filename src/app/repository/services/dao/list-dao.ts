@@ -106,7 +106,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
       map.set(id, {...(map.get(id) as object), ...(update as object)} as T);
       const values = [];
-      this._map.forEach(value => values.push(value));
+      map.forEach(value => values.push(value));
       this.config.saveRepoConfigCollection(
           this.path, this.collectionId, values);
     });

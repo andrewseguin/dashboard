@@ -21,23 +21,17 @@ const routes: Routes = [{
   component: Repository,
   children: [
     {
-      path: 'reports',
+      path: 'issue-queries',
       loadChildren:
-          'app/repository/reports-page/reports-page.module#ReportsPageModule'
+          'app/repository/issue-queries-page/issue-queries-page.module#IssueQueriesPageModule'
     },
     {
-      path: 'issues',
-      redirectTo: 'issues/new',
+      path: 'issue-query/:id',
       loadChildren:
-          'app/repository/issues-page/issues-page.module#IssuesPageModule'
-    },
-    {
-      path: 'issues/:reportId',
-      loadChildren:
-          'app/repository/issues-page/issues-page.module#IssuesPageModule'
+          'app/repository/issue-query-page/issue-query-page.module#IssueQueryPageModule'
     },
 
-    {path: '', redirectTo: 'issues', pathMatch: 'full'},
+    {path: '', redirectTo: 'issue-queries', pathMatch: 'full'},
   ]
 }];
 

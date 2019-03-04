@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {Router} from '@angular/router';
-import {Report} from 'app/repository/issues-page/issues-page';
+import {Report} from 'app/repository/services/dao/reports-dao';
 import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer/issue-renderer-options';
+import {ReportDialog} from '../dialog/report/report-dialog';
 
 @Component({
   selector: 'report-menu',
@@ -15,14 +15,12 @@ export class ReportMenu {
 
   @Input() optionsOverride: IssueRendererOptionsState;
 
-  constructor(  // private reportDialog: ReportDialog,
-                //   private activatedSeason: ActivatedSeason,
-      private router: Router) {}
+  constructor(private reportDialog: ReportDialog) {}
   openEditNameDialog() {
-    // this.reportDialog.editReport(this.report);
+    this.reportDialog.editReport(this.report);
   }
 
   deleteReport() {
-    // this.reportDialog.deleteReport(this.report);
+    this.reportDialog.deleteReport(this.report);
   }
 }

@@ -6,31 +6,31 @@ import {ReportDialogModule} from '../shared/dialog/report/report-dialog.module';
 import {IssueDetailModule} from '../shared/issue-detail/issue-detail.module';
 import {IssuesListModule} from '../shared/issues-list/issues-list.module';
 import {ReportMenuModule} from '../shared/report-menu/report-menu.module';
-import {IssuesPage} from './issues-page';
+import {IssueQueryPage} from './issue-query-page';
 
 
 
 const routes: Routes = [{
   path: '',
-  component: IssuesPage,
+  component: IssueQueryPage,
 }];
 
 @NgModule({imports: [RouterModule.forChild(routes)], exports: [RouterModule]})
-export class IssuesPageRoutingModule {
+export class IssueQueryPageRoutingModule {
 }
 
 @NgModule({
   imports: [
     CommonModule,
-    IssuesPageRoutingModule,
+    IssueQueryPageRoutingModule,
     MaterialModule,
     IssueDetailModule,
     IssuesListModule,
     ReportMenuModule,
     ReportDialogModule,
   ],
-  declarations: [IssuesPage],
-  exports: [IssuesPage],
+  declarations: [IssueQueryPage],
+  exports: [IssueQueryPage],
 })
-export class IssuesPageModule {
+export class IssueQueryPageModule {
 }

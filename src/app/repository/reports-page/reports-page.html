@@ -1,8 +1,0 @@
-<div *ngFor="let report of reportsDao.list | async">
-  {{report.id}}
-  <button mat-button (click)="remove(report.id)"> delete </button>
-</div>
-
-<button mat-button (click)="createReport()"> Create </button>
-
-<button mat-button (click)="addNew()"> New </button>

@@ -5,7 +5,7 @@ import {IssueRecommendations, Recommendation} from 'app/repository/services/issu
 import {Markdown} from 'app/repository/services/markdown';
 import {RepoDao} from 'app/service/repo-dao';
 import {Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {delay, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'issue-detail',
@@ -28,6 +28,7 @@ export class IssueDetail {
       private issueRecommendations: IssueRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
+    console.log(this.issueId)
     if (simpleChanges['issueId'] && this.issueId) {
       this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.issueId);
       this.recommendations = this.issueRecommendations.get(this.issueId);

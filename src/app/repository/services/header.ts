@@ -4,11 +4,12 @@ import {Title as WindowTitle} from '@angular/platform-browser';
 import {NavigationEnd, Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {filter, takeUntil} from 'rxjs/operators';
-import {ActivatedRepository} from './activated-repository';
+import {filter, take, takeUntil} from 'rxjs/operators';
 
-const SECTIONS =
-    new Map<string, string>([['reports', 'Reports'], ['issues', 'Issues']]);
+import {ActivatedRepository} from './activated-repository';
+import {ReportsDao} from './dao/reports-dao';
+
+const SECTIONS = new Map<string, string>([['issue-queries', 'Issue Queries']]);
 
 
 @Injectable()
@@ -23,6 +24,7 @@ export class Header {
 
   constructor(
       private windowTitle: WindowTitle, private router: Router,
+      private reportsDao: ReportsDao,
       private activatedRepository: ActivatedRepository) {
     this.title.pipe(takeUntil(this.destroyed))
         .subscribe(title => this.windowTitle.setTitle(title));
@@ -32,12 +34,12 @@ export class Header {
         .subscribe((e: NavigationEnd) => {
           this.goBack = null;
           const section = e.urlAfterRedirects.split('/')[3];
-          this.title.next(SECTIONS.get(section));
+          const id = e.urlAfterRedirects.split('/')[4];
 
-          if (section === 'issues') {
-            const repository = this.activatedRepository.repository.value;
-            this.goBack = () =>
-                this.router.navigate([`/${repository}/reports`]);
+          if (section === 'issue-query') {
+            this.onReportRoute(id);
+          } else {
+            this.title.next(SECTIONS.get(section));
           }
         });
   }
@@ -45,5 +47,10 @@ export class Header {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
+  }
+
+  onReportRoute(reportId: string) {
+    const repository = this.activatedRepository.repository.value;
+    this.goBack = () => this.router.navigate([`/${repository}/issue-queries`]);
   }
 }

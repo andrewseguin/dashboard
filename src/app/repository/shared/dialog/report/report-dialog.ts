@@ -77,7 +77,8 @@ export class ReportDialog {
 
           this.reportsDao.add(report).then(id => {
             this.router.navigate(
-                [`${repository}/issues/${id}`], {replaceUrl: true});
+                [`${repository}/issue-query/${id}`],
+                {replaceUrl: true, queryParamsHandling: 'merge'});
           });
         });
   }
