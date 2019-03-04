@@ -5,9 +5,13 @@ export function stringContainsQuery(str: string, query: InputQuery) {
     return false;
   }
 
-  const input = query.input;
+  let input = query.input;
   if (!input) {
     return true;
+  }
+
+  if (input === '""') {
+    input = '';
   }
 
   switch (query.equality) {
@@ -80,4 +84,11 @@ export function stateMatchesEquality(state: boolean, query: StateQuery) {
     default:
       throw Error(`Unknown equality: ${query.equality}`);
   }
+}
+
+export function arrayContainsQuery(arr: string[], query: InputQuery) {
+  const str = arr.sort().toString() || '[]';
+  const input = query.input.split(',').sort().toString() || '[]';
+
+  return stringContainsQuery(str, {input, equality: query.equality});
 }

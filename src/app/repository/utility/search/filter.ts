@@ -5,9 +5,9 @@ import {Observable} from 'rxjs';
 import {Query} from './query';
 
 export interface MatcherContext {
-  issue?: Issue;
-  labels?: Label[];
-  contributors?: Contributor[];
+  issue: Issue;
+  labels: Map<number, Label>;
+  contributors: Map<number, Contributor>;
 }
 
 export interface AutocompleteContext {

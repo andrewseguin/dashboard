@@ -28,7 +28,7 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
     {id: 'notIs', label: 'is not'},
   ];
   form = new FormGroup({
-    equality: new FormControl('contains'),
+    equality: new FormControl('is'),
     input: new FormControl(''),
   });
   destroyed = new Subject();
@@ -41,7 +41,7 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
   set options(o: string[]) {
     this._options.next(Array.from(new Set(o)));
   }
-  get options(): string[] { return this._options.value; }
+  get options(): string[] {return this._options.value;}
   _options = new BehaviorSubject([]);
 
   @Input() focusInput: boolean;
@@ -50,8 +50,8 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
 
   constructor(private elementRef: ElementRef) {
     this.form.valueChanges.pipe(
-        takeUntil(this.destroyed))
-        .subscribe(value => this.queryChange.next(value));
+      takeUntil(this.destroyed))
+      .subscribe(value => this.queryChange.next(value));
 
     const inputChanges = this.form.valueChanges.pipe(startWith(null));
     this.filteredOptions = combineLatest([this._options, inputChanges]).pipe(map(result => {
@@ -59,6 +59,10 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
       const input = this.form.value.input as string;
       return options.filter(o => o.toLowerCase().includes(input.toLowerCase())).sort();
     }));
+  }
+
+  ngOnInit() {
+    this.queryChange.next(this.form.value);
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {

@@ -15,7 +15,7 @@ export class IssuesRenderer {
   options: IssueRendererOptions = new IssueRendererOptions();
 
   // Starts as null as a signal that no issues have been processed.
-  issueGroups = new BehaviorSubject<IssueGroup[]|null>(null);
+  issueGroups = new BehaviorSubject<IssueGroup[] | null>(null);
 
   private initSubscription: Subscription;
 
@@ -51,9 +51,9 @@ export class IssuesRenderer {
       // Search
       const search = this.options.search;
       const searchedIssues =
-          !search ? filteredIssues : filteredIssues.filter(issue => {
-            return this.issueMatchesSearch(search, issue);
-          });
+        !search ? filteredIssues : filteredIssues.filter(issue => {
+          return this.issueMatchesSearch(search, issue);
+        });
 
       // Group
       const grouper = new IssueGrouping(searchedIssues, repo);

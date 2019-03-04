@@ -16,12 +16,11 @@ export class IssueFilterer {
 
         const context: MatcherContext = {
           issue,
-          labels: repo.labels,
-          contributors: repo.contributors
+          labels: repo.labelsMap,
+          contributors: repo.contributorsMap
         };
 
-        return IssuesFilterMetadata.get(filter.type)
-            .matcher(context, filter.query);
+        return IssuesFilterMetadata.get(filter.type).matcher(context, filter.query);
       });
     });
   }
