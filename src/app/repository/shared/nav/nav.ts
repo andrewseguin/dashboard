@@ -26,11 +26,12 @@ export class Nav {
   repo = 'angular/material2';
 
   user = this.afAuth.authState.pipe(
-      filter(auth => !!auth), mergeMap(auth => this.usersDao.get(auth.uid)));
+    filter(auth => !!auth), mergeMap(auth => this.usersDao.get(auth.uid)));
   isUserProfileExpanded = false;
 
   links: NavLink[] = [
     {route: 'issue-queries', label: 'Issue Queries', icon: 'find_in_page'},
+    {route: 'config', label: 'Config', icon: 'settings'},
   ];
 
   @Input() sidenav: MatSidenav;
@@ -38,10 +39,10 @@ export class Nav {
   private destroyed = new Subject();
 
   constructor(
-      public afAuth: AngularFireAuth, public usersDao: UsersDao,
-      public activatedRepository: ActivatedRepository,
-      public cd: ChangeDetectorRef, public theme: Theme, public router: Router,
-      public updater: Updater) {}
+    public afAuth: AngularFireAuth, public usersDao: UsersDao,
+    public activatedRepository: ActivatedRepository,
+    public cd: ChangeDetectorRef, public theme: Theme, public router: Router,
+    public updater: Updater) {}
 
   ngOnDestroy() {
     this.destroyed.next();

@@ -1,0 +1,13 @@
+<mat-tab-group (selectedTabChange)="selectedTabIndex = $event.index"
+               mat-align-tabs="center">
+  <ng-container *ngFor="let tab of tabs">
+    <mat-tab [label]="tab.label">
+      <ng-template matTabContent>
+        <ng-container [ngSwitch]="tab.id">
+          <cache *ngSwitchCase="'cache'"></cache>
+          <recommendations *ngSwitchCase="'recommendations'"></recommendations>
+        </ng-container>
+      </ng-template>
+    </mat-tab>
+  </ng-container>
+</mat-tab-group>

@@ -1,0 +1,13 @@
+<ng-container *ngIf="repoDao.repo | async; let repo">
+  <h1>Cache Information</h1>
+
+  <div>
+    Number of issues: {{(repo.issues.length)}}
+  </div>
+  <div>
+    Labels: {{(repo.labels.length)}}
+  </div>
+  <div>
+    Contributors: {{(repo.contributors.length)}}
+  </div>
+</ng-container>

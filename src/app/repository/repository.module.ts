@@ -23,12 +23,17 @@ const routes: Routes = [{
     {
       path: 'issue-queries',
       loadChildren:
-          'app/repository/issue-queries-page/issue-queries-page.module#IssueQueriesPageModule'
+        'app/repository/issue-queries-page/issue-queries-page.module#IssueQueriesPageModule'
     },
     {
       path: 'issue-query/:id',
       loadChildren:
-          'app/repository/issue-query-page/issue-query-page.module#IssueQueryPageModule'
+        'app/repository/issue-query-page/issue-query-page.module#IssueQueryPageModule'
+    },
+    {
+      path: 'config',
+      loadChildren:
+        'app/repository/config-page/config-page.module#ConfigPageModule'
     },
 
     {path: '', redirectTo: 'issue-queries', pathMatch: 'full'},
