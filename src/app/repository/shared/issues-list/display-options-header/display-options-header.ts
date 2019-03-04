@@ -13,6 +13,7 @@ import {takeUntil} from 'rxjs/operators';
 export class DisplayOptionsHeader {
   groups = new Map<Group, string>([
     ['all', 'None'],
+    ['reporter', 'Reporter'],
   ]);
   groupIds = Array.from(this.groups.keys());
 

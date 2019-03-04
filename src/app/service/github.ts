@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {getLinkMap} from 'app/utility/link-map';
 import {empty, Observable} from 'rxjs';
 import {expand, map} from 'rxjs/operators';
+import {Gist} from './github-types/gist';
 
 export interface CombinedPagedResults<T> {
   total: number;
@@ -37,10 +38,52 @@ export class Github {
     return this.getPagedResults<GithubLabel, Label>(url, githubLabelToLabel);
   }
 
+  getGists(): Observable<CombinedPagedResults<Gist>> {
+    const url = this.constructUrl(`gists`, `per_page=100`);
+    return this.getPagedResults<Gist, Gist>(url, g => g);
+  }
+
+  getGist(id: string): Observable<Gist> {
+    const url = this.constructUrl(`gists/${id}`);
+    return this.query<Gist>(url).pipe(map(result => {
+      const gist = result.body;
+
+      // Transform keys so that understores in keys become slashes to match repo
+      // string
+      const transformedFiles = {};
+      Object.keys(gist.files).forEach(key => {
+        transformedFiles[key.replace('_', '/')] = gist.files[key];
+      });
+      gist.files = transformedFiles;
+
+      return gist;
+    }));
+  }
+
+  editGist(id: string, filename: string, content: string) {
+    filename = filename.replace('/', '_');
+
+    const files = {};
+    files[filename] = {filename, content};
+    const url = this.constructUrl(`gists/${id}`);
+    return this.patch(url, {files});
+  }
+
   getContributors(repo: string): Observable<CombinedPagedResults<Contributor>> {
     const url = this.constructUrl(`repos/${repo}/contributors`, `per_page=100`);
     return this.getPagedResults<GithubContributor, Contributor>(
         url, githubContributorToContributor);
+  }
+
+  createGist(): Observable<Gist> {
+    const url = 'https://api.github.com/gists';
+    const body = {
+      files: {dashboardConfig: {content: '{}'}},
+      description: 'Dashboard Config',
+      public: false,
+    };
+
+    return this.post<Gist>(url, body);
   }
 
   private getPagedResults<T, R>(url: string, transform: (values: T) => R):
@@ -58,8 +101,9 @@ export class Github {
           const transformedResponse = result.response.map(transform);
           current = current.concat(transformedResponse);
 
-          // Determine this on the first pass but not subsequent ones. The last
-          // page will have result.numPages equal to 1 since it is missing.
+          // Determine this on the first pass but not subsequent ones. The
+          // last page will have result.numPages equal to 1 since it is
+          // missing.
           if (!total) {
             total = Math.min(result.numPages, 3);
           }
@@ -68,7 +112,7 @@ export class Github {
         }));
   }
 
-  private constructUrl(path: string, query: string) {
+  private constructUrl(path: string, query = '') {
     const domain = 'https://api.github.com';
     return `${domain}/${path}?${query}`;
   }
@@ -86,7 +130,23 @@ export class Github {
       observe: 'response',
       headers: new HttpHeaders({
         'Authorization': `token ${localStorage.getItem('accessToken')}`,
-        'Accept': accept
+        'Accept': accept,
+      })
+    });
+  }
+
+  post<T>(url: string, body: any): Observable<T> {
+    return this.http.post<T>(url, body, {
+      headers: new HttpHeaders({
+        'Authorization': `token ${localStorage.getItem('accessToken')}`,
+      })
+    });
+  }
+
+  patch<T>(url: string, body: any): Observable<T> {
+    return this.http.patch<T>(url, body, {
+      headers: new HttpHeaders({
+        'Authorization': `token ${localStorage.getItem('accessToken')}`,
       })
     });
   }

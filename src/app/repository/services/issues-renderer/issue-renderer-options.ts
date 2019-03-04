@@ -1,7 +1,7 @@
 import {Filter} from 'app/repository/utility/search/filter';
 import {Subject} from 'rxjs';
 
-export type Group = 'all';
+export type Group = 'all'|'reporter';
 
 export type Sort = 'created'|'title';
 

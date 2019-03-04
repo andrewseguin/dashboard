@@ -1,12 +1,14 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
-import {MatSnackBar} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-
 import {Header} from '../services';
+import {ActivatedRepository} from '../services/activated-repository';
+import {ReportsDao} from '../services/dao/reports-dao';
 import {areOptionStatesEqual, IssueRendererOptions, IssueRendererOptionsState} from '../services/issues-renderer/issue-renderer-options';
+import {ReportDialog} from '../shared/dialog/report/report-dialog';
+
 
 export interface Report {
   id?: string;
@@ -62,64 +64,60 @@ export class IssuesPage {
   constructor(
       private router: Router,
       private activatedRoute: ActivatedRoute,
-      // private activatedSeason: ActivatedRepository,
+      private activatedRepository: ActivatedRepository,
       private header: Header,
-      private snackbar: MatSnackBar,
+      private reportsDao: ReportsDao,
+      private reportDialog: ReportDialog,
       private cd: ChangeDetectorRef,
   ) {
-    this.report = createNewReport();
-    this.activatedRoute.queryParamMap.pipe(takeUntil(this.destroyed))
+    this.activatedRoute.params.pipe(takeUntil(this.destroyed))
         .subscribe(params => {
-          this.issueId = +params.get('issue');
-        });
+          const id = params['reportId'];
+          this.canSave = false;
 
+          if (this.reportGetSubscription) {
+            this.reportGetSubscription.unsubscribe();
+          }
 
-
-    /* this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
-      const id = params['id'];
-      this.canSave = false;
-
-      if (this.reportGetSubscription) {
-        this.reportGetSubscription.unsubscribe();
-      }
-
-      if (id === 'new') {
-        this.report = createNewReport();
-        this.cd.markForCheck();
-      } else {
-        this.reportGetSubscription = this.reportsDao.get(id)
-          .pipe(takeUntil(this.destroyed))
-          .subscribe(report => {
-            if (report) {
-              this.report = report;
-            } else {
-              this.router.navigate([`reports`],
-                  {relativeTo: this.activatedRoute.parent});
-            }
+          if (id === 'new') {
+            this.report = createNewReport();
             this.cd.markForCheck();
-          });
-      }
-    });
- */  }
+          } else {
+            this.reportGetSubscription =
+                this.reportsDao.get(id)
+                    .pipe(takeUntil(this.destroyed))
+                    .subscribe(report => {
+                      if (report) {
+                        this.report = report;
+                      } else {
+                        this.router.navigate(
+                            [`reports`],
+                            {relativeTo: this.activatedRoute.parent});
+                      }
+                      this.cd.markForCheck();
+                    });
+          }
+        });
+  }
 
-    ngOnInit() {
-      this.header.toolbarOutlet.next(this.toolbarActions);
-    }
+  ngOnInit() {
+    this.header.toolbarOutlet.next(this.toolbarActions);
+  }
 
-    ngOnDestroy() {
-      this.header.toolbarOutlet.next(null);
-      this.destroyed.next();
-      this.destroyed.complete();
-    }
+  ngOnDestroy() {
+    this.header.toolbarOutlet.next(null);
+    this.destroyed.next();
+    this.destroyed.complete();
+  }
 
-    saveAs() {
-      // this.reportDialog.saveAsReport(
-      //     this.currentOptions, this.activatedSeason.season.value);
-    }
+  saveAs() {
+     this.reportDialog.saveAsReport(
+         this.currentOptions, this.activatedRepository.repository.value);
+  }
 
-    save() {
-      // this.reportsDao.update(this.report.id, {options: this.currentOptions});
-    }
+  save() {
+     this.reportsDao.update(this.report.id, {options: this.currentOptions});
+  }
 }
 
 function createNewReport() {

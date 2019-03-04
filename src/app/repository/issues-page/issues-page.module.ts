@@ -2,13 +2,13 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
-
-import {IssueDetail} from '../shared/issue-detail/issue-detail';
+import {ReportDialogModule} from '../shared/dialog/report/report-dialog.module';
 import {IssueDetailModule} from '../shared/issue-detail/issue-detail.module';
-import {ReportMenuModule} from '../shared/report-menu/report-menu.module';
-
-import {IssuesPage} from './issues-page';
 import {IssuesListModule} from '../shared/issues-list/issues-list.module';
+import {ReportMenuModule} from '../shared/report-menu/report-menu.module';
+import {IssuesPage} from './issues-page';
+
+
 
 const routes: Routes = [{
   path: '',
@@ -27,6 +27,7 @@ export class IssuesPageRoutingModule {
     IssueDetailModule,
     IssuesListModule,
     ReportMenuModule,
+    ReportDialogModule,
   ],
   declarations: [IssuesPage],
   exports: [IssuesPage],

@@ -2,8 +2,11 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
+
 import {Repository} from './repository';
 import {Header, Selection} from './services';
+import {ActivatedRepository} from './services/activated-repository';
+import {ReportsDao} from './services/dao/reports-dao';
 import {IssueRecommendations} from './services/issue-recommendations';
 import {Markdown} from './services/markdown';
 import {Updater} from './services/updater';
@@ -11,7 +14,6 @@ import {CreateStoreModule} from './shared/dialog/create-store/create-store.modul
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
 import {SelectionHeaderModule} from './shared/selection-header/selection-header.module';
-import {ActivatedRepository} from './services/activated-repository';
 
 
 const routes: Routes = [{
@@ -63,6 +65,7 @@ export class RepositoryRoutingModule {
     IssueRecommendations,
     Markdown,
     ActivatedRepository,
+    ReportsDao,
   ]
 })
 export class RepositoryModule {

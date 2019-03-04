@@ -29,3 +29,17 @@
 ::ng-deep img {
   max-width: 100%;
 }
+
+.body::ng-deep {
+  img {
+    max-width: 100%;
+  }
+
+  pre {
+    border-radius: 3px;
+    font-size: 85%;
+    line-height: 1.45;
+    overflow: auto;
+    padding: 16px;
+  }
+}
