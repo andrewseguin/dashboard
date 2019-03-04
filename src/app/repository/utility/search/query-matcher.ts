@@ -87,8 +87,8 @@ export function stateMatchesEquality(state: boolean, query: StateQuery) {
 }
 
 export function arrayContainsQuery(arr: string[], query: InputQuery) {
-  const str = arr.sort().toString() || '[]';
-  const input = query.input.split(',').sort().toString() || '[]';
+  const str = arr.map(v => `"${v}"`).sort().toString() || '[]';
+  const input = query.input ? query.input.split(',').map(v => `"${v}"`).sort().toString() : '[]';
 
   return stringContainsQuery(str, {input, equality: query.equality});
 }

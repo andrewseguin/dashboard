@@ -67,8 +67,13 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges.query) {
-      if (this.query && this.query.input) {
-        this.form.get('input').setValue(this.query.input || '', {emitEvent: false});
+      if (this.query) {
+        if (this.query.input) {
+          this.form.get('input').setValue(this.query.input || '', {emitEvent: false});
+        }
+        if (this.query.equality) {
+          this.form.get('equality').setValue(this.query.equality || '', {emitEvent: false});
+        }
       }
     }
   }
