@@ -16,6 +16,7 @@ export class IssueQueryMenu {
   @Input() optionsOverride: IssueRendererOptionsState;
 
   constructor(private issueQueryDialog: IssueQueryDialog) {}
+  
   openEditNameDialog() {
     this.issueQueryDialog.editIssueQuery(this.issueQuery);
   }

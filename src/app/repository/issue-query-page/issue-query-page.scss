@@ -62,3 +62,15 @@ advanced-search {
 display-options-header {
   margin-bottom: 24px;
 }
+
+issue-query-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  width: 64px;
+}
+
+.save-as {
+  margin-right: 16px;
+}

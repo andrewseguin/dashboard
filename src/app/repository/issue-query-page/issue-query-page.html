@@ -7,6 +7,7 @@
   <ng-template cdkPortal>
     <ng-container *ngIf="issueQuery">
       <button mat-raised-button color="primary" *ngIf="!issueQuery.id"
+              class="save-as"
               (click)="saveAs()">
         Save As
       </button>
@@ -17,7 +18,8 @@
       </button>
 
       <issue-query-menu [issueQuery]="issueQuery" icon="settings"
-                   [optionsOverride]="currentOptions">
+                        *ngIf="issueQuery.id"
+                        [optionsOverride]="currentOptions">
       </issue-query-menu>
     </ng-container>
   </ng-template>

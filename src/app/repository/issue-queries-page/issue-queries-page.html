@@ -13,7 +13,7 @@
     <div class="issue-queries">
       <ng-container
                     *ngFor="let issueQuery of issueQuery.issueQueries; trackBy: issueQueryKeyTrackBy">
-        <div class="issueQuery theme-hover" mat-ripple
+        <div class="issue-query theme-hover" mat-ripple
              (click)="navigateToIssueQuery(issueQuery.id)">
           <div class="name"> {{issueQuery.name}} </div>
 
