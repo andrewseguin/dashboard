@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {RecommendationsDao, Recommendation} from 'app/repository/services/dao/recommendations-dao';
 
 @Component({
   selector: 'recommendations',
@@ -7,5 +8,6 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Recommendations {
-
+  trackById = (_i, r: Recommendation) => r.id;
+  constructor(public recommendationsDao: RecommendationsDao) {}
 }

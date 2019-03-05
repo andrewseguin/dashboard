@@ -1,0 +1,27 @@
+<div class="theme-background-card theme-border">
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Message</mat-label>
+      <textarea matInput formControlName="message" cdkTextareaAutosize>
+    </textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type</mat-label>
+      <input matInput formControlName="type">
+    </mat-form-field>
+
+    <advanced-search [search]="search"
+                     [filters]="filters"
+                     [metadata]="metadata"
+                     (searchChanged)="search = $event"
+                     (filtersChanged)="filters = $event">
+    </advanced-search>
+
+    <div class="delete">
+      <button mat-stroked-button color="warn" (click)="deleteRecommendation()">
+        Delete Recommendation
+      </button>
+    </div>
+  </form>
+</div>

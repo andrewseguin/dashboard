@@ -1,1 +1,6 @@
-Recommendations
+<button mat-button (click)="recommendationsDao.add({})"> New </button>
+
+<div *ngFor="let recommendation of recommendationsDao.list | async; trackBy: trackById">
+  <editable-recommendation [recommendation]="recommendation">
+  </editable-recommendation>
+</div>

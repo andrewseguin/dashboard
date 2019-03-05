@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  border-style: solid;
+  border-width: 1px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+mat-form-field {
+  display: block;
+}
+
+.delete {
+  display: flex;
+  justify-content: flex-end;
+}

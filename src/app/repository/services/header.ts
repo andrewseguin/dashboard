@@ -9,7 +9,7 @@ import {filter, take, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
 import {IssueQueriesDao} from './dao/issue-queries-dao';
 
-const SECTIONS = new Map<string, string>([['issue-queries', 'Issue Queries']]);
+const SECTIONS = new Map<string, string>([['issue-queries', 'Issue Queries'], ['config', 'Config']]);
 
 
 @Injectable()
@@ -23,23 +23,23 @@ export class Header {
   destroyed = new Subject();
 
   constructor(
-      private windowTitle: WindowTitle, private router: Router,
-      private activatedRepository: ActivatedRepository) {
+    private windowTitle: WindowTitle, private router: Router,
+    private activatedRepository: ActivatedRepository) {
     this.title.pipe(takeUntil(this.destroyed))
-        .subscribe(title => this.windowTitle.setTitle(title));
+      .subscribe(title => this.windowTitle.setTitle(title));
     this.router.events
-        .pipe(
-            filter(e => e instanceof NavigationEnd), takeUntil(this.destroyed))
-        .subscribe((e: NavigationEnd) => {
-          this.goBack = null;
-          const section = e.urlAfterRedirects.split('/')[3];
+      .pipe(
+        filter(e => e instanceof NavigationEnd), takeUntil(this.destroyed))
+      .subscribe((e: NavigationEnd) => {
+        this.goBack = null;
+        const section = e.urlAfterRedirects.split('/')[3];
 
-          if (section === 'issue-query') {
-            this.onIssueQueryRoute();
-          } else {
-            this.title.next(SECTIONS.get(section));
-          }
-        });
+        if (section === 'issue-query') {
+          this.onIssueQueryRoute();
+        } else {
+          this.title.next(SECTIONS.get(section));
+        }
+      });
   }
 
   ngOnDestroy() {

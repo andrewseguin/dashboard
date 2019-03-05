@@ -14,6 +14,7 @@ import {CreateStoreModule} from './shared/dialog/create-store/create-store.modul
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
 import {SelectionHeaderModule} from './shared/selection-header/selection-header.module';
+import {RecommendationsDao} from './services/dao/recommendations-dao';
 
 
 const routes: Routes = [{
@@ -65,6 +66,7 @@ export class RepositoryRoutingModule {
     Markdown,
     ActivatedRepository,
     IssueQueriesDao,
+    RecommendationsDao,
   ]
 })
 export class RepositoryModule {
