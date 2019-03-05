@@ -43,7 +43,7 @@ export class IssuesRenderer {
 
     this.initSubscription =
         combineLatest(data)
-            .pipe(filter(result => !!result[0] && !!result[1]), debounceTime(250))
+            .pipe(filter(result => !!result[0] && !!result[1]), debounceTime(50))
             .subscribe(result => {
               const repo = result[0] as Repo;
               const recommendations = result[1] as Map<number, Recommendation[]>;
