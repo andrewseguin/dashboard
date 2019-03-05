@@ -1,29 +1,36 @@
 import {Injectable} from '@angular/core';
 import {Repo, RepoDao} from 'app/service/repo-dao';
-import {combineLatest, Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {filter, map, takeUntil} from 'rxjs/operators';
+
 import {getRecommendations} from '../utility/get-recommendations';
+
 import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
-import {IssuesFilterMetadata} from './issues-renderer/issues-filter-metadata';
 
 @Injectable()
 export class IssueRecommendations {
-  context: Observable<{repo: Repo, recommendations: Recommendation[]}> =
-      combineLatest(this.repoDao.repo, this.recommendationsDao.list)
-          .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
-                  return {repo: result[0], recommendations: result[1]};
-                }));
+  recommendations = new BehaviorSubject<Map<number, Recommendation[]>|null>(null);
 
-  constructor(
-      private repoDao: RepoDao,
-      private recommendationsDao: RecommendationsDao) {}
+  private destroyed = new Subject();
 
-  get(issueId: number): Observable<Recommendation[]> {
-    return combineLatest(this.repoDao.repo, this.recommendationsDao.list)
-        .pipe(filter(result => !!result[0] && !!result[1]), map((result => {
-                const repo = result[0] as Repo;
-                const recommendations = result[1] as Recommendation[];
-                return getRecommendations(issueId, repo, recommendations);
-              })));
+  constructor(private repoDao: RepoDao, private recommendationsDao: RecommendationsDao) {
+    combineLatest(this.repoDao.repo, this.recommendationsDao.list)
+        .pipe(filter(result => !!result[0] && !!result[1]), takeUntil(this.destroyed))
+        .subscribe(result => {
+          const repo = result[0] as Repo;
+          const recommendations = result[1] as Recommendation[];
+
+          const map = new Map<number, Recommendation[]>();
+          repo.issues.forEach(issue => {
+            map.set(issue.number, getRecommendations(issue.number, repo, recommendations));
+          });
+
+          this.recommendations.next(map);
+        });
+  }
+
+  ngOnDestroy() {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 }

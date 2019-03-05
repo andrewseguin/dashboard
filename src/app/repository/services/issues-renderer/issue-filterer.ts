@@ -1,10 +1,15 @@
 import {Filter, MatcherContext} from 'app/repository/utility/search/filter';
 import {Issue} from 'app/service/github';
 import {Repo} from 'app/service/repo-dao';
+
+import {Recommendation} from '../dao/recommendations-dao';
+
 import {IssuesFilterMetadata} from './issues-filter-metadata';
 
 export class IssueFilterer {
-  constructor(private filters: Filter[], private repo: Repo) {}
+  constructor(
+      private filters: Filter[], private repo: Repo,
+      private recommendationsMap: Map<number, Recommendation[]>) {}
 
   filter(issues: Issue[]) {
     return issues.filter(issue => {
@@ -13,12 +18,13 @@ export class IssueFilterer {
           return true;
         }
 
+        const recommendations = this.recommendationsMap.get(issue.number);
         const context: MatcherContext = {
           issue,
           repo: this.repo,
+          recommendations,
         };
-        return IssuesFilterMetadata.get(filter.type)
-            .matcher(context, filter.query);
+        return IssuesFilterMetadata.get(filter.type).matcher(context, filter.query);
       });
     });
   }

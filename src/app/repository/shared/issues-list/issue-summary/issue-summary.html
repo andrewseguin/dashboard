@@ -14,7 +14,7 @@
       </div>
 
       <div class="section theme-warn"
-           *ngIf="issueRecommendations.get(issue.number) | async; let recommendations">
+           *ngIf="(issueRecommendations.recommendations | async)?.get(issue.number); let recommendations">
         <div *ngFor="let r of recommendations">
           {{r.message}}
         </div>

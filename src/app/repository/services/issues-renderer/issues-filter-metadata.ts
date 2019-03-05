@@ -1,9 +1,14 @@
-import {getRecommendations} from 'app/repository/utility/get-recommendations';
-import {arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery} from 'app/repository/utility/search/query-matcher';
+import {
+  arrayContainsQuery,
+  dateMatchesEquality,
+  numberMatchesEquality,
+  stateMatchesEquality,
+  stringContainsQuery
+} from 'app/repository/utility/search/query-matcher';
 import {filter, map} from 'rxjs/operators';
-
 import {AutocompleteContext, IFilterMetadata, MatcherContext} from '../../utility/search/filter';
 import {DateQuery, InputQuery, NumberQuery, StateQuery} from '../../utility/search/query';
+
 
 export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
 
@@ -34,8 +39,7 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       autocomplete: (c: AutocompleteContext) => {
         return c.repoDao.repo.pipe(map(repo => {
           const assigneesSet = new Set<string>();
-          repo.issues.forEach(
-              i => i.assignees.forEach(a => assigneesSet.add(a)));
+          repo.issues.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
 
           const assignees = [];
           assigneesSet.forEach(a => assignees.push(a));
@@ -60,14 +64,12 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Labels',
       queryType: 'input',
       matcher: (c: MatcherContext, q: InputQuery) => {
-        return arrayContainsQuery(
-            c.issue.labels.map(l => c.repo.labelsMap.get(l).name), q);
+        return arrayContainsQuery(c.issue.labels.map(l => c.repo.labelsMap.get(l).name), q);
       },
       autocomplete: (c: AutocompleteContext) => {
-        return c.repoDao.repo.pipe(
-            filter(repo => !!repo), map(repo => {
-              return repo.labels.map(issue => issue.name);
-            }));
+        return c.repoDao.repo.pipe(filter(repo => !!repo), map(repo => {
+                                     return repo.labels.map(issue => issue.name);
+                                   }));
       }
     }
   ],
@@ -107,6 +109,22 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
         const values = new Map<string, boolean>([
           ['open', c.issue.state === 'open'],
           ['closed', c.issue.state === 'closed'],
+        ]);
+        return stateMatchesEquality(values.get(q.state), q);
+      },
+    }
+  ],
+
+  [
+    'recommendation', {
+      displayName: 'Recommendation',
+      queryType: 'state',
+      queryTypeData: {states: ['empty', 'at least one warning', 'at least one suggestion']},
+      matcher: (c: MatcherContext, q: StateQuery) => {
+        const values = new Map<string, boolean>([
+          ['empty', !c.recommendations.length],
+          ['at least one warning', c.recommendations.some(r => r.type === 'warning')],
+          ['at least one suggestion', c.recommendations.some(r => r.type === 'suggestion')],
         ]);
         return stateMatchesEquality(values.get(q.state), q);
       },

@@ -1,16 +1,18 @@
 import {Injectable} from '@angular/core';
-import {getIssuesMatchingFilterAndSearch} from 'app/repository/utility/get-issues-matching-filter-and-search';
+import {
+  getIssuesMatchingFilterAndSearch
+} from 'app/repository/utility/get-issues-matching-filter-and-search';
 import {Repo, RepoDao} from 'app/service/repo-dao';
 import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
-import {debounceTime, delay, startWith} from 'rxjs/operators';
+import {debounceTime, filter, startWith} from 'rxjs/operators';
 
-import {RecommendationsDao} from '../dao/recommendations-dao';
+import {Recommendation} from '../dao/recommendations-dao';
+import {IssueRecommendations} from '../issue-recommendations';
 
 import {IssueFilterer} from './issue-filterer';
 import {IssueGroup, IssueGrouping} from './issue-grouping';
 import {IssueRendererOptions} from './issue-renderer-options';
 import {IssueSorter} from './issue-sorter';
-
 
 
 @Injectable()
@@ -22,7 +24,7 @@ export class IssuesRenderer {
 
   private initSubscription: Subscription;
 
-  constructor(private repoDao: RepoDao) {}
+  constructor(private repoDao: RepoDao, private issuesRecommendations: IssueRecommendations) {}
 
   ngOnDestroy() {
     this.initSubscription.unsubscribe();
@@ -35,40 +37,40 @@ export class IssuesRenderer {
 
     const data: any[] = [
       this.repoDao.repo,
+      this.issuesRecommendations.recommendations,
       this.options.changed.pipe(startWith(null)),
     ];
 
     this.initSubscription =
-        combineLatest(data).pipe(debounceTime(250)).subscribe(result => {
-          const repo = result[0] as Repo;
+        combineLatest(data)
+            .pipe(filter(result => !!result[0] && !!result[1]), debounceTime(250))
+            .subscribe(result => {
+              const repo = result[0] as Repo;
+              const recommendations = result[1] as Map<number, Recommendation[]>;
 
-          if (!repo) {
-            return [];
-          }
+              // Filter and search
+              const filterer = new IssueFilterer(this.options.filters, repo, recommendations);
+              const filteredAndSearchedIssues =
+                  getIssuesMatchingFilterAndSearch(repo.issues, filterer, this.options.search);
 
-          // Filter and search
-          const filterer = new IssueFilterer(this.options.filters, repo);
-          const filteredAndSearchedIssues = getIssuesMatchingFilterAndSearch(
-              repo.issues, filterer, this.options.search);
+              // Group
+              const grouper = new IssueGrouping(filteredAndSearchedIssues, repo);
+              let issueGroups = grouper.getGroup(this.options.grouping);
+              issueGroups = issueGroups.sort((a, b) => a.title < b.title ? -1 : 1);
 
-          // Group
-          const grouper = new IssueGrouping(filteredAndSearchedIssues, repo);
-          let issueGroups = grouper.getGroup(this.options.grouping);
-          issueGroups = issueGroups.sort((a, b) => a.title < b.title ? -1 : 1);
+              // Sort
+              const issueSorter = new IssueSorter();
+              issueGroups.forEach(group => {
+                const sort = this.options.sorting;
+                const sortFn = issueSorter.getSortFunction(sort);
+                group.issues = group.issues.sort(sortFn);
 
-          // Sort
-          const issueSorter = new IssueSorter();
-          issueGroups.forEach(group => {
-            const sort = this.options.sorting;
-            const sortFn = issueSorter.getSortFunction(sort);
-            group.issues = group.issues.sort(sortFn);
+                if (this.options.reverseSort) {
+                  group.issues = group.issues.reverse();
+                }
+              });
 
-            if (this.options.reverseSort) {
-              group.issues = group.issues.reverse();
-            }
-          });
-
-          this.issueGroups.next(issueGroups);
-        });
+              this.issueGroups.next(issueGroups);
+            });
   }
 }

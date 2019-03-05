@@ -7,6 +7,7 @@ import {delay, filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
 import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
+import {IssueRecommendations} from '../services/issue-recommendations';
 import {IssueFilterer} from '../services/issues-renderer/issue-filterer';
 import {getIssuesMatchingFilterAndSearch} from '../utility/get-issues-matching-filter-and-search';
 
@@ -25,20 +26,21 @@ export class IssueQueriesPage {
   issueQueryGroups = this.issueQueriesDao.list.pipe(map(getSortedGroups));
 
   issueQueryResultsCount =
-      combineLatest(this.repoDao.repo, this.issueQueryGroups)
+      combineLatest(
+          this.repoDao.repo, this.issueQueryGroups, this.issueRecommendations.recommendations)
           .pipe(
-              filter(result => !!result[0] && !!result[1]), delay(200),
+              filter(result => !!result[0] && !!result[1] && !!result[2]), delay(200),
               map(result => {
                 const repo = result[0] as Repo;
                 const groups = result[1] as IssueQueryGroup[];
+                const recommendations = result[2] as Map<number, Recommendation[]>;
 
                 const map = new Map<string, number>();
                 groups.forEach(group => group.issueQueries.forEach(query => {
-                  const filterer =
-                      new IssueFilterer(query.options.filters, repo);
-                  const count = getIssuesMatchingFilterAndSearch(
-                                    repo.issues, filterer, query.options.search)
-                                    .length;
+                  const filterer = new IssueFilterer(query.options.filters, repo, recommendations);
+                  const count =
+                      getIssuesMatchingFilterAndSearch(repo.issues, filterer, query.options.search)
+                          .length;
                   map.set(query.id, count);
                 }));
 
@@ -48,13 +50,12 @@ export class IssueQueriesPage {
   issueQueryKeyTrackBy = (_i, issueQuery: IssueQuery) => issueQuery.id;
 
   constructor(
-      public issueQueriesDao: IssueQueriesDao, public repoDao: RepoDao,
-      private router: Router, private recommendationsDao: RecommendationsDao,
+      public issueQueriesDao: IssueQueriesDao, public repoDao: RepoDao, private router: Router,
+      private issueRecommendations: IssueRecommendations,
       private activatedRepository: ActivatedRepository) {}
 
   createIssueQuery() {
-    this.router.navigate(
-        [`${this.activatedRepository.repository.value}/issue-query/new`]);
+    this.router.navigate([`${this.activatedRepository.repository.value}/issue-query/new`]);
   }
 
   createIssueQueryFromRecommendation(recommendation: Recommendation) {
@@ -64,8 +65,7 @@ export class IssueQueriesPage {
   }
 
   navigateToIssueQuery(id: string) {
-    this.router.navigate(
-        [`${this.activatedRepository.repository.value}/issue-query/${id}`]);
+    this.router.navigate([`${this.activatedRepository.repository.value}/issue-query/${id}`]);
   }
 }
 
