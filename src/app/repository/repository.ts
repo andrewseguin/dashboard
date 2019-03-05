@@ -44,7 +44,7 @@ export class Repository {
       if (result.empty) {
         this.requestCreateStore();
       } else {
-        this.initializeAutoUpdates();
+        this.initializAutoIssueUpdates();
       }
     });
   }
@@ -54,20 +54,21 @@ export class Repository {
     this.destroyed.complete();
   }
 
-  private initializeAutoUpdates() {
+  private initializAutoIssueUpdates() {
     interval(20 * 1000).subscribe(() => {
-      console.log('updating');
+      console.log('updating issues');
       this.updater.updateLabels(this.repository);
-      this.updater.updateContributors(this.repository);
-      this.updater.updateIssues(this.repository);
     });
+
+    this.updater.updateContributors(this.repository);
+    this.updater.updateIssues(this.repository);
   }
 
   private requestCreateStore() {
     const config = {data: {repo: this.repository}, width: '500px'};
     this.dialog.open(CreateStore, config).afterClosed().subscribe(created => {
       if (created) {
-        this.initializeAutoUpdates();
+        this.initializAutoIssueUpdates();
       }
     });
   }

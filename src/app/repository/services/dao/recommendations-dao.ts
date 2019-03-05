@@ -6,7 +6,7 @@ import {ActivatedRepository} from '../activated-repository';
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
 export interface AddLabelAction {
-  labels: number[];
+  labels: string[];
 }
 export interface AddAssigneeAction {
   assignee: string[];
@@ -18,7 +18,7 @@ export interface Recommendation {
   id?: string;
   message?: string;
   type?: 'warning'|'suggestion';
-  actionType?: 'apply-label'|'add-assignee';
+  actionType?: 'add-label'|'add-assignee';
   action?: Action;
   filters?: Filter[];
   search?: string;

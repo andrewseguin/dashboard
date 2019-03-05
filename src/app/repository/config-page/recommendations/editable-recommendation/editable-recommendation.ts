@@ -52,7 +52,7 @@ export class EditableRecommendation {
   metadata = IssuesFilterMetadata;
 
   actionTypeOptions = [
-    {label: 'Apply label', value: 'apply-label'},
+    {label: 'Add label', value: 'add-label'},
     {label: 'Add assignee', value: 'add-assignee'}
   ];
 
@@ -72,8 +72,11 @@ export class EditableRecommendation {
     this.form = new FormGroup({
       message: new FormControl(this.recommendation.message),
       type: new FormControl(this.recommendation.type || 'warning'),
-      actionType: new FormControl(this.recommendation.action || 'apply-label'),
+      actionType:
+          new FormControl(this.recommendation.actionType || 'add-label'),
+      action: new FormControl(this.recommendation.action),
     });
+
     this._search = this.recommendation.search;
     this._filters = this.recommendation.filters || [];
 
@@ -84,11 +87,10 @@ export class EditableRecommendation {
             message: this.form.value.message,
             type: this.form.value.type,
             actionType: this.form.value.actionType,
+            action: this.form.value.action,
             filters: this.filters,
             search: this.search
           };
-
-          switch (this.form.value.action) { case 'apply-label': }
 
           this.recommendationsDao.update(this.recommendation.id, update);
         });
@@ -112,5 +114,9 @@ export class EditableRecommendation {
                 `Recommendation deleted`, null, {duration: 2000});
           }
         });
+  }
+
+  setAddLabelAction(labelNames: number[]) {
+    this.form.get('action').setValue({labels: labelNames});
   }
 }
