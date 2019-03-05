@@ -15,7 +15,9 @@
                     *ngFor="let issueQuery of issueQuery.issueQueries; trackBy: issueQueryKeyTrackBy">
         <div class="issue-query theme-hover" mat-ripple
              (click)="navigateToIssueQuery(issueQuery.id)">
-          <div class="name"> {{issueQuery.name}} </div>
+          <div class="name"> {{issueQuery.name}}
+            ({{(issueQueryResultsCount | async)?.get(issueQuery.id) || '...'}})
+          </div>
 
           <issue-query-menu [issueQuery]="issueQuery" icon="more_vert"
                             (click)="$event.stopPropagation()">

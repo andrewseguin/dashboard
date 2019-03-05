@@ -8,13 +8,20 @@
 
   <mat-form-field appearance="outline">
     <mat-label> Group (optional) </mat-label>
-    <input matInput formControlName="group">
+    <input matInput formControlName="group" [matAutocomplete]="auto">
   </mat-form-field>
+
 </div>
 
 <div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close> Cancel </button>
-  <button mat-raised-button color="primary"
-          [disabled]="!formGroup.valid"
+  <button mat-raised-button color="primary" [disabled]="!formGroup.valid"
           (click)="save()"> Save </button>
 </div>
+
+<mat-autocomplete #auto="matAutocomplete">
+  <mat-option *ngFor="let option of filteredGroupOptions | async"
+              [value]="option">
+    {{option}}
+  </mat-option>
+</mat-autocomplete>

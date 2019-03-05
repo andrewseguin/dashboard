@@ -1,14 +1,13 @@
 import {Injectable} from '@angular/core';
-import {issueMatchesSearch} from 'app/repository/utility/issue-matches-search';
+import {getIssuesMatchingFilterAndSearch} from 'app/repository/utility/get-issues-matching-filter-and-search';
 import {Repo, RepoDao} from 'app/service/repo-dao';
 import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
-import {Recommendation, RecommendationsDao} from '../dao/recommendations-dao';
+import {RecommendationsDao} from '../dao/recommendations-dao';
 import {IssueFilterer} from './issue-filterer';
 import {IssueGroup, IssueGrouping} from './issue-grouping';
 import {IssueRendererOptions} from './issue-renderer-options';
 import {IssueSorter} from './issue-sorter';
-import {IssuesFilterMetadata} from './issues-filter-metadata';
 
 
 
@@ -21,9 +20,7 @@ export class IssuesRenderer {
 
   private initSubscription: Subscription;
 
-  constructor(
-      private repoDao: RepoDao,
-      private recommendationsDao: RecommendationsDao) {}
+  constructor(private repoDao: RepoDao) {}
 
   ngOnDestroy() {
     this.initSubscription.unsubscribe();
@@ -36,31 +33,23 @@ export class IssuesRenderer {
 
     const data: any[] = [
       this.repoDao.repo,
-      this.recommendationsDao.list,
       this.options.changed.pipe(startWith(null)),
     ];
 
     this.initSubscription = combineLatest(data).subscribe(result => {
       const repo = result[0] as Repo;
-      const recommendations = result[1] as Recommendation[];
 
       if (!repo) {
         return [];
       }
 
-      // Filter
-      const issueFilterer = new IssueFilterer(this.options.filters, repo);
-      let filteredIssues = issueFilterer.filter(repo.issues);
-
-      // Search
-      const search = this.options.search;
-      const searchedIssues =
-          !search ? filteredIssues : filteredIssues.filter(issue => {
-            return issueMatchesSearch(search, issue);
-          });
+      // Filter and search
+      const filterer = new IssueFilterer(this.options.filters, repo);
+      const filteredAndSearchedIssues = getIssuesMatchingFilterAndSearch(
+          repo.issues, filterer, this.options.search);
 
       // Group
-      const grouper = new IssueGrouping(searchedIssues, repo);
+      const grouper = new IssueGrouping(filteredAndSearchedIssues, repo);
       let issueGroups = grouper.getGroup(this.options.grouping);
       issueGroups = issueGroups.sort((a, b) => a.title < b.title ? -1 : 1);
 

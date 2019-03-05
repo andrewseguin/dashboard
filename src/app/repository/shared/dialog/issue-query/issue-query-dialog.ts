@@ -16,8 +16,7 @@ import {IssueQueryEdit} from './issue-query-edit/issue-query-edit';
 export class IssueQueryDialog {
   constructor(
       private dialog: MatDialog, private snackbar: MatSnackBar,
-      private router: Router, private afAuth: AngularFireAuth,
-      private issueQueriesDao: IssueQueriesDao) {}
+      private router: Router, private issueQueriesDao: IssueQueriesDao) {}
 
   /** Shows the edit issue query dialog to change the name/group.*/
   editIssueQuery(issueQuery: IssueQuery) {

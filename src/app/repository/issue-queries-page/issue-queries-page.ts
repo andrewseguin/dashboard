@@ -1,9 +1,13 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Router} from '@angular/router';
-import {RepoDao} from 'app/service/repo-dao';
-import {map} from 'rxjs/operators';
+import {Repo, RepoDao} from 'app/service/repo-dao';
+import {combineLatest} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
+
 import {ActivatedRepository} from '../services/activated-repository';
 import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
+import {IssueFilterer} from '../services/issues-renderer/issue-filterer';
+import {getIssuesMatchingFilterAndSearch} from '../utility/get-issues-matching-filter-and-search';
 
 
 interface IssueQueryGroup {
@@ -18,6 +22,27 @@ interface IssueQueryGroup {
 })
 export class IssueQueriesPage {
   issueQueryGroups = this.issueQueriesDao.list.pipe(map(getSortedGroups));
+
+  issueQueryResultsCount =
+      combineLatest(this.repoDao.repo, this.issueQueryGroups)
+          .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
+                  const repo = result[0] as Repo;
+                  const groups = result[1] as IssueQueryGroup[];
+
+                  const map = new Map<string, number>();
+                  groups.forEach(group => group.issueQueries.forEach(query => {
+                    const filterer =
+                        new IssueFilterer(query.options.filters, repo);
+                    const count =
+                        getIssuesMatchingFilterAndSearch(
+                            repo.issues, filterer, query.options.search)
+                            .length;
+                    map.set(query.id, count);
+                  }));
+
+                  return map;
+                }));
+
   issueQueryKeyTrackBy = (_i, issueQuery: IssueQuery) => issueQuery.id;
 
   constructor(
