@@ -23,7 +23,9 @@ import {map, takeUntil} from 'rxjs/operators';
 })
 export class IssueSummary {
   warnings = this.issueRecommendations.recommendations.pipe(
-      map(r => this.issue ? r.get(this.issue.number) : null));
+      map(map => this.issue ? map.get(this.issue.number).filter(r => r.type === 'warning') : null));
+  suggestions = this.issueRecommendations.recommendations.pipe(map(
+      map => this.issue ? map.get(this.issue.number).filter(r => r.type === 'suggestion') : null));
 
   private destroyed = new Subject();
 

@@ -10,18 +10,34 @@
     </div>
 
     <div class="details theme-secondary-text">
-      <div class="section" *ngIf="issuesRenderer.options.view.assignee">
-        Assignee: {{issue.reporter}}
-      </div>
+      <ng-container *ngIf="issuesRenderer.options.view.assignee">
+        <div class="section">
+          Assignee: {{issue.reporter}}
+        </div>
+      </ng-container>
 
-      <div class="section" *ngIf="issuesRenderer.options.view.labels">
-        <label-list [labelIds]="issue.labels"></label-list>
-      </div>
+      <ng-container *ngIf="issuesRenderer.options.view.labels">
+        <div class="section">
+          <label-list [labelIds]="issue.labels"></label-list>
+        </div>
+      </ng-container>
 
-      <ng-container *ngIf="(warnings | async).length">
+      <ng-container
+                    *ngIf="(warnings | async).length && issuesRenderer.options.view.warnings">
         <div class="section theme-warn">
-          <div *ngFor="let warning of warnings | async">
+          <div *ngFor="let warning of warnings | async" class="recommendation">
+            <mat-icon> warning </mat-icon>
             {{warning.message}}
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container
+                    *ngIf="(suggestions | async).length && issuesRenderer.options.view.suggestions">
+        <div class="section">
+          <div *ngFor="let suggestion of suggestions | async"
+               class="recommendation">
+            <mat-icon> label_important </mat-icon>{{suggestion.message}}
           </div>
         </div>
       </ng-container>

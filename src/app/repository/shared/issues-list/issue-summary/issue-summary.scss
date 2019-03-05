@@ -61,3 +61,15 @@ label-list {
   display: flex;
   justify-content: flex-end;
 }
+
+.recommendation {
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    margin-right: 4px;
+  }
+}
