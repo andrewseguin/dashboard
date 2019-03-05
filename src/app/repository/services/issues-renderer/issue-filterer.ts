@@ -1,14 +1,12 @@
 import {Filter, MatcherContext} from 'app/repository/utility/search/filter';
 import {Issue} from 'app/service/github';
 import {Repo} from 'app/service/repo-dao';
-
-import {IssueRendererOptions} from './issue-renderer-options';
 import {IssuesFilterMetadata} from './issues-filter-metadata';
 
 export class IssueFilterer {
-  constructor(private filters: Filter[]) {}
+  constructor(private filters: Filter[], private repo: Repo) {}
 
-  filter(issues: Issue[], repo: Repo) {
+  filter(issues: Issue[]) {
     return issues.filter(issue => {
       return this.filters.every(filter => {
         if (!filter.query) {
@@ -17,10 +15,8 @@ export class IssueFilterer {
 
         const context: MatcherContext = {
           issue,
-          labels: repo.labelsMap,
-          contributors: repo.contributorsMap
+          repo: this.repo,
         };
-
         return IssuesFilterMetadata.get(filter.type)
             .matcher(context, filter.query);
       });

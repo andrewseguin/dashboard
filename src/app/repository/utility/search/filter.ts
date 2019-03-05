@@ -1,13 +1,13 @@
-import {Contributor, Issue, Label} from 'app/service/github';
-import {RepoDao} from 'app/service/repo-dao';
+import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
+import {Issue} from 'app/service/github';
+import {Repo, RepoDao} from 'app/service/repo-dao';
 import {Observable} from 'rxjs';
-
 import {Query} from './query';
+
 
 export interface MatcherContext {
   issue: Issue;
-  labels: Map<number, Label>;
-  contributors: Map<number, Contributor>;
+  repo: Repo;
 }
 
 export interface AutocompleteContext {

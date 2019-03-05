@@ -1,9 +1,8 @@
-import {dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery, arrayContainsQuery} from 'app/repository/utility/search/query-matcher';
+import {getRecommendations} from 'app/repository/utility/get-recommendations';
+import {arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery} from 'app/repository/utility/search/query-matcher';
 import {map} from 'rxjs/operators';
-
 import {AutocompleteContext, IFilterMetadata, MatcherContext} from '../../utility/search/filter';
 import {DateQuery, InputQuery, NumberQuery, StateQuery} from '../../utility/search/query';
-
 
 export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
 
@@ -34,7 +33,8 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       autocomplete: (c: AutocompleteContext) => {
         return c.repoDao.repo.pipe(map(repo => {
           const assigneesSet = new Set<string>();
-          repo.issues.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
+          repo.issues.forEach(
+              i => i.assignees.forEach(a => assigneesSet.add(a)));
 
           const assignees = [];
           assigneesSet.forEach(a => assignees.push(a));
@@ -59,7 +59,8 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Labels',
       queryType: 'input',
       matcher: (c: MatcherContext, q: InputQuery) => {
-        return arrayContainsQuery(c.issue.labels.map(l => c.labels.get(l).name), q);
+        return arrayContainsQuery(
+            c.issue.labels.map(l => c.repo.labelsMap.get(l).name), q);
       },
       autocomplete: (c: AutocompleteContext) => {
         return c.repoDao.repo.pipe(map(repo => {

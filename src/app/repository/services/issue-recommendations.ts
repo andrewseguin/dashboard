@@ -1,13 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Issue, Label} from 'app/service/github';
 import {Repo, RepoDao} from 'app/service/repo-dao';
 import {combineLatest, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-
-import {issueMatchesSearch} from '../utility/issue-matches-search';
-
+import {getRecommendations} from '../utility/get-recommendations';
 import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
-import {IssueFilterer} from './issues-renderer/issue-filterer';
+import {IssuesFilterMetadata} from './issues-renderer/issues-filter-metadata';
 
 @Injectable()
 export class IssueRecommendations {
@@ -21,19 +18,12 @@ export class IssueRecommendations {
       private repoDao: RepoDao,
       private recommendationsDao: RecommendationsDao) {}
 
-  get(issueId: number): Observable<Recommendation[]|any> {
-    return this.context.pipe(map(context => {
-      const issue = context.repo.issuesMap.get(issueId);
-      return context.recommendations.filter(recommendation => {
-        const issueFilterer = new IssueFilterer(recommendation.filters);
-        const passesFilter =
-            !!issueFilterer.filter([issue], context.repo).length;
-        if (!passesFilter) {
-          return false;
-        }
-
-        return issueMatchesSearch(recommendation.search, issue);
-      });
-    }));
+  get(issueId: number): Observable<Recommendation[]> {
+    return combineLatest(this.repoDao.repo, this.recommendationsDao.list)
+        .pipe(filter(result => !!result[0] && !!result[1]), map((result => {
+                const repo = result[0] as Repo;
+                const recommendations = result[1] as Recommendation[];
+                return getRecommendations(issueId, repo, recommendations);
+              })));
   }
 }
