@@ -25,6 +25,9 @@ export class DisplayOptionsHeader {
 
   views = new Map<ViewKey, string>([
     ['assignee', 'Assignee'],
+    ['labels', 'Labels'],
+    ['warnings', 'Warnings'],
+    ['suggestions', 'Suggestions'],
   ]);
   viewKeys = Array.from(this.views.keys());
 

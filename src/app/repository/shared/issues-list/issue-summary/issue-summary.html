@@ -1,4 +1,5 @@
-<div class="issue theme-hover" mat-ripple [class.theme-background-hover]="active">
+<div class="issue theme-hover" mat-ripple
+     [class.theme-background-hover]="active">
   <div class="info">
     <div class="top-row theme-text">
       <div class="name">
@@ -13,11 +14,17 @@
         Assignee: {{issue.reporter}}
       </div>
 
-      <div class="section theme-warn" *ngIf="(issueRecommendations.recommendations | async)?.get(issue.number); let recommendations">
-        <div *ngFor="let r of recommendations">
-          {{r.message}}
-        </div>
+      <div class="section" *ngIf="issuesRenderer.options.view.labels">
+        <label-list [labelIds]="issue.labels"></label-list>
       </div>
+
+      <ng-container *ngIf="(warnings | async).length">
+        <div class="section theme-warn">
+          <div *ngFor="let warning of warnings | async">
+            {{warning.message}}
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
 

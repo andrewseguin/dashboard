@@ -22,6 +22,9 @@ import {map, takeUntil} from 'rxjs/operators';
   host: {'(click)': 'select.emit(this.issue.number)'}
 })
 export class IssueSummary {
+  warnings = this.issueRecommendations.recommendations.pipe(
+      map(r => this.issue ? r.get(this.issue.number) : null));
+
   private destroyed = new Subject();
 
   @Input() issue: Issue;

@@ -14,10 +14,13 @@ export interface IssueRendererOptionsState {
   reverseSort: boolean;
 }
 
-export type ViewKey = 'assignee';
+export type ViewKey = 'assignee'|'labels'|'warnings'|'suggestions';
 
 export interface View {
   assignee?: boolean;
+  labels?: boolean;
+  warnings?: boolean;
+  suggestions?: boolean;
 }
 
 export class IssueRendererOptions {
