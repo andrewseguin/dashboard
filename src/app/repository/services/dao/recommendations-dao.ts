@@ -10,8 +10,8 @@ import {RepositoryCollectionDao} from './repository-collection-dao';
 export interface Recommendation {
   id?: string;
   message?: string;
-  type?: 'warning' | 'suggestion';
-  action: 'apply-label' | 'add-assignee';
+  type?: 'warning'|'suggestion';
+  action?: 'apply-label'|'add-assignee';
   filters?: Filter[];
   search?: string;
   dateCreated?: string;
@@ -19,10 +19,11 @@ export interface Recommendation {
 }
 
 @Injectable()
-export class RecommendationsDao extends RepositoryCollectionDao<Recommendation> {
+export class RecommendationsDao extends
+    RepositoryCollectionDao<Recommendation> {
   constructor(
-    afAuth: AngularFireAuth, activatedRepository: ActivatedRepository,
-    config: Config) {
+      afAuth: AngularFireAuth, activatedRepository: ActivatedRepository,
+      config: Config) {
     super(afAuth, activatedRepository, config, 'recommendations');
   }
 }

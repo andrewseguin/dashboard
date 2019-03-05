@@ -72,6 +72,7 @@ export class EditableRecommendation {
         const update: Recommendation = {
           message: this.form.value.message,
           type: this.form.value.type,
+          action: this.form.value.action,
           filters: this.filters,
           search: this.search
         };
