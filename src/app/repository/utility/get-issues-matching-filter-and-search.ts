@@ -8,6 +8,8 @@ export function getIssuesMatchingFilterAndSearch(
     issues: Issue[], filterer: IssueFilterer, search: string) {
   let filteredIssues = filterer.filter(issues);
   return !search ? filteredIssues : filteredIssues.filter(issue => {
-    return issueMatchesSearch(search, issue);
+    const searchTokens = search.split(' OR ');
+    return searchTokens.some(
+        searchToken => issueMatchesSearch(searchToken, issue));
   });
 }
