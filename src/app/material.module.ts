@@ -26,7 +26,8 @@ import {
   MatSortModule,
   MatTableModule, MatTabsModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatButtonToggleModule
 } from '@angular/material';
 import {PortalModule} from '@angular/cdk/portal';
 
@@ -36,6 +37,7 @@ import {PortalModule} from '@angular/cdk/portal';
     MatAutocompleteModule,
     MatBadgeModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatCardModule,
     MatChipsModule,
     MatCheckboxModule,
@@ -65,4 +67,4 @@ import {PortalModule} from '@angular/cdk/portal';
     PortalModule,
   ]
 })
-export class MaterialModule { }
+export class MaterialModule {}

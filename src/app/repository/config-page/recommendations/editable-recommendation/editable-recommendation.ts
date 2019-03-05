@@ -59,7 +59,8 @@ export class EditableRecommendation {
   ngOnInit() {
     this.form = new FormGroup({
       message: new FormControl(this.recommendation.message),
-      type: new FormControl(this.recommendation.type),
+      type: new FormControl(this.recommendation.type || 'warning'),
+      action: new FormControl(this.recommendation.action || 'apply-label'),
     });
     this._search = this.recommendation.search;
     this._filters = this.recommendation.filters || [];

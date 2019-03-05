@@ -11,6 +11,7 @@ export interface Recommendation {
   id?: string;
   message?: string;
   type?: 'warning' | 'suggestion';
+  action: 'apply-label' | 'add-assignee';
   filters?: Filter[];
   search?: string;
   dateCreated?: string;

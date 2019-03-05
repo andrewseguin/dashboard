@@ -6,14 +6,20 @@
     </textarea>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Type</mat-label>
-      <input matInput formControlName="type">
-    </mat-form-field>
+    <div>
+      <mat-button-toggle-group formControlName="type" aria-label="Type">
+        <mat-button-toggle value="warning">Warning</mat-button-toggle>
+        <mat-button-toggle value="suggestion">Suggestion</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div>
+      <mat-button-toggle-group formControlName="action" aria-label="Action">
+        <mat-button-toggle value="apply-label">Apply Label</mat-button-toggle>
+        <mat-button-toggle value="italic">Add Assignee</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
 
-    <advanced-search [search]="search"
-                     [filters]="filters"
-                     [metadata]="metadata"
+    <advanced-search [search]="search" [filters]="filters" [metadata]="metadata"
                      (searchChanged)="search = $event"
                      (filtersChanged)="filters = $event">
     </advanced-search>

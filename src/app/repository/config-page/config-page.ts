@@ -11,7 +11,7 @@ interface ConfigTab {
   templateUrl: 'config-page.html',
 })
 export class ConfigPage {
-  selectedTabIndex = 0;
+  selectedTabIndex = 1;
   tabs: ConfigTab[] = [
     {
       id: 'cache',
