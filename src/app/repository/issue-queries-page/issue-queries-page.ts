@@ -52,6 +52,7 @@ export class IssueQueriesPage {
   constructor(
       public issueQueriesDao: IssueQueriesDao, public repoDao: RepoDao, private router: Router,
       private issueRecommendations: IssueRecommendations,
+      public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}
 
   createIssueQuery() {
