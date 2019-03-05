@@ -1,5 +1,4 @@
-<mat-tab-group (selectedTabChange)="selectedTabIndex = $event.index"
-               mat-align-tabs="center">
+<mat-tab-group mat-align-tabs="center">
   <ng-container *ngFor="let tab of tabs">
     <mat-tab [label]="tab.label">
       <ng-template matTabContent>

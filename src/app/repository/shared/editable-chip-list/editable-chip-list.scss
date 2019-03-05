@@ -1,0 +1,21 @@
+:host {
+  display: block;
+  padding: 8px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+}
+
+mat-label {
+  text-transform: capitalize;
+}
+
+input {
+  margin: 0;
+  border: none;
+  outline: none;
+  padding: 4px;
+  color: inherit;
+  background: inherit;
+  font-size: inherit;
+}

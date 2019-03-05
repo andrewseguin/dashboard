@@ -1,22 +1,43 @@
 <div class="theme-background-card theme-border">
   <form [formGroup]="form">
-    <mat-form-field appearance="outline">
-      <mat-label>Message</mat-label>
-      <textarea matInput formControlName="message" cdkTextareaAutosize>
-    </textarea>
-    </mat-form-field>
+    <div class="heading">
+      <mat-select formControlName="type" class="type">
+        <mat-select-trigger>
+          <ng-container [ngSwitch]="form.value.type">
+            <mat-icon *ngSwitchCase="'warning'" class="theme-warn">
+              warning
+            </mat-icon>
+            <mat-icon *ngSwitchCase="'suggestion'"> label_important </mat-icon>
+          </ng-container>
+        </mat-select-trigger>
+        <mat-option *ngFor="let type of ['warning', 'suggestion']"
+                    [value]="type">
+          {{type}}
+        </mat-option>
+      </mat-select>
 
-    <div>
-      <mat-button-toggle-group formControlName="type" aria-label="Type">
-        <mat-button-toggle value="warning">Warning</mat-button-toggle>
-        <mat-button-toggle value="suggestion">Suggestion</mat-button-toggle>
-      </mat-button-toggle-group>
+      <textarea class="message theme-border" formControlName="message"
+                cdkTextareaAutosize>  </textarea>
     </div>
-    <div>
-      <mat-button-toggle-group formControlName="action" aria-label="Action">
-        <mat-button-toggle value="apply-label">Apply Label</mat-button-toggle>
-        <mat-button-toggle value="italic">Add Assignee</mat-button-toggle>
-      </mat-button-toggle-group>
+
+    <div class="action">
+      <mat-select formControlName="actionType">
+        <mat-option *ngFor="let actionType of actionTypeOptions" [value]="actionType.value">
+          {{actionType.label}}
+        </mat-option>
+      </mat-select>
+
+
+      <div [ngSwitch]="form.value.actionType" class="action-list">
+        <div *ngSwitchCase="'apply-label'">
+          <editable-chip-list [values]="recommendation.action.labels"
+                              [autocomplete]="(addLabelsAutocomplete | async) || []">
+          </editable-chip-list>
+        </div>
+        <div *ngSwitchCase="'add-assignee'">
+          Add assignee
+        </div>
+      </div>
     </div>
 
     <advanced-search [search]="search" [filters]="filters" [metadata]="metadata"

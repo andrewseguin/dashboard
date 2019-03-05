@@ -5,13 +5,21 @@ import {Config} from 'app/service/config';
 import {ActivatedRepository} from '../activated-repository';
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
+export interface AddLabelAction {
+  labels: number[];
+}
+export interface AddAssigneeAction {
+  assignee: string[];
+}
 
+export type Action = AddLabelAction;
 
 export interface Recommendation {
   id?: string;
   message?: string;
   type?: 'warning'|'suggestion';
-  action?: 'apply-label'|'add-assignee';
+  actionType?: 'apply-label'|'add-assignee';
+  action?: Action;
   filters?: Filter[];
   search?: string;
   dateCreated?: string;

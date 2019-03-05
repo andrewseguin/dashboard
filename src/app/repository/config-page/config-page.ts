@@ -11,15 +11,15 @@ interface ConfigTab {
   templateUrl: 'config-page.html',
 })
 export class ConfigPage {
-  selectedTabIndex = 1;
   tabs: ConfigTab[] = [
-    {
-      id: 'cache',
-      label: 'Cache',
-    },
+
     {
       id: 'recommendations',
       label: 'Recommendations',
+    },
+    {
+      id: 'cache',
+      label: 'Cache',
     },
   ];
 

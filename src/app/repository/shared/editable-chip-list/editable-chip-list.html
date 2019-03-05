@@ -1,0 +1,17 @@
+<mat-chip-list #chipList>
+  <mat-chip *ngFor="let value of values" removable (removed)="remove(value)">
+    {{value}}
+    <mat-icon matChipRemove>cancel</mat-icon>
+  </mat-chip>
+  <input [placeholder]="placeholder" #chipInput [formControl]="formControl"
+         [matAutocomplete]="auto" [matChipInputFor]="chipList"
+         (matChipInputTokenEnd)="add($event.value)">
+</mat-chip-list>
+
+<mat-autocomplete #auto="matAutocomplete"
+                  (optionSelected)="add($event.option.value)">
+  <mat-option *ngFor="let value of filteredAutocomplete | async"
+              [value]="value">
+    {{value}}
+  </mat-option>
+</mat-autocomplete>
