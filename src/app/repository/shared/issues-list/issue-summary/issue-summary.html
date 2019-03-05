@@ -9,7 +9,7 @@
     </div>
 
     <div class="details theme-secondary-text">
-      <div class="section">
+      <div class="section" *ngIf="issuesRenderer.options.view.assignee">
         Assignee: {{issue.reporter}}
       </div>
 

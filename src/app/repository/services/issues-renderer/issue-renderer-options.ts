@@ -10,7 +10,14 @@ export interface IssueRendererOptionsState {
   search: string;
   grouping: Group;
   sorting: Sort;
+  view: View;
   reverseSort: boolean;
+}
+
+export type ViewKey = 'assignee';
+
+export interface View {
+  assignee?: boolean;
 }
 
 export class IssueRendererOptions {
@@ -62,6 +69,18 @@ export class IssueRendererOptions {
   }
   private _sorting: Sort = 'created';
 
+  set view(v: View) {
+    if (this._view === v) {
+      return;
+    }
+    this._view = v;
+    this.changed.next();
+  }
+  get view(): View {
+    return this._view;
+  }
+  private _view: View = {};
+
   set reverseSort(v: boolean) {
     if (this._reverseSort === v) {
       return;
@@ -81,6 +100,7 @@ export class IssueRendererOptions {
     this._search = options.search;
     this._grouping = options.grouping;
     this._sorting = options.sorting;
+    this._view = options.view;
     this._reverseSort = options.reverseSort;
     this.changed.next();
   }
@@ -91,14 +111,15 @@ export class IssueRendererOptions {
       search: this.search,
       grouping: this.grouping,
       sorting: this.sorting,
+      view: this.view,
       reverseSort: this.reverseSort,
     };
   }
 }
 
-export function areOptionStatesEqual(
-    o1: IssueRendererOptionsState, o2: IssueRendererOptionsState) {
+export function areOptionStatesEqual(o1: IssueRendererOptionsState, o2: IssueRendererOptionsState) {
   return o1.grouping === o2.grouping && o1.reverseSort === o2.reverseSort &&
       o1.sorting === o2.sorting && o1.search === o2.search &&
+      JSON.stringify(o1.view) === JSON.stringify(o2.view) &&
       JSON.stringify(o1.filters.sort()) === JSON.stringify(o2.filters.sort());
 }

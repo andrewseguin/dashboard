@@ -1,11 +1,11 @@
 import {query} from '@angular/animations';
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {Issue} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
-import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
 
 @Component({
   selector: 'issue-summary',
@@ -24,7 +24,11 @@ export class IssueSummary {
 
   constructor(
       private activatedRoute: ActivatedRoute, public issueRecommendations: IssueRecommendations,
-      public issuesRenderer: IssuesRenderer, private router: Router) {}
+      private cd: ChangeDetectorRef, public issuesRenderer: IssuesRenderer,
+      private router: Router) {
+    this.issuesRenderer.options.changed.pipe(takeUntil(this.destroyed))
+        .subscribe(() => this.cd.markForCheck());
+  }
 
   ngOnInit() {}
 

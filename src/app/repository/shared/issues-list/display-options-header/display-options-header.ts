@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {Group, Sort} from 'app/repository/services/issues-renderer/issue-renderer-options';
+import {Group, Sort, ViewKey} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -23,16 +23,19 @@ export class DisplayOptionsHeader {
   ]);
   sortIds = Array.from(this.sorts.keys());
 
+  views = new Map<ViewKey, string>([
+    ['assignee', 'Assignee'],
+  ]);
+  viewKeys = Array.from(this.views.keys());
+
   @Input() listLength: number;
 
   private destroyed = new Subject();
 
-  constructor(
-      public issuesRenderer: IssuesRenderer, private cd: ChangeDetectorRef) {
-    this.issuesRenderer.options.changed.pipe(takeUntil(this.destroyed))
-        .subscribe(() => {
-          this.cd.markForCheck();
-        });
+  constructor(public issuesRenderer: IssuesRenderer, private cd: ChangeDetectorRef) {
+    this.issuesRenderer.options.changed.pipe(takeUntil(this.destroyed)).subscribe(() => {
+      this.cd.markForCheck();
+    });
   }
 
   ngOnDestroy() {
@@ -48,5 +51,11 @@ export class DisplayOptionsHeader {
       options.sorting = sort;
       options.reverseSort = false;
     }
+  }
+
+  toggleViewKey(viewKey: ViewKey) {
+    const view = {...this.issuesRenderer.options.view};
+    view[viewKey] = !view[viewKey];
+    this.issuesRenderer.options.view = view;
   }
 }

@@ -10,6 +10,7 @@
 <mat-menu #rootMenu="matMenu">
   <button mat-menu-item [matMenuTriggerFor]="groupingMenu">Group By</button>
   <button mat-menu-item [matMenuTriggerFor]="sortingMenu">Sort By</button>
+  <button mat-menu-item [matMenuTriggerFor]="viewingMenu">View</button>
 </mat-menu>
 
 <!-- Group Menu -->
@@ -37,6 +38,18 @@
         arrow_downward
       </mat-icon>
       {{sorts.get(sort)}}
+    </div>
+  </button>
+</mat-menu>
+
+<!-- View Menu -->
+<mat-menu #viewingMenu="matMenu">
+  <button mat-menu-item *ngFor="let viewKey of viewKeys"
+          [class.selected]="!!issuesRenderer.options.view[viewKey]"
+          (click)="toggleViewKey(viewKey); $event.stopPropagation();">
+    <div class="button-content">
+      <mat-icon>check</mat-icon>
+      {{views.get(viewKey)}}
     </div>
   </button>
 </mat-menu>
