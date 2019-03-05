@@ -1,0 +1,5 @@
+<div *ngFor="let dashboard of dashboardsDao.list | async">
+  {{dashboard.name}}
+</div>
+
+<button (click)="newDashboard()"> New Dashboard </button>
