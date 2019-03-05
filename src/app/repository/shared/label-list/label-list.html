@@ -1,6 +1,6 @@
 <mat-chip-list>
   <ng-container *ngFor="let id of labelIds">
-    <ng-container *ngIf="labels?.get(id); let label">
+    <ng-container *ngIf="(repoDao.repo | async)?.labelsMap.get(id); let label">
       <mat-chip class="label" (click)="select(label.id)"
         [class.selectable]="selectable" [style.color]="label.textColor" [style.backgroundColor]="'#' + label.color"
         [style.borderColor]="'#' + label.borderColor">

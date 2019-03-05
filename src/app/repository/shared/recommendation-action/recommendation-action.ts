@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {Recommendation} from 'app/repository/services/issue-recommendations';
+import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {Github, Issue} from 'app/service/github';
 import {RepoDao} from 'app/service/repo-dao';
 

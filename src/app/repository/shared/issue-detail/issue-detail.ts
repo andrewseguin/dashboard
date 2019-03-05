@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
-import {IssueRecommendations, Recommendation} from 'app/repository/services/issue-recommendations';
+import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
+import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
 import {RepoDao} from 'app/service/repo-dao';
 import {Observable, Subject} from 'rxjs';

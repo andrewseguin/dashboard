@@ -9,23 +9,15 @@ import {RepoDao} from 'app/service/repo-dao';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LabelList {
-  @Input() labelIds: Label[];
+  /** Label identification either by id or name */
+  @Input() labelIds: string[]|number[];
 
   /** Whether the labels are a selection list */
   @Input() selectable: boolean;
 
   @Output() selected = new EventEmitter<number>();
 
-  labels = new Map<number, Label>();
-
-  constructor(private repoDao: RepoDao, private cd: ChangeDetectorRef) {
-    this.repoDao.repo.subscribe(repo => {
-      if (repo) {
-        repo.labels.forEach(label => this.labels.set(label.id, label));
-        this.cd.markForCheck();
-      }
-    });
-  }
+  constructor(public repoDao: RepoDao, private cd: ChangeDetectorRef) {}
 
   select(labelId: number) {
     if (this.selectable) {

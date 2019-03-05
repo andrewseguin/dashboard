@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {issueMatchesSearch} from 'app/repository/utility/issue-matches-search';
 import {tokenizeIssue} from 'app/repository/utility/tokenize-issue';
 import {Issue} from 'app/service/github';
 import {Repo, RepoDao} from 'app/service/repo-dao';
@@ -15,7 +16,7 @@ export class IssuesRenderer {
   options: IssueRendererOptions = new IssueRendererOptions();
 
   // Starts as null as a signal that no issues have been processed.
-  issueGroups = new BehaviorSubject<IssueGroup[] | null>(null);
+  issueGroups = new BehaviorSubject<IssueGroup[]|null>(null);
 
   private initSubscription: Subscription;
 
@@ -42,18 +43,16 @@ export class IssuesRenderer {
         return [];
       }
 
-      const issues = repo.issues;
-
       // Filter
-      const issueFilterer = new IssueFilterer(this.options);
-      let filteredIssues = issueFilterer.filter(repo);
+      const issueFilterer = new IssueFilterer(this.options.filters);
+      let filteredIssues = issueFilterer.filter(repo.issues, repo);
 
       // Search
       const search = this.options.search;
       const searchedIssues =
-        !search ? filteredIssues : filteredIssues.filter(issue => {
-          return this.issueMatchesSearch(search, issue);
-        });
+          !search ? filteredIssues : filteredIssues.filter(issue => {
+            return issueMatchesSearch(search, issue);
+          });
 
       // Group
       const grouper = new IssueGrouping(searchedIssues, repo);
@@ -74,10 +73,5 @@ export class IssuesRenderer {
 
       this.issueGroups.next(issueGroups);
     });
-  }
-
-  issueMatchesSearch(token: string, issue: Issue) {
-    const issueStr = tokenizeIssue(issue);
-    return issueStr.indexOf(token.toLowerCase()) != -1;
   }
 }

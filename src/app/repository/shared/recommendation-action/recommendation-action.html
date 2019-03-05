@@ -1,5 +1,15 @@
 <div class="labels-recommendation">
-  <mat-icon [class.theme-warn]="recommendation.warn"> {{recommendation.icon}} </mat-icon>
+  <ng-container [ngSwitch]="recommendation.type">
+    <mat-icon *ngSwitchCase="'warning'" class="theme-warn"> warning </mat-icon>
+    <mat-icon *ngSwitchCase="'suggestion'"> label_important </mat-icon>
+  </ng-container>
+
   <span class="message"> {{recommendation.message}} </span>
-  <label-list [labelIds]="recommendation.labels" [selectable]="true" (selected)="addLabel($event)"></label-list>
+
+  <ng-container [ngSwitch]="recommendation.actionType">
+    <div *ngSwitchCase="'add-label'">
+      <label-list [labelIds]="recommendation.action.labels" [selectable]="true"
+                  (selected)="addLabel($event)"></label-list>
+    </div>
+  </ng-container>
 </div>

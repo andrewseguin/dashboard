@@ -1,93 +1,39 @@
 import {Injectable} from '@angular/core';
 import {Issue, Label} from 'app/service/github';
 import {Repo, RepoDao} from 'app/service/repo-dao';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {combineLatest, Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 
-export interface AssignmentRecommendation {
-  action: 'assign';
-  assignee: string;
-}
+import {issueMatchesSearch} from '../utility/issue-matches-search';
 
-export interface LabelRecommendation {
-  icon: string;
-  labels: number[];
-  message: string;
-  warn?: boolean;
-}
-
-export type Recommendation = AssignmentRecommendation | LabelRecommendation;
+import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
+import {IssueFilterer} from './issues-renderer/issue-filterer';
 
 @Injectable()
 export class IssueRecommendations {
-  constructor(private repoDao: RepoDao) {}
+  context: Observable<{repo: Repo, recommendations: Recommendation[]}> =
+      combineLatest(this.repoDao.repo, this.recommendationsDao.list)
+          .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
+                  return {repo: result[0], recommendations: result[1]};
+                }));
 
-  get(issueId: number): Observable<Recommendation[] | any> {
-    return this.repoDao.repo.pipe(map(repo => {
-      let issue: Issue;
-      for (let i of repo.issues) {
-        if (i.number === issueId) {
-          issue = i;
-          break;
+  constructor(
+      private repoDao: RepoDao,
+      private recommendationsDao: RecommendationsDao) {}
+
+  get(issueId: number): Observable<Recommendation[]|any> {
+    return this.context.pipe(map(context => {
+      const issue = context.repo.issuesMap.get(issueId);
+      return context.recommendations.filter(recommendation => {
+        const issueFilterer = new IssueFilterer(recommendation.filters);
+        const passesFilter =
+            !!issueFilterer.filter([issue], context.repo).length;
+        if (!passesFilter) {
+          return false;
         }
-      }
 
-      return this.getRecommendations(issue, repo);
+        return issueMatchesSearch(recommendation.search, issue);
+      });
     }));
   }
-
-  getRecommendations(issue: Issue, repo: Repo): Recommendation[] {
-    if (!issue || !repo) {
-      return [];
-    }
-
-
-    const recommendations = [];
-
-    // Need priority
-    const priorityLabels = getPriorityLabels(repo.labels);
-    const needsPriority = !issue.labels.some(label => {
-      return priorityLabels.indexOf(label) !== -1;
-    });
-    if (needsPriority) {
-      recommendations.push({
-        message: 'This issue is missing a priority',
-        labels: priorityLabels,
-        icon: 'warning',
-        warn: true,
-      });
-    }
-
-    // Could use docs label
-    const mentionsDocs = (issue.title + issue.body).indexOf('docs') !== -1;
-    let docsLabel: number;
-    repo.labels.forEach(label => {
-      if (label.name === 'docs') {
-        docsLabel = label.id;
-      }
-    });
-    if (mentionsDocs && docsLabel &&
-      issue.labels.indexOf(docsLabel) === -1) {
-      recommendations.push({
-        message: 'This issue mentions documentation. Apply docs label?',
-        labels: [docsLabel],
-        icon: 'label_important'
-      });
-    }
-
-    return recommendations;
-  }
-}
-
-function getPriorityLabels(labels: Label[]): number[] {
-  const priorityLabels: Label[] = [];
-
-  labels.forEach(label => {
-    if (['P0', 'P1', 'P2', 'P3', 'P4', 'P5'].indexOf(label.name) !== -1) {
-      priorityLabels.push(label);
-    }
-  });
-
-  priorityLabels.sort((a, b) => a.name < b.name ? -1 : 1);
-  return priorityLabels.map(label => label.id);
 }
