@@ -5,7 +5,7 @@ import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer
 import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
-import {auditTime, debounceTime, takeUntil} from 'rxjs/operators';
+import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'issues-list',

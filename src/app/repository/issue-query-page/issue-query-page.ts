@@ -2,13 +2,15 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {filter, map, take, takeUntil} from 'rxjs/operators';
 
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
-import {IssueQuery, IssueQueriesDao} from '../services/dao/issue-queries-dao';
+import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
+import {RecommendationsDao} from '../services/dao/recommendations-dao';
 import {areOptionStatesEqual, IssueRendererOptions, IssueRendererOptionsState} from '../services/issues-renderer/issue-renderer-options';
 import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
+import {Filter} from '../utility/search/filter';
 
 @Component({
   styleUrls: ['issue-query-page.scss'],
@@ -30,9 +32,11 @@ export class IssueQueryPage {
 
   set currentOptions(currentOptions: IssueRendererOptionsState) {
     // When current options change, a check should be evaluated if they differ
-    // from the current issue query's options. If so, the save button should display.
+    // from the current issue query's options. If so, the save button should
+    // display.
     this._currentOptions = currentOptions;
-    this.canSave = this.issueQuery && this.issueQuery.options && this.currentOptions &&
+    this.canSave = this.issueQuery && this.issueQuery.options &&
+        this.currentOptions &&
         !areOptionStatesEqual(this.issueQuery.options, this.currentOptions);
   }
   get currentOptions(): IssueRendererOptionsState {
@@ -52,8 +56,10 @@ export class IssueQueryPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
+      private recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository, private header: Header,
-      private issueQueriesDao: IssueQueriesDao, private issueQueryDialog: IssueQueryDialog,
+      private issueQueriesDao: IssueQueriesDao,
+      private issueQueryDialog: IssueQueryDialog,
       private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed))
         .subscribe(params => {
@@ -65,7 +71,14 @@ export class IssueQueryPage {
           }
 
           if (id === 'new') {
-            this.issueQuery = createNewIssueQuery();
+            const recommendationId =
+                this.activatedRoute.snapshot.queryParamMap.get(
+                    'recommendationId');
+            if (recommendationId) {
+              this.createNewIssueQueryFromRecommendation(recommendationId);
+            } else {
+              this.issueQuery = createNewIssueQuery();
+            }
             this.cd.markForCheck();
           } else {
             this.getSubscription =
@@ -101,11 +114,30 @@ export class IssueQueryPage {
   }
 
   save() {
-    this.issueQueriesDao.update(this.issueQuery.id, {options: this.currentOptions});
+    this.issueQueriesDao.update(
+        this.issueQuery.id, {options: this.currentOptions});
+  }
+
+  private createNewIssueQueryFromRecommendation(id: string) {
+    this.recommendationsDao.list.pipe(filter(list => !!list), take(1))
+        .subscribe(list => {
+          list.forEach(r => {
+            if (r.id === id) {
+              this.issueQuery =
+                  createNewIssueQuery(r.message, r.filters, r.search);
+              this.cd.markForCheck();
+            }
+          });
+        });
   }
 }
 
-function createNewIssueQuery() {
+function createNewIssueQuery(
+    name = 'New Issue Query', filters: Filter[] = [], search = '') {
   const options = new IssueRendererOptions();
-  return {name: 'New Issue Query', options: options.getState()};
+
+  options.filters = filters;
+  options.search = search;
+
+  return {name, options: options.getState()};
 }

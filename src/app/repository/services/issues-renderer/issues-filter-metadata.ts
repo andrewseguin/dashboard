@@ -1,6 +1,7 @@
 import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery} from 'app/repository/utility/search/query-matcher';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
+
 import {AutocompleteContext, IFilterMetadata, MatcherContext} from '../../utility/search/filter';
 import {DateQuery, InputQuery, NumberQuery, StateQuery} from '../../utility/search/query';
 
@@ -63,9 +64,10 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
             c.issue.labels.map(l => c.repo.labelsMap.get(l).name), q);
       },
       autocomplete: (c: AutocompleteContext) => {
-        return c.repoDao.repo.pipe(map(repo => {
-          return repo.labels.map(issue => issue.name);
-        }));
+        return c.repoDao.repo.pipe(
+            filter(repo => !!repo), map(repo => {
+              return repo.labels.map(issue => issue.name);
+            }));
       }
     }
   ],

@@ -1,15 +1,13 @@
 import {Injectable} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
 import {IssueQueriesDao, IssueQuery} from 'app/repository/services/dao/issue-queries-dao';
 import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
-
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
-
 import {IssueQueryEdit} from './issue-query-edit/issue-query-edit';
+
 
 
 @Injectable()

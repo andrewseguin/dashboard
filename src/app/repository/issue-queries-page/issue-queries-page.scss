@@ -41,10 +41,38 @@
   }
 }
 
-button.mat-fab {
+.new-buttons {
   position: fixed;
   right: 0;
   bottom: 0;
   margin: 32px;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+
+  button {
+    margin-top: 16px;
+
+    ::ng-deep .mat-button-wrapper {
+      padding: 0;
+      line-height: 0;
+    }
+  }
+}
+
+.secondary {
+  height: 40px;
+  width: 40px;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+
+  .new-buttons:hover &, .new-buttons.menu-open & {
+    opacity: 1;
+  }
+}
+
+::ng-deep .recommendations-menu {
+  max-width: 40vw;
 }

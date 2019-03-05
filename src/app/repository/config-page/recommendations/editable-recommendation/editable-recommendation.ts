@@ -6,7 +6,7 @@ import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issu
 import {DeleteConfirmation} from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
 import {Filter} from 'app/repository/utility/search/filter';
 import {RepoDao} from 'app/service/repo-dao';
-import {combineLatest, merge, of, Subject} from 'rxjs';
+import {merge, of, Subject} from 'rxjs';
 import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
 
 @Component({
@@ -52,6 +52,7 @@ export class EditableRecommendation {
   metadata = IssuesFilterMetadata;
 
   actionTypeOptions = [
+    {label: 'No action', value: 'no-action'},
     {label: 'Add label', value: 'add-label'},
     {label: 'Add assignee', value: 'add-assignee'}
   ];
@@ -79,7 +80,9 @@ export class EditableRecommendation {
 
     this._search = this.recommendation.search;
     this._filters = this.recommendation.filters || [];
+  }
 
+  ngAfterViewInit() {
     merge(this.form.valueChanges, this.queryChanged)
         .pipe(debounceTime(2000), takeUntil(this._destroyed))
         .subscribe(() => {

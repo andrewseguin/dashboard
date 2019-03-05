@@ -14,11 +14,15 @@ export interface AddAssigneeAction {
 
 export type Action = AddLabelAction;
 
+export type RecommendationType = 'warning'|'suggestion';
+
+export type ActionType = 'add-label'|'add-assignee';
+
 export interface Recommendation {
   id?: string;
   message?: string;
-  type?: 'warning'|'suggestion';
-  actionType?: 'add-label'|'add-assignee';
+  type?: RecommendationType;
+  actionType?: ActionType;
   action?: Action;
   filters?: Filter[];
   search?: string;

@@ -1,7 +1,17 @@
-<button mat-fab (click)="createIssueQuery()"
-        [matTooltip]="'Create New Issue Query'">
-  <mat-icon>add</mat-icon>
-</button>
+<div class="new-buttons" [class.menu-open]="recommendationsMenu.menuOpen">
+  <button mat-fab color="primary" class="secondary"
+          #recommendationsMenu="matMenuTrigger"
+          [matMenuTriggerFor]="recommendations"
+          matTooltip="New issue query from recommendation"
+          [matTooltipPosition]="'before'">
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <button mat-fab (click)="createIssueQuery()"
+          matTooltip="New blank issue query" [matTooltipPosition]="'before'">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
 
 <ng-container
               *ngIf="issueQueryGroups | async; let issueQueryGroups; else loading">
@@ -33,3 +43,11 @@
 <ng-template #loading>
   <loading label="issue queries"></loading>
 </ng-template>
+
+<mat-menu #recommendations="matMenu" class="recommendations-menu">
+  <button mat-menu-item
+          *ngFor="let recommendation of recommendationsDao.list | async"
+          (click)="createIssueQueryFromRecommendation(recommendation)">
+    {{recommendation.message}}
+  </button>
+</mat-menu>
