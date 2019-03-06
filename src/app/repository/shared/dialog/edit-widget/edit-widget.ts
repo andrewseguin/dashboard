@@ -34,6 +34,7 @@ export class EditWidget {
       private dialogRef: MatDialogRef<EditWidget, Widget>, private issuesRenderer: IssuesRenderer,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
+    this.issuesRenderer.initialize();
     this.issuesRenderer.options.setState(data.widget.options);
     this.form = new FormGroup({
       title: new FormControl(this.widget.title),

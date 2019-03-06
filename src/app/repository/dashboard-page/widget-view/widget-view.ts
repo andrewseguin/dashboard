@@ -4,7 +4,8 @@ import {
   Component,
   EventEmitter,
   Input,
-  Output
+  Output,
+  SimpleChanges
 } from '@angular/core';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
@@ -43,7 +44,6 @@ export class WidgetView {
 
   ngOnInit() {
     this.issuesRenderer.initialize();
-    this.issuesRenderer.options.setState(this.widget.options);
     this.issuesRenderer.issueGroups
         .pipe(filter(issueGroups => !!issueGroups), takeUntil(this.destroyed))
         .subscribe(issueGroups => {
@@ -51,6 +51,12 @@ export class WidgetView {
           issueGroups.forEach(issueGroup => this.issues.push(...issueGroup.issues));
           this.cd.markForCheck();
         });
+  }
+
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    if (simpleChanges['widget'] && this.widget) {
+      this.issuesRenderer.options.setState(this.widget.options);
+    }
   }
 
   openIssueModal(issue: number) {}

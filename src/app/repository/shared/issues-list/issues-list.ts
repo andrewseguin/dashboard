@@ -1,7 +1,18 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  Output
+} from '@angular/core';
 import {Selection} from 'app/repository/services';
 import {IssueGroup} from 'app/repository/services/issues-renderer/issue-grouping';
-import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer/issue-renderer-options';
+import {
+  IssueRendererOptionsState
+} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
@@ -30,8 +41,6 @@ export class IssuesList {
 
   issueFilterMetadata = IssuesFilterMetadata;
 
-  listLength = 0;
-
   @Input()
   set issuesRendererOptionsState(state: IssueRendererOptionsState) {
     this.issuesRenderer.options.setState(state);
@@ -39,58 +48,47 @@ export class IssuesList {
 
   @Input() printMode: boolean;
 
-  @Output()
-  issuesRendererOptionsChanged = new EventEmitter<IssueRendererOptionsState>();
+  @Output() issuesRendererOptionsChanged = new EventEmitter<IssueRendererOptionsState>();
 
   constructor(
-      public issuesRenderer: IssuesRenderer, public cd: ChangeDetectorRef,
-      public ngZone: NgZone, public selection: Selection,
-      public elementRef: ElementRef) {}
+      public issuesRenderer: IssuesRenderer, public cd: ChangeDetectorRef, public ngZone: NgZone,
+      public selection: Selection, public elementRef: ElementRef) {}
 
   ngOnInit() {
     this.issuesRenderer.initialize();
     const options = this.issuesRenderer.options;
-    options.changed.pipe(debounceTime(100), takeUntil(this.destroyed))
-        .subscribe(() => {
-          this.issuesRendererOptionsChanged.next(options.getState());
-          this.elementRef.nativeElement.scrollTop = 0;
-        });
+    options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
+      this.issuesRendererOptionsChanged.next(options.getState());
+      this.elementRef.nativeElement.scrollTop = 0;
+    });
 
     // After 200ms of scrolling, add 50 more issues if near bottom of screen
-    this.elementScrolled.pipe(auditTime(200), takeUntil(this.destroyed))
-        .subscribe(() => {
-          const el = this.elementRef.nativeElement;
-          const viewHeight = el.getBoundingClientRect().height;
-          const scrollTop = el.scrollTop;
-          const scrollHeight = el.scrollHeight;
+    this.elementScrolled.pipe(auditTime(200), takeUntil(this.destroyed)).subscribe(() => {
+      const el = this.elementRef.nativeElement;
+      const viewHeight = el.getBoundingClientRect().height;
+      const scrollTop = el.scrollTop;
+      const scrollHeight = el.scrollHeight;
 
-          const distanceFromBottom = scrollHeight - scrollTop - viewHeight;
-          if (distanceFromBottom < 1000 && scrollTop > 200) {
-            this.issuesToDisplay += 40;
-            this.render();
-            this.ngZone.run(() => this.cd.markForCheck());
-          } else if (scrollTop < 200) {
-            if (this.issuesToDisplay != 20) {
-              this.issuesToDisplay = 20;
-              this.render();
-              this.ngZone.run(() => this.cd.markForCheck());
-            }
-          }
-        });
+      const distanceFromBottom = scrollHeight - scrollTop - viewHeight;
+      if (distanceFromBottom < 1000 && scrollTop > 200) {
+        this.issuesToDisplay += 40;
+        this.render();
+        this.ngZone.run(() => this.cd.markForCheck());
+      } else if (scrollTop < 200) {
+        if (this.issuesToDisplay != 20) {
+          this.issuesToDisplay = 20;
+          this.render();
+          this.ngZone.run(() => this.cd.markForCheck());
+        }
+      }
+    });
 
     // When issue groups change, render the first ten, then debounce and
     // render more
-    this.issuesRenderer.issueGroups.pipe(takeUntil(this.destroyed))
-        .subscribe(issueGroups => {
-          this.issueGroups = issueGroups;
-
-          this.listLength = 0;
-          if (issueGroups) {
-            issueGroups.forEach(g => this.listLength += g.issues.length);
-          }
-
-          this.render();
-        });
+    this.issuesRenderer.issueGroups.pipe(takeUntil(this.destroyed)).subscribe(issueGroups => {
+      this.issueGroups = issueGroups;
+      this.render();
+    });
   }
 
   ngOnDestroy() {
@@ -135,8 +133,7 @@ export class IssuesList {
     const difference = actualLength - renderLength;
 
     if (difference > threshold) {
-      renderGroup.issues =
-          actualGroup.issues.slice(0, renderLength + threshold);
+      renderGroup.issues = actualGroup.issues.slice(0, renderLength + threshold);
     } else {
       renderGroup.issues = actualGroup.issues.slice();
       this.renderNextGroup();
@@ -149,8 +146,7 @@ export class IssuesList {
       return;
     }
 
-    const nextRenderedIssueGroup =
-        this.issueGroups[this.renderedIssueGroups.length];
+    const nextRenderedIssueGroup = this.issueGroups[this.renderedIssueGroups.length];
     this.renderedIssueGroups.push({...nextRenderedIssueGroup, issues: []});
   }
 
@@ -159,7 +155,6 @@ export class IssuesList {
   }
 
   selectGroup(index: number) {
-    this.selection.issues.select(
-        ...this.issueGroups[index].issues.map(r => r.number));
+    this.selection.issues.select(...this.issueGroups[index].issues.map(r => r.number));
   }
 }

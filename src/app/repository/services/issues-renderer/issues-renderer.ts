@@ -22,6 +22,9 @@ export class IssuesRenderer {
   // Starts as null as a signal that no issues have been processed.
   issueGroups = new BehaviorSubject<IssueGroup[]|null>(null);
 
+  // Number of issues in the issue groups.
+  issueCount = new BehaviorSubject<number|null>(null);
+
   private initSubscription: Subscription;
 
   constructor(private repoDao: RepoDao, private issuesRecommendations: IssueRecommendations) {}
@@ -73,6 +76,7 @@ export class IssuesRenderer {
               });
 
               this.issueGroups.next(issueGroups);
+              this.issueCount.next(filteredAndSearchedIssues.length);
             });
   }
 }

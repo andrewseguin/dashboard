@@ -109,7 +109,7 @@ export class DashboardPage {
 
     this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {
       if (result) {
-        column[index] = {...result};
+        column.widgets[index] = {...result};
         this.save();
       }
     });
@@ -122,5 +122,6 @@ export class DashboardPage {
 
   private save() {
     this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+    this.cd.markForCheck();
   }
 }

@@ -1,6 +1,6 @@
 <div class="buttons">
   <div class="length">
-    {{listLength}} issues
+    {{issuesRenderer.issueCount | async}} issues
   </div>
   <button mat-button [mat-menu-trigger-for]="rootMenu">
     <div class="options-menu-trigger"> Display Options </div>
