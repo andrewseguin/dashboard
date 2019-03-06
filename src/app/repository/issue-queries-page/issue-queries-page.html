@@ -26,7 +26,9 @@
         <div class="issue-query theme-hover" mat-ripple
              (click)="navigateToIssueQuery(issueQuery.id)">
           <div class="name"> {{issueQuery.name}}
-            ({{(issueQueryResultsCount | async)?.get(issueQuery.id) || '...'}})
+            <ng-container *ngIf="issueQueryResultsCount | async; let countMap">
+              ({{countMap.get(issueQuery.id)}})
+            </ng-container>
           </div>
 
           <issue-query-menu [issueQuery]="issueQuery" icon="more_vert"

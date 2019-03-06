@@ -1,7 +1,8 @@
 <ng-container *ngIf="dashboard">
   <ng-container *ngFor="let columnGroup of dashboard.columnGroups">
     <div class="column-group">
-      <div *ngFor="let column of columnGroup.columns" class="column theme-border">
+      <div *ngFor="let column of columnGroup.columns"
+           class="column theme-border">
         <div *ngFor="let widget of column.widgets" class="widget theme-border">
           Im a widget
         </div>

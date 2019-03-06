@@ -1,0 +1,20 @@
+<h1 mat-dialog-title> Edit Widget </h1>
+
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field class="name">
+      <mat-label> Name </mat-label>
+      <input matInput formControlName="name">
+    </mat-form-field>
+
+    <advanced-search [search]="search" [filters]="filters" [metadata]="metadata"
+                     (searchChanged)="search = $event"
+                     (filtersChanged)="filters = $event">
+    </advanced-search>
+  </form>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close> Cancel </button>
+  <button mat-raised-button (click)="edit()"> Edit </button>
+</div>

@@ -1,12 +1,14 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
-import {filter, takeUntil} from 'rxjs/operators';
+import {filter, take, takeUntil} from 'rxjs/operators';
 
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {Column, ColumnGroup, Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
+import {EditWidget} from '../shared/dialog/edit-widget/edit-widget';
 
 
 @Component({
@@ -33,7 +35,7 @@ export class DashboardPage {
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
       private dashboardsDao: DashboardsDao, private activatedRepository: ActivatedRepository,
-      private header: Header, private cd: ChangeDetectorRef) {
+      private header: Header, private cd: ChangeDetectorRef, private dialog: MatDialog) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
 
@@ -74,8 +76,19 @@ export class DashboardPage {
     this.dashboardsDao.update(this.dashboard.id, this.dashboard);
   }
 
-  addWidget(column: Column, index: number) {
-    column.widgets.push({id: 'blah'});
-    this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+  addWidget(column: Column) {
+    const config = {
+      width: '650px',
+      data: {
+        name: 'New Widget',
+      }
+    };
+
+    this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe(result => {
+      if (result) {
+        column.widgets.push({id: 'blah'});
+        this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+      }
+    });
   }
 }
