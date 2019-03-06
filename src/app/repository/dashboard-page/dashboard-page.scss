@@ -12,9 +12,24 @@
   flex-direction: column;
   flex: 1;
   margin: 16px;
+  border-width: 1px;
+  border-style: solid;
+
+  :host:not(.edit-mode) & {
+    border-width: 0;
+  }
 }
 
 mat-slide-toggle {
   margin-right: 16px;
   font-size: 16px;
+}
+
+.column-group .mat-button {
+  height: 64px;
+  margin: 8px;
+}
+
+.column-group > .mat-button {
+  align-self: center;
 }

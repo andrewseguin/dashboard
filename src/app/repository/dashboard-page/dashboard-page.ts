@@ -23,7 +23,8 @@ import {EditWidget, EditWidgetData} from '../shared/dialog/edit-widget/edit-widg
   selector: 'dashboard-page',
   styleUrls: ['dashboard-page.scss'],
   templateUrl: 'dashboard-page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {'[class.edit-mode]': 'edit.value'}
 })
 export class DashboardPage {
   set dashboard(dashboard: Dashboard) {

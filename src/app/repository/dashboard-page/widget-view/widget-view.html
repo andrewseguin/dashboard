@@ -8,8 +8,10 @@
 </div>
 
 <ng-container *ngIf="issues; else loading">
-  <ng-container *ngFor="let issue of issues.slice(0, listLengthLimit); trackBy: trackByNumber; let last = last">
-    <issue-summary [issue]="issue" (select)="openIssueModal($event)"></issue-summary>
+  <ng-container
+                *ngFor="let issue of issues.slice(0, listLengthLimit); trackBy: trackByNumber; let last = last">
+    <issue-summary [issue]="issue" (select)="openIssueModal($event)">
+    </issue-summary>
     <mat-divider *ngIf="!last"></mat-divider>
   </ng-container>
 </ng-container>
@@ -19,7 +21,7 @@
 </ng-template>
 
 
-<mat-menu #settings="matMenu" class="recommendations-menu">
+<mat-menu #settings="matMenu">
   <button mat-menu-item (click)="edit.emit()"> Edit </button>
   <button mat-menu-item (click)="remove.emit()"> Remove </button>
 </mat-menu>

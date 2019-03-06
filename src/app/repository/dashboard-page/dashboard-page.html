@@ -1,13 +1,20 @@
 <ng-container *ngIf="dashboard">
-  <ng-container *ngFor="let columnGroup of dashboard.columnGroups">
+  <ng-container
+                *ngFor="let columnGroup of dashboard.columnGroups; let last = last">
     <div class="column-group">
-      <div *ngFor="let column of columnGroup.columns" class="column theme-border">
+      <div *ngFor="let column of columnGroup.columns" class="column"
+           [class.theme-border]="edit.value">
+        <button mat-button *ngIf="edit.value"
+                (click)="removeColumn(columnGroup)">
+          <mat-icon> delete </mat-icon> Remove Column
+        </button>
         <widget-view *ngFor="let widget of column.widgets; let index = index"
                      [widget]="widget" (edit)="editWidget(column, index)"
                      [editMode]="edit.value"
                      (remove)="removeWidget(column, index)">
         </widget-view>
-        <button mat-button *ngIf="edit.value" (click)="addWidget(column)">
+        <button mat-button *ngIf="edit.value" (click)="addWidget(column)"
+                class="add-widget">
           <mat-icon> add </mat-icon> Widget
         </button>
       </div>
@@ -15,14 +22,21 @@
         <mat-icon> add </mat-icon>
       </button>
     </div>
-    <mat-divider></mat-divider>
+    <mat-divider *ngIf="!last"></mat-divider>
   </ng-container>
-  <button mat-button *ngIf="edit.valueChanges | async" (click)="addColumnGroup()">
+  <button mat-button *ngIf="edit.valueChanges | async"
+          (click)="addColumnGroup()">
     <mat-icon> add </mat-icon> Column Group
   </button>
 </ng-container>
 
 <ng-template cdkPortal>
-  <mat-slide-toggle class="theme-secondary-text" [formControl]="edit"> Edit
-  </mat-slide-toggle>
+  <button mat-icon-button [matMenuTriggerFor]="settings" class="settings">
+    <mat-icon> settings </mat-icon>
+  </button>
 </ng-template>
+
+<mat-menu #settings="matMenu">
+  <button mat-menu-item (click)="edit.setValue(!edit.value)"> Toggle Edit Mode
+  </button>
+</mat-menu>

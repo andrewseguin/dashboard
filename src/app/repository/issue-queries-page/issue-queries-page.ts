@@ -29,7 +29,7 @@ export class IssueQueriesPage {
       combineLatest(
           this.repoDao.repo, this.issueQueryGroups, this.issueRecommendations.recommendations)
           .pipe(
-              filter(result => !!result[0] && !!result[1] && !!result[2]), delay(200),
+              filter(result => !!result[0] && !!result[1] && !!result[2]), delay(1000),
               map(result => {
                 const repo = result[0] as Repo;
                 const groups = result[1] as IssueQueryGroup[];
