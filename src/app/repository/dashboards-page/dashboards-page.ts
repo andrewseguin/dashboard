@@ -17,11 +17,8 @@ export class DashboardsPage {
       public dashboardsDao: DashboardsDao, private router: Router,
       private activatedRepository: ActivatedRepository) {}
 
-  newDashboard() {
-    this.dashboardsDao.add({name: 'New Dashboard', columnGroups: [{columns: [{widgets: []}]}]})
-        .then(id => {
-          this.router.navigate([`${this.activatedRepository.repository.value}/dashboard/${id}`]);
-        });
+  createDashboard() {
+    this.router.navigate([`${this.activatedRepository.repository.value}/dashboard/new`]);
   }
 
   navigateToDashboard(id: string) {

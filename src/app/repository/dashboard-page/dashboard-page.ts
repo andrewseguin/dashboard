@@ -68,6 +68,18 @@ export class DashboardPage {
         this.getSubscription.unsubscribe();
       }
 
+      if (id === 'new') {
+        const newDashboard:
+            Dashboard = {name: 'New Dashboard', columnGroups: [{columns: [{widgets: []}]}]};
+        this.dashboard = newDashboard;
+        this.dashboardsDao.add(newDashboard).then(id => {
+          this.router.navigate(
+              [`${this.activatedRepository.repository.value}/dashboard/${id}`],
+              {replaceUrl: true, queryParamsHandling: 'merge'});
+        });
+        return;
+      }
+
       // Delay added to improve page responsiveness on first load
       this.getSubscription =
           this.dashboardsDao.map.pipe(delay(0), takeUntil(this.destroyed), filter(map => !!map))
