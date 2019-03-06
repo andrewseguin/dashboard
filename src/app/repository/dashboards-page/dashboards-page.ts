@@ -5,6 +5,7 @@ import {ActivatedRepository} from '../services/activated-repository';
 import {Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
 
 @Component({
+  selector: 'dashboards-page',
   styleUrls: ['dashboards-page.scss'],
   templateUrl: 'dashboards-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -17,9 +18,12 @@ export class DashboardsPage {
       private activatedRepository: ActivatedRepository) {}
 
   newDashboard() {
-    this.dashboardsDao.add({name: 'New Dashboard', columnGroups: [{columns: []}]}).then(id => {
-      this.router.navigate([`${this.activatedRepository.repository.value}/dashboard/${id}`]);
-    });
+    this.dashboardsDao.add({name: 'New Dashboard', columnGroups: [{columns: [{widgets: []}]}]})
+        .then(id => {
+          this.router.navigate(
+              [`${this.activatedRepository.repository.value}/dashboard/${id}`],
+              {queryParams: {edit: true}});
+        });
   }
 
   navigateToDashboard(id: string) {

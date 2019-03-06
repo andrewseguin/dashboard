@@ -25,6 +25,8 @@ import {filter, takeUntil} from 'rxjs/operators';
 export class WidgetView {
   @Input() widget: Widget;
 
+  @Input() editMode: boolean;
+
   @Output() edit = new EventEmitter<void>();
 
   @Output() remove = new EventEmitter<void>();

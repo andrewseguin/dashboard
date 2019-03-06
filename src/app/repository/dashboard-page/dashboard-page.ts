@@ -1,5 +1,6 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {FormControl} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
@@ -19,6 +20,7 @@ import {EditWidget, EditWidgetData} from '../shared/dialog/edit-widget/edit-widg
 
 
 @Component({
+  selector: 'dashboard-page',
   styleUrls: ['dashboard-page.scss'],
   templateUrl: 'dashboard-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -33,6 +35,8 @@ export class DashboardPage {
   }
   private _dashboard: Dashboard;
 
+  edit = new FormControl();
+
   private destroyed = new Subject();
 
   private getSubscription: Subscription;
@@ -43,6 +47,10 @@ export class DashboardPage {
       private router: Router, private activatedRoute: ActivatedRoute,
       private dashboardsDao: DashboardsDao, private activatedRepository: ActivatedRepository,
       private header: Header, private cd: ChangeDetectorRef, private dialog: MatDialog) {
+    this.edit.setValue(this.activatedRoute.snapshot.queryParamMap.get('edit'));
+
+    this.edit.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.cd.markForCheck());
+
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
 

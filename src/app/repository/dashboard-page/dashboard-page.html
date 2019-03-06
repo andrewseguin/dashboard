@@ -4,19 +4,25 @@
       <div *ngFor="let column of columnGroup.columns" class="column theme-border">
         <widget-view *ngFor="let widget of column.widgets; let index = index"
                      [widget]="widget" (edit)="editWidget(column, index)"
+                     [editMode]="edit.value"
                      (remove)="removeWidget(column, index)">
         </widget-view>
-        <button mat-button (click)="addWidget(column)">
+        <button mat-button *ngIf="edit.value" (click)="addWidget(column)">
           <mat-icon> add </mat-icon> Widget
         </button>
       </div>
-      <button mat-button (click)="addColumn(columnGroup)">
+      <button mat-button *ngIf="edit.value" (click)="addColumn(columnGroup)">
         <mat-icon> add </mat-icon>
       </button>
     </div>
     <mat-divider></mat-divider>
   </ng-container>
-  <button mat-button (click)="addColumnGroup()">
+  <button mat-button *ngIf="edit.valueChanges | async" (click)="addColumnGroup()">
     <mat-icon> add </mat-icon> Column Group
   </button>
 </ng-container>
+
+<ng-template cdkPortal>
+  <mat-slide-toggle class="theme-secondary-text" [formControl]="edit"> Edit
+  </mat-slide-toggle>
+</ng-template>

@@ -2,7 +2,7 @@
   <div class="title">
     {{widget.title}}
   </div>
-  <button mat-icon-button [matMenuTriggerFor]="settings">
+  <button mat-icon-button *ngIf="editMode" [matMenuTriggerFor]="settings">
     <mat-icon> settings </mat-icon>
   </button>
 </div>
