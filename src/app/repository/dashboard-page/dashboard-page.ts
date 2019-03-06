@@ -6,7 +6,7 @@ import {filter, takeUntil} from 'rxjs/operators';
 
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
-import {Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
+import {Column, ColumnGroup, Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
 
 
 @Component({
@@ -62,5 +62,20 @@ export class DashboardPage {
     this.header.toolbarOutlet.next(null);
     this.destroyed.next();
     this.destroyed.complete();
+  }
+
+  addColumnGroup() {
+    this.dashboard.columnGroups.push({columns: []});
+    this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+  }
+
+  addColumn(columnGroup: ColumnGroup) {
+    columnGroup.columns.push({widgets: []});
+    this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+  }
+
+  addWidget(column: Column, index: number) {
+    column.widgets.push({id: 'blah'});
+    this.dashboardsDao.update(this.dashboard.id, this.dashboard);
   }
 }

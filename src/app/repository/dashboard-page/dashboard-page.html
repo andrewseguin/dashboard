@@ -1,1 +1,21 @@
-I'm a dashboard page!!!!
+<ng-container *ngIf="dashboard">
+  <ng-container *ngFor="let columnGroup of dashboard.columnGroups">
+    <div class="column-group">
+      <div *ngFor="let column of columnGroup.columns" class="column theme-border">
+        <div *ngFor="let widget of column.widgets" class="widget theme-border">
+          Im a widget
+        </div>
+        <button mat-button (click)="addWidget(column)">
+          <mat-icon> add </mat-icon> Widget
+        </button>
+      </div>
+      <button mat-button (click)="addColumn(columnGroup)">
+        <mat-icon> add </mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+  </ng-container>
+  <button mat-button (click)="addColumnGroup()">
+    <mat-icon> add </mat-icon> Column Group
+  </button>
+</ng-container>

@@ -1,5 +1,6 @@
-<div *ngFor="let dashboard of dashboardsDao.list | async">
+<button mat-button *ngFor="let dashboard of dashboardsDao.list | async; trackBy: trackById"
+        (click)="navigateToDashboard(dashboard.id)">
   {{dashboard.name}}
-</div>
+</button>
 
 <button (click)="newDashboard()"> New Dashboard </button>

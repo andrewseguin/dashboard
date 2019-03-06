@@ -4,9 +4,24 @@ import {Config} from 'app/service/config';
 import {ActivatedRepository} from '../activated-repository';
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
+export interface IssueQueryWidget {
+  id: string;
+}
+
+export type Widget = IssueQueryWidget;
+
+export interface Column {
+  widgets: Widget[];
+}
+
+export interface ColumnGroup {
+  columns: Column[];
+}
+
 export interface Dashboard {
   id?: string;
   name?: string;
+  columnGroups?: ColumnGroup[];
   dateCreated?: string;
   dateModified?: string;
 }
