@@ -18,16 +18,13 @@
       <button mat-menu-item (click)="remove.emit()"> Remove </button>
     </mat-menu>
   </div>
-
-  <div class="dashboard new" (click)="navigateToDashboard(dashboard.id)">
-    <button mat-stroked-button (click)="newDashboard()" color="primary"
-            class="new">
-      <mat-icon>add</mat-icon>
-    </button>
-  </div>
-
 </ng-container>
 
 <ng-template #loading>
   <loading label="dashboards"></loading>
 </ng-template>
+
+<button mat-fab (click)="createDashboard()" matTooltip="New dashboard"
+        [matTooltipPosition]="'before'">
+  <mat-icon>add</mat-icon>
+</button>

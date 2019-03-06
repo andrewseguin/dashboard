@@ -40,3 +40,11 @@
 loading {
   width: 100%;
 }
+
+button[mat-fab] {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin: 32px;
+  z-index: 1;
+}
