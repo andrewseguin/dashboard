@@ -5,7 +5,7 @@ import {FormControl} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
-import {filter, take, takeUntil} from 'rxjs/operators';
+import {delay, filter, take, takeUntil} from 'rxjs/operators';
 
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
@@ -68,8 +68,9 @@ export class DashboardPage {
         this.getSubscription.unsubscribe();
       }
 
+      // Delay added to improve page responsiveness on first load
       this.getSubscription =
-          this.dashboardsDao.map.pipe(takeUntil(this.destroyed), filter(map => !!map))
+          this.dashboardsDao.map.pipe(delay(0), takeUntil(this.destroyed), filter(map => !!map))
               .subscribe(map => {
                 if (map.get(id)) {
                   this.dashboard = map.get(id);

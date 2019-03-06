@@ -1,4 +1,4 @@
-<ng-container *ngIf="dashboard">
+<ng-container *ngIf="dashboard; else loading">
   <!-- Column Group-->
   <div
        *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index">
@@ -66,3 +66,7 @@
   <button mat-menu-item (click)="edit.setValue(!edit.value)"> Toggle Edit Mode
   </button>
 </mat-menu>
+
+<ng-template #loading>
+  <loading label="dashboard"></loading>
+</ng-template>

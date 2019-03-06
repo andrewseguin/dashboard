@@ -3,12 +3,24 @@
        class="dashboard theme-border theme-background-card theme-hover"
        *ngFor="let dashboard of dashboards; trackBy: trackById"
        (click)="navigateToDashboard(dashboard.id)">
-    {{dashboard.name}}
-    <button mat-button (click)="dashboardsDao.remove(dashboard.id)"> Delete
-    </button>
+
+    <div class="heading">
+      <div class="name">{{dashboard.name}}</div>
+
+      <button mat-icon-button>
+        <mat-icon>settings</mat-icon>
+      </button>
+    </div>
+
+    <mat-menu #settings="matMenu">
+      <button mat-menu-item (click)="edit.emit()"> Edit Name </button>
+      <button mat-menu-item (click)="edit.emit()"> Edit Description </button>
+      <button mat-menu-item (click)="remove.emit()"> Remove </button>
+    </mat-menu>
   </div>
 
-  <button mat-stroked-button (click)="newDashboard()" color="primary" class="new">
+  <button mat-stroked-button (click)="newDashboard()" color="primary"
+          class="new">
     <mat-icon>add</mat-icon>
   </button>
 </ng-container>

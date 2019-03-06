@@ -17,3 +17,13 @@
   align-self: center;
   margin: 56px;
 }
+
+.heading {
+  display: flex;
+    justify-content: space-between;
+}
+
+.name {
+  align-self: center;
+  font-size: 18px;
+}
