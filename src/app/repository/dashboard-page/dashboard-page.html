@@ -57,6 +57,9 @@
 </ng-container>
 
 <ng-template cdkPortal>
+  <button mat-raised-button color="primary" class="view" *ngIf="edit.value"
+          (click)="edit.setValue(false)">
+    View </button>
   <button mat-icon-button [matMenuTriggerFor]="settings" class="settings">
     <mat-icon> settings </mat-icon>
   </button>

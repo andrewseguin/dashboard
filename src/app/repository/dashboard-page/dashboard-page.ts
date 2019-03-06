@@ -103,7 +103,11 @@ export class DashboardPage {
   }
 
   addWidget(column: Column) {
-    const widget: Widget = {title: 'New Widget', options: new IssueRendererOptions().getState()};
+    const widget: Widget = {
+      title: 'New Widget',
+      options: new IssueRendererOptions().getState(),
+      type: 'issues-list'
+    };
     const config: MatDialogConfig<EditWidgetData> = {width: '650px', data: {widget}};
 
     this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {

@@ -1,8 +1,12 @@
 :host {
   display: flex;
+  height: 100%;
+  width: 100%;
 }
 
 .dashboard {
+  display: flex;
+  flex-direction: column;
   width: 350px;
   height: 150px;
   padding: 16px;
@@ -10,12 +14,17 @@
   border-width: 1px;
   border-style: solid;
   cursor: pointer;
-}
 
-.new {
-  height: 56px;
-  align-self: center;
-  margin: 56px;
+  &.new {
+    align-items: center;
+    justify-content: center;
+    border: none;
+
+    button {
+      height: 100%;
+      width: 100%;
+    }
+  }
 }
 
 .heading {
@@ -26,4 +35,8 @@
 .name {
   align-self: center;
   font-size: 18px;
+}
+
+loading {
+  width: 100%;
 }

@@ -1,13 +1,13 @@
 <ng-container *ngIf="dashboardsDao.list | async; let dashboards; else loading">
-  <div mat-ripple
-       class="dashboard theme-border theme-background-card theme-hover"
+  <div class="dashboard theme-border theme-background-card theme-hover"
        *ngFor="let dashboard of dashboards; trackBy: trackById"
        (click)="navigateToDashboard(dashboard.id)">
 
     <div class="heading">
       <div class="name">{{dashboard.name}}</div>
 
-      <button mat-icon-button>
+      <button mat-icon-button (click)="$event.stopPropagation()"
+              [matMenuTriggerFor]="settings">
         <mat-icon>settings</mat-icon>
       </button>
     </div>
@@ -19,10 +19,13 @@
     </mat-menu>
   </div>
 
-  <button mat-stroked-button (click)="newDashboard()" color="primary"
-          class="new">
-    <mat-icon>add</mat-icon>
-  </button>
+  <div class="dashboard new" (click)="navigateToDashboard(dashboard.id)">
+    <button mat-stroked-button (click)="newDashboard()" color="primary"
+            class="new">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
 </ng-container>
 
 <ng-template #loading>

@@ -48,6 +48,10 @@ widget-view + widget-view {
   min-height: 120px;
 }
 
+.view {
+  margin-right: 16px;
+}
+
 /** Drag and drop styles **/
 .cdk-drag-preview {
   box-sizing: border-box;
