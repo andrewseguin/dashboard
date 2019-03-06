@@ -1,10 +1,11 @@
 <ng-container *ngIf="dashboard">
   <ng-container *ngFor="let columnGroup of dashboard.columnGroups">
     <div class="column-group">
-      <div *ngFor="let column of columnGroup.columns"
-           class="column theme-border">
-        <widget *ngFor="let widget of column.widgets" [widget]="widget">
-        </widget>
+      <div *ngFor="let column of columnGroup.columns" class="column theme-border">
+        <widget-view *ngFor="let widget of column.widgets; let index = index"
+                     [widget]="widget" (edit)="editWidget(column, index)"
+                     (remove)="removeWidget(column, index)">
+        </widget-view>
         <button mat-button (click)="addWidget(column)">
           <mat-icon> add </mat-icon> Widget
         </button>

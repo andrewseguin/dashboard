@@ -1,4 +1,4 @@
-<div class="issue theme-hover" [class.theme-background-hover]="active | async">
+<div class="issue theme-hover" mat-ripple [class.theme-background-hover]="active">
   <div class="info">
     <div class="top-row theme-text">
       <div class="name">
@@ -13,8 +13,7 @@
         Assignee: {{issue.reporter}}
       </div>
 
-      <div class="section theme-warn"
-           *ngIf="(issueRecommendations.recommendations | async)?.get(issue.number); let recommendations">
+      <div class="section theme-warn" *ngIf="(issueRecommendations.recommendations | async)?.get(issue.number); let recommendations">
         <div *ngFor="let r of recommendations">
           {{r.message}}
         </div>
@@ -22,8 +21,7 @@
     </div>
   </div>
 
-  <div class="active"
-       [style.visibility]="(active | async) ? 'visible' : 'hidden' ">
+  <div class="active" [style.visibility]="active ? 'visible' : 'hidden' ">
     <mat-icon> keyboard_arrow_right </mat-icon>
   </div>
 </div>

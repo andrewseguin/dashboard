@@ -4,6 +4,9 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from 'app/material.module';
 
 import {AdvancedSearchModule} from '../../advanced-search/advanced-search.module';
+import {
+  DisplayOptionsHeaderModule
+} from '../../issues-list/display-options-header/display-options-header.module';
 
 import {EditWidget} from './edit-widget';
 
@@ -13,6 +16,7 @@ import {EditWidget} from './edit-widget';
     MaterialModule,
     ReactiveFormsModule,
     AdvancedSearchModule,
+    DisplayOptionsHeaderModule,
   ],
   declarations: [EditWidget],
   exports: [EditWidget],

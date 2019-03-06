@@ -4,6 +4,6 @@
 
 <ng-container *ngFor="let issue of issues; trackBy:trackByIssueNumber">
   <mat-divider></mat-divider>
-  <issue-summary [issue]="issue" [id]="issue.number">
-  </issue-summary>
+  <issue-summary [issue]="issue" [active]="(activeIssue | async) === issue.number"
+                 (select)="navigateToIssue($event)"></issue-summary>
 </ng-container>

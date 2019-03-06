@@ -8,7 +8,7 @@ import {IssueRendererOptionsState} from '../issues-renderer/issue-renderer-optio
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
 export interface IssueQueryWidget {
-  name: string;
+  title: string;
   options: IssueRendererOptionsState;
 }
 

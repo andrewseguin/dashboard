@@ -1,0 +1,24 @@
+
+:host {
+  display: flex;
+  flex-direction: column;
+  border-width: 1px;
+  border-style: solid;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px;
+  align-items: center;
+}
+
+.title {
+  font-size: 20px;
+}
+
+loading {
+  padding: 32px 0;
+}

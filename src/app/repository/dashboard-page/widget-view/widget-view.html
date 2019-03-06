@@ -1,0 +1,25 @@
+<div class="header">
+  <div class="title">
+    {{widget.title}}
+  </div>
+  <button mat-icon-button [matMenuTriggerFor]="settings">
+    <mat-icon> settings </mat-icon>
+  </button>
+</div>
+
+<ng-container *ngIf="issues; else loading">
+  <ng-container *ngFor="let issue of issues.slice(0, listLengthLimit); trackBy: trackByNumber; let last = last">
+    <issue-summary [issue]="issue" (select)="openIssueModal($event)"></issue-summary>
+    <mat-divider *ngIf="!last"></mat-divider>
+  </ng-container>
+</ng-container>
+
+<ng-template #loading>
+  <loading></loading>
+</ng-template>
+
+
+<mat-menu #settings="matMenu" class="recommendations-menu">
+  <button mat-menu-item (click)="edit.emit()"> Edit </button>
+  <button mat-menu-item (click)="remove.emit()"> Remove </button>
+</mat-menu>

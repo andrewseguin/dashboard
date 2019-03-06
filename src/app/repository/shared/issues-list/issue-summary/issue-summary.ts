@@ -1,5 +1,12 @@
 import {query} from '@angular/animations';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  Output
+} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
@@ -12,20 +19,22 @@ import {map, takeUntil} from 'rxjs/operators';
   templateUrl: 'issue-summary.html',
   styleUrls: ['issue-summary.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'(click)': 'selectIssue()'}
+  host: {'(click)': 'select.emit(this.issue.number)'}
 })
 export class IssueSummary {
   private destroyed = new Subject();
 
   @Input() issue: Issue;
 
-  active = this.activatedRoute.queryParamMap.pipe(
-      map(queryParamMap => +queryParamMap.get('issue') === this.issue.number));
+  @Input() active: boolean;
 
-  constructor(
-      private activatedRoute: ActivatedRoute, public issueRecommendations: IssueRecommendations,
-      private cd: ChangeDetectorRef, public issuesRenderer: IssuesRenderer,
-      private router: Router) {
+  @Output()
+  select = new EventEmitter<number>()
+
+      constructor(
+          private activatedRoute: ActivatedRoute, public issueRecommendations: IssueRecommendations,
+          private cd: ChangeDetectorRef, public issuesRenderer: IssuesRenderer,
+          private router: Router) {
     this.issuesRenderer.options.changed.pipe(takeUntil(this.destroyed))
         .subscribe(() => this.cd.markForCheck());
   }
@@ -35,13 +44,5 @@ export class IssueSummary {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
-  }
-
-  selectIssue() {
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute.parent,
-      queryParams: {issue: this.issue.number},
-      queryParamsHandling: 'merge',
-    });
   }
 }

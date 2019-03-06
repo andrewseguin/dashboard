@@ -1,14 +1,21 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
-import {MatDialog} from '@angular/material';
+import {MatDialog, MatDialogConfig} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
 import {filter, take, takeUntil} from 'rxjs/operators';
 
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
-import {Column, ColumnGroup, Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
-import {EditWidget, EditWidgetResult} from '../shared/dialog/edit-widget/edit-widget';
+import {
+  Column,
+  ColumnGroup,
+  Dashboard,
+  DashboardsDao,
+  Widget
+} from '../services/dao/dashboards-dao';
+import {IssueRendererOptions} from '../services/issues-renderer/issue-renderer-options';
+import {EditWidget, EditWidgetData} from '../shared/dialog/edit-widget/edit-widget';
 
 
 @Component({
@@ -68,30 +75,44 @@ export class DashboardPage {
 
   addColumnGroup() {
     this.dashboard.columnGroups.push({columns: [{widgets: []}]});
-    this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+    this.save();
   }
 
   addColumn(columnGroup: ColumnGroup) {
     columnGroup.columns.push({widgets: []});
-    this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+    this.save();
   }
 
   addWidget(column: Column) {
-    const config = {
-      width: '650px',
-      data: {
-        name: 'New Widget',
-      }
-    };
+    const widget: Widget = {title: 'New Widget', options: new IssueRendererOptions().getState()};
+    const config: MatDialogConfig<EditWidgetData> = {width: '650px', data: {widget}};
 
-    this.dialog.open(EditWidget, config)
-        .afterClosed()
-        .pipe(take(1))
-        .subscribe((result: EditWidgetResult) => {
-          if (result) {
-            column.widgets.push(result);
-            this.dashboardsDao.update(this.dashboard.id, this.dashboard);
-          }
-        });
+    this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {
+      if (result) {
+        column.widgets.push(result);
+        this.save();
+      }
+    });
+  }
+
+  editWidget(column: Column, index: number) {
+    const config:
+        MatDialogConfig<EditWidgetData> = {width: '650px', data: {widget: column.widgets[index]}};
+
+    this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {
+      if (result) {
+        column[index] = {...result};
+        this.save();
+      }
+    });
+  }
+
+  removeWidget(column: Column, index: number) {
+    column.widgets.splice(index, 1);
+    this.save();
+  }
+
+  private save() {
+    this.dashboardsDao.update(this.dashboard.id, this.dashboard);
   }
 }

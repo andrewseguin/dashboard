@@ -27,7 +27,9 @@ export class IssuesRenderer {
   constructor(private repoDao: RepoDao, private issuesRecommendations: IssueRecommendations) {}
 
   ngOnDestroy() {
-    this.initSubscription.unsubscribe();
+    if (this.initSubscription) {
+      this.initSubscription.unsubscribe();
+    }
   }
 
   initialize() {
