@@ -1,11 +1,15 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Config} from 'app/service/config';
+
 import {ActivatedRepository} from '../activated-repository';
+import {IssueRendererOptionsState} from '../issues-renderer/issue-renderer-options';
+
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
 export interface IssueQueryWidget {
-  id: string;
+  name: string;
+  options: IssueRendererOptionsState;
 }
 
 export type Widget = IssueQueryWidget;

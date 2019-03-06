@@ -3,9 +3,8 @@
     <div class="column-group">
       <div *ngFor="let column of columnGroup.columns"
            class="column theme-border">
-        <div *ngFor="let widget of column.widgets" class="widget theme-border">
-          Im a widget
-        </div>
+        <widget *ngFor="let widget of column.widgets" [widget]="widget">
+        </widget>
         <button mat-button (click)="addWidget(column)">
           <mat-icon> add </mat-icon> Widget
         </button>

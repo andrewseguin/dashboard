@@ -1,6 +1,10 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {
+  IssueRendererOptions,
+  IssueRendererOptionsState
+} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {Filter} from 'app/repository/utility/search/filter';
 import {Observable, Subject} from 'rxjs';
@@ -10,7 +14,10 @@ export interface EditWidgetData {
   warning?: Observable<string>;
 }
 
-export interface EditWidgetResult {}
+export interface EditWidgetResult {
+  name: string;
+  options: IssueRendererOptionsState;
+}
 
 @Component({
   templateUrl: 'edit-widget.html',
@@ -59,6 +66,8 @@ export class EditWidget {
   }
 
   edit() {
-    this.dialogRef.close({name: 'New widget'});
+    const result:
+        EditWidgetResult = {name: 'New widget', options: new IssueRendererOptions().getState()};
+    this.dialogRef.close(result);
   }
 }

@@ -1,6 +1,9 @@
-<button mat-button *ngFor="let dashboard of dashboardsDao.list | async; trackBy: trackById"
-        (click)="navigateToDashboard(dashboard.id)">
+<div mat-ripple class="dashboard theme-border theme-background-card"
+     *ngFor="let dashboard of dashboardsDao.list | async; trackBy: trackById"
+     (click)="navigateToDashboard(dashboard.id)">
   {{dashboard.name}}
-</button>
+  <button mat-button (click)="dashboardsDao.remove(dashboard.id)"> Delete
+  </button>
+</div>
 
 <button (click)="newDashboard()"> New Dashboard </button>

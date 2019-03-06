@@ -7,6 +7,7 @@ import {EditWidgetModule} from '../shared/dialog/edit-widget/edit-widget.module'
 import {LoadingModule} from '../shared/loading/loading.module';
 
 import {DashboardPage} from './dashboard-page';
+import { WidgetModule } from './widget/widget.module';
 
 
 const routes: Routes = [{
@@ -20,7 +21,7 @@ export class DashboardPageRoutingModule {
 
 @NgModule({
   imports:
-      [CommonModule, MaterialModule, LoadingModule, EditWidgetModule, DashboardPageRoutingModule],
+      [CommonModule, MaterialModule, LoadingModule, EditWidgetModule, WidgetModule, DashboardPageRoutingModule],
   declarations: [DashboardPage],
   exports: [DashboardPage],
 })

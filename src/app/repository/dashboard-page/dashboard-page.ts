@@ -8,7 +8,7 @@ import {filter, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {Column, ColumnGroup, Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
-import {EditWidget} from '../shared/dialog/edit-widget/edit-widget';
+import {EditWidget, EditWidgetResult} from '../shared/dialog/edit-widget/edit-widget';
 
 
 @Component({
@@ -67,7 +67,7 @@ export class DashboardPage {
   }
 
   addColumnGroup() {
-    this.dashboard.columnGroups.push({columns: []});
+    this.dashboard.columnGroups.push({columns: [{widgets: []}]});
     this.dashboardsDao.update(this.dashboard.id, this.dashboard);
   }
 
@@ -84,11 +84,14 @@ export class DashboardPage {
       }
     };
 
-    this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe(result => {
-      if (result) {
-        column.widgets.push({id: 'blah'});
-        this.dashboardsDao.update(this.dashboard.id, this.dashboard);
-      }
-    });
+    this.dialog.open(EditWidget, config)
+        .afterClosed()
+        .pipe(take(1))
+        .subscribe((result: EditWidgetResult) => {
+          if (result) {
+            column.widgets.push(result);
+            this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+          }
+        });
   }
 }
