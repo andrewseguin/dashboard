@@ -1,9 +1,18 @@
-<div mat-ripple class="dashboard theme-border theme-background-card"
-     *ngFor="let dashboard of dashboardsDao.list | async; trackBy: trackById"
-     (click)="navigateToDashboard(dashboard.id)">
-  {{dashboard.name}}
-  <button mat-button (click)="dashboardsDao.remove(dashboard.id)"> Delete
-  </button>
-</div>
+<ng-container *ngIf="dashboardsDao.list | async; let dashboards; else loading">
+  <div mat-ripple
+       class="dashboard theme-border theme-background-card theme-hover"
+       *ngFor="let dashboard of dashboards; trackBy: trackById"
+       (click)="navigateToDashboard(dashboard.id)">
+    {{dashboard.name}}
+    <button mat-button (click)="dashboardsDao.remove(dashboard.id)"> Delete
+    </button>
+  </div>
 
-<button (click)="newDashboard()"> New Dashboard </button>
+  <button mat-stroked-button (click)="newDashboard()" color="primary" class="new">
+    <mat-icon>add</mat-icon>
+  </button>
+</ng-container>
+
+<ng-template #loading>
+  <loading label="dashboards"></loading>
+</ng-template>

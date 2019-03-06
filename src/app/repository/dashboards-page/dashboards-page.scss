@@ -1,7 +1,19 @@
+:host {
+  display: flex;
+}
+
 .dashboard {
-  width: 150px;
+  width: 350px;
   height: 150px;
-  display: inline-block;
   padding: 16px;
   margin: 16px;
+  border-width: 1px;
+  border-style: solid;
+  cursor: pointer;
+}
+
+.new {
+  height: 56px;
+  align-self: center;
+  margin: 56px;
 }

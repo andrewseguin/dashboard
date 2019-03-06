@@ -20,9 +20,7 @@ export class DashboardsPage {
   newDashboard() {
     this.dashboardsDao.add({name: 'New Dashboard', columnGroups: [{columns: [{widgets: []}]}]})
         .then(id => {
-          this.router.navigate(
-              [`${this.activatedRepository.repository.value}/dashboard/${id}`],
-              {queryParams: {edit: true}});
+          this.router.navigate([`${this.activatedRepository.repository.value}/dashboard/${id}`]);
         });
   }
 

@@ -1,3 +1,4 @@
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
@@ -30,6 +31,16 @@ export class DashboardPage {
   set dashboard(dashboard: Dashboard) {
     this._dashboard = dashboard;
     this.header.title.next(this.dashboard.name);
+
+    const hasWidgets = this.dashboard.columnGroups.some(columnGroup => {
+      return columnGroup.columns.some(column => {
+        return column.widgets.some(widget => true);
+      });
+    });
+
+    if (!hasWidgets) {
+      this.edit.setValue(true);
+    }
   }
   get dashboard(): Dashboard {
     return this._dashboard;
@@ -48,8 +59,6 @@ export class DashboardPage {
       private router: Router, private activatedRoute: ActivatedRoute,
       private dashboardsDao: DashboardsDao, private activatedRepository: ActivatedRepository,
       private header: Header, private cd: ChangeDetectorRef, private dialog: MatDialog) {
-    this.edit.setValue(this.activatedRoute.snapshot.queryParamMap.get('edit'));
-
     this.edit.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.cd.markForCheck());
 
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
@@ -116,6 +125,16 @@ export class DashboardPage {
     });
   }
 
+  removeColumnGroup(index: number) {
+    this.dashboard.columnGroups.splice(index, 1);
+    this.save();
+  }
+
+  removeColumn(columnGroup: ColumnGroup, index: number) {
+    columnGroup.columns.splice(index, 1);
+    this.save();
+  }
+
   removeWidget(column: Column, index: number) {
     column.widgets.splice(index, 1);
     this.save();
@@ -124,5 +143,16 @@ export class DashboardPage {
   private save() {
     this.dashboardsDao.update(this.dashboard.id, this.dashboard);
     this.cd.markForCheck();
+  }
+
+  dropWidget(event: CdkDragDrop<Widget[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(
+          event.previousContainer.data, event.container.data, event.previousIndex,
+          event.currentIndex);
+    }
+    this.save();
   }
 }

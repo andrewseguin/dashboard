@@ -1,4 +1,4 @@
-<div class="header">
+<div class="widget-header theme-text">
   <div class="title">
     {{widget.title}}
   </div>
@@ -10,7 +10,8 @@
 <ng-container *ngIf="issues; else loading">
   <ng-container
                 *ngFor="let issue of issues.slice(0, listLengthLimit); trackBy: trackByNumber; let last = last">
-    <issue-summary [issue]="issue" (select)="openIssueModal($event)">
+    <issue-summary [issue]="issue" (select)="openIssueModal($event)"
+                   [style.pointer-events]="editMode ? 'none' : ''">
     </issue-summary>
     <mat-divider *ngIf="!last"></mat-divider>
   </ng-container>

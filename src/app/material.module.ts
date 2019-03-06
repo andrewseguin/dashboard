@@ -1,8 +1,11 @@
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {PortalModule} from '@angular/cdk/portal';
 import {NgModule} from '@angular/core';
-
 import {
-  MatAutocompleteModule, MatBadgeModule,
+  MatAutocompleteModule,
+  MatBadgeModule,
   MatButtonModule,
+  MatButtonToggleModule,
   MatCardModule,
   MatCheckboxModule,
   MatChipsModule,
@@ -24,16 +27,16 @@ import {
   MatSlideToggleModule,
   MatSnackBarModule,
   MatSortModule,
-  MatTableModule, MatTabsModule,
+  MatTableModule,
+  MatTabsModule,
   MatToolbarModule,
-  MatTooltipModule,
-  MatButtonToggleModule
+  MatTooltipModule
 } from '@angular/material';
-import {PortalModule} from '@angular/cdk/portal';
 
 @NgModule({
   imports: [],
   exports: [
+    DragDropModule,
     MatAutocompleteModule,
     MatBadgeModule,
     MatButtonModule,
@@ -67,4 +70,5 @@ import {PortalModule} from '@angular/cdk/portal';
     PortalModule,
   ]
 })
-export class MaterialModule {}
+export class MaterialModule {
+}
