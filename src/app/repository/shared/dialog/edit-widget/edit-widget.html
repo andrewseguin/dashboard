@@ -29,7 +29,7 @@
                    [metadata]="metadata" (searchChanged)="issuesRenderer.options.search = $event"
                    (filtersChanged)="issuesRenderer.options.filters = $event">
   </advanced-search>
-  <display-options-header></display-options-header>
+  <display-options-header [hideGrouping]="true"></display-options-header>
 </div>
 
 <div mat-dialog-actions align="end">

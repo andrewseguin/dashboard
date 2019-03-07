@@ -45,7 +45,7 @@ export class EditWidget {
       type: this.form.value.type,
     };
 
-    if (result.type === 'issues-count') {
+    if (result.type === 'issues-list') {
       result.listLength = this.form.value.listLength;
     }
 

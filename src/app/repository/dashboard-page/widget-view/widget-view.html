@@ -12,7 +12,7 @@
   <ng-container *ngSwitchCase="'issues-list'">
     <ng-container *ngIf="issues; else loading">
       <ng-container
-                    *ngFor="let issue of issues.slice(0, listLengthLimit); trackBy: trackByNumber; let last = last">
+                    *ngFor="let issue of issues.slice(0, widget.listLength); trackBy: trackByNumber; let last = last">
         <issue-summary [issue]="issue" (select)="openIssueModal($event)"
                        [style.pointer-events]="editMode ? 'none' : ''">
         </issue-summary>

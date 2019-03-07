@@ -34,8 +34,6 @@ export class WidgetView {
 
   issues: Issue[];
 
-  listLengthLimit = 3;
-
   trackByNumber = (_i, issue: Issue) => issue.number;
 
   private destroyed = new Subject();

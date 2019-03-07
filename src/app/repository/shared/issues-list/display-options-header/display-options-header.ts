@@ -31,6 +31,8 @@ export class DisplayOptionsHeader {
   ]);
   viewKeys = Array.from(this.views.keys());
 
+  @Input() hideGrouping: boolean;
+
   private destroyed = new Subject();
 
   constructor(public issuesRenderer: IssuesRenderer, private cd: ChangeDetectorRef) {
