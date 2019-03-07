@@ -37,7 +37,7 @@ export class Markdown {
     return this.repoDao.getIssue(issueId).pipe(map(issue => this.render(issue.body)));
   }
 
-  private render(text: string): SafeHtml {
+  render(text: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(this.md.render(text));
   }
 

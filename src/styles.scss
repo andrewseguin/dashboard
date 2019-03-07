@@ -22,6 +22,22 @@ body {
   }
 }
 
+/** Markdown **/
+.markdown {
+  img {
+    max-width: 100%;
+  }
+
+  pre {
+    border-radius: 3px;
+    font-size: 85%;
+    line-height: 1.45;
+    overflow: auto;
+    padding: 16px;
+  }
+}
+
+
 /* Material Styles */
 /* Rules for sizing the icon. */
 .material-icons.md-14 { font-size: 14px; height: 14px; width: 14px; }

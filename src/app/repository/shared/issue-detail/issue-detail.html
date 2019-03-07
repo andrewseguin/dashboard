@@ -17,15 +17,26 @@
     </div>
   </div>
 
-  <label-list *ngIf="issue.labels.length" [labelIds]="issue.labels" class="issue-labels"></label-list>
+  <label-list *ngIf="issue.labels.length" [labelIds]="issue.labels"
+              class="issue-labels"></label-list>
 
   <ng-container *ngFor="let recommendation of recommendations | async">
     <mat-divider></mat-divider>
 
-    <recommendation-action [recommendation]="recommendation" [issue]="issue"></recommendation-action>
+    <recommendation-action [recommendation]="recommendation" [issue]="issue">
+    </recommendation-action>
   </ng-container>
 
   <mat-divider class="last-divider"></mat-divider>
 
-  <div class="body theme-border theme-background-card" [innerHTML]="bodyMarkdown | async"></div>
+  <div class="body theme-border theme-background-card markdown"
+       [innerHTML]="bodyMarkdown | async"></div>
+
+  <ng-container *ngIf="comments | async; let comments">
+    <mat-divider *ngIf="comments.length"></mat-divider>
+    <div class="comments-title"> Comments ({{comments.length}}) </div>
+    <comment-view *ngFor="let comment of comments" [comment]="comment">
+    </comment-view>
+  </ng-container>
+
 </ng-container>

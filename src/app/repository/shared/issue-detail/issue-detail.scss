@@ -30,16 +30,7 @@
   max-width: 100%;
 }
 
-.body::ng-deep {
-  img {
-    max-width: 100%;
-  }
-
-  pre {
-    border-radius: 3px;
-    font-size: 85%;
-    line-height: 1.45;
-    overflow: auto;
-    padding: 16px;
-  }
+.comments-title {
+  margin: 32px 16px 0;
+  font-size: 24px;
 }

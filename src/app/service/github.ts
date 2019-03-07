@@ -21,14 +21,11 @@ export class Github {
       query += ` updated:>${since}`;
     }
     const url = this.constructUrl('search/issues', query);
-    return this.query(url).pipe(
-      map(result => (result.body as any).total_count));
+    return this.query(url).pipe(map(result => (result.body as any).total_count));
   }
 
-  getIssues(repo: string, since?: string):
-    Observable<CombinedPagedResults<Issue>> {
-    const query = since ? `per_page=100&state=all&since=${since}` :
-      'per_page=100&state=all';
+  getIssues(repo: string, since?: string): Observable<CombinedPagedResults<Issue>> {
+    const query = since ? `per_page=100&state=all&since=${since}` : 'per_page=100&state=all';
     const url = this.constructUrl(`repos/${repo}/issues`, query);
     return this.getPagedResults<GithubIssue, Issue>(url, githubIssueToIssue);
   }
@@ -41,6 +38,11 @@ export class Github {
   getGists(): Observable<CombinedPagedResults<Gist>> {
     const url = this.constructUrl(`gists`, `per_page=100`);
     return this.getPagedResults<Gist, Gist>(url, g => g);
+  }
+
+  getTimeline(repo: string, id: number): Observable<CombinedPagedResults<GithubTimelineEvent>> {
+    const url = this.constructUrl(`repos/${repo}/issues/${id}/events`, 'per_page=100');
+    return this.getPagedResults<GithubTimelineEvent, GithubTimelineEvent>(url, g => g);
   }
 
   getGist(id: string): Observable<Gist> {
@@ -60,6 +62,11 @@ export class Github {
     }));
   }
 
+  getComments(repo: string, id: number): Observable<CombinedPagedResults<UserComment>> {
+    const url = this.constructUrl(`repos/${repo}/issues/${id}/comments`, 'per_page=100');
+    return this.getPagedResults<GithubComment, UserComment>(url, githubCommentToUserComment);
+  }
+
   editGist(id: string, filename: string, content: string) {
     filename = filename.replace('/', '_');
 
@@ -72,7 +79,7 @@ export class Github {
   getContributors(repo: string): Observable<CombinedPagedResults<Contributor>> {
     const url = this.constructUrl(`repos/${repo}/contributors`, `per_page=100`);
     return this.getPagedResults<GithubContributor, Contributor>(
-      url, githubContributorToContributor);
+        url, githubContributorToContributor);
   }
 
   createGist(): Observable<Gist> {
@@ -87,27 +94,26 @@ export class Github {
   }
 
   private getPagedResults<T, R>(url: string, transform: (values: T) => R):
-    Observable<CombinedPagedResults<R>> {
+      Observable<CombinedPagedResults<R>> {
     let completed = 0;
     let total = 0;
     let current = [];
 
     return this.get<T>(url).pipe(
-      expand(result => result.next ? this.get(result.next) : empty()),
-      map(result => {
-        completed++;
-        const transformedResponse = result.response.map(transform);
-        current = current.concat(transformedResponse);
+        expand(result => result.next ? this.get(result.next) : empty()), map(result => {
+          completed++;
+          const transformedResponse = result.response.map(transform);
+          current = current.concat(transformedResponse);
 
-        // Determine this on the first pass but not subsequent ones. The
-        // last page will have result.numPages equal to 1 since it is
-        // missing.
-        if (!total) {
-          total = result.numPages;
-        }
+          // Determine this on the first pass but not subsequent ones. The
+          // last page will have result.numPages equal to 1 since it is
+          // missing.
+          if (!total) {
+            total = result.numPages;
+          }
 
-        return {completed, total, current};
-      }));
+          return {completed, total, current};
+        }));
   }
 
   private constructUrl(path: string, query = '') {
@@ -149,8 +155,7 @@ export class Github {
     });
   }
 
-  get<T>(url: string):
-    Observable<{response: T[], next: string | null, numPages: number}> {
+  get<T>(url: string): Observable<{response: T[], next: string|null, numPages: number}> {
     return this.query<T[]>(url).pipe(map(result => {
       const response = result.body;
       const linkMap = getLinkMap(result.headers);
@@ -260,6 +265,57 @@ export interface GithubContributor {
   contributions: number;
 }
 
+export interface GithubComment {
+  id: number;
+  node_id: string;
+  url: string;
+  html_url: string;
+  body: string;
+  user: User;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GithubActor {
+  login: string;
+  id: number;
+  node_id: string;
+  avatar_url: string;
+  gravatar_id: string;
+  url: string;
+  html_url: string;
+  followers_url: string;
+  following_url: string;
+  gists_url: string;
+  starred_url: string;
+  subscriptions_url: string;
+  organizations_url: string;
+  repos_url: string;
+  events_url: string;
+  received_events_url: string;
+  type: string;
+  site_admin: boolean;
+}
+
+export interface GithubTimelineEvent {
+  id: number;
+  node_id: string;
+  url: string;
+  actor: GithubActor;
+  event: string;
+  commit_id: string;
+  commit_url: string;
+  created_at: string;
+}
+
+
+export interface UserComment {
+  message: string;
+  user: string;
+  created: string;
+  updated: string;
+}
+
 export interface Issue {
   assignees: string[];
   body: string;
@@ -323,14 +379,18 @@ function githubLabelToLabel(o: GithubLabel): Label {
   };
 }
 
+function githubCommentToUserComment(o: GithubComment): UserComment {
+  return {
+    message: o.body,
+    user: o.user.login,
+    created: o.created_at,
+    updated: o.updated_at,
+  };
+}
+
 
 function githubContributorToContributor(o: GithubContributor): Contributor {
-  return {
-    login: o.login,
-    id: o.id,
-    avatar_url: o.avatar_url,
-    contributions: o.contributions
-  };
+  return {login: o.login, id: o.id, avatar_url: o.avatar_url, contributions: o.contributions};
 }
 
 function getTextColor(color: string) {

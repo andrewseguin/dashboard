@@ -1,0 +1,8 @@
+<div class="heading">
+  {{comment.user}} commented {{comment.created | timeAgo}} -
+  {{comment.created | date:'medium'}}
+</div>
+
+<div class="message theme-border theme-background-card markdown"
+     [innerHTML]="messageMarkdown">
+</div>

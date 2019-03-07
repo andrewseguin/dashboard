@@ -6,11 +6,12 @@ import {MaterialModule} from 'app/material.module';
 import {LabelListModule} from '../label-list/label-list.module';
 import {RecommendationActionModule} from '../recommendation-action/recommendation-action.module';
 
+import {CommentViewModule} from './comment-view/comment-view.module';
 import {IssueDetail} from './issue-detail';
 
 @NgModule({
   imports: [
-    CommonModule, MaterialModule, TimeAgoPipeModule, LabelListModule,
+    CommonModule, MaterialModule, TimeAgoPipeModule, LabelListModule, CommentViewModule,
     RecommendationActionModule
   ],
   declarations: [IssueDetail],
