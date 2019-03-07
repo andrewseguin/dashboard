@@ -1,0 +1,33 @@
+<span>{{timelineEvent.actor}}</span>
+
+&nbsp;
+
+<span [ngSwitch]="timelineEvent.type">
+  <ng-container *ngSwitchCase="'closed'">
+    closed this issue
+  </ng-container>
+  <ng-container *ngSwitchCase="'labeled'">
+    added <label-list [labelIds]="timelineEvent.labels"></label-list>
+  </ng-container>
+  <ng-container *ngSwitchCase="'assigned'">
+    <ng-container
+                  *ngIf="timelineEvent.actor === timelineEvent.assignees[0]; else differentAssignee">
+      self-assigned this issue
+    </ng-container>
+    <ng-template #differentAssignee>
+      assigned this issue to {{timelineEvent.assignees.join(', ')}}
+    </ng-template>
+    <label-list [labelIds]="timelineEvent.labels"></label-list>
+  </ng-container>
+  <ng-container *ngSwitchCase="'renamed'">
+    renamed the issue from "{{timelineEvent.rename.from}}" to
+    "{{timelineEvent.rename.to}}"
+  </ng-container>
+  <ng-container *ngSwitchDefault>
+    Unknown type: {{timelineEvent | json}}
+  </ng-container>
+</span>
+
+&nbsp;
+
+<span>{{timelineEvent.created | timeAgo}}</span>

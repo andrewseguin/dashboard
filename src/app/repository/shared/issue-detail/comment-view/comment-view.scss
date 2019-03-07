@@ -1,13 +1,18 @@
+:host {
+  display: block;
+  margin: 16px 0;
+}
+
 .message {
   padding: 16px;
   border-width: 1px;
   border-style: solid;
-  margin: 16px 0;
 }
 
 .heading {
-  font-size: 14px;
-  margin: 16px;
-  font-weight: bold;
-  padding-top: 32px;
+  font-size: 18px;
+  padding: 16px;
+  border-style: solid;
+  border-width: 1px;
+  border-bottom: none;
 }

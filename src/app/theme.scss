@@ -26,6 +26,7 @@
   .theme-background-app-bar { background: mat-color($background, app-bar); }
   .theme-background-card { background: mat-color($background, card); }
   .theme-background-hover { background: mat-color($background, hover); }
+  .theme-background-positive { background: map-get($theme, positive); }
   .theme-hover:hover { background: mat-color($background, hover); }
 
   .theme-primary { color: mat-color($primary); }
@@ -44,9 +45,7 @@
 
   // Add any additional light-theme keys here.
   $theme: map-merge($theme, (
-    positive: green,
-    row-hover: #f5f5f5,
-    editable-cell-hover: #efefef,
+    positive: #66fb66,
   ));
 
   @include themed-styles($theme);
@@ -61,9 +60,7 @@
 
   // Add any additional dark-theme keys here.
   $theme: map-merge($theme, (
-    positive: #00ce00,
-    row-hover: #505050,
-    editable-cell-hover: #5f5f5f,
+    positive: #048604,
   ));
 
   @include themed-styles($theme);

@@ -17,7 +17,7 @@
 .body {
   border-style: solid;
   border-width: 1px;
-  margin: 16px 0;
+  margin: 32px 0 64px;
   padding: 16px;
 }
 
@@ -30,7 +30,19 @@
   max-width: 100%;
 }
 
-.comments-title {
-  margin: 32px 16px 0;
-  font-size: 24px;
+.state {
+  margin-left: 8px;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 4px 8px;
+}
+
+.activities {
+  display: flex;
+  flex-direction: column;
+}
+
+.activities mat-divider {
+  margin-bottom: 16px;
 }

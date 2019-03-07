@@ -24,7 +24,7 @@ import {filter, map} from 'rxjs/operators';
 export interface Activity {
   type: 'comment'|'timeline';
   date: string;
-  context: UserComment|GithubTimelineEvent;
+  context: UserComment|TimelineEvent;
 }
 @Component({
   selector: 'issue-detail',
@@ -39,7 +39,7 @@ export class IssueDetail {
 
   comments: Observable<any[]>;
 
-  activity: Observable<Activity[]>;
+  activities: Observable<Activity[]>;
 
   @Input() issueId: number;
 
@@ -61,7 +61,7 @@ export class IssueDetail {
         this.github.getTimeline(this.activatedRepository.repository.value, this.issueId)
       ];
 
-      this.activity =
+      this.activities =
           combineLatest(...activityRequests)
               .pipe(
                   filter(result => {
@@ -74,14 +74,22 @@ export class IssueDetail {
                   }),
                   map(result => {
                     const comments = result[0].current as UserComment[];
-                    const timeline = result[1].current as GithubTimelineEvent[];
 
-                    const activity: Activity[] = [];
+                    const filteredTimelineEvents =
+                        new Set(['mentioned', 'subscribed', 'referenced']);
+                    const timelineEvents =
+                        (result[1].current as TimelineEvent[])
+                            .filter(
+                                timelineEvent => !filteredTimelineEvents.has(timelineEvent.type));
+
+                    const activities: Activity[] = [];
                     comments.forEach(
-                        c => activity.push({type: 'comment', date: c.created, context: c}));
-                    timeline.forEach(
-                        e => activity.push({type: 'timeline', date: e.created_at, context: e}));
-                    return activity;
+                        c => activities.push({type: 'comment', date: c.created, context: c}));
+                    timelineEvents.forEach(
+                        e => activities.push({type: 'timeline', date: e.created, context: e}));
+                    activities.sort((a, b) => a.date < b.date ? -1 : 1);
+
+                    return activities;
                   }));
     }
   }

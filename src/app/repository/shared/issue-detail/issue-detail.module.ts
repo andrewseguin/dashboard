@@ -8,11 +8,12 @@ import {RecommendationActionModule} from '../recommendation-action/recommendatio
 
 import {CommentViewModule} from './comment-view/comment-view.module';
 import {IssueDetail} from './issue-detail';
+import {TimelineEventViewModule} from './timeline-event-view/timeline-event-view.module';
 
 @NgModule({
   imports: [
     CommonModule, MaterialModule, TimeAgoPipeModule, LabelListModule, CommentViewModule,
-    RecommendationActionModule
+    RecommendationActionModule, TimelineEventViewModule
   ],
   declarations: [IssueDetail],
   exports: [IssueDetail],

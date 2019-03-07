@@ -14,38 +14,40 @@
       <ng-container *ngIf="issue.created != issue.updated">
         - issue was last updated {{issue.updated | timeAgo}}
       </ng-container>
+      <span class="state theme-border"
+            [class.theme-background-warn]="issue.state === 'closed'"
+            [class.theme-background-positive]="issue.state === 'open'">
+        {{issue.state}} </span>
     </div>
   </div>
 
   <label-list *ngIf="issue.labels.length" [labelIds]="issue.labels"
               class="issue-labels"></label-list>
 
-  <ng-container *ngFor="let recommendation of recommendations | async">
+  <ng-container
+                *ngFor="let recommendation of recommendations | async; let last = last">
     <mat-divider></mat-divider>
 
     <recommendation-action [recommendation]="recommendation" [issue]="issue">
     </recommendation-action>
-  </ng-container>
 
-  <mat-divider class="last-divider"></mat-divider>
+    <mat-divider *ngIf="last"></mat-divider>
+  </ng-container>
 
   <div class="body theme-border theme-background-card markdown"
        [innerHTML]="bodyMarkdown | async"></div>
 
-  <ng-container *ngIf="activity | async; let activities">
-    <ng-container *ngIf="activities.length">
-      <mat-divider *ngIf="activities.length"></mat-divider>
-      <div class="comments-title"> Activity </div>
-    </ng-container>
+  <div *ngIf="activities | async; let activities" class="activities">
+    <mat-divider *ngIf="activities.length"></mat-divider>
 
     <ng-container *ngFor="let a of activities" [ngSwitch]="a.type">
       <comment-view *ngSwitchCase="'comment'" [comment]="a.context">
       </comment-view>
-      <div *ngSwitchCase="'timeline'">
-        {{a.context | json}}
-      </div>
+      <timeline-event-view *ngSwitchCase="'timeline'"
+                           [timelineEvent]="a.context">
+      </timeline-event-view>
     </ng-container>
 
-  </ng-container>
+  </div>
 
 </ng-container>

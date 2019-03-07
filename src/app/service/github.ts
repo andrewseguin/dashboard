@@ -307,11 +307,13 @@ export interface GithubTimelineEvent {
   commit_id: string;
   commit_url: string;
   created_at: string;
+  label: {name: string, color: string};
   labels: {name: string, color: string}[];
   lock_reason: string;
-  assignees: string[];
+  assignee: User;
+  assignees: User[];
 
-  assigner: any;
+  assigner: User;
   dismissed_review: any;
   milestone: {title: string};
   rename: {from: string, to: string};
@@ -421,9 +423,9 @@ function githubTimelineEventtoTimelineEvent(o: GithubTimelineEvent): TimelineEve
     actor: o.actor.login,
     type: o.event,
     created: o.created_at,
-    labels: o.labels ? o.labels.map(l => l.name) : null,
+    labels: o.label ? [o.label.name] : o.labels ? o.labels.map(l => l.name) : [],
     lockReason: o.lock_reason,
-    assignees: o.assignees,
+    assignees: o.assignee ? [o.assignee.login] : o.assignees ? o.assignees.map(a => a.login) : [],
     assigner: o.assigner && o.assigner.login,
     dismissed_review: o.dismissed_review,
     milestone: o.milestone,
