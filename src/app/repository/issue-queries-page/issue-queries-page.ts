@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Repo, RepoDao} from 'app/service/repo-dao';
-import {combineLatest} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 
 import {ActivatedRepository} from '../services/activated-repository';
@@ -23,23 +23,27 @@ interface IssueQueryGroup {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IssueQueriesPage {
-  type: IssueQueryType = this.activatedRoute.snapshot.params.type;
+  type: Observable<IssueQueryType> = this.activatedRoute.params.pipe(map(params => params.type));
 
-  issueQueryGroups = this.issueQueriesDao.list.pipe(
-      filter(list => !!list), map(list => list.filter(item => item.type === this.type)),
-      map(getSortedGroups));
+  issueQueryGroups = combineLatest(this.issueQueriesDao.list, this.type)
+                         .pipe(
+                             filter(result => !!result[0]),
+                             map(result => result[0].filter(item => item.type === result[1])),
+                             map(getSortedGroups));
 
   issueQueryResultsCount =
       combineLatest(
-          this.repoDao.repo, this.issueQueryGroups, this.issueRecommendations.recommendations)
+          this.repoDao.repo, this.issueQueryGroups, this.issueRecommendations.recommendations,
+          this.type)
           .pipe(
               filter(result => !!result[0] && !!result[1] && !!result[2]), delay(1000),
               map(result => {
                 const repo = result[0] as Repo;
                 const groups = result[1] as IssueQueryGroup[];
                 const recommendations = result[2] as Map<number, Recommendation[]>;
-                const items = this.type === 'issue' ? repo.issues :
-                                                      this.type === 'pr' ? repo.pullRequests : [];
+                const type = result[3] as IssueQueryType;
+                const items =
+                    type === 'issue' ? repo.issues : type === 'pr' ? repo.pullRequests : [];
 
                 const map = new Map<string, number>();
                 groups.forEach(group => group.issueQueries.forEach(query => {
@@ -61,10 +65,10 @@ export class IssueQueriesPage {
       public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}
 
-  createIssueQuery() {
+  createIssueQuery(type: IssueQueryType) {
     this.router.navigate(
         [`${this.activatedRepository.repository.value}/issue-query/new`],
-        {queryParams: {type: 'issue'}});
+        {queryParams: {type}});
   }
 
   createIssueQueryFromRecommendation(recommendation: Recommendation) {

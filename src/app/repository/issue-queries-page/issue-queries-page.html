@@ -1,38 +1,32 @@
-<div class="new-buttons" [class.menu-open]="recommendationsMenu.menuOpen">
-  <button mat-fab color="primary" class="secondary"
-          #recommendationsMenu="matMenuTrigger"
-          [matMenuTriggerFor]="recommendations"
-          matTooltip="New issue query from recommendation"
+<div class="new-buttons" [class.menu-open]="recommendationsMenu.menuOpen" *ngIf="type | async; let type">
+  <button mat-fab color="primary" class="secondary" #recommendationsMenu="matMenuTrigger"
+          [matMenuTriggerFor]="recommendations" matTooltip="New issue query from recommendation"
           [matTooltipPosition]="'before'">
     <mat-icon>add</mat-icon>
   </button>
 
-  <button mat-fab (click)="createIssueQuery()"
-          matTooltip="New blank issue query" [matTooltipPosition]="'before'">
+  <button mat-fab (click)="createIssueQuery(type)" matTooltip="New empty query"
+          [matTooltipPosition]="'before'">
     <mat-icon>add</mat-icon>
   </button>
 </div>
 
-<ng-container
-              *ngIf="issueQueryGroups | async; let issueQueryGroups; else loading">
+<ng-container *ngIf="issueQueryGroups | async; let issueQueryGroups; else loading">
   <div class="group" *ngFor="let issueQuery of issueQueryGroups">
     <div class="group-title">
       {{issueQuery.name}}
     </div>
 
     <div class="issue-queries">
-      <ng-container
-                    *ngFor="let issueQuery of issueQuery.issueQueries; trackBy: issueQueryKeyTrackBy">
-        <div class="issue-query theme-hover" mat-ripple
-             (click)="navigateToIssueQuery(issueQuery.id)">
+      <ng-container *ngFor="let issueQuery of issueQuery.issueQueries; trackBy: issueQueryKeyTrackBy">
+        <div class="issue-query theme-hover" mat-ripple (click)="navigateToIssueQuery(issueQuery.id)">
           <div class="name"> {{issueQuery.name}}
             <ng-container *ngIf="issueQueryResultsCount | async; let countMap">
               ({{countMap.get(issueQuery.id)}})
             </ng-container>
           </div>
 
-          <issue-query-menu [issueQuery]="issueQuery" icon="more_vert"
-                            (click)="$event.stopPropagation()">
+          <issue-query-menu [issueQuery]="issueQuery" icon="more_vert" (click)="$event.stopPropagation()">
           </issue-query-menu>
         </div>
         <mat-divider></mat-divider>
@@ -46,8 +40,7 @@
 </ng-template>
 
 <mat-menu #recommendations="matMenu" class="recommendations-menu">
-  <button mat-menu-item
-          *ngFor="let recommendation of recommendationsDao.list | async"
+  <button mat-menu-item *ngFor="let recommendation of recommendationsDao.list | async"
           (click)="createIssueQueryFromRecommendation(recommendation)">
     {{recommendation.message}}
   </button>

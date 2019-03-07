@@ -6,8 +6,7 @@ import {Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {filter, takeUntil} from 'rxjs/operators';
 
-const SECTIONS = new Map<string, string>(
-    [['issue-queries', 'Issue Queries'], ['config', 'Config'], ['dashboards', 'Dashboards']]);
+const TOP_LEVEL_SECTIONS = new Set<string>(['issue-queries', 'config', 'dashboards']);
 
 @Injectable()
 export class Header {
@@ -23,9 +22,25 @@ export class Header {
     this.title.pipe(takeUntil(this.destroyed)).subscribe(title => this.windowTitle.setTitle(title));
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntil(this.destroyed))
         .subscribe((e: NavigationEnd) => {
-          const section = e.urlAfterRedirects.split('/')[3];
-          if (SECTIONS.get(section)) {
-            this.title.next(SECTIONS.get(section));
+          const sections = e.urlAfterRedirects.split('/');
+          const section = sections[3];
+          const subSection = sections[4];
+
+          switch (section) {
+            case 'config':
+              this.title.next('Config');
+              break;
+            case 'dashboards':
+              this.title.next('Dashboards');
+              break;
+            case 'issue-queries':
+              this.title.next(
+                  subSection === 'issue' ? 'Issue Queries' :
+                                           subSection === 'pr' ? 'Pull Request Queries' : '');
+              break;
+          }
+
+          if (TOP_LEVEL_SECTIONS.has(section)) {
             this.goBack = null;
           }
         });
