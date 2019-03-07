@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Repo, RepoDao} from 'app/service/repo-dao';
 import {combineLatest} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 
 import {ActivatedRepository} from '../services/activated-repository';
-import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
+import {IssueQueriesDao, IssueQuery, IssueQueryType} from '../services/dao/issue-queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {IssueRecommendations} from '../services/issue-recommendations';
 import {IssueFilterer} from '../services/issues-renderer/issue-filterer';
@@ -23,7 +23,11 @@ interface IssueQueryGroup {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IssueQueriesPage {
-  issueQueryGroups = this.issueQueriesDao.list.pipe(map(getSortedGroups));
+  type: IssueQueryType = this.activatedRoute.snapshot.params.type;
+
+  issueQueryGroups = this.issueQueriesDao.list.pipe(
+      filter(list => !!list), map(list => list.filter(item => item.type === this.type)),
+      map(getSortedGroups));
 
   issueQueryResultsCount =
       combineLatest(
@@ -34,12 +38,14 @@ export class IssueQueriesPage {
                 const repo = result[0] as Repo;
                 const groups = result[1] as IssueQueryGroup[];
                 const recommendations = result[2] as Map<number, Recommendation[]>;
+                const items = this.type === 'issue' ? repo.issues :
+                                                      this.type === 'pr' ? repo.pullRequests : [];
 
                 const map = new Map<string, number>();
                 groups.forEach(group => group.issueQueries.forEach(query => {
                   const filterer = new IssueFilterer(query.options.filters, repo, recommendations);
                   const count =
-                      getIssuesMatchingFilterAndSearch(repo.issues, filterer, query.options.search)
+                      getIssuesMatchingFilterAndSearch(items, filterer, query.options.search)
                           .length;
                   map.set(query.id, count);
                 }));
@@ -51,12 +57,14 @@ export class IssueQueriesPage {
 
   constructor(
       public issueQueriesDao: IssueQueriesDao, public repoDao: RepoDao, private router: Router,
-      private issueRecommendations: IssueRecommendations,
+      private activatedRoute: ActivatedRoute, private issueRecommendations: IssueRecommendations,
       public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}
 
   createIssueQuery() {
-    this.router.navigate([`${this.activatedRepository.repository.value}/issue-query/new`]);
+    this.router.navigate(
+        [`${this.activatedRepository.repository.value}/issue-query/new`],
+        {queryParams: {type: 'issue'}});
   }
 
   createIssueQueryFromRecommendation(recommendation: Recommendation) {
@@ -72,10 +80,6 @@ export class IssueQueriesPage {
 
 
 function getSortedGroups(issueQueries: IssueQuery[]) {
-  if (!issueQueries) {
-    return;
-  }
-
   const groups = new Map<string, IssueQuery[]>();
   issueQueries.forEach(issueQuery => {
     const group = issueQuery.group || 'Other';

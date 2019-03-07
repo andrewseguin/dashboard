@@ -8,7 +8,7 @@ import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {Widget} from '../services/dao/dashboards-dao';
-import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
+import {IssueQueriesDao, IssueQuery, IssueQueryType} from '../services/dao/issue-queries-dao';
 import {RecommendationsDao} from '../services/dao/recommendations-dao';
 import {
   areOptionStatesEqual,
@@ -33,6 +33,8 @@ export class IssueQueryPage {
     this._issueQuery = issueQuery;
     this.currentOptions = this.issueQuery.options;
     this.header.title.next(this.issueQuery.name);
+    this.header.goBack = () => this.router.navigate(
+        [`/${this.activatedRepository.repository.value}/issue-queries/${this.issueQuery.type}`]);
   }
   get issueQuery(): IssueQuery {
     return this._issueQuery;
@@ -77,16 +79,18 @@ export class IssueQueryPage {
       }
 
       if (id === 'new') {
-        const recommendationId = this.activatedRoute.snapshot.queryParamMap.get('recommendationId');
-        const widgetJson = this.activatedRoute.snapshot.queryParamMap.get('widget');
+        const queryParamMap = this.activatedRoute.snapshot.queryParamMap;
+        const recommendationId = queryParamMap.get('recommendationId');
+        const widgetJson = queryParamMap.get('widget');
 
         if (recommendationId) {
           this.createNewIssueQueryFromRecommendation(recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
-          this.issueQuery = createNewIssueQuery(widget.title, widget.options);
+          this.issueQuery = createNewIssueQuery('issue', widget.title, widget.options);
         } else {
-          this.issueQuery = createNewIssueQuery();
+          const type = queryParamMap.get('type') as IssueQueryType;
+          this.issueQuery = createNewIssueQuery(type);
         }
         this.cd.markForCheck();
       } else {
@@ -117,7 +121,7 @@ export class IssueQueryPage {
 
   saveAs() {
     this.issueQueryDialog.saveAsIssueQuery(
-        this.currentOptions, this.activatedRepository.repository.value);
+        this.currentOptions, this.activatedRepository.repository.value, this.issueQuery.type);
   }
 
   save() {
@@ -131,7 +135,7 @@ export class IssueQueryPage {
           const options = new IssueRendererOptions();
           options.filters = r.filters;
           options.search = r.search;
-          this.issueQuery = createNewIssueQuery(r.message, options.getState());
+          this.issueQuery = createNewIssueQuery('issue', r.message, options.getState());
           this.cd.markForCheck();
         }
       });
@@ -140,12 +144,13 @@ export class IssueQueryPage {
 }
 
 function createNewIssueQuery(
-    name = 'New Issue Query', optionsState: IssueRendererOptionsState = null) {
+    type: IssueQueryType, name = 'New Issue Query',
+    optionsState: IssueRendererOptionsState = null): IssueQuery {
   const options = new IssueRendererOptions();
 
   if (optionsState) {
     options.setState(optionsState);
   }
 
-  return {name, options: options.getState()};
+  return {name, type, options: options.getState()};
 }

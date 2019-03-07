@@ -2,12 +2,14 @@ import {DB, openDb} from 'idb';
 import {BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {Contributor, Issue, Label} from './github';
+import {Contributor, Issue, Label, PullRequest} from './github';
 
 export interface Repo {
   empty: boolean;
   issues: Issue[];
   issuesMap: Map<number, Issue>;
+  pullRequests: PullRequest[];
+  pullRequestsMap: Map<number, PullRequest>;
   labels: Label[];
   labelsMap: Map<number, Label>;
   contributors: Contributor[];
@@ -79,14 +81,16 @@ export class RepoDao {
           return Promise.all([
             db.transaction('issues', 'readonly').objectStore('issues').getAll(),
             db.transaction('labels', 'readonly').objectStore('labels').getAll(),
-            db.transaction('contributors', 'readonly')
-                .objectStore('contributors')
-                .getAll()
+            db.transaction('contributors', 'readonly').objectStore('contributors').getAll()
           ]);
         })
         .then(result => {
           const issues = result[0].filter((issue: Issue) => !issue.pr);
           const issuesMap = new Map<number, Issue>();
+          issues.forEach(o => issuesMap.set(o.number, o));
+
+          const pullRequests = result[0].filter((issue: PullRequest) => !!issue.pr);
+          const pullRequestsMap = new Map<number, PullRequest>();
           issues.forEach(o => issuesMap.set(o.number, o));
 
           const labels = result[1];
@@ -101,6 +105,8 @@ export class RepoDao {
           this.repo.next({
             issues,
             issuesMap,
+            pullRequests,
+            pullRequestsMap,
             labels,
             labelsMap,
             contributors,

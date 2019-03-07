@@ -31,7 +31,7 @@ const routes: Routes = [{
       loadChildren: 'app/repository/dashboard-page/dashboard-page.module#DashboardPageModule'
     },
     {
-      path: 'issue-queries',
+      path: 'issue-queries/:type',
       loadChildren:
           'app/repository/issue-queries-page/issue-queries-page.module#IssueQueriesPageModule'
     },
@@ -44,7 +44,7 @@ const routes: Routes = [{
       loadChildren: 'app/repository/config-page/config-page.module#ConfigPageModule'
     },
 
-    {path: '', redirectTo: 'issue-queries', pathMatch: 'full'},
+    {path: '', redirectTo: 'issue-queries/issues', pathMatch: 'full'},
   ]
 }];
 

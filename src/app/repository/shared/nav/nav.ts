@@ -31,7 +31,7 @@ export class Nav {
 
   links: NavLink[] = [
     {route: 'dashboards', label: 'Dashboards', icon: 'dashboard'},
-    {route: 'issue-queries', label: 'Issue Queries', icon: 'find_in_page'},
+    {route: 'issue-queries/issues', label: 'Issue Queries', icon: 'find_in_page'},
     {route: 'config', label: 'Config', icon: 'settings'},
   ];
 

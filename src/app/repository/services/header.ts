@@ -5,7 +5,6 @@ import {NavigationEnd, Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {filter, takeUntil} from 'rxjs/operators';
-import {ActivatedRepository} from './activated-repository';
 
 const SECTIONS = new Map<string, string>(
     [['issue-queries', 'Issue Queries'], ['config', 'Config'], ['dashboards', 'Dashboards']]);
@@ -20,21 +19,14 @@ export class Header {
 
   destroyed = new Subject();
 
-  constructor(
-      private windowTitle: WindowTitle, private router: Router,
-      private activatedRepository: ActivatedRepository) {
+  constructor(private windowTitle: WindowTitle, private router: Router) {
     this.title.pipe(takeUntil(this.destroyed)).subscribe(title => this.windowTitle.setTitle(title));
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntil(this.destroyed))
         .subscribe((e: NavigationEnd) => {
-          this.goBack = null;
           const section = e.urlAfterRedirects.split('/')[3];
-
-          if (section === 'issue-query') {
-            this.onIssueQueryRoute();
-          } else if (section === 'dashboard') {
-            this.onDashboardRoute();
-          } else {
+          if (SECTIONS.get(section)) {
             this.title.next(SECTIONS.get(section));
+            this.goBack = null;
           }
         });
   }
@@ -42,15 +34,5 @@ export class Header {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
-  }
-
-  onIssueQueryRoute() {
-    const repository = this.activatedRepository.repository.value;
-    this.goBack = () => this.router.navigate([`/${repository}/issue-queries`]);
-  }
-
-  onDashboardRoute() {
-    const repository = this.activatedRepository.repository.value;
-    this.goBack = () => this.router.navigate([`/${repository}/dashboards`]);
   }
 }

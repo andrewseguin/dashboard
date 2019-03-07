@@ -357,6 +357,8 @@ export interface Issue {
   url: string;
 }
 
+export interface PullRequest extends Issue {}
+
 export interface Label {
   id: number;
   name: string;

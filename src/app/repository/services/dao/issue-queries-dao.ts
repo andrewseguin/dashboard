@@ -7,9 +7,12 @@ import {IssueRendererOptionsState} from '../issues-renderer/issue-renderer-optio
 
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
+export type IssueQueryType = 'issue'|'pr';
+
 export interface IssueQuery {
   id?: string;
   name?: string;
+  type?: 'issue'|'pr';
   group?: string;
   createdBy?: string;
   modifiedBy?: string;
@@ -21,9 +24,7 @@ export interface IssueQuery {
 
 @Injectable()
 export class IssueQueriesDao extends RepositoryCollectionDao<IssueQuery> {
-  constructor(
-      afAuth: AngularFireAuth, activatedRepository: ActivatedRepository,
-      config: Config) {
+  constructor(afAuth: AngularFireAuth, activatedRepository: ActivatedRepository, config: Config) {
     super(afAuth, activatedRepository, config, 'issue-queries');
   }
 }

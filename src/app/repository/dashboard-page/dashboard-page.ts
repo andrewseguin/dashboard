@@ -41,6 +41,9 @@ export class DashboardPage {
     if (!hasWidgets) {
       this.edit.setValue(true);
     }
+
+    const repository = this.activatedRepository.repository.value;
+    this.header.goBack = () => this.router.navigate([`/${repository}/dashboards`]);
   }
   get dashboard(): Dashboard {
     return this._dashboard;
