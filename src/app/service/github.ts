@@ -40,9 +40,10 @@ export class Github {
     return this.getPagedResults<Gist, Gist>(url, g => g);
   }
 
-  getTimeline(repo: string, id: number): Observable<CombinedPagedResults<GithubTimelineEvent>> {
+  getTimeline(repo: string, id: number): Observable<CombinedPagedResults<TimelineEvent>> {
     const url = this.constructUrl(`repos/${repo}/issues/${id}/events`, 'per_page=100');
-    return this.getPagedResults<GithubTimelineEvent, GithubTimelineEvent>(url, g => g);
+    return this.getPagedResults<GithubTimelineEvent, TimelineEvent>(
+        url, githubTimelineEventtoTimelineEvent);
   }
 
   getGist(id: string): Observable<Gist> {
@@ -306,8 +307,32 @@ export interface GithubTimelineEvent {
   commit_id: string;
   commit_url: string;
   created_at: string;
+  labels: {name: string, color: string}[];
+  lock_reason: string;
+  assignees: string[];
+
+  assigner: any;
+  dismissed_review: any;
+  milestone: {title: string};
+  rename: {from: string, to: string};
+  requested_reviewers: any;
+  review_requester: any;
 }
 
+export interface TimelineEvent {
+  actor: string;
+  type: string;
+  created: string;
+  labels: string[];
+  lockReason: string;
+  assignees: string[];
+  assigner: string;
+  dismissed_review: any;
+  milestone: {title: string};
+  rename: {from: string, to: string};
+  requestedReviewers: any;
+  reviewRequester: any;
+}
 
 export interface UserComment {
   message: string;
@@ -385,6 +410,24 @@ function githubCommentToUserComment(o: GithubComment): UserComment {
     user: o.user.login,
     created: o.created_at,
     updated: o.updated_at,
+  };
+}
+
+
+function githubTimelineEventtoTimelineEvent(o: GithubTimelineEvent): TimelineEvent {
+  return {
+    actor: o.actor.login,
+    type: o.event,
+    created: o.created_at,
+    labels: o.labels ? o.labels.map(l => l.name) : null,
+    lockReason: o.lock_reason,
+    assignees: o.assignees,
+    assigner: o.assigner && o.assigner.login,
+    dismissed_review: o.dismissed_review,
+    milestone: o.milestone,
+    rename: o.rename,
+    requestedReviewers: o.requested_reviewers,
+    reviewRequester: o.review_requester,
   };
 }
 

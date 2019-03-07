@@ -32,11 +32,20 @@
   <div class="body theme-border theme-background-card markdown"
        [innerHTML]="bodyMarkdown | async"></div>
 
-  <ng-container *ngIf="comments | async; let comments">
-    <mat-divider *ngIf="comments.length"></mat-divider>
-    <div class="comments-title"> Comments ({{comments.length}}) </div>
-    <comment-view *ngFor="let comment of comments" [comment]="comment">
-    </comment-view>
+  <ng-container *ngIf="activity | async; let activities">
+    <ng-container *ngIf="activities.length">
+      <mat-divider *ngIf="activities.length"></mat-divider>
+      <div class="comments-title"> Activity </div>
+    </ng-container>
+
+    <ng-container *ngFor="let a of activities" [ngSwitch]="a.type">
+      <comment-view *ngSwitchCase="'comment'" [comment]="a.context">
+      </comment-view>
+      <div *ngSwitchCase="'timeline'">
+        {{a.context | json}}
+      </div>
+    </ng-container>
+
   </ng-container>
 
 </ng-container>
