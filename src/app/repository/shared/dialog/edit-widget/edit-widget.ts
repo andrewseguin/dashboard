@@ -26,7 +26,7 @@ export class EditWidget {
   metadata = IssuesFilterMetadata;
 
   constructor(
-      private dialogRef: MatDialogRef<EditWidget, Widget>, private issuesRenderer: IssuesRenderer,
+      private dialogRef: MatDialogRef<EditWidget, Widget>, public issuesRenderer: IssuesRenderer,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
     this.issuesRenderer.initialize();
@@ -34,6 +34,7 @@ export class EditWidget {
     this.form = new FormGroup({
       title: new FormControl(this.widget.title),
       type: new FormControl(this.widget.type),
+      listLength: new FormControl(this.widget.listLength || 3),
     });
   }
 
@@ -41,8 +42,13 @@ export class EditWidget {
     const result: Widget = {
       title: this.form.value.title,
       options: this.issuesRenderer.options.getState(),
-      type: this.form.value.type
+      type: this.form.value.type,
     };
+
+    if (result.type === 'issues-count') {
+      result.listLength = this.form.value.listLength;
+    }
+
     this.dialogRef.close(result);
   }
 }

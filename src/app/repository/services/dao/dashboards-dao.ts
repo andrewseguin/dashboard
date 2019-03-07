@@ -8,21 +8,22 @@ import {IssueRendererOptionsState} from '../issues-renderer/issue-renderer-optio
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
 export interface BaseWidget {
-  title: string;
-  type: 'issues-list'|'issues-count';
+  title?: string;
+  type?: 'issues-list'|'issues-count';
 }
 
 export interface IssueListWidget extends BaseWidget {
-  options: IssueRendererOptionsState;
+  options?: IssueRendererOptionsState;
+  listLength?: number;
 }
 
 export interface IssueCountWidget extends BaseWidget {
-  options: IssueRendererOptionsState;
-  fontSize: number;
-  colors: {color: 'yellow'|'red'|'green', condition: 'less than'|'greater than'|'equal to'}[];
+  options?: IssueRendererOptionsState;
+  fontSize?: number;
+  colors?: {color: 'yellow'|'red'|'green', condition: 'less than'|'greater than'|'equal to'}[];
 }
 
-export type Widget = IssueListWidget|IssueCountWidget;
+export type Widget = IssueListWidget&IssueCountWidget;
 
 export interface Column {
   widgets: Widget[];

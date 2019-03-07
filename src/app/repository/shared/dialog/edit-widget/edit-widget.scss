@@ -1,3 +1,15 @@
-mat-form-field.title {
-  width: 100%
+form {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.type {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .label {
+    margin-right: 16px;
+  }
 }

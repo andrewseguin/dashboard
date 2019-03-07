@@ -43,7 +43,6 @@ export class WidgetView {
   constructor(public issuesRenderer: IssuesRenderer, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.widget.type = 'issues-count';
     this.issuesRenderer.initialize();
     this.issuesRenderer.issueGroups
         .pipe(filter(issueGroups => !!issueGroups), takeUntil(this.destroyed))

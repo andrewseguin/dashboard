@@ -7,12 +7,29 @@
       <input matInput formControlName="title">
     </mat-form-field>
 
-    <advanced-search [search]="issuesRenderer.options.search" [filters]="issuesRenderer.options.filters"
-                     [metadata]="metadata" (searchChanged)="issuesRenderer.options.search = $event"
-                     (filtersChanged)="issuesRenderer.options.filters = $event">
-    </advanced-search>
-    <display-options-header></display-options-header>
+    <div class="type">
+      <div class="label"> Display Type </div>
+      <mat-button-toggle-group formControlName="type">
+        <mat-button-toggle value="issues-list">Issue list</mat-button-toggle>
+        <mat-button-toggle value="issues-count"> Issue Count</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <ng-container [ngSwitch]="form.value.type">
+      <ng-container *ngSwitchCase="'issues-list'">
+        <mat-form-field class="list-length">
+          <mat-label> Max List Length </mat-label>
+          <input matInput formControlName="listLength">
+        </mat-form-field>
+      </ng-container>
+    </ng-container>
   </form>
+
+  <advanced-search [search]="issuesRenderer.options.search" [filters]="issuesRenderer.options.filters"
+                   [metadata]="metadata" (searchChanged)="issuesRenderer.options.search = $event"
+                   (filtersChanged)="issuesRenderer.options.filters = $event">
+  </advanced-search>
+  <display-options-header></display-options-header>
 </div>
 
 <div mat-dialog-actions align="end">
