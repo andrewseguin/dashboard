@@ -3,19 +3,19 @@ import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
 
 import {IssueDetailDialogModule} from '../../dialog/issue-detail-dialog/issue-detail-dialog.module';
-import {IssueSummaryModule} from '../issue-summary/issue-summary.module';
+import {ItemSummaryModule} from '../item-summary/item-summary.module';
 
-import {IssuesGroup} from './issues-group';
+import {ItemsGroup} from './items-group';
 
 @NgModule({
   imports: [
-    IssueSummaryModule,
+    ItemSummaryModule,
     CommonModule,
     MaterialModule,
     IssueDetailDialogModule,
   ],
-  declarations: [IssuesGroup],
-  exports: [IssuesGroup]
+  declarations: [ItemsGroup],
+  exports: [ItemsGroup]
 })
-export class IssuesGroupModule {
+export class ItemsGroupModule {
 }

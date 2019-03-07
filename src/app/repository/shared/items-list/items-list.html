@@ -9,9 +9,9 @@
   <display-options-header></display-options-header>
 
   <div class="issues-container">
-    <issues-group *ngFor="let issueGroup of renderedIssueGroups; let index = index; trackBy:getIssueGroupKey"
-                  [issues]="issueGroup.issues" [title]="issueGroup.title">
-    </issues-group>
+    <items-group *ngFor="let issueGroup of renderedIssueGroups; let index = index; trackBy:getIssueGroupKey"
+                 [items]="issueGroup.issues" [title]="issueGroup.title">
+    </items-group>
   </div>
 
   <div *ngIf="loadingIssues" class="loading-more">

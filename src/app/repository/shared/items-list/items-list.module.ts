@@ -1,17 +1,19 @@
-import {NgModule} from '@angular/core';
-import {ItemsList} from './items-list';
 import {CommonModule} from '@angular/common';
-import {DisplayOptionsHeaderModule} from './display-options-header/display-options-header.module';
+import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
+
 import {AdvancedSearchModule} from '../advanced-search/advanced-search.module';
 import {LoadingModule} from '../loading/loading.module';
-import {IssuesGroupModule} from './issues-group/issues-group.module';
+
+import {DisplayOptionsHeaderModule} from './display-options-header/display-options-header.module';
+import {ItemsGroupModule} from './items-group/items-group.module';
+import {ItemsList} from './items-list';
 
 @NgModule({
   imports: [
     CommonModule,
     MaterialModule,
-    IssuesGroupModule,
+    ItemsGroupModule,
     DisplayOptionsHeaderModule,
     AdvancedSearchModule,
     LoadingModule,
@@ -19,4 +21,5 @@ import {IssuesGroupModule} from './issues-group/issues-group.module';
   declarations: [ItemsList],
   exports: [ItemsList],
 })
-export class IssuesListModule { }
+export class IssuesListModule {
+}

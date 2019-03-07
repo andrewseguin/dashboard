@@ -4,9 +4,7 @@ import {MaterialModule} from 'app/material.module';
 import {
   IssueDetailDialogModule
 } from 'app/repository/shared/dialog/issue-detail-dialog/issue-detail-dialog.module';
-import {
-  IssueSummaryModule
-} from 'app/repository/shared/items-list/issue-summary/issue-summary.module';
+import {ItemSummaryModule} from 'app/repository/shared/items-list/item-summary/item-summary.module';
 import {LoadingModule} from 'app/repository/shared/loading/loading.module';
 
 import {WidgetView} from './widget-view';
@@ -14,7 +12,7 @@ import {WidgetView} from './widget-view';
 
 @NgModule({
   imports:
-      [CommonModule, MaterialModule, IssueSummaryModule, IssueDetailDialogModule, LoadingModule],
+      [CommonModule, MaterialModule, ItemSummaryModule, IssueDetailDialogModule, LoadingModule],
   declarations: [WidgetView],
   exports: [WidgetView],
 })

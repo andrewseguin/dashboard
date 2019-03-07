@@ -1,29 +1,29 @@
-<div class="issue theme-hover" mat-ripple
+<div class="item theme-hover" mat-ripple
      [class.theme-background-hover]="active">
   <div class="info">
     <div class="top-row theme-text">
       <div class="name">
         <span class="section">
-          {{issue.title}}
+          {{item.title}}
         </span>
       </div>
     </div>
 
     <div class="details theme-secondary-text">
-      <ng-container *ngIf="issuesRenderer.options.view.assignee">
+      <ng-container *ngIf="itemsRenderer.options.view.assignee">
         <div class="section">
-          Assignee: {{issue.reporter}}
+          Assignee: {{item.reporter}}
         </div>
       </ng-container>
 
-      <ng-container *ngIf="issuesRenderer.options.view.labels">
+      <ng-container *ngIf="itemsRenderer.options.view.labels">
         <div class="section">
-          <label-list [labelIds]="issue.labels"></label-list>
+          <label-list [labelIds]="item.labels"></label-list>
         </div>
       </ng-container>
 
       <ng-container
-                    *ngIf="(warnings | async).length && issuesRenderer.options.view.warnings">
+                    *ngIf="(warnings | async).length && itemsRenderer.options.view.warnings">
         <div class="section theme-warn">
           <div *ngFor="let warning of warnings | async" class="recommendation">
             <mat-icon> warning </mat-icon>
@@ -33,7 +33,7 @@
       </ng-container>
 
       <ng-container
-                    *ngIf="(suggestions | async).length && issuesRenderer.options.view.suggestions">
+                    *ngIf="(suggestions | async).length && itemsRenderer.options.view.suggestions">
         <div class="section">
           <div *ngFor="let suggestion of suggestions | async"
                class="recommendation">

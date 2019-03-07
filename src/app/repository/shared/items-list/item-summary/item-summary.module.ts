@@ -4,7 +4,7 @@ import {MaterialModule} from 'app/material.module';
 
 import {LabelListModule} from '../../label-list/label-list.module';
 
-import {IssueSummary} from './issue-summary';
+import {ItemSummary} from './item-summary';
 
 @NgModule({
   imports: [
@@ -12,8 +12,8 @@ import {IssueSummary} from './issue-summary';
     MaterialModule,
     LabelListModule,
   ],
-  declarations: [IssueSummary],
-  exports: [IssueSummary],
+  declarations: [ItemSummary],
+  exports: [ItemSummary],
 })
-export class IssueSummaryModule {
+export class ItemSummaryModule {
 }

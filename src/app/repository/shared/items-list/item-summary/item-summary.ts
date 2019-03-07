@@ -15,21 +15,21 @@ import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
-  selector: 'issue-summary',
-  templateUrl: 'issue-summary.html',
-  styleUrls: ['issue-summary.scss'],
+  selector: 'item-summary',
+  templateUrl: 'item-summary.html',
+  styleUrls: ['item-summary.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'(click)': 'select.emit(this.issue.number)'}
+  host: {'(click)': 'select.emit(this.item.number)'}
 })
-export class IssueSummary {
-  warnings = this.issueRecommendations.recommendations.pipe(
-      map(map => this.issue ? map.get(this.issue.number).filter(r => r.type === 'warning') : null));
-  suggestions = this.issueRecommendations.recommendations.pipe(map(
-      map => this.issue ? map.get(this.issue.number).filter(r => r.type === 'suggestion') : null));
+export class ItemSummary {
+  warnings = this.itemRecommendations.recommendations.pipe(
+      map(map => this.item ? map.get(this.item.number).filter(r => r.type === 'warning') : null));
+  suggestions = this.itemRecommendations.recommendations.pipe(map(
+      map => this.item ? map.get(this.item.number).filter(r => r.type === 'suggestion') : null));
 
   private destroyed = new Subject();
 
-  @Input() issue: Item;
+  @Input() item: Item;
 
   @Input() active: boolean;
 
@@ -37,10 +37,10 @@ export class IssueSummary {
   select = new EventEmitter<number>()
 
       constructor(
-          private activatedRoute: ActivatedRoute, public issueRecommendations: IssueRecommendations,
-          private cd: ChangeDetectorRef, public issuesRenderer: IssuesRenderer,
+          private activatedRoute: ActivatedRoute, public itemRecommendations: IssueRecommendations,
+          private cd: ChangeDetectorRef, public itemsRenderer: IssuesRenderer,
           private router: Router) {
-    this.issuesRenderer.options.changed.pipe(takeUntil(this.destroyed))
+    this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed))
         .subscribe(() => this.cd.markForCheck());
   }
 

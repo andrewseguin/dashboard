@@ -8,20 +8,20 @@ import {IssueDetailDialog} from '../../dialog/issue-detail-dialog/issue-detail-d
 
 
 @Component({
-  selector: 'issues-group',
-  templateUrl: 'issues-group.html',
-  styleUrls: ['issues-group.scss'],
+  selector: 'items-group',
+  templateUrl: 'items-group.html',
+  styleUrls: ['items-group.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IssuesGroup {
-  @Input() issues: Item[];
+export class ItemsGroup {
+  @Input() items: Item[];
 
   @Input() title: string;
 
-  trackByItemNumber = (_i, issue: Item) => issue.number;
+  trackByItemNumber = (_i, item: Item) => item.number;
 
-  activeIssue =
-      this.activatedRoute.queryParamMap.pipe(map(queryParamMap => +queryParamMap.get('issue')));
+  activeItem =
+      this.activatedRoute.queryParamMap.pipe(map(queryParamMap => +queryParamMap.get('item')));
 
   constructor(
       private router: Router, private dialog: MatDialog, private activatedRoute: ActivatedRoute) {}

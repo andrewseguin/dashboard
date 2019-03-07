@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
 
-import {ItemDetailModule} from '../../issue-detail/item-detail.module';
+import {ItemDetailModule} from '../../item-detail/item-detail.module';
 
 import {IssueDetailDialog} from './issue-detail-dialog';
 

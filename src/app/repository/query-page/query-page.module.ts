@@ -4,11 +4,11 @@ import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
 import {QueryDialogModule} from '../shared/dialog/issue-query/issue-query-dialog.module';
-import {ItemDetailModule} from '../shared/issue-detail/item-detail.module';
 import {IssuesListModule} from '../shared/items-list/items-list.module';
 import {QueryMenuModule} from '../shared/query-menu/query-menu.module';
 
 import {QueryPage} from './query-page';
+import { ItemDetailModule } from '../shared/item-detail/item-detail.module';
 
 
 const routes: Routes = [{
