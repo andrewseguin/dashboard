@@ -8,6 +8,8 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
+import {Router} from '@angular/router';
+import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {
@@ -44,7 +46,8 @@ export class WidgetView {
 
   constructor(
       public issuesRenderer: IssuesRenderer, private dialog: MatDialog,
-      private cd: ChangeDetectorRef) {}
+      private cd: ChangeDetectorRef, private router: Router,
+      private activatedRepository: ActivatedRepository) {}
 
   ngOnInit() {
     this.issuesRenderer.initialize();
@@ -65,5 +68,11 @@ export class WidgetView {
 
   openIssueModal(issueId: number) {
     this.dialog.open(IssueDetailDialog, {data: {issueId}});
+  }
+
+  openIssueQuery() {
+    this.router.navigate(
+        [`${this.activatedRepository.repository.value}/issue-query/new`],
+        {queryParams: {'widget': JSON.stringify(this.widget)}});
   }
 }

@@ -16,6 +16,11 @@
 
 .title {
   font-size: 20px;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 loading {

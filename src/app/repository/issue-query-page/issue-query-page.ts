@@ -1,11 +1,13 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
 
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
+import {Widget} from '../services/dao/dashboards-dao';
 import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
 import {RecommendationsDao} from '../services/dao/recommendations-dao';
 import {
@@ -15,15 +17,12 @@ import {
 } from '../services/issues-renderer/issue-renderer-options';
 import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
 import {Filter} from '../utility/search/filter';
-import { isMobile } from 'app/utility/media-matcher';
 
 @Component({
   styleUrls: ['issue-query-page.scss'],
   templateUrl: 'issue-query-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '[class.is-mobile]': 'isMobile()'
-  }
+  host: {'[class.is-mobile]': 'isMobile()'}
 })
 export class IssueQueryPage {
   isMobile = isMobile;
@@ -79,8 +78,13 @@ export class IssueQueryPage {
 
       if (id === 'new') {
         const recommendationId = this.activatedRoute.snapshot.queryParamMap.get('recommendationId');
+        const widgetJson = this.activatedRoute.snapshot.queryParamMap.get('widget');
+
         if (recommendationId) {
           this.createNewIssueQueryFromRecommendation(recommendationId);
+        } else if (widgetJson) {
+          const widget: Widget = JSON.parse(widgetJson);
+          this.issueQuery = createNewIssueQuery(widget.title, widget.options);
         } else {
           this.issueQuery = createNewIssueQuery();
         }
@@ -124,7 +128,10 @@ export class IssueQueryPage {
     this.recommendationsDao.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
       list.forEach(r => {
         if (r.id === id) {
-          this.issueQuery = createNewIssueQuery(r.message, r.filters, r.search);
+          const options = new IssueRendererOptions();
+          options.filters = r.filters;
+          options.search = r.search;
+          this.issueQuery = createNewIssueQuery(r.message, options.getState());
           this.cd.markForCheck();
         }
       });
@@ -132,11 +139,13 @@ export class IssueQueryPage {
   }
 }
 
-function createNewIssueQuery(name = 'New Issue Query', filters: Filter[] = [], search = '') {
+function createNewIssueQuery(
+    name = 'New Issue Query', optionsState: IssueRendererOptionsState = null) {
   const options = new IssueRendererOptions();
 
-  options.filters = filters;
-  options.search = search;
+  if (optionsState) {
+    options.setState(optionsState);
+  }
 
   return {name, options: options.getState()};
 }
