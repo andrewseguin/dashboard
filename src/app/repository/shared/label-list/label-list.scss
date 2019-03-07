@@ -18,3 +18,7 @@ mat-chip {
     border-color: inherit !important;
   }
 }
+
+:host ::ng-deep .mat-chip-list-wrapper {
+  margin: 0;
+}

@@ -7,8 +7,12 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
+import {MatDialog} from '@angular/material';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
+import {
+  IssueDetailDialog
+} from 'app/repository/shared/dialog/issue-detail-dialog/issue-detail-dialog';
 import {Issue} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -38,7 +42,9 @@ export class WidgetView {
 
   private destroyed = new Subject();
 
-  constructor(public issuesRenderer: IssuesRenderer, private cd: ChangeDetectorRef) {}
+  constructor(
+      public issuesRenderer: IssuesRenderer, private dialog: MatDialog,
+      private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.issuesRenderer.initialize();
@@ -57,5 +63,7 @@ export class WidgetView {
     }
   }
 
-  openIssueModal(issue: number) {}
+  openIssueModal(issueId: number) {
+    this.dialog.open(IssueDetailDialog, {data: {issueId}});
+  }
 }
