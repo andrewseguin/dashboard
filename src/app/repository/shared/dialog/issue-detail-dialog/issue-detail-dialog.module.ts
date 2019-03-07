@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
 
-import {IssueDetailModule} from '../../issue-detail/issue-detail.module';
+import {ItemDetailModule} from '../../issue-detail/item-detail.module';
 
 import {IssueDetailDialog} from './issue-detail-dialog';
 
@@ -9,7 +9,7 @@ import {IssueDetailDialog} from './issue-detail-dialog';
 @NgModule({
   imports: [
     MaterialModule,
-    IssueDetailModule,
+    ItemDetailModule,
   ],
   declarations: [IssueDetailDialog],
   exports: [IssueDetailDialog],

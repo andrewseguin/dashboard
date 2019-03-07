@@ -4,7 +4,7 @@ import {Repo} from 'app/service/repo-dao';
 
 import {Recommendation} from '../dao/recommendations-dao';
 
-import {IssuesFilterMetadata} from './issues-filter-metadata';
+import {ItemsFilterMetadata} from './issues-filter-metadata';
 
 export class IssueFilterer {
   constructor(
@@ -20,11 +20,11 @@ export class IssueFilterer {
 
         const recommendations = this.recommendationsMap.get(issue.number);
         const context: MatcherContext = {
-          issue,
+          item: issue,
           repo: this.repo,
           recommendations,
         };
-        return IssuesFilterMetadata.get(filter.type).matcher(context, filter.query);
+        return ItemsFilterMetadata.get(filter.type).matcher(context, filter.query);
       });
     });
   }

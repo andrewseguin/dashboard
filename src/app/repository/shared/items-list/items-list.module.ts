@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {IssuesList} from './issues-list';
+import {ItemsList} from './items-list';
 import {CommonModule} from '@angular/common';
 import {DisplayOptionsHeaderModule} from './display-options-header/display-options-header.module';
 import {MaterialModule} from 'app/material.module';
@@ -16,7 +16,7 @@ import {IssuesGroupModule} from './issues-group/issues-group.module';
     AdvancedSearchModule,
     LoadingModule,
   ],
-  declarations: [IssuesList],
-  exports: [IssuesList],
+  declarations: [ItemsList],
+  exports: [ItemsList],
 })
 export class IssuesListModule { }

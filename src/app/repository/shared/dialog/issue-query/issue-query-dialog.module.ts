@@ -1,14 +1,14 @@
 import {NgModule} from '@angular/core';
 import {DeleteConfirmationModule} from '../delete-confirmation/delete-confirmation.module';
-import {IssueQueryDialog} from './issue-query-dialog';
-import {IssueQueryEditModule} from './issue-query-edit/issue-query-edit.module';
+import {QueryDialog} from './issue-query-dialog';
+import {QueryEditModule} from './issue-query-edit/query-edit.module';
 
 @NgModule({
   imports: [
     DeleteConfirmationModule,
-    IssueQueryEditModule,
+    QueryEditModule,
   ],
-  providers: [IssueQueryDialog]
+  providers: [QueryDialog]
 })
-export class IssueQueryDialogModule {
+export class QueryDialogModule {
 }

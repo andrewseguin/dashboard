@@ -6,7 +6,7 @@ import {Query} from './query';
 
 
 export interface MatcherContext {
-  issue: Item;
+  item: Item;
   repo: Repo;
   recommendations: Recommendation[]
 }

@@ -2,13 +2,13 @@ import {DB, openDb} from 'idb';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
-import {Contributor, Item, Label, PullRequest} from './github';
+import {Contributor, Issue, Item, Label, PullRequest} from './github';
 
 export interface Repo {
   empty: boolean;
   items: Item[];
   itemsMap: Map<number, Item>;
-  issues: Item[];
+  issues: Issue[];
   issuesMap: Map<number, Item>;
   pullRequests: PullRequest[];
   pullRequestsMap: Map<number, PullRequest>;
@@ -33,8 +33,8 @@ export class RepoDao {
     this.id = repoId;
     this.repo = new BehaviorSubject<Repo|null>(null);
     this.db = openDb(this.id, DB_VERSION, function(db) {
-      if (!db.objectStoreNames.contains('issues')) {
-        db.createObjectStore('issues', {keyPath: 'number'});
+      if (!db.objectStoreNames.contains('items')) {
+        db.createObjectStore('items', {keyPath: 'number'});
       }
       if (!db.objectStoreNames.contains('labels')) {
         db.createObjectStore('labels', {keyPath: 'id'});
@@ -50,8 +50,8 @@ export class RepoDao {
     return this.repo.pipe(filter(repo => !!repo), map(repo => repo.itemsMap.get(item)));
   }
 
-  setIssues(issues: Item[]): Promise<void> {
-    return this.setValues(issues, 'issues');
+  setItems(items: Item[]): Promise<void> {
+    return this.setValues(items, 'items');
   }
 
   setLabels(labels: Label[]): Promise<void> {
@@ -77,7 +77,7 @@ export class RepoDao {
     this.db
         .then(db => {
           return Promise.all([
-            db.transaction('issues', 'readonly').objectStore('issues').getAll(),
+            db.transaction('items', 'readonly').objectStore('items').getAll(),
             db.transaction('labels', 'readonly').objectStore('labels').getAll(),
             db.transaction('contributors', 'readonly').objectStore('contributors').getAll()
           ]);

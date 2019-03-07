@@ -10,19 +10,17 @@ import {RepoDao} from 'app/service/repo-dao';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecommendationAction {
-  @Input() issue: Item;
+  @Input() item: Item;
 
   @Input() recommendation: Recommendation;
 
-  constructor(
-      private repoDao: RepoDao, private cd: ChangeDetectorRef,
-      private github: Github) {}
+  constructor(private repoDao: RepoDao, private cd: ChangeDetectorRef, private github: Github) {}
 
   addLabel(labelId: number) {
     // TODO: Send to github
-    const newIssue = {...this.issue};
-    newIssue.labels = [...this.issue.labels, labelId];
+    const newIssue = {...this.item};
+    newIssue.labels = [...this.item.labels, labelId];
 
-    this.repoDao.setIssues([newIssue]);
+    this.repoDao.setItems([newIssue]);
   }
 }

@@ -1,7 +1,5 @@
 <span>{{timelineEvent.actor}}</span>
 
-&nbsp;
-
 <span [ngSwitch]="timelineEvent.type">
   <ng-container *ngSwitchCase="'closed'">
     closed this issue
@@ -27,7 +25,5 @@
     Unknown type: {{timelineEvent | json}}
   </ng-container>
 </span>
-
-&nbsp;
 
 <span>{{timelineEvent.created | timeAgo}}</span>

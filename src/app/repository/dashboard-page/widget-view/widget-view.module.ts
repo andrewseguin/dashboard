@@ -6,7 +6,7 @@ import {
 } from 'app/repository/shared/dialog/issue-detail-dialog/issue-detail-dialog.module';
 import {
   IssueSummaryModule
-} from 'app/repository/shared/issues-list/issue-summary/issue-summary.module';
+} from 'app/repository/shared/items-list/issue-summary/issue-summary.module';
 import {LoadingModule} from 'app/repository/shared/loading/loading.module';
 
 import {WidgetView} from './widget-view';

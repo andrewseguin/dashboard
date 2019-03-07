@@ -10,7 +10,7 @@ import {AutocompleteContext, IFilterMetadata, MatcherContext} from '../../utilit
 import {DateQuery, InputQuery, NumberQuery, StateQuery} from '../../utility/search/query';
 
 
-export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
+export const ItemsFilterMetadata = new Map<string, IFilterMetadata>([
 
   /** InputQuery Filters */
 
@@ -19,7 +19,7 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Title',
       queryType: 'input',
       matcher: (c: MatcherContext, q: InputQuery) => {
-        return stringContainsQuery(c.issue.title, q);
+        return stringContainsQuery(c.item.title, q);
       },
       autocomplete: (c: AutocompleteContext) => {
         return c.repoDao.repo.pipe(map(repo => {
@@ -34,7 +34,7 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Assignee',
       queryType: 'input',
       matcher: (c: MatcherContext, q: InputQuery) => {
-        return arrayContainsQuery(c.issue.assignees, q);
+        return arrayContainsQuery(c.item.assignees, q);
       },
       autocomplete: (c: AutocompleteContext) => {
         return c.repoDao.repo.pipe(map(repo => {
@@ -54,7 +54,7 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Body',
       queryType: 'input',
       matcher: (c: MatcherContext, q: InputQuery) => {
-        return stringContainsQuery(c.issue.body, q);
+        return stringContainsQuery(c.item.body, q);
       },
     }
   ],
@@ -64,7 +64,7 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Labels',
       queryType: 'input',
       matcher: (c: MatcherContext, q: InputQuery) => {
-        return arrayContainsQuery(c.issue.labels.map(l => c.repo.labelsMap.get(l).name), q);
+        return arrayContainsQuery(c.item.labels.map(l => c.repo.labelsMap.get(l).name), q);
       },
       autocomplete: (c: AutocompleteContext) => {
         return c.repoDao.repo.pipe(filter(repo => !!repo), map(repo => {
@@ -81,7 +81,7 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Comment Count',
       queryType: 'number',
       matcher: (c: MatcherContext, q: NumberQuery) => {
-        return numberMatchesEquality(c.issue.comments, q);
+        return numberMatchesEquality(c.item.comments, q);
       }
     }
   ],
@@ -93,7 +93,7 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Date Created',
       queryType: 'date',
       matcher: (c: MatcherContext, q: DateQuery) => {
-        return dateMatchesEquality(c.issue.created, q);
+        return dateMatchesEquality(c.item.created, q);
       }
     }
   ],
@@ -107,8 +107,8 @@ export const IssuesFilterMetadata = new Map<string, IFilterMetadata>([
       queryTypeData: {states: ['open', 'closed']},
       matcher: (c: MatcherContext, q: StateQuery) => {
         const values = new Map<string, boolean>([
-          ['open', c.issue.state === 'open'],
-          ['closed', c.issue.state === 'closed'],
+          ['open', c.item.state === 'open'],
+          ['closed', c.item.state === 'closed'],
         ]);
         return stateMatchesEquality(values.get(q.state), q);
       },

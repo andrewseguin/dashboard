@@ -7,7 +7,7 @@ import {Repository} from './repository';
 import {Header, Selection} from './services';
 import {ActivatedRepository} from './services/activated-repository';
 import {DashboardsDao} from './services/dao/dashboards-dao';
-import {IssueQueriesDao} from './services/dao/issue-queries-dao';
+import {QueriesDao} from './services/dao/issue-queries-dao';
 import {RecommendationsDao} from './services/dao/recommendations-dao';
 import {IssueRecommendations} from './services/issue-recommendations';
 import {Markdown} from './services/markdown';
@@ -71,7 +71,7 @@ export class RepositoryRoutingModule {
     IssueRecommendations,
     Markdown,
     ActivatedRepository,
-    IssueQueriesDao,
+    QueriesDao,
     RecommendationsDao,
     DashboardsDao,
   ]

@@ -29,26 +29,24 @@ export class Updater {
     this.repoDao.repo
         .pipe(
             mergeMap(repo => {
-              const issues = repo.issues;
+              const items = repo.items;
 
-              issues.forEach(issue => {
+              items.forEach(issue => {
                 if (!lastUpdated || lastUpdated < issue.updated) {
                   lastUpdated = issue.updated;
                 }
               });
 
-              return this.github.getOutdatedIssuesCount(repoId, lastUpdated);
+              return this.github.getOutdatedItemsCount(repoId, lastUpdated);
             }),
             mergeMap(count => {
-              return count ? this.github.getIssues(repoId, lastUpdated) :
-                             of(null);
+              return count ? this.github.getIssues(repoId, lastUpdated) : of(null);
             }),
             take(1))
         .subscribe(result => {
           if (result) {
-            this.repoDao.setIssues(result.current);
-            console.log(
-                'Updated', result.current.length, ' since ', lastUpdated);
+            this.repoDao.setItems(result.current);
+            console.log('Updated', result.current.length, ' since ', lastUpdated);
           }
         });
   }

@@ -3,11 +3,9 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
-import {
-  IssueQueryEditModule
-} from '../shared/dialog/issue-query/issue-query-edit/issue-query-edit.module';
-import {IssueQueryMenuModule} from '../shared/issue-query-menu/issue-query-menu.module';
+import {QueryEditModule} from '../shared/dialog/issue-query/issue-query-edit/query-edit.module';
 import {LoadingModule} from '../shared/loading/loading.module';
+import {QueryMenuModule} from '../shared/query-menu/query-menu.module';
 
 import {QueriesPage} from './queries-page';
 
@@ -23,8 +21,8 @@ export class QueriesPageRoutingModule {
     QueriesPageRoutingModule,
     MaterialModule,
     LoadingModule,
-    IssueQueryEditModule,
-    IssueQueryMenuModule,
+    QueryEditModule,
+    QueryMenuModule,
   ],
   declarations: [QueriesPage],
   exports: [QueriesPage],

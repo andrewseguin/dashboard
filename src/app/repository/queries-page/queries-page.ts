@@ -6,7 +6,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 
 import {ActivatedRepository} from '../services/activated-repository';
-import {IssueQueriesDao, IssueQuery as ItemQuery} from '../services/dao/issue-queries-dao';
+import {QueriesDao, Query} from '../services/dao/issue-queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {IssueRecommendations} from '../services/issue-recommendations';
 import {IssueFilterer} from '../services/issues-renderer/issue-filterer';
@@ -14,7 +14,7 @@ import {getIssuesMatchingFilterAndSearch} from '../utility/get-issues-matching-f
 
 
 interface QueryGroup {
-  queries: ItemQuery[];
+  queries: Query[];
   name: string;
 }
 
@@ -26,7 +26,7 @@ interface QueryGroup {
 export class QueriesPage {
   type: Observable<ItemType> = this.activatedRoute.params.pipe(map(params => params.type));
 
-  queryGroups = combineLatest(this.issueQueriesDao.list, this.type)
+  queryGroups = combineLatest(this.queriesDao.list, this.type)
                     .pipe(
                         filter(result => !!result[0]),
                         map(result => result[0].filter(item => item.type === result[1])),
@@ -57,10 +57,10 @@ export class QueriesPage {
                 return map;
               }));
 
-  queryKeyTrackBy = (_i, itemQuery: ItemQuery) => itemQuery.id;
+  queryKeyTrackBy = (_i, itemQuery: Query) => itemQuery.id;
 
   constructor(
-      public issueQueriesDao: IssueQueriesDao, public repoDao: RepoDao, private router: Router,
+      public queriesDao: QueriesDao, public repoDao: RepoDao, private router: Router,
       private activatedRoute: ActivatedRoute, private issueRecommendations: IssueRecommendations,
       public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}
@@ -82,8 +82,8 @@ export class QueriesPage {
 }
 
 
-function getSortedGroups(queries: ItemQuery[]) {
-  const groups = new Map<string, ItemQuery[]>();
+function getSortedGroups(queries: Query[]) {
+  const groups = new Map<string, Query[]>();
   queries.forEach(query => {
     const group = query.group || 'Other';
     if (!groups.has(group)) {

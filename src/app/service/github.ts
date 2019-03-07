@@ -15,7 +15,7 @@ export interface CombinedPagedResults<T> {
 export class Github {
   constructor(private http: HttpClient) {}
 
-  getOutdatedIssuesCount(repo: string, since?: string) {
+  getOutdatedItemsCount(repo: string, since?: string) {
     let query = `q=type:issue repo:${repo}`;
     if (since) {
       query += ` updated:>${since}`;
@@ -101,7 +101,8 @@ export class Github {
     let current = [];
 
     return this.get<T>(url).pipe(
-        expand(result => result.next ? this.get(result.next) : empty()), map(result => {
+        expand(result => (result.next && completed < 3) ? this.get(result.next) : empty()),
+        map(result => {
           completed++;
           const transformedResponse = result.response.map(transform);
           current = current.concat(transformedResponse);
@@ -110,7 +111,7 @@ export class Github {
           // last page will have result.numPages equal to 1 since it is
           // missing.
           if (!total) {
-            total = result.numPages;
+            total = Math.min(result.numPages, 3);
           }
 
           return {completed, total, current};

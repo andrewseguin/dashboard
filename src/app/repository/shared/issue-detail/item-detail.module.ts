@@ -7,7 +7,7 @@ import {LabelListModule} from '../label-list/label-list.module';
 import {RecommendationActionModule} from '../recommendation-action/recommendation-action.module';
 
 import {CommentViewModule} from './comment-view/comment-view.module';
-import {IssueDetail} from './issue-detail';
+import {ItemDetail} from './item-detail';
 import {TimelineEventViewModule} from './timeline-event-view/timeline-event-view.module';
 
 @NgModule({
@@ -15,8 +15,8 @@ import {TimelineEventViewModule} from './timeline-event-view/timeline-event-view
     CommonModule, MaterialModule, TimeAgoPipeModule, LabelListModule, CommentViewModule,
     RecommendationActionModule, TimelineEventViewModule
   ],
-  declarations: [IssueDetail],
-  exports: [IssueDetail],
+  declarations: [ItemDetail],
+  exports: [ItemDetail],
 })
-export class IssueDetailModule {
+export class ItemDetailModule {
 }

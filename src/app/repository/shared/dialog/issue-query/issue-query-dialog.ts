@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
 import {
-  IssueQueriesDao,
-  IssueQuery,
+  QueriesDao,
+  Query,
 } from 'app/repository/services/dao/issue-queries-dao';
 import {
   IssueRendererOptionsState
@@ -14,62 +14,62 @@ import {take} from 'rxjs/operators';
 
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
 
-import {IssueQueryEdit} from './issue-query-edit/issue-query-edit';
+import {QueryEdit} from './issue-query-edit/query-edit';
 
 
 @Injectable()
-export class IssueQueryDialog {
+export class QueryDialog {
   constructor(
       private dialog: MatDialog, private snackbar: MatSnackBar, private router: Router,
-      private issueQueriesDao: IssueQueriesDao) {}
+      private queriesDao: QueriesDao) {}
 
-  /** Shows the edit issue query dialog to change the name/group.*/
-  editIssueQuery(issueQuery: IssueQuery) {
+  /** Shows the edit query dialog to change the name/group.*/
+  editQuery(query: Query) {
     const data = {
-      name: issueQuery.name,
-      group: issueQuery.group,
+      name: query.name,
+      group: query.group,
     };
 
-    this.dialog.open(IssueQueryEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
+    this.dialog.open(QueryEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
       if (result) {
-        this.issueQueriesDao.update(issueQuery.id, {name: result['name'], group: result['group']});
+        this.queriesDao.update(query.id, {name: result['name'], group: result['group']});
       }
     });
   }
 
   /**
-   * Shows delete issue query dialog. If user confirms deletion, remove the
-   * issue query and navigate to the issue queries page.
+   * Shows delete query dialog. If user confirms deletion, remove the
+   * query and navigate to the queries page.
    */
-  deleteIssueQuery(issueQuery: IssueQuery) {
-    const data = {name: of(issueQuery.name)};
+  deleteQuery(query: Query) {
+    const data = {name: of(query.name)};
 
     this.dialog.open(DeleteConfirmation, {data})
         .afterClosed()
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.issueQueriesDao.remove(issueQuery.id);
-            this.snackbar.open(`Issue query "${issueQuery.name}" deleted`, null, {duration: 2000});
+            this.queriesDao.remove(query.id);
+            this.snackbar.open(`Query "${query.name}" deleted`, null, {duration: 2000});
           }
         });
   }
 
   /**
-   * Shows edit issue query dialog to enter the name/group. If user enters a
-   * name, save the issue query and automatically navigate to the issue query
+   * Shows edit query dialog to enter the name/group. If user enters a
+   * name, save the query and automatically navigate to the query
    * page with $key, replacing the current URL.
    */
-  saveAsIssueQuery(currentOptions: IssueRendererOptionsState, repository: string, type: ItemType) {
-    this.dialog.open(IssueQueryEdit).afterClosed().pipe(take(1)).subscribe(result => {
+  saveAsQuery(currentOptions: IssueRendererOptionsState, repository: string, type: ItemType) {
+    this.dialog.open(QueryEdit).afterClosed().pipe(take(1)).subscribe(result => {
       if (!result) {
         return;
       }
 
-      const issueQuery: IssueQuery =
-          {name: result['name'], group: result['group'], options: currentOptions, type};
+      const query:
+          Query = {name: result['name'], group: result['group'], options: currentOptions, type};
 
-      this.issueQueriesDao.add(issueQuery).then(id => {
+      this.queriesDao.add(query).then(id => {
         this.router.navigate(
             [`${repository}/query/${id}`], {replaceUrl: true, queryParamsHandling: 'merge'});
       });

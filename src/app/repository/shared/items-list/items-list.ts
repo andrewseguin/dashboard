@@ -13,20 +13,20 @@ import {IssueGroup} from 'app/repository/services/issues-renderer/issue-grouping
 import {
   IssueRendererOptionsState
 } from 'app/repository/services/issues-renderer/issue-renderer-options';
-import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
+import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {ItemType} from 'app/service/github';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
 
 @Component({
-  selector: 'issues-list',
-  templateUrl: 'issues-list.html',
-  styleUrls: ['issues-list.scss'],
+  selector: 'items-list',
+  templateUrl: 'items-list.html',
+  styleUrls: ['items-list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [IssuesRenderer]
 })
-export class IssuesList {
+export class ItemsList {
   destroyed = new Subject();
   private elementScrolled: Observable<Event> = Observable.create(
       (observer: Observer<Event>) => this.ngZone.runOutsideAngular(
@@ -40,7 +40,7 @@ export class IssuesList {
   renderedIssueGroups: IssueGroup[];
   issuesToDisplay = 20;
 
-  issueFilterMetadata = IssuesFilterMetadata;
+  issueFilterMetadata = ItemsFilterMetadata;
 
   @Input()
   set issuesRendererOptionsState(state: IssueRendererOptionsState) {

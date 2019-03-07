@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
-import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
+import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {Subject} from 'rxjs';
 
@@ -23,7 +23,7 @@ export class EditWidget {
 
   form: FormGroup;
 
-  metadata = IssuesFilterMetadata;
+  metadata = ItemsFilterMetadata;
 
   constructor(
       private dialogRef: MatDialogRef<EditWidget, Widget>, public issuesRenderer: IssuesRenderer,

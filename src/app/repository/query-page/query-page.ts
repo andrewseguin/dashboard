@@ -8,14 +8,14 @@ import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {Widget} from '../services/dao/dashboards-dao';
-import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
+import {QueriesDao, Query} from '../services/dao/issue-queries-dao';
 import {RecommendationsDao} from '../services/dao/recommendations-dao';
 import {
   areOptionStatesEqual,
   IssueRendererOptions,
   IssueRendererOptionsState
 } from '../services/issues-renderer/issue-renderer-options';
-import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
+import {QueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
 
 
 @Component({
@@ -27,7 +27,7 @@ import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog'
 export class QueryPage {
   isMobile = isMobile;
 
-  set query(query: IssueQuery) {
+  set query(query: Query) {
     // When a issue query is set, the options state should be updated to be
     // whatever the issue query is, and the title should always match
     this._query = query;
@@ -36,10 +36,10 @@ export class QueryPage {
     this.header.goBack = () => this.router.navigate(
         [`/${this.activatedRepository.repository.value}/queries/${this.query.type}`]);
   }
-  get query(): IssueQuery {
+  get query(): Query {
     return this._query;
   }
-  private _query: IssueQuery;
+  private _query: Query;
 
   set currentOptions(currentOptions: IssueRendererOptionsState) {
     // When current options change, a check should be evaluated if they differ
@@ -68,7 +68,7 @@ export class QueryPage {
       private router: Router, private activatedRoute: ActivatedRoute,
       private recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository, private header: Header,
-      private issueQueriesDao: IssueQueriesDao, private issueQueryDialog: IssueQueryDialog,
+      private queriesDao: QueriesDao, private queryDialog: QueryDialog,
       private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
@@ -95,7 +95,7 @@ export class QueryPage {
         this.cd.markForCheck();
       } else {
         this.getSubscription =
-            this.issueQueriesDao.map.pipe(takeUntil(this.destroyed), filter(map => !!map))
+            this.queriesDao.map.pipe(takeUntil(this.destroyed), filter(map => !!map))
                 .subscribe(map => {
                   if (map.get(id)) {
                     this.query = map.get(id);
@@ -119,12 +119,12 @@ export class QueryPage {
   }
 
   saveAs() {
-    this.issueQueryDialog.saveAsIssueQuery(
+    this.queryDialog.saveAsQuery(
         this.currentOptions, this.activatedRepository.repository.value, this.query.type);
   }
 
   save() {
-    this.issueQueriesDao.update(this.query.id, {options: this.currentOptions});
+    this.queriesDao.update(this.query.id, {options: this.currentOptions});
   }
 
   private createNewQueryFromRecommendation(id: string) {
@@ -144,7 +144,7 @@ export class QueryPage {
 
 function createNewQuery(
     type: ItemType, name = 'New Query',
-    optionsState: IssueRendererOptionsState = null): IssueQuery {
+    optionsState: IssueRendererOptionsState = null): Query {
   const options = new IssueRendererOptions();
 
   if (optionsState) {

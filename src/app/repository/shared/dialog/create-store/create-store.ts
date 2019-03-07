@@ -32,7 +32,7 @@ export class CreateStore {
       private dialogRef: MatDialogRef<CreateStore, void>, public github: Github,
       private repoDao: RepoDao, private cd: ChangeDetectorRef,
       @Inject(MAT_DIALOG_DATA) public data: PromptDialogData) {
-    this.github.getOutdatedIssuesCount(data.repo).subscribe(result => {
+    this.github.getOutdatedItemsCount(data.repo).subscribe(result => {
       this.totalIssueCount = result;
       this.cd.markForCheck();
     });
@@ -46,7 +46,7 @@ export class CreateStore {
   async store() {
     await this.getValues(
         'issues', () => this.github.getIssues(this.data.repo),
-        (values: Item[]) => this.repoDao.setIssues(values));
+        (values: Item[]) => this.repoDao.setItems(values));
 
     await this.getValues(
         'labels', () => this.github.getLabels(this.data.repo),

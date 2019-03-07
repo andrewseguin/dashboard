@@ -1,8 +1,8 @@
 <div class="master theme-border">
-  <issues-list *ngIf="query?.options" [type]="query.type"
-               [issuesRendererOptionsState]="query.options"
-               (issuesRendererOptionsChanged)="currentOptions = $event">
-  </issues-list>
+  <items-list *ngIf="query?.options" [type]="query.type"
+              [issuesRendererOptionsState]="query.options"
+              (issuesRendererOptionsChanged)="currentOptions = $event">
+  </items-list>
 
   <ng-template cdkPortal>
     <ng-container *ngIf="query">
@@ -16,13 +16,13 @@
         {{canSave ? 'Save' : 'Saved'}}
       </button>
 
-      <issue-query-menu [issueQuery]="query" icon="settings" *ngIf="query.id"
-                        [optionsOverride]="currentOptions">
-      </issue-query-menu>
+      <query-menu [query]="query" icon="settings" *ngIf="query.id"
+                  [optionsOverride]="currentOptions">
+      </query-menu>
     </ng-container>
   </ng-template>
 </div>
 
 <div class="detail" *ngIf="!isMobile()">
-  <issue-detail [itemId]="issueId | async"></issue-detail>
+  <item-detail [itemId]="itemId | async"></item-detail>
 </div>

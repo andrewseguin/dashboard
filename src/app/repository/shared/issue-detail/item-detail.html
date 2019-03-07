@@ -1,34 +1,34 @@
-<ng-container *ngIf="repoDao.getItem(itemId) | async; let issue">
+<ng-container *ngIf="repoDao.getItem(itemId) | async; let item">
   <div class="header">
     <div class="title">
-      {{issue.title}}
-      <span class="issue-number">
-        (<a class="theme-primary" [href]="issue.url">#{{issue.number}}</a>)
+      {{item.title}}
+      <span class="item-number">
+        (<a class="theme-primary" [href]="item.url">#{{item.number}}</a>)
       </span>
     </div>
   </div>
 
   <div class="context">
     <div class="created">
-      Reported by {{issue.reporter}} on {{issue.created | date}}
-      <ng-container *ngIf="issue.created != issue.updated">
-        - issue was last updated {{issue.updated | timeAgo}}
+      Reported by {{item.reporter}} on {{item.created | date}}
+      <ng-container *ngIf="item.created != item.updated">
+        - last updated {{item.updated | timeAgo}}
       </ng-container>
       <span class="state theme-border"
-            [class.theme-background-warn]="issue.state === 'closed'"
-            [class.theme-background-positive]="issue.state === 'open'">
-        {{issue.state}} </span>
+            [class.theme-background-warn]="item.state === 'closed'"
+            [class.theme-background-positive]="item.state === 'open'">
+        {{item.state}} </span>
     </div>
   </div>
 
-  <label-list *ngIf="issue.labels.length" [labelIds]="issue.labels"
-              class="issue-labels"></label-list>
+  <label-list *ngIf="item.labels.length" [labelIds]="item.labels"
+              class="item-labels"></label-list>
 
   <ng-container
                 *ngFor="let recommendation of recommendations | async; let last = last">
     <mat-divider></mat-divider>
 
-    <recommendation-action [recommendation]="recommendation" [issue]="issue">
+    <recommendation-action [recommendation]="recommendation" [item]="item">
     </recommendation-action>
 
     <mat-divider *ngIf="last"></mat-divider>

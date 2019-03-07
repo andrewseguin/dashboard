@@ -6,7 +6,7 @@ import {MaterialModule} from 'app/material.module';
 import {AdvancedSearchModule} from '../../advanced-search/advanced-search.module';
 import {
   DisplayOptionsHeaderModule
-} from '../../issues-list/display-options-header/display-options-header.module';
+} from '../../items-list/display-options-header/display-options-header.module';
 
 import {EditWidget} from './edit-widget';
 

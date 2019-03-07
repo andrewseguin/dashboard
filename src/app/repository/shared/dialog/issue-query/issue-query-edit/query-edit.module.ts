@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from 'app/material.module';
 
-import {IssueQueryEdit} from './issue-query-edit';
+import {QueryEdit} from './query-edit';
 
 @NgModule({
   imports: [
@@ -11,9 +11,9 @@ import {IssueQueryEdit} from './issue-query-edit';
     MaterialModule,
     ReactiveFormsModule,
   ],
-  declarations: [IssueQueryEdit],
-  exports: [IssueQueryEdit],
-  entryComponents: [IssueQueryEdit]
+  declarations: [QueryEdit],
+  exports: [QueryEdit],
+  entryComponents: [QueryEdit]
 })
-export class IssueQueryEditModule {
+export class QueryEditModule {
 }

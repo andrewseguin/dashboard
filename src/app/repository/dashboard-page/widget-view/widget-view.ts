@@ -70,7 +70,7 @@ export class WidgetView {
     this.dialog.open(IssueDetailDialog, {data: {issueId}});
   }
 
-  openIssueQuery() {
+  openQuery() {
     this.router.navigate(
         [`${this.activatedRepository.repository.value}/query/new`],
         {queryParams: {'widget': JSON.stringify(this.widget)}});

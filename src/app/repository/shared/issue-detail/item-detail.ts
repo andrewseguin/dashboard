@@ -27,12 +27,12 @@ export interface Activity {
   context: UserComment|TimelineEvent;
 }
 @Component({
-  selector: 'issue-detail',
-  styleUrls: ['issue-detail.scss'],
-  templateUrl: 'issue-detail.html',
+  selector: 'item-detail',
+  styleUrls: ['item-detail.scss'],
+  templateUrl: 'item-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IssueDetail {
+export class ItemDetail {
   bodyMarkdown: Observable<SafeHtml>;
 
   recommendations: Observable<Recommendation[]>;
@@ -48,12 +48,12 @@ export class IssueDetail {
   constructor(
       private markdown: Markdown, public repoDao: RepoDao, private cd: ChangeDetectorRef,
       public activatedRepository: ActivatedRepository, public github: Github,
-      private issueRecommendations: IssueRecommendations) {}
+      private itemRecommendations: IssueRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
-      this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.itemId);
-      this.recommendations = this.issueRecommendations.recommendations.pipe(
+      this.bodyMarkdown = this.markdown.getItemBodyMarkdown(this.itemId);
+      this.recommendations = this.itemRecommendations.recommendations.pipe(
           filter(r => !!r), map(recommendations => recommendations.get(this.itemId)));
 
       const activityRequests = [

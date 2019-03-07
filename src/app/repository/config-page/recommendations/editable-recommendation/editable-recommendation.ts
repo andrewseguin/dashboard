@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
-import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
+import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {DeleteConfirmation} from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
 import {Filter} from 'app/repository/utility/search/filter';
 import {RepoDao} from 'app/service/repo-dao';
@@ -49,7 +49,7 @@ export class EditableRecommendation {
 
   form: FormGroup;
 
-  metadata = IssuesFilterMetadata;
+  metadata = ItemsFilterMetadata;
 
   actionTypeOptions = [
     {label: 'No action', value: 'no-action'},
