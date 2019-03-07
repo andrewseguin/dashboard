@@ -1,7 +1,7 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {IssueType} from 'app/service/github';
+import {ItemType} from 'app/service/github';
 import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
@@ -35,7 +35,7 @@ export class IssueQueryPage {
     this.currentOptions = this.issueQuery.options;
     this.header.title.next(this.issueQuery.name);
     this.header.goBack = () => this.router.navigate(
-        [`/${this.activatedRepository.repository.value}/issue-queries/${this.issueQuery.type}`]);
+        [`/${this.activatedRepository.repository.value}/queries/${this.issueQuery.type}`]);
   }
   get issueQuery(): IssueQuery {
     return this._issueQuery;
@@ -90,7 +90,7 @@ export class IssueQueryPage {
           const widget: Widget = JSON.parse(widgetJson);
           this.issueQuery = createNewIssueQuery('issue', widget.title, widget.options);
         } else {
-          const type = queryParamMap.get('type') as IssueType;
+          const type = queryParamMap.get('type') as ItemType;
           this.issueQuery = createNewIssueQuery(type);
         }
         this.cd.markForCheck();
@@ -101,8 +101,7 @@ export class IssueQueryPage {
                   if (map.get(id)) {
                     this.issueQuery = map.get(id);
                   } else {
-                    this.router.navigate(
-                        [`${this.activatedRepository.repository.value}/issue-queries`]);
+                    this.router.navigate([`${this.activatedRepository.repository.value}/queries`]);
                   }
                   this.cd.markForCheck();
                 });
@@ -145,7 +144,7 @@ export class IssueQueryPage {
 }
 
 function createNewIssueQuery(
-    type: IssueType, name = 'New Issue Query',
+    type: ItemType, name = 'New Issue Query',
     optionsState: IssueRendererOptionsState = null): IssueQuery {
   const options = new IssueRendererOptions();
 

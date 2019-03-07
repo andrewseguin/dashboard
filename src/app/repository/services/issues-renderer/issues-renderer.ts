@@ -13,7 +13,7 @@ import {IssueFilterer} from './issue-filterer';
 import {IssueGroup, IssueGrouping} from './issue-grouping';
 import {IssueRendererOptions} from './issue-renderer-options';
 import {IssueSorter} from './issue-sorter';
-import { IssueType } from 'app/service/github';
+import { ItemType } from 'app/service/github';
 
 
 @Injectable()
@@ -36,7 +36,7 @@ export class IssuesRenderer {
     }
   }
 
-  initialize(type: IssueType) {
+  initialize(type: ItemType) {
     if (this.initSubscription) {
       this.initSubscription.unsubscribe();
     }

@@ -1,0 +1,54 @@
+<div class="new-buttons" [class.menu-open]="recommendationsMenu.menuOpen"
+     *ngIf="type | async; let type">
+  <button mat-fab color="primary" class="secondary"
+          #recommendationsMenu="matMenuTrigger"
+          [matMenuTriggerFor]="recommendations"
+          matTooltip="New query from recommendation"
+          [matTooltipPosition]="'before'">
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <button mat-fab (click)="createQuery(type)" matTooltip="New empty query"
+          [matTooltipPosition]="'before'">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<ng-container *ngIf="queryGroups | async; let queryGroups; else loading">
+  <div class="group" *ngFor="let queryGroup of queryGroups">
+    <div class="group-title">
+      {{queryGroup.name}}
+    </div>
+
+    <div class="queries">
+      <ng-container
+                    *ngFor="let query of queryGroup.queries; trackBy: queryKeyTrackBy">
+        <div class="query theme-hover" mat-ripple
+             (click)="navigateToQuery(query.id)">
+          <div class="name"> {{query.name}}
+            <ng-container *ngIf="queryResultsCount | async; let countMap">
+              ({{countMap.get(query.id)}})
+            </ng-container>
+          </div>
+
+          <issue-query-menu [issueQuery]="query" icon="more_vert"
+                            (click)="$event.stopPropagation()">
+          </issue-query-menu>
+        </div>
+        <mat-divider></mat-divider>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #loading>
+  <loading label="queries"></loading>
+</ng-template>
+
+<mat-menu #recommendations="matMenu" class="recommendations-menu">
+  <button mat-menu-item
+          *ngFor="let recommendation of recommendationsDao.list | async"
+          (click)="createQueryFromRecommendation(recommendation)">
+    {{recommendation.message}}
+  </button>
+</mat-menu>

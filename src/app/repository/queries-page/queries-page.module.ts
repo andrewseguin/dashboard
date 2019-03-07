@@ -3,29 +3,31 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
-import {IssueQueryEditModule} from '../shared/dialog/issue-query/issue-query-edit/issue-query-edit.module';
+import {
+  IssueQueryEditModule
+} from '../shared/dialog/issue-query/issue-query-edit/issue-query-edit.module';
 import {IssueQueryMenuModule} from '../shared/issue-query-menu/issue-query-menu.module';
 import {LoadingModule} from '../shared/loading/loading.module';
 
-import {IssueQueriesPage} from './issue-queries-page';
+import {QueriesPage} from './queries-page';
 
-const routes: Routes = [{path: '', component: IssueQueriesPage}];
+const routes: Routes = [{path: '', component: QueriesPage}];
 
 @NgModule({imports: [RouterModule.forChild(routes)], exports: [RouterModule]})
-export class IssueQueriesPageRoutingModule {
+export class QueriesPageRoutingModule {
 }
 
 @NgModule({
   imports: [
     CommonModule,
-    IssueQueriesPageRoutingModule,
+    QueriesPageRoutingModule,
     MaterialModule,
     LoadingModule,
     IssueQueryEditModule,
     IssueQueryMenuModule,
   ],
-  declarations: [IssueQueriesPage],
-  exports: [IssueQueriesPage],
+  declarations: [QueriesPage],
+  exports: [QueriesPage],
 })
-export class IssueQueriesPageModule {
+export class QueriesPageModule {
 }

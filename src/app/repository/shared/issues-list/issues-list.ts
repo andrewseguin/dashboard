@@ -15,7 +15,7 @@ import {
 } from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
-import {IssueType} from 'app/service/github';
+import {ItemType} from 'app/service/github';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
 
@@ -49,7 +49,7 @@ export class IssuesList {
 
   @Input() printMode: boolean;
 
-  @Input() type: IssueType;
+  @Input() type: ItemType;
 
   @Output() issuesRendererOptionsChanged = new EventEmitter<IssueRendererOptionsState>();
 

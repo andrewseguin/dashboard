@@ -8,7 +8,7 @@ import {
 import {
   IssueRendererOptionsState
 } from 'app/repository/services/issues-renderer/issue-renderer-options';
-import {IssueType} from 'app/service/github';
+import {ItemType} from 'app/service/github';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 
@@ -60,7 +60,7 @@ export class IssueQueryDialog {
    * name, save the issue query and automatically navigate to the issue query
    * page with $key, replacing the current URL.
    */
-  saveAsIssueQuery(currentOptions: IssueRendererOptionsState, repository: string, type: IssueType) {
+  saveAsIssueQuery(currentOptions: IssueRendererOptionsState, repository: string, type: ItemType) {
     this.dialog.open(IssueQueryEdit).afterClosed().pipe(take(1)).subscribe(result => {
       if (!result) {
         return;

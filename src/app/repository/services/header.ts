@@ -6,7 +6,7 @@ import {Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {filter, takeUntil} from 'rxjs/operators';
 
-const TOP_LEVEL_SECTIONS = new Set<string>(['issue-queries', 'config', 'dashboards']);
+const TOP_LEVEL_SECTIONS = new Set<string>(['queries', 'config', 'dashboards']);
 
 @Injectable()
 export class Header {
@@ -33,7 +33,7 @@ export class Header {
             case 'dashboards':
               this.title.next('Dashboards');
               break;
-            case 'issue-queries':
+            case 'queries':
               this.title.next(
                   subSection === 'issue' ? 'Issue Queries' :
                                            subSection === 'pr' ? 'Pull Request Queries' : '');
