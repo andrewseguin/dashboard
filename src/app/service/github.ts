@@ -24,10 +24,10 @@ export class Github {
     return this.query(url).pipe(map(result => (result.body as any).total_count));
   }
 
-  getIssues(repo: string, since?: string): Observable<CombinedPagedResults<Issue>> {
+  getIssues(repo: string, since?: string): Observable<CombinedPagedResults<Item>> {
     const query = since ? `per_page=100&state=all&since=${since}` : 'per_page=100&state=all';
     const url = this.constructUrl(`repos/${repo}/issues`, query);
-    return this.getPagedResults<GithubIssue, Issue>(url, githubIssueToIssue);
+    return this.getPagedResults<GithubIssue, Item>(url, githubIssueToIssue);
   }
 
   getLabels(repo: string): Observable<CombinedPagedResults<Label>> {
@@ -345,7 +345,7 @@ export interface UserComment {
 
 export type IssueType = 'issue'|'pr';
 
-export interface Issue {
+export interface Item {
   assignees: string[];
   body: string;
   title: string;
@@ -361,7 +361,8 @@ export interface Issue {
   url: string;
 }
 
-export interface PullRequest extends Issue {}
+export interface PullRequest extends Item {}
+export interface Issue extends Item {}
 
 export interface Label {
   id: number;
@@ -379,7 +380,7 @@ export interface Contributor {
   contributions: number;
 }
 
-function githubIssueToIssue(o: GithubIssue): Issue {
+function githubIssueToIssue(o: GithubIssue): Item {
   return {
     assignees: o.assignees.map(a => a.login),
     body: o.body,

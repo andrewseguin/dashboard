@@ -41,7 +41,7 @@ export class IssueDetail {
 
   activities: Observable<Activity[]>;
 
-  @Input() issueId: number;
+  @Input() itemId: number;
 
   private destroyed = new Subject();
 
@@ -51,14 +51,14 @@ export class IssueDetail {
       private issueRecommendations: IssueRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['issueId'] && this.issueId) {
-      this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.issueId);
+    if (simpleChanges['itemId'] && this.itemId) {
+      this.bodyMarkdown = this.markdown.getIssueBodyMarkdown(this.itemId);
       this.recommendations = this.issueRecommendations.recommendations.pipe(
-          filter(r => !!r), map(recommendations => recommendations.get(this.issueId)));
+          filter(r => !!r), map(recommendations => recommendations.get(this.itemId)));
 
       const activityRequests = [
-        this.github.getComments(this.activatedRepository.repository.value, this.issueId),
-        this.github.getTimeline(this.activatedRepository.repository.value, this.issueId)
+        this.github.getComments(this.activatedRepository.repository.value, this.itemId),
+        this.github.getTimeline(this.activatedRepository.repository.value, this.itemId)
       ];
 
       this.activities =

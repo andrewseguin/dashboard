@@ -15,6 +15,7 @@ import {
 } from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {IssuesFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
+import {IssueType} from 'app/service/github';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
 
@@ -48,6 +49,8 @@ export class IssuesList {
 
   @Input() printMode: boolean;
 
+  @Input() type: IssueType;
+
   @Output() issuesRendererOptionsChanged = new EventEmitter<IssueRendererOptionsState>();
 
   constructor(
@@ -55,7 +58,7 @@ export class IssuesList {
       public selection: Selection, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    this.issuesRenderer.initialize('issue');
+    this.issuesRenderer.initialize(this.type);
     const options = this.issuesRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.issuesRendererOptionsChanged.next(options.getState());

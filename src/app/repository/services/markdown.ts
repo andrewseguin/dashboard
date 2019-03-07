@@ -34,7 +34,7 @@ export class Markdown {
   constructor(private sanitizer: DomSanitizer, private repoDao: RepoDao) {}
 
   getIssueBodyMarkdown(issueId: number): Observable<SafeHtml> {
-    return this.repoDao.getIssue(issueId).pipe(map(issue => this.render(issue.body)));
+    return this.repoDao.getItem(issueId).pipe(map(issue => this.render(issue.body)));
   }
 
   render(text: string): SafeHtml {

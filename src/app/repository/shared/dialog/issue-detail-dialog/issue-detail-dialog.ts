@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
-import {Issue} from 'app/service/github';
+import {Item} from 'app/service/github';
 
 export interface IssueDetailDialogData {
   issueId: number;
@@ -14,7 +14,7 @@ export interface IssueDetailDialogData {
   providers: [IssuesRenderer]
 })
 export class IssueDetailDialog {
-  issue: Issue;
+  issue: Item;
 
   constructor(
       private dialogRef: MatDialogRef<IssueDetailDialog, void>,

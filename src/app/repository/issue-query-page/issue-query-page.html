@@ -1,5 +1,5 @@
 <div class="master theme-border">
-  <issues-list *ngIf="issueQuery?.options"
+  <issues-list *ngIf="issueQuery?.options" [type]="issueQuery.type"
                [issuesRendererOptionsState]="issueQuery.options"
                (issuesRendererOptionsChanged)="currentOptions = $event">
   </issues-list>
@@ -7,8 +7,7 @@
   <ng-template cdkPortal>
     <ng-container *ngIf="issueQuery">
       <button mat-raised-button color="primary" *ngIf="!issueQuery.id"
-              class="save-as"
-              (click)="saveAs()">
+              class="save-as" (click)="saveAs()">
         Save As
       </button>
 
@@ -26,5 +25,5 @@
 </div>
 
 <div class="detail" *ngIf="!isMobile()">
-  <issue-detail [issueId]="issueId | async"></issue-detail>
+  <issue-detail [itemId]="issueId | async"></issue-detail>
 </div>

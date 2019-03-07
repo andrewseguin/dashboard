@@ -19,7 +19,7 @@
 
     <div class="issue-queries">
       <ng-container *ngFor="let issueQuery of issueQuery.issueQueries; trackBy: issueQueryKeyTrackBy">
-        <div class="issue-query theme-hover" mat-ripple (click)="navigateToIssueQuery(issueQuery.id)">
+        <div class="issue-query theme-hover" mat-ripple (click)="navigateToItem(issueQuery.id)">
           <div class="name"> {{issueQuery.name}}
             <ng-container *ngIf="issueQueryResultsCount | async; let countMap">
               ({{countMap.get(issueQuery.id)}})

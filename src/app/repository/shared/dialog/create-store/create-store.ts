@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
-import {Github, Contributor, Label, Issue} from 'app/service/github';
+import {Github, Contributor, Label, Item} from 'app/service/github';
 import {RepoDao} from 'app/service/repo-dao';
 import {Subject, Observable} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -50,7 +50,7 @@ export class CreateStore {
   async store() {
     await this.getValues('issues',
       () => this.github.getIssues(this.data.repo),
-      (values: Issue[]) => this.repoDao.setIssues(values));
+      (values: Item[]) => this.repoDao.setIssues(values));
 
     await this.getValues('labels',
       () => this.github.getLabels(this.data.repo),

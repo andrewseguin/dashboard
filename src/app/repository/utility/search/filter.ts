@@ -1,12 +1,12 @@
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
-import {Issue} from 'app/service/github';
+import {Item} from 'app/service/github';
 import {Repo, RepoDao} from 'app/service/repo-dao';
 import {Observable} from 'rxjs';
 import {Query} from './query';
 
 
 export interface MatcherContext {
-  issue: Issue;
+  issue: Item;
   repo: Repo;
   recommendations: Recommendation[]
 }

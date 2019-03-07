@@ -15,7 +15,7 @@ import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-ren
 import {
   IssueDetailDialog
 } from 'app/repository/shared/dialog/issue-detail-dialog/issue-detail-dialog';
-import {Issue} from 'app/service/github';
+import {Item} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 
@@ -38,9 +38,9 @@ export class WidgetView {
 
   @Output() remove = new EventEmitter<void>();
 
-  issues: Issue[];
+  issues: Item[];
 
-  trackByNumber = (_i, issue: Issue) => issue.number;
+  trackByNumber = (_i, issue: Item) => issue.number;
 
   private destroyed = new Subject();
 

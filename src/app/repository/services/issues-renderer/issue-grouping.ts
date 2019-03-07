@@ -1,4 +1,4 @@
-import {Issue} from 'app/service/github';
+import {Item} from 'app/service/github';
 import {Repo} from 'app/service/repo-dao';
 
 import {Group} from './issue-renderer-options';
@@ -6,11 +6,11 @@ import {Group} from './issue-renderer-options';
 export class IssueGroup {
   id: string;
   title: string;
-  issues: Issue[];
+  issues: Item[];
 }
 
 export class IssueGrouping {
-  constructor(private issues: Issue[], private repo: Repo) {}
+  constructor(private issues: Item[], private repo: Repo) {}
 
   getGroup(group: Group) {
     switch (group) {
@@ -26,7 +26,7 @@ export class IssueGrouping {
   }
 
   getGroupByProperty(property: string) {
-    const groups: Map<string, Issue[]> = new Map();
+    const groups: Map<string, Item[]> = new Map();
 
     this.issues.forEach(issue => {
       const value = issue[property];

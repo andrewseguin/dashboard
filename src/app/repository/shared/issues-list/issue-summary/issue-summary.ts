@@ -10,7 +10,7 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
-import {Issue} from 'app/service/github';
+import {Item} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
@@ -29,7 +29,7 @@ export class IssueSummary {
 
   private destroyed = new Subject();
 
-  @Input() issue: Issue;
+  @Input() issue: Item;
 
   @Input() active: boolean;
 

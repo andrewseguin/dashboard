@@ -1,5 +1,5 @@
 import {Filter, MatcherContext} from 'app/repository/utility/search/filter';
-import {Issue} from 'app/service/github';
+import {Item} from 'app/service/github';
 import {Repo} from 'app/service/repo-dao';
 
 import {Recommendation} from '../dao/recommendations-dao';
@@ -11,7 +11,7 @@ export class IssueFilterer {
       private filters: Filter[], private repo: Repo,
       private recommendationsMap: Map<number, Recommendation[]>) {}
 
-  filter(issues: Issue[]) {
+  filter(issues: Item[]) {
     return issues.filter(issue => {
       return this.filters.every(filter => {
         if (!filter.query) {

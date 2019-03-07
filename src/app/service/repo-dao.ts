@@ -1,13 +1,15 @@
 import {DB, openDb} from 'idb';
-import {BehaviorSubject} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 
-import {Contributor, Issue, Label, PullRequest} from './github';
+import {Contributor, Item, Label, PullRequest} from './github';
 
 export interface Repo {
   empty: boolean;
-  issues: Issue[];
-  issuesMap: Map<number, Issue>;
+  items: Item[];
+  itemsMap: Map<number, Item>;
+  issues: Item[];
+  issuesMap: Map<number, Item>;
   pullRequests: PullRequest[];
   pullRequestsMap: Map<number, PullRequest>;
   labels: Label[];
@@ -44,15 +46,11 @@ export class RepoDao {
     this.db.then(() => this.update());
   }
 
-  getIssue(issueId: number) {
-    return this.repo.pipe(map(repo => {
-      if (repo) {
-        return repo.issuesMap.get(issueId);
-      }
-    }));
+  getItem(item: number): Observable<Item> {
+    return this.repo.pipe(filter(repo => !!repo), map(repo => repo.itemsMap.get(item)));
   }
 
-  setIssues(issues: Issue[]): Promise<void> {
+  setIssues(issues: Item[]): Promise<void> {
     return this.setValues(issues, 'issues');
   }
 
@@ -85,8 +83,12 @@ export class RepoDao {
           ]);
         })
         .then(result => {
-          const issues = result[0].filter((issue: Issue) => !issue.pr);
-          const issuesMap = new Map<number, Issue>();
+          const items = result[0];
+          const itemsMap = new Map<number, PullRequest>();
+          items.forEach(o => itemsMap.set(o.number, o));
+
+          const issues = result[0].filter((issue: Item) => !issue.pr);
+          const issuesMap = new Map<number, Item>();
           issues.forEach(o => issuesMap.set(o.number, o));
 
           const pullRequests = result[0].filter((issue: PullRequest) => !!issue.pr);
@@ -103,6 +105,8 @@ export class RepoDao {
           contributors.forEach(o => contributorsMap.set(o.id, o));
 
           this.repo.next({
+            items,
+            itemsMap,
             issues,
             issuesMap,
             pullRequests,

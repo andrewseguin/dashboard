@@ -1,4 +1,4 @@
-<ng-container *ngIf="repoDao.getIssue(issueId) | async; let issue">
+<ng-container *ngIf="repoDao.getItem(itemId) | async; let issue">
   <div class="header">
     <div class="title">
       {{issue.title}}

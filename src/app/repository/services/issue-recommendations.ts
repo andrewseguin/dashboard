@@ -21,7 +21,7 @@ export class IssueRecommendations {
           const recommendations = result[1] as Recommendation[];
 
           const map = new Map<number, Recommendation[]>();
-          repo.issues.forEach(issue => {
+          [...repo.issues, ...repo.pullRequests].forEach(issue => {
             map.set(issue.number, getRecommendations(issue.number, repo, recommendations));
           });
 

@@ -1,6 +1,7 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {IssueType} from 'app/service/github';
 import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
@@ -17,7 +18,6 @@ import {
 } from '../services/issues-renderer/issue-renderer-options';
 import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
 import {Filter} from '../utility/search/filter';
-import { IssueType } from 'app/service/github';
 
 @Component({
   styleUrls: ['issue-query-page.scss'],
@@ -58,7 +58,7 @@ export class IssueQueryPage {
   canSave: boolean;
 
   issueId =
-      this.activatedRoute.queryParamMap.pipe(map(queryParamsMap => +queryParamsMap.get('issue')));
+      this.activatedRoute.queryParamMap.pipe(map(queryParamsMap => +queryParamsMap.get('item')));
 
   private destroyed = new Subject();
   private getSubscription: Subscription;
