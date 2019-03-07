@@ -69,8 +69,8 @@ export class DashboardPage {
       }
 
       if (id === 'new') {
-        const newDashboard:
-            Dashboard = {name: 'New Dashboard', columnGroups: [{columns: [{widgets: []}]}]};
+        const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
+        const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
         this.dashboard = newDashboard;
         this.dashboardsDao.add(newDashboard).then(id => {
           this.router.navigate(

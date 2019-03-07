@@ -1,11 +1,8 @@
 <ng-container *ngIf="dashboard; else loading">
   <!-- Column Group-->
-  <div
-       *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index">
+  <div *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index">
     <div class="column-group" cdkDropListGroup>
-      <button mat-button *ngIf="edit.value"
-              [style.visibility]="first ? 'hidden' : ''"
-              (click)="removeColumnGroup(columnGroupIndex)">
+      <button mat-button *ngIf="edit.value && !first" (click)="removeColumnGroup(columnGroupIndex)">
         <mat-icon> delete </mat-icon> Remove Group
       </button>
 
@@ -14,21 +11,17 @@
         <!-- Column -->
         <div *ngFor="let column of columnGroup.columns; let columnIndex = index; let first = first"
              class="column" [class.theme-border]="edit.value">
-          <button mat-button *ngIf="edit.value"
-                  [style.visibility]="first ? 'hidden' : ''"
+          <button mat-button *ngIf="edit.value" [style.visibility]="first ? 'hidden' : ''"
                   (click)="removeColumn(columnGroup, columnIndex)">
             <mat-icon> delete </mat-icon> Remove Column
           </button>
 
           <div class="widgets theme-background-hover" cdkDropList
-               [cdkDropListData]="column.widgets"
-               (cdkDropListDropped)="dropWidget($event)">
+               [cdkDropListData]="column.widgets" (cdkDropListDropped)="dropWidget($event)">
             <!-- Widget -->
             <widget-view *ngFor="let widget of column.widgets; let widgetIndex = index"
-                         cdkDrag [cdkDragDisabled]="!edit.value"
-                         [widget]="widget"
-                         (edit)="editWidget(column, widgetIndex)"
-                         [editMode]="edit.value"
+                         cdkDrag [cdkDragDisabled]="!edit.value" [widget]="widget"
+                         (edit)="editWidget(column, widgetIndex)" [editMode]="edit.value"
                          (remove)="removeWidget(column, widgetIndex)">
             </widget-view>
           </div>
@@ -50,8 +43,7 @@
   </div>
 
 
-  <button mat-button *ngIf="edit.valueChanges | async"
-          (click)="addColumnGroup()">
+  <button mat-button *ngIf="edit.valueChanges | async" (click)="addColumnGroup()">
     <mat-icon> add </mat-icon> Group
   </button>
 </ng-container>
