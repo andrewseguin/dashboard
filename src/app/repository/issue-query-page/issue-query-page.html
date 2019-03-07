@@ -25,6 +25,6 @@
   </ng-template>
 </div>
 
-<div class="detail">
+<div class="detail" *ngIf="!isMobile()">
   <issue-detail [issueId]="issueId | async"></issue-detail>
 </div>

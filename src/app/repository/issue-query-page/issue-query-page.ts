@@ -15,13 +15,19 @@ import {
 } from '../services/issues-renderer/issue-renderer-options';
 import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
 import {Filter} from '../utility/search/filter';
+import { isMobile } from 'app/utility/media-matcher';
 
 @Component({
   styleUrls: ['issue-query-page.scss'],
   templateUrl: 'issue-query-page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.is-mobile]': 'isMobile()'
+  }
 })
 export class IssueQueryPage {
+  isMobile = isMobile;
+
   set issueQuery(issueQuery: IssueQuery) {
     // When a issue query is set, the options state should be updated to be
     // whatever the issue query is, and the title should always match
