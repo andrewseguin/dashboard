@@ -5,11 +5,12 @@ import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 
 import {ActivatedRepository} from '../services/activated-repository';
-import {IssueQueriesDao, IssueQuery, IssueQueryType} from '../services/dao/issue-queries-dao';
+import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {IssueRecommendations} from '../services/issue-recommendations';
 import {IssueFilterer} from '../services/issues-renderer/issue-filterer';
 import {getIssuesMatchingFilterAndSearch} from '../utility/get-issues-matching-filter-and-search';
+import { IssueType } from 'app/service/github';
 
 
 interface IssueQueryGroup {
@@ -23,7 +24,7 @@ interface IssueQueryGroup {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IssueQueriesPage {
-  type: Observable<IssueQueryType> = this.activatedRoute.params.pipe(map(params => params.type));
+  type: Observable<IssueType> = this.activatedRoute.params.pipe(map(params => params.type));
 
   issueQueryGroups = combineLatest(this.issueQueriesDao.list, this.type)
                          .pipe(
@@ -41,7 +42,7 @@ export class IssueQueriesPage {
                 const repo = result[0] as Repo;
                 const groups = result[1] as IssueQueryGroup[];
                 const recommendations = result[2] as Map<number, Recommendation[]>;
-                const type = result[3] as IssueQueryType;
+                const type = result[3] as IssueType;
                 const items =
                     type === 'issue' ? repo.issues : type === 'pr' ? repo.pullRequests : [];
 
@@ -65,7 +66,7 @@ export class IssueQueriesPage {
       public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}
 
-  createIssueQuery(type: IssueQueryType) {
+  createIssueQuery(type: IssueType) {
     this.router.navigate(
         [`${this.activatedRepository.repository.value}/issue-query/new`],
         {queryParams: {type}});

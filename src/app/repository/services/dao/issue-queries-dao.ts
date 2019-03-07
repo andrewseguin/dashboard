@@ -7,8 +7,6 @@ import {IssueRendererOptionsState} from '../issues-renderer/issue-renderer-optio
 
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
-export type IssueQueryType = 'issue'|'pr';
-
 export interface IssueQuery {
   id?: string;
   name?: string;

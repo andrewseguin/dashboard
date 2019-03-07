@@ -50,7 +50,7 @@ export class WidgetView {
       private activatedRepository: ActivatedRepository) {}
 
   ngOnInit() {
-    this.issuesRenderer.initialize();
+    this.issuesRenderer.initialize('issue');
     this.issuesRenderer.issueGroups
         .pipe(filter(issueGroups => !!issueGroups), takeUntil(this.destroyed))
         .subscribe(issueGroups => {

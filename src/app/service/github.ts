@@ -343,6 +343,8 @@ export interface UserComment {
   updated: string;
 }
 
+export type IssueType = 'issue'|'pr';
+
 export interface Issue {
   assignees: string[];
   body: string;

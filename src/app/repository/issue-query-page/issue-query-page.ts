@@ -8,7 +8,7 @@ import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {Widget} from '../services/dao/dashboards-dao';
-import {IssueQueriesDao, IssueQuery, IssueQueryType} from '../services/dao/issue-queries-dao';
+import {IssueQueriesDao, IssueQuery} from '../services/dao/issue-queries-dao';
 import {RecommendationsDao} from '../services/dao/recommendations-dao';
 import {
   areOptionStatesEqual,
@@ -17,6 +17,7 @@ import {
 } from '../services/issues-renderer/issue-renderer-options';
 import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
 import {Filter} from '../utility/search/filter';
+import { IssueType } from 'app/service/github';
 
 @Component({
   styleUrls: ['issue-query-page.scss'],
@@ -89,7 +90,7 @@ export class IssueQueryPage {
           const widget: Widget = JSON.parse(widgetJson);
           this.issueQuery = createNewIssueQuery('issue', widget.title, widget.options);
         } else {
-          const type = queryParamMap.get('type') as IssueQueryType;
+          const type = queryParamMap.get('type') as IssueType;
           this.issueQuery = createNewIssueQuery(type);
         }
         this.cd.markForCheck();
@@ -144,7 +145,7 @@ export class IssueQueryPage {
 }
 
 function createNewIssueQuery(
-    type: IssueQueryType, name = 'New Issue Query',
+    type: IssueType, name = 'New Issue Query',
     optionsState: IssueRendererOptionsState = null): IssueQuery {
   const options = new IssueRendererOptions();
 

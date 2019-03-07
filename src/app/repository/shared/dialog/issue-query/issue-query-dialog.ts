@@ -4,14 +4,16 @@ import {Router} from '@angular/router';
 import {
   IssueQueriesDao,
   IssueQuery,
-  IssueQueryType
 } from 'app/repository/services/dao/issue-queries-dao';
 import {
   IssueRendererOptionsState
 } from 'app/repository/services/issues-renderer/issue-renderer-options';
+import {IssueType} from 'app/service/github';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
+
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
+
 import {IssueQueryEdit} from './issue-query-edit/issue-query-edit';
 
 
@@ -58,8 +60,7 @@ export class IssueQueryDialog {
    * name, save the issue query and automatically navigate to the issue query
    * page with $key, replacing the current URL.
    */
-  saveAsIssueQuery(
-      currentOptions: IssueRendererOptionsState, repository: string, type: IssueQueryType) {
+  saveAsIssueQuery(currentOptions: IssueRendererOptionsState, repository: string, type: IssueType) {
     this.dialog.open(IssueQueryEdit).afterClosed().pipe(take(1)).subscribe(result => {
       if (!result) {
         return;

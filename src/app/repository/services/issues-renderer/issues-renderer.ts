@@ -13,6 +13,7 @@ import {IssueFilterer} from './issue-filterer';
 import {IssueGroup, IssueGrouping} from './issue-grouping';
 import {IssueRendererOptions} from './issue-renderer-options';
 import {IssueSorter} from './issue-sorter';
+import { IssueType } from 'app/service/github';
 
 
 @Injectable()
@@ -35,9 +36,9 @@ export class IssuesRenderer {
     }
   }
 
-  initialize() {
+  initialize(type: IssueType) {
     if (this.initSubscription) {
-      throw new Error('Already been initialized');
+      this.initSubscription.unsubscribe();
     }
 
     const data: any[] = [
@@ -51,12 +52,13 @@ export class IssuesRenderer {
             .pipe(filter(result => !!result[0] && !!result[1]), debounceTime(50))
             .subscribe(result => {
               const repo = result[0] as Repo;
+              const items = type === 'issue' ? repo.issues : repo.pullRequests;
               const recommendations = result[1] as Map<number, Recommendation[]>;
 
               // Filter and search
               const filterer = new IssueFilterer(this.options.filters, repo, recommendations);
               const filteredAndSearchedIssues =
-                  getIssuesMatchingFilterAndSearch(repo.issues, filterer, this.options.search);
+                  getIssuesMatchingFilterAndSearch(items, filterer, this.options.search);
 
               // Group
               const grouper = new IssueGrouping(filteredAndSearchedIssues, repo);

@@ -55,7 +55,7 @@ export class IssuesList {
       public selection: Selection, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    this.issuesRenderer.initialize();
+    this.issuesRenderer.initialize('issue');
     const options = this.issuesRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.issuesRendererOptionsChanged.next(options.getState());
