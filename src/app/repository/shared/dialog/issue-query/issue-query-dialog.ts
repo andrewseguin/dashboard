@@ -71,7 +71,7 @@ export class IssueQueryDialog {
 
       this.issueQueriesDao.add(issueQuery).then(id => {
         this.router.navigate(
-            [`${repository}/issue-query/${id}`], {replaceUrl: true, queryParamsHandling: 'merge'});
+            [`${repository}/query/${id}`], {replaceUrl: true, queryParamsHandling: 'merge'});
       });
     });
   }

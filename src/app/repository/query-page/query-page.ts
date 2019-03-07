@@ -5,7 +5,6 @@ import {ItemType} from 'app/service/github';
 import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
-
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {Widget} from '../services/dao/dashboards-dao';
@@ -17,38 +16,38 @@ import {
   IssueRendererOptionsState
 } from '../services/issues-renderer/issue-renderer-options';
 import {IssueQueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
-import {Filter} from '../utility/search/filter';
+
 
 @Component({
-  styleUrls: ['issue-query-page.scss'],
-  templateUrl: 'issue-query-page.html',
+  styleUrls: ['query-page.scss'],
+  templateUrl: 'query-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {'[class.is-mobile]': 'isMobile()'}
 })
-export class IssueQueryPage {
+export class QueryPage {
   isMobile = isMobile;
 
-  set issueQuery(issueQuery: IssueQuery) {
+  set query(query: IssueQuery) {
     // When a issue query is set, the options state should be updated to be
     // whatever the issue query is, and the title should always match
-    this._issueQuery = issueQuery;
-    this.currentOptions = this.issueQuery.options;
-    this.header.title.next(this.issueQuery.name);
+    this._query = query;
+    this.currentOptions = this.query.options;
+    this.header.title.next(this.query.name);
     this.header.goBack = () => this.router.navigate(
-        [`/${this.activatedRepository.repository.value}/queries/${this.issueQuery.type}`]);
+        [`/${this.activatedRepository.repository.value}/queries/${this.query.type}`]);
   }
-  get issueQuery(): IssueQuery {
-    return this._issueQuery;
+  get query(): IssueQuery {
+    return this._query;
   }
-  private _issueQuery: IssueQuery;
+  private _query: IssueQuery;
 
   set currentOptions(currentOptions: IssueRendererOptionsState) {
     // When current options change, a check should be evaluated if they differ
-    // from the current issue query's options. If so, the save button should
+    // from the current query's options. If so, the save button should
     // display.
     this._currentOptions = currentOptions;
-    this.canSave = this.issueQuery && this.issueQuery.options && this.currentOptions &&
-        !areOptionStatesEqual(this.issueQuery.options, this.currentOptions);
+    this.canSave = this.query && this.query.options && this.currentOptions &&
+        !areOptionStatesEqual(this.query.options, this.currentOptions);
   }
   get currentOptions(): IssueRendererOptionsState {
     return this._currentOptions;
@@ -57,7 +56,7 @@ export class IssueQueryPage {
 
   canSave: boolean;
 
-  issueId =
+  itemId =
       this.activatedRoute.queryParamMap.pipe(map(queryParamsMap => +queryParamsMap.get('item')));
 
   private destroyed = new Subject();
@@ -85,13 +84,13 @@ export class IssueQueryPage {
         const widgetJson = queryParamMap.get('widget');
 
         if (recommendationId) {
-          this.createNewIssueQueryFromRecommendation(recommendationId);
+          this.createNewQueryFromRecommendation(recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
-          this.issueQuery = createNewIssueQuery('issue', widget.title, widget.options);
+          this.query = createNewQuery('issue', widget.title, widget.options);
         } else {
           const type = queryParamMap.get('type') as ItemType;
-          this.issueQuery = createNewIssueQuery(type);
+          this.query = createNewQuery(type);
         }
         this.cd.markForCheck();
       } else {
@@ -99,7 +98,7 @@ export class IssueQueryPage {
             this.issueQueriesDao.map.pipe(takeUntil(this.destroyed), filter(map => !!map))
                 .subscribe(map => {
                   if (map.get(id)) {
-                    this.issueQuery = map.get(id);
+                    this.query = map.get(id);
                   } else {
                     this.router.navigate([`${this.activatedRepository.repository.value}/queries`]);
                   }
@@ -121,21 +120,21 @@ export class IssueQueryPage {
 
   saveAs() {
     this.issueQueryDialog.saveAsIssueQuery(
-        this.currentOptions, this.activatedRepository.repository.value, this.issueQuery.type);
+        this.currentOptions, this.activatedRepository.repository.value, this.query.type);
   }
 
   save() {
-    this.issueQueriesDao.update(this.issueQuery.id, {options: this.currentOptions});
+    this.issueQueriesDao.update(this.query.id, {options: this.currentOptions});
   }
 
-  private createNewIssueQueryFromRecommendation(id: string) {
+  private createNewQueryFromRecommendation(id: string) {
     this.recommendationsDao.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
       list.forEach(r => {
         if (r.id === id) {
           const options = new IssueRendererOptions();
           options.filters = r.filters;
           options.search = r.search;
-          this.issueQuery = createNewIssueQuery('issue', r.message, options.getState());
+          this.query = createNewQuery('issue', r.message, options.getState());
           this.cd.markForCheck();
         }
       });
@@ -143,8 +142,8 @@ export class IssueQueryPage {
   }
 }
 
-function createNewIssueQuery(
-    type: ItemType, name = 'New Issue Query',
+function createNewQuery(
+    type: ItemType, name = 'New Query',
     optionsState: IssueRendererOptionsState = null): IssueQuery {
   const options = new IssueRendererOptions();
 

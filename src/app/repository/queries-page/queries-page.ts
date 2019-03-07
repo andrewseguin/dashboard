@@ -67,17 +67,17 @@ export class QueriesPage {
 
   createQuery(type: ItemType) {
     this.router.navigate(
-        [`${this.activatedRepository.repository.value}/issue-query/new`], {queryParams: {type}});
+        [`${this.activatedRepository.repository.value}/query/new`], {queryParams: {type}});
   }
 
   createQueryFromRecommendation(recommendation: Recommendation) {
     this.router.navigate(
-        [`${this.activatedRepository.repository.value}/issue-query/new`],
+        [`${this.activatedRepository.repository.value}/query/new`],
         {queryParams: {'recommendationId': recommendation.id}});
   }
 
   navigateToQuery(id: string) {
-    this.router.navigate([`${this.activatedRepository.repository.value}/issue-query/${id}`]);
+    this.router.navigate([`${this.activatedRepository.repository.value}/query/${id}`]);
   }
 }
 

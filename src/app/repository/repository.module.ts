@@ -35,8 +35,8 @@ const routes: Routes = [{
       loadChildren: 'app/repository/queries-page/queries-page.module#QueriesPageModule'
     },
     {
-      path: 'issue-query/:id',
-      loadChildren: 'app/repository/issue-query-page/issue-query-page.module#IssueQueryPageModule'
+      path: 'query/:id',
+      loadChildren: 'app/repository/query-page/query-page.module#QueryPageModule'
     },
     {
       path: 'config',

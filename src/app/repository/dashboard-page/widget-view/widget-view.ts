@@ -72,7 +72,7 @@ export class WidgetView {
 
   openIssueQuery() {
     this.router.navigate(
-        [`${this.activatedRepository.repository.value}/issue-query/new`],
+        [`${this.activatedRepository.repository.value}/query/new`],
         {queryParams: {'widget': JSON.stringify(this.widget)}});
   }
 }
