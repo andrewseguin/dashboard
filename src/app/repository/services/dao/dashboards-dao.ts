@@ -35,6 +35,7 @@ export interface ColumnGroup {
 export interface Dashboard {
   id?: string;
   name?: string;
+  description?: string;
   columnGroups?: ColumnGroup[];
   dateCreated?: string;
   dateModified?: string;

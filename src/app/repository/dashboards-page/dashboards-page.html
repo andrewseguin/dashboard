@@ -1,21 +1,25 @@
 <ng-container *ngIf="dashboardsDao.list | async; let dashboards; else loading">
-  <div class="dashboard theme-border theme-background-card theme-hover"
-       *ngFor="let dashboard of dashboards; trackBy: trackById"
+  <div class="dashboard theme-border theme-background-card theme-hover" *ngFor="let dashboard of dashboards; trackBy: trackById"
        (click)="navigateToDashboard(dashboard.id)">
 
     <div class="heading">
       <div class="name">{{dashboard.name}}</div>
 
-      <button mat-icon-button (click)="$event.stopPropagation()"
+      <button mat-icon-button (click)="$event.stopPropagation()" class="theme-hover theme-secondary-text settings"
               [matMenuTriggerFor]="settings">
         <mat-icon>settings</mat-icon>
       </button>
     </div>
 
+    <div class="description theme-secondary-text">
+      {{dashboard.description}}
+    </div>
+
     <mat-menu #settings="matMenu">
-      <button mat-menu-item (click)="edit.emit()"> Edit Name </button>
-      <button mat-menu-item (click)="edit.emit()"> Edit Description </button>
-      <button mat-menu-item (click)="remove.emit()"> Remove </button>
+      <button mat-menu-item (click)="dashboardDialog.editDashboard(dashboard)">
+        Edit Name/Description </button>
+      <button mat-menu-item (click)="dashboardDialog.deleteIssueQuery(dashboard)">
+        Remove </button>
     </mat-menu>
   </div>
 </ng-container>

@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 
 import {ActivatedRepository} from '../services/activated-repository';
 import {Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
+import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
 
 @Component({
   selector: 'dashboards-page',
@@ -15,7 +16,7 @@ export class DashboardsPage {
 
   constructor(
       public dashboardsDao: DashboardsDao, private router: Router,
-      private activatedRepository: ActivatedRepository) {}
+      public dashboardDialog: DashboardDialog, private activatedRepository: ActivatedRepository) {}
 
   createDashboard() {
     this.router.navigate([`${this.activatedRepository.repository.value}/dashboard/new`]);
