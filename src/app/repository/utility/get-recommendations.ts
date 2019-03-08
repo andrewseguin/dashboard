@@ -7,7 +7,7 @@ export function getRecommendations(
     itemId: number, repo: Repo, recommendations: Recommendation[]): Recommendation[] {
   const issue = repo.itemsMap.get(itemId);
   return recommendations.filter(recommendation => {
-    const filterer = new IssueFilterer(recommendation.filters, repo, new Map());
+    const filterer = new IssueFilterer(recommendation.filters || [], repo, new Map());
     const matchedIssues =
         getIssuesMatchingFilterAndSearch([issue], filterer, recommendation.search);
     return !!matchedIssues.length;
