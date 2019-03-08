@@ -33,6 +33,10 @@
     </ng-container>
   </form>
 
+  <button mat-button [matMenuTriggerFor]="loadSearch">
+    Load Saved Search
+  </button>
+
   <advanced-search [search]="issuesRenderer.options.search" [filters]="issuesRenderer.options.filters"
                    [metadata]="metadata" (searchChanged)="issuesRenderer.options.search = $event"
                    (filtersChanged)="issuesRenderer.options.filters = $event">
@@ -42,5 +46,36 @@
 
 <div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close> Cancel </button>
-  <button mat-raised-button (click)="edit()"> Edit </button>
+  <button mat-raised-button (click)="edit()" color="primary"> Save </button>
 </div>
+
+<mat-menu #loadSearch="matMenu">
+  <button mat-menu-item *ngIf="(recommendationsDao.list | async)?.length > 0"
+          [matMenuTriggerFor]="recommendationsMenu"> Recommendations
+  </button>
+  <button mat-menu-item *ngIf="(issueQueries | async)?.length > 0 && form.value.itemType === 'issue'"
+          [matMenuTriggerFor]="issueQueriesMenu"> Issue Queries
+  </button>
+  <button mat-menu-item *ngIf="(prQueries | async)?.length > 0 && form.value.itemType === 'pr'"
+          [matMenuTriggerFor]="prQueriesMenu"> Pull Request Queries
+  </button>
+</mat-menu>
+
+<mat-menu #recommendationsMenu="matMenu">
+  <button mat-menu-item *ngFor="let recommendation of recommendationsDao.list | async"
+          (click)="loadFromRecommendation(recommendation)">
+    {{recommendation.message}}
+  </button>
+</mat-menu>
+
+<mat-menu #issueQueriesMenu="matMenu">
+  <button mat-menu-item *ngFor="let query of issueQueries | async" (click)="loadFromQuery(query)">
+    {{query.name}}
+  </button>
+</mat-menu>
+
+<mat-menu #prQueriesMenu="matMenu">
+  <button mat-menu-item *ngFor="let query of prQueries | async" (click)="loadFromQuery(query)">
+    {{query.name}}
+  </button>
+</mat-menu>

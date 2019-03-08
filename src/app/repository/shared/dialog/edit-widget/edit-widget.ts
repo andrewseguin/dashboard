@@ -2,10 +2,13 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@an
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
+import {QueriesDao, Query} from 'app/repository/services/dao/issue-queries-dao';
+import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
+import {IssueRendererOptions} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 
 export interface EditWidgetData {
   widget: Widget;
@@ -26,11 +29,17 @@ export class EditWidget {
 
   metadata = ItemsFilterMetadata;
 
+  issueQueries = this.queriesDao.list.pipe(
+      filter(list => !!list), map(list => list.filter(q => q.type === 'issue')));
+  prQueries = this.queriesDao.list.pipe(
+      filter(list => !!list), map(list => list.filter(q => q.type === 'pr')));
+
   private _destroyed = new Subject();
 
   constructor(
       private dialogRef: MatDialogRef<EditWidget, Widget>, public issuesRenderer: IssuesRenderer,
-      private cd: ChangeDetectorRef, @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+      public recommendationsDao: RecommendationsDao, public queriesDao: QueriesDao,
+      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
     this.issuesRenderer.initialize(this.widget.itemType);
     this.issuesRenderer.options.setState(data.widget.options);
@@ -64,5 +73,16 @@ export class EditWidget {
     }
 
     this.dialogRef.close(result);
+  }
+
+  loadFromRecommendation(recommendation: Recommendation) {
+    const options = new IssueRendererOptions();
+    options.filters = recommendation.filters;
+    options.search = recommendation.search;
+    this.issuesRenderer.options.setState(options.getState());
+  }
+
+  loadFromQuery(query: Query) {
+    this.issuesRenderer.options.setState(query.options);
   }
 }
