@@ -37,7 +37,7 @@ export class Updater {
                 }
               });
 
-              return this.github.getOutdatedItemsCount(repoId, lastUpdated);
+              return this.github.getItemsCount(repoId, lastUpdated);
             }),
             mergeMap(count => {
               return count ? this.github.getIssues(repoId, lastUpdated) : of(null);

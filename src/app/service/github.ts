@@ -15,7 +15,7 @@ export interface CombinedPagedResults<T> {
 export class Github {
   constructor(private http: HttpClient) {}
 
-  getOutdatedItemsCount(repo: string, since?: string) {
+  getItemsCount(repo: string, since?: string): Observable<number> {
     let query = `q=type:issue repo:${repo}`;
     if (since) {
       query += ` updated:>${since}`;

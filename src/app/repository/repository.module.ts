@@ -23,6 +23,10 @@ const routes: Routes = [{
   component: Repository,
   children: [
     {
+      path: 'database',
+      loadChildren: 'app/repository/database-page/database-page.module#DatabasePageModule'
+    },
+    {
       path: 'dashboards',
       loadChildren: 'app/repository/dashboards-page/dashboards-page.module#DashboardsPageModule'
     },

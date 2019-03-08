@@ -1,0 +1,9 @@
+<ng-container *ngIf="repoDao.repo | async; let repo">
+  <ng-container *ngIf="!repo.empty; else loadData">
+    Data loaded
+  </ng-container>
+
+  <ng-template #loadData>
+    <load-data></load-data>
+  </ng-template>
+</ng-container>

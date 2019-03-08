@@ -8,12 +8,13 @@ import {Updater} from 'app/repository/services/updater';
 import {UsersDao} from 'app/service/users-dao';
 import {Observable, Subject} from 'rxjs';
 import {filter, mergeMap} from 'rxjs/operators';
+import { RepoDao } from 'app/service/repo-dao';
 
 export interface NavLink {
   route: string;
   label: string;
   icon: string;
-  permissions?: Observable<boolean>;
+  requiresData?: boolean;
 }
 
 @Component({
@@ -30,10 +31,11 @@ export class Nav {
   isUserProfileExpanded = false;
 
   links: NavLink[] = [
-    {route: 'dashboards', label: 'Dashboards', icon: 'dashboard'},
-    {route: 'queries/issue', label: 'Issues', icon: 'find_in_page'},
-    {route: 'queries/pr', label: 'Pull Requests', icon: 'call_merge'},
-    {route: 'config', label: 'Config', icon: 'settings'},
+    {route: 'database', label: 'Database', icon: 'archive'},
+    {route: 'dashboards', label: 'Dashboards', icon: 'dashboard', requiresData: true},
+    {route: 'queries/issue', label: 'Issues', icon: 'find_in_page', requiresData: true},
+    {route: 'queries/pr', label: 'Pull Requests', icon: 'call_merge', requiresData: true},
+    {route: 'config', label: 'Config', icon: 'settings', requiresData: true},
   ];
 
   @Input() sidenav: MatSidenav;
@@ -41,7 +43,7 @@ export class Nav {
   private destroyed = new Subject();
 
   constructor(
-      public afAuth: AngularFireAuth, public usersDao: UsersDao,
+      public afAuth: AngularFireAuth, public usersDao: UsersDao, private repoDao: RepoDao,
       public activatedRepository: ActivatedRepository, public cd: ChangeDetectorRef,
       public theme: Theme, public router: Router, public updater: Updater) {}
 

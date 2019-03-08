@@ -32,7 +32,7 @@ export class CreateStore {
       private dialogRef: MatDialogRef<CreateStore, void>, public github: Github,
       private repoDao: RepoDao, private cd: ChangeDetectorRef,
       @Inject(MAT_DIALOG_DATA) public data: PromptDialogData) {
-    this.github.getOutdatedItemsCount(data.repo).subscribe(result => {
+    this.github.getItemsCount(data.repo).subscribe(result => {
       this.totalIssueCount = result;
       this.cd.markForCheck();
     });

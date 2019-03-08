@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 interface ConfigTab {
   id: string;
@@ -9,6 +9,7 @@ interface ConfigTab {
   selector: 'config-page',
   styleUrls: ['config-page.scss'],
   templateUrl: 'config-page.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigPage {
   tabs: ConfigTab[] = [
