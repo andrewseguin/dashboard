@@ -7,7 +7,6 @@ import {takeUntil} from 'rxjs/operators';
 
 import {ActivatedRepository} from './services/activated-repository';
 import {Updater} from './services/updater';
-import {CreateStore} from './shared/dialog/create-store/create-store';
 
 @Component({
   templateUrl: 'repository.html',

@@ -12,7 +12,6 @@ import {RecommendationsDao} from './services/dao/recommendations-dao';
 import {IssueRecommendations} from './services/issue-recommendations';
 import {Markdown} from './services/markdown';
 import {Updater} from './services/updater';
-import {CreateStoreModule} from './shared/dialog/create-store/create-store.module';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
 import {SelectionHeaderModule} from './shared/selection-header/selection-header.module';
@@ -64,7 +63,6 @@ export class RepositoryRoutingModule {
     SelectionHeaderModule,
     RouterModule,
     RepositoryRoutingModule,
-    CreateStoreModule,
   ],
   declarations: [Repository],
   exports: [Repository],
