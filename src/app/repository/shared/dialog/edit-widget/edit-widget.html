@@ -8,15 +8,23 @@
     </mat-form-field>
 
     <div class="type">
+      <div class="label"> Query Type </div>
+      <mat-button-toggle-group formControlName="itemType">
+        <mat-button-toggle value="issue"> Issue </mat-button-toggle>
+        <mat-button-toggle value="pr">Pull Request</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <div class="type">
       <div class="label"> Display Type </div>
-      <mat-button-toggle-group formControlName="type">
-        <mat-button-toggle value="issues-list">Issue list</mat-button-toggle>
-        <mat-button-toggle value="issues-count"> Issue Count</mat-button-toggle>
+      <mat-button-toggle-group formControlName="displayType">
+        <mat-button-toggle value="list">List</mat-button-toggle>
+        <mat-button-toggle value="count"> Count</mat-button-toggle>
       </mat-button-toggle-group>
     </div>
 
     <ng-container [ngSwitch]="form.value.type">
-      <ng-container *ngSwitchCase="'issues-list'">
+      <ng-container *ngSwitchCase="'list'">
         <mat-form-field class="list-length">
           <mat-label> Max List Length </mat-label>
           <input matInput formControlName="listLength">

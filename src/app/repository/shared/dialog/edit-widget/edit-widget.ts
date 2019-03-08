@@ -1,10 +1,11 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
 import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
 import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 export interface EditWidgetData {
   widget: Widget;
@@ -25,27 +26,40 @@ export class EditWidget {
 
   metadata = ItemsFilterMetadata;
 
+  private _destroyed = new Subject();
+
   constructor(
       private dialogRef: MatDialogRef<EditWidget, Widget>, public issuesRenderer: IssuesRenderer,
-      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+      private cd: ChangeDetectorRef, @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
-    this.issuesRenderer.initialize('issue');
+    this.issuesRenderer.initialize(this.widget.itemType);
     this.issuesRenderer.options.setState(data.widget.options);
     this.form = new FormGroup({
       title: new FormControl(this.widget.title),
-      type: new FormControl(this.widget.type),
+      itemType: new FormControl(this.widget.itemType),
+      displayType: new FormControl(this.widget.displayType),
       listLength: new FormControl(this.widget.listLength || 3),
     });
+
+    this.form.get('itemType').valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
+      this.issuesRenderer.initialize(itemType);
+    });
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   edit() {
     const result: Widget = {
       title: this.form.value.title,
       options: this.issuesRenderer.options.getState(),
-      type: this.form.value.type,
+      itemType: this.form.value.itemType,
+      displayType: this.form.value.displayType,
     };
 
-    if (result.type === 'issues-list') {
+    if (result.displayType === 'list') {
       result.listLength = this.form.value.listLength;
     }
 

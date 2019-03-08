@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Config} from 'app/service/config';
+import {ItemType} from 'app/service/github';
 
 import {ActivatedRepository} from '../activated-repository';
 import {IssueRendererOptionsState} from '../issues-renderer/issue-renderer-options';
@@ -9,7 +10,8 @@ import {RepositoryCollectionDao} from './repository-collection-dao';
 
 export interface BaseWidget {
   title?: string;
-  type?: 'issues-list'|'issues-count';
+  itemType: ItemType;
+  displayType?: 'list'|'count';
 }
 
 export interface IssueListWidget extends BaseWidget {

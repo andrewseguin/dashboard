@@ -87,7 +87,7 @@ export class QueryPage {
           this.createNewQueryFromRecommendation(recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
-          this.query = createNewQuery('issue', widget.title, widget.options);
+          this.query = createNewQuery(widget.itemType, widget.title, widget.options);
         } else {
           const type = queryParamMap.get('type') as ItemType;
           this.query = createNewQuery(type);
@@ -143,8 +143,7 @@ export class QueryPage {
 }
 
 function createNewQuery(
-    type: ItemType, name = 'New Query',
-    optionsState: IssueRendererOptionsState = null): Query {
+    type: ItemType, name = 'New Query', optionsState: IssueRendererOptionsState = null): Query {
   const options = new IssueRendererOptions();
 
   if (optionsState) {
