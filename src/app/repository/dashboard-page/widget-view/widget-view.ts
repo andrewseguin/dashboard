@@ -34,6 +34,8 @@ export class WidgetView {
 
   @Input() editMode: boolean;
 
+  @Input() dashboardId: string;
+
   @Output() edit = new EventEmitter<void>();
 
   @Output() remove = new EventEmitter<void>();
@@ -73,6 +75,6 @@ export class WidgetView {
   openQuery() {
     this.router.navigate(
         [`${this.activatedRepository.repository.value}/query/new`],
-        {queryParams: {'widget': JSON.stringify(this.widget)}});
+        {queryParams: {'widget': JSON.stringify(this.widget), dashboard: this.dashboardId}});
   }
 }

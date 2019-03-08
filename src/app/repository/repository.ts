@@ -53,13 +53,13 @@ export class Repository {
   }
 
   private initializAutoIssueUpdates() {
-    interval(20 * 1000)
+    interval(60 * 1000)
         .pipe(mergeMap(() => this.repoDao.repo), filter(repo => !repo.empty))
         .subscribe(() => {
-          this.updater.updateLabels(this.repository);
+          this.updater.updateIssues(this.repository);
         });
 
     this.updater.updateContributors(this.repository);
-    this.updater.updateIssues(this.repository);
+    this.updater.updateLabels(this.repository);
   }
 }

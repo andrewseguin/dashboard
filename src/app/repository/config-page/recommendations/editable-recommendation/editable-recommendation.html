@@ -10,44 +10,58 @@
             <mat-icon *ngSwitchCase="'suggestion'"> label_important </mat-icon>
           </ng-container>
         </mat-select-trigger>
-        <mat-option *ngFor="let type of ['warning', 'suggestion']" [value]="type">
+        <mat-option *ngFor="let type of ['warning', 'suggestion']"
+                    [value]="type">
           {{type}}
         </mat-option>
       </mat-select>
 
       <textarea class="message theme-border" formControlName="message"
                 cdkTextareaAutosize>  </textarea>
+
+      <button mat-icon-button (click)="expanded = !expanded">
+        <mat-icon [@expansionIndicator]="expanded">
+          expand_more
+        </mat-icon>
+      </button>
     </div>
 
-    <div class="action">
-      <mat-select formControlName="actionType">
-        <mat-option *ngFor="let actionType of actionTypeOptions" [value]="actionType.value">
-          {{actionType.label}}
-        </mat-option>
-      </mat-select>
+    <div [@expansionContent]="expanded">
 
 
-      <div [ngSwitch]="form.value.actionType" class="action-list">
-        <div *ngSwitchCase="'add-label'">
-          <editable-chip-list [values]="recommendation.action?.labels"
-                              [autocomplete]="(addLabelsAutocomplete | async) || []"
-                              (listChange)="setAddLabelAction($event)">
-          </editable-chip-list>
+      <div class="action">
+        <mat-select formControlName="actionType">
+          <mat-option *ngFor="let actionType of actionTypeOptions"
+                      [value]="actionType.value">
+            {{actionType.label}}
+          </mat-option>
+        </mat-select>
+
+
+        <div [ngSwitch]="form.value.actionType" class="action-list">
+          <div *ngSwitchCase="'add-label'">
+            <editable-chip-list [values]="recommendation.action?.labels"
+                                [autocomplete]="(addLabelsAutocomplete | async) || []"
+                                (listChange)="setAddLabelAction($event)">
+            </editable-chip-list>
+          </div>
+          <div *ngSwitchCase="'add-assignee'">
+            Add assignee
+          </div>
         </div>
-        <div *ngSwitchCase="'add-assignee'">
-          Add assignee
-        </div>
+      </div>
+      <advanced-search [search]="search" [filters]="filters"
+                       [metadata]="metadata" (searchChanged)="search = $event"
+                       (filtersChanged)="filters = $event">
+      </advanced-search>
+      <div class="delete">
+        <button mat-stroked-button color="warn"
+                (click)="deleteRecommendation()">
+          Delete Recommendation
+        </button>
       </div>
     </div>
 
-    <advanced-search [search]="search" [filters]="filters" [metadata]="metadata"
-                     (searchChanged)="search = $event" (filtersChanged)="filters = $event">
-    </advanced-search>
 
-    <div class="delete">
-      <button mat-stroked-button color="warn" (click)="deleteRecommendation()">
-        Delete Recommendation
-      </button>
-    </div>
   </form>
 </div>

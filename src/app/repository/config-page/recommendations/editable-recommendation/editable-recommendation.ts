@@ -3,9 +3,12 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
-import {DeleteConfirmation} from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
+import {
+  DeleteConfirmation
+} from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
 import {Filter} from 'app/repository/utility/search/filter';
 import {RepoDao} from 'app/service/repo-dao';
+import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {merge, of, Subject} from 'rxjs';
 import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
 
@@ -16,9 +19,12 @@ import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'theme-background-card theme-border',
-  }
+  },
+  animations: EXPANSION_ANIMATION
 })
 export class EditableRecommendation {
+  expanded = false;
+
   set filters(v: Filter[]) {
     if (this._filters === v) {
       return;
@@ -52,16 +58,15 @@ export class EditableRecommendation {
   metadata = ItemsFilterMetadata;
 
   actionTypeOptions = [
-    {label: 'No action', value: 'no-action'},
-    {label: 'Add label', value: 'add-label'},
+    {label: 'No action', value: 'no-action'}, {label: 'Add label', value: 'add-label'},
     {label: 'Add assignee', value: 'add-assignee'}
   ];
 
   actionLabels = [];
   actionAssignees = [];
 
-  addLabelsAutocomplete = this.repoDao.repo.pipe(
-      filter(repo => !!repo), map(repo => repo.labels.map(l => l.name)));
+  addLabelsAutocomplete =
+      this.repoDao.repo.pipe(filter(repo => !!repo), map(repo => repo.labels.map(l => l.name)));
 
   private _destroyed = new Subject();
 
@@ -73,8 +78,7 @@ export class EditableRecommendation {
     this.form = new FormGroup({
       message: new FormControl(this.recommendation.message),
       type: new FormControl(this.recommendation.type || 'warning'),
-      actionType:
-          new FormControl(this.recommendation.actionType || 'add-label'),
+      actionType: new FormControl(this.recommendation.actionType || 'add-label'),
       action: new FormControl(this.recommendation.action),
     });
 
@@ -113,8 +117,7 @@ export class EditableRecommendation {
         .subscribe(confirmed => {
           if (confirmed) {
             this.recommendationsDao.remove(this.recommendation.id);
-            this.snackbar.open(
-                `Recommendation deleted`, null, {duration: 2000});
+            this.snackbar.open(`Recommendation deleted`, null, {duration: 2000});
           }
         });
   }

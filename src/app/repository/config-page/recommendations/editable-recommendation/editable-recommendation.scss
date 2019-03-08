@@ -6,6 +6,10 @@
   margin: 16px 0;
 }
 
+form {
+  overflow: hidden;
+}
+
 mat-form-field {
   display: block;
 }
@@ -27,7 +31,6 @@ mat-button-toggle-group {
 .heading {
   display: flex;
   align-items: center;
-  margin-bottom: 24px;
 
   .message {
     flex: 1;
@@ -51,6 +54,7 @@ mat-button-toggle-group {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
+  padding-top: 24px;
 
   mat-select {
     width: inherit;

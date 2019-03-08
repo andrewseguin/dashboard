@@ -21,6 +21,7 @@
             <!-- Widget -->
             <widget-view *ngFor="let widget of column.widgets; let widgetIndex = index"
                          cdkDrag [cdkDragDisabled]="!edit.value" [widget]="widget"
+                         [dashboardId]="dashboard.id"
                          (edit)="editWidget(column, widgetIndex)" [editMode]="edit.value"
                          (remove)="removeWidget(column, widgetIndex)">
             </widget-view>

@@ -41,7 +41,6 @@ export class LabelList {
 
   labels = combineLatest(this._labelIds, this.repoDao.repo)
                .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
-                       console.log('updating labels');
                        const labelIds = result[0] as (string | number)[];
                        const repo = result[1] as Repo;
 

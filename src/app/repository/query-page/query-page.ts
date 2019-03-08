@@ -33,8 +33,7 @@ export class QueryPage {
     this._query = query;
     this.currentOptions = this.query.options;
     this.header.title.next(this.query.name);
-    this.header.goBack = () => this.router.navigate(
-        [`/${this.activatedRepository.repository.value}/queries/${this.query.type}`]);
+    this.setBack();
   }
   get query(): Query {
     return this._query;
@@ -82,6 +81,7 @@ export class QueryPage {
         const queryParamMap = this.activatedRoute.snapshot.queryParamMap;
         const recommendationId = queryParamMap.get('recommendationId');
         const widgetJson = queryParamMap.get('widget');
+        const dashboard = queryParamMap.get('dashboard');
 
         if (recommendationId) {
           this.createNewQueryFromRecommendation(recommendationId);
@@ -91,6 +91,11 @@ export class QueryPage {
         } else {
           const type = queryParamMap.get('type') as ItemType;
           this.query = createNewQuery(type);
+        }
+
+        // If navigated from dashboard, go back to the dashboard, not queries page
+        if (dashboard) {
+          this.setBack(dashboard);
         }
         this.cd.markForCheck();
       } else {
@@ -125,6 +130,16 @@ export class QueryPage {
 
   save() {
     this.queriesDao.update(this.query.id, {options: this.currentOptions});
+  }
+
+  setBack(fromDashboard?: string) {
+    if (fromDashboard) {
+      this.header.goBack = () => this.router.navigate(
+          [`/${this.activatedRepository.repository.value}/dashboard/${fromDashboard}`]);
+    } else {
+      this.header.goBack = () => this.router.navigate(
+          [`/${this.activatedRepository.repository.value}/queries/${this.query.type}`]);
+    }
   }
 
   private createNewQueryFromRecommendation(id: string) {

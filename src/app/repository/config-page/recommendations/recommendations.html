@@ -1,8 +1,16 @@
-<button mat-raised-button color="primary" (click)="recommendationsDao.add({})">
-  New </button>
-
-<div
-     *ngFor="let recommendation of recommendationsDao.list | async; trackBy: trackById">
-  <editable-recommendation [recommendation]="recommendation">
-  </editable-recommendation>
+<div class="action">
+  <button mat-raised-button color="primary" (click)="add()">
+    Add New Recommendation
+  </button>
 </div>
+
+<ng-container *ngIf="sortedRecommendations | async; let list; else loading">
+  <div *ngFor="let recommendation of list; trackBy: trackById">
+    <editable-recommendation [recommendation]="recommendation">
+    </editable-recommendation>
+  </div>
+</ng-container>
+
+<ng-template #loading>
+  <loading label="recommendations"></loading>
+</ng-template>
