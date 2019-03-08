@@ -3,7 +3,6 @@
     <mat-tab [label]="tab.label">
       <ng-template matTabContent>
         <ng-container [ngSwitch]="tab.id">
-          <cache *ngSwitchCase="'cache'"></cache>
           <recommendations *ngSwitchCase="'recommendations'"></recommendations>
         </ng-container>
       </ng-template>

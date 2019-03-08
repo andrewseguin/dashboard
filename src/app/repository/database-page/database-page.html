@@ -1,9 +1,38 @@
-<ng-container *ngIf="repoDao.repo | async; let repo">
-  <ng-container *ngIf="!repo.empty; else loadData">
-    Data loaded
-  </ng-container>
+<div class="title"> {{activatedRepository.repository | async}} </div>
 
-  <ng-template #loadData>
-    <load-data></load-data>
-  </ng-template>
+<ng-container *ngIf="repoDao.repo | async; let repo">
+  <load-data #loadData></load-data>
+
+  <div class="description">
+    <div class="type issues theme-border theme-background-card"
+         *ngIf="repo.issues.length; let count">
+      <div class="type-title">
+        {{(count)}} Issues
+
+        <update-button [updateState]="issuesUpdateState | async"
+                       (update)="updateIssues()">
+        </update-button>
+      </div>
+    </div>
+
+    <div class="type issues theme-border theme-background-card"
+         *ngIf="repo.labels.length; let count">
+      <div class="type-title">
+        {{(count)}} Labels
+
+        <update-button [updateState]="labelsUpdateState | async"
+                       (update)="updateLabels()">
+        </update-button>
+      </div>
+
+      <label-list [labelIds]="repoLabels | async"> </label-list>
+
+    </div>
+  </div>
+
+  <button mat-button class="remove"
+          *ngIf="!repo.empty && !(loadData.isLoading | async)" color="warn"
+          (click)="removeData()">
+    Remove all locally stored data
+  </button>
 </ng-container>

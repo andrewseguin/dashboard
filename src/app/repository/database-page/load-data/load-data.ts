@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
+import {MatSnackBar} from '@angular/material';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Contributor, Github, Item, Label} from 'app/service/github';
 import {RepoDao} from 'app/service/repo-dao';
-import {combineLatest, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
 
 
@@ -21,6 +22,10 @@ interface StorageState {
 })
 export class LoadData {
   state: StorageState|null = null;
+
+  isLoading = new BehaviorSubject<boolean>(false);
+
+  completedTypes = new Set();
 
   formGroup =
       new FormGroup({issueDateType: new FormControl('since'), issueDate: new FormControl('')});
@@ -45,7 +50,7 @@ export class LoadData {
 
   constructor(
       private activatedRepository: ActivatedRepository, private repoDao: RepoDao,
-      private github: Github, private cd: ChangeDetectorRef) {
+      private snackbar: MatSnackBar, private github: Github, private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
     this.formGroup.get('issueDate').setValue(lastMonth, {emitEvent: false});
@@ -54,27 +59,31 @@ export class LoadData {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
+    this.isLoading.next(false);
   }
 
   async store() {
     const repository = this.activatedRepository.repository.value;
-
-    await this.getValues(
-        'issues', () => this.github.getIssues(repository, this.getIssuesDateSince()),
-        (values: Item[]) => this.repoDao.setItems(values));
+    this.isLoading.next(true);
 
     await this.getValues(
         'labels', () => this.github.getLabels(repository),
         (values: Label[]) => this.repoDao.setLabels(values));
+    this.completedTypes.add('labels');
+
+    await this.getValues(
+        'issues', () => this.github.getIssues(repository, this.getIssuesDateSince()),
+        (values: Item[]) => this.repoDao.setItems(values));
+    this.completedTypes.add('issues');
 
     await this.getValues(
         'contributors', () => this.github.getContributors(repository),
         (values: Contributor[]) => this.repoDao.setContributors(values));
+    this.completedTypes.add('contributors');
 
-    this.state = {
-      id: 'complete',
-      label: 'Complete',
-    };
+    this.state = null;
+    this.snackbar.open(`Successfully loaded data for ${repository}`, '', {duration: 2000});
+    this.isLoading.next(false);
     this.cd.markForCheck();
   }
 

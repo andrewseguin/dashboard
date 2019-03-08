@@ -1,14 +1,14 @@
-<div class="title"> {{activatedRepository.repository | async}} </div>
+<div class="load" *ngIf="!state && (repoDao.repo | async)?.empty">
 
-<div class="description">
-  <div class="type issues theme-border theme-background-card">
-    <div class="type-title">
-      {{((totalIssueCount | async) || '...')}} Issues
-    </div>
+  <div class="action">
+    <button mat-raised-button color="primary" class="load-data"
+            (click)="store()">
+      Load Data
+    </button>
 
     <div class="issues-form" [formGroup]="formGroup">
       <mat-select formControlName="issueDateType">
-        <mat-option *ngFor="let option of ['all issues', 'since']"
+        <mat-option *ngFor="let option of ['all data', 'since']"
                     [value]="option">
           {{option}}
         </mat-option>
@@ -18,33 +18,30 @@
         <input formControlName="issueDate" [matDatepicker]="picker"
                class="theme-border" (click)="picker.open()"
                placeholder="Choose a date">
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </div>
     </div>
   </div>
 
-  <div class="type labels theme-border theme-background-card">
-    <div class="type-title">
-      {{((totalLabelsCount | async) || '...')}} Labels
-    </div>
-  </div>
+  <ng-container *ngIf="totalIssueCount | async; let issueCount">
+    <ng-container *ngIf="totalLabelsCount | async; let labelCount">
+      <div class="data-to-load theme-secondary-text">
+        ({{issueCount}} issues, {{labelCount}} labels)
+      </div>
+    </ng-container>
+  </ng-container>
 </div>
 
-<div class="state theme-secondary-text" *ngIf="state && state.label">
-  {{state.label}}
-</div>
-
-<button mat-raised-button color="primary" *ngIf="!state" (click)="store()">
-  Load Data
-</button>
-
-<button mat-raised-button color="primary" *ngIf="state?.id === 'complete'"
-        [disabled]="state.id !== 'complete'" mat-dialog-close="true">
-  {{state.id === 'complete' ? 'Close' : 'Storing...'}}
-</button>
 
 <ng-container *ngIf="state?.progress; let progress">
+  <div *ngFor="let completed of completedTypes">
+    {{completedType}}
+  </div>
+
+  <div class="loading">
+    {{state.label}}
+    {{'(' + (state.progress.value | number:'1.0-0') + '% complete)'}}
+  </div>
   <mat-progress-bar *ngIf="progress.type === 'determinate'" mode="determinate"
                     [value]="state.progress.value">
   </mat-progress-bar>

@@ -1,4 +1,4 @@
-import {DB, openDb} from 'idb';
+import {DB, deleteDb, openDb} from 'idb';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
@@ -13,7 +13,7 @@ export interface Repo {
   pullRequests: PullRequest[];
   pullRequestsMap: Map<number, PullRequest>;
   labels: Label[];
-  labelsMap: Map<number, Label>;
+  labelsMap: Map<string|number, Label>;
   contributors: Contributor[];
   contributorsMap: Map<number, Contributor>;
 }
@@ -21,18 +21,17 @@ export interface Repo {
 const DB_VERSION = 1;
 
 export class RepoDao {
-  id: string;
+  repository: string;
 
-  repo: BehaviorSubject<Repo|null>;
+  repo = new BehaviorSubject<Repo|null>(null);
 
   private db: Promise<DB>;
 
   constructor() {}
 
-  initialize(repoId: string) {
-    this.id = repoId;
-    this.repo = new BehaviorSubject<Repo|null>(null);
-    this.db = openDb(this.id, DB_VERSION, function(db) {
+  initialize(repository: string) {
+    this.repository = repository;
+    this.db = openDb(this.repository, DB_VERSION, function(db) {
       if (!db.objectStoreNames.contains('items')) {
         db.createObjectStore('items', {keyPath: 'number'});
       }
@@ -60,6 +59,18 @@ export class RepoDao {
 
   setContributors(contributors: Contributor[]): Promise<void> {
     return this.setValues(contributors, 'contributors');
+  }
+
+  removeData() {
+    this.db
+        .then(db => {
+          db.close();
+          return deleteDb(this.repository);
+        })
+        .then(() => {
+          this.repo.next(null);
+          this.initialize(this.repository);
+        });
   }
 
   private setValues(values: any[], objectStore: string) {

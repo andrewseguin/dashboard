@@ -18,10 +18,6 @@ export class ConfigPage {
       id: 'recommendations',
       label: 'Recommendations',
     },
-    {
-      id: 'cache',
-      label: 'Cache',
-    },
   ];
 
   constructor() {}
