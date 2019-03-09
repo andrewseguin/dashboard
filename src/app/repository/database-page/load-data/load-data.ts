@@ -11,7 +11,7 @@ import {filter, map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
 interface StorageState {
   id: string;
   label: string;
-  progress?: {type: 'determinate'|'indeterminate', value?: number}
+  progress?: {type: 'determinate'|'indeterminate', value?: number};
 }
 
 @Component({

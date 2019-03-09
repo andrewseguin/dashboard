@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
-import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {NavigationEnd, Router} from '@angular/router';
 import {distinctUntilChanged} from 'rxjs/operators';
-
 import {Auth} from './service/auth';
 import {sendPageview} from './utility/analytics';
+
 
 @Component({
   selector: 'app-root',
@@ -15,7 +14,7 @@ import {sendPageview} from './utility/analytics';
   }
 })
 export class App {
-  constructor(private snackBar: MatSnackBar, private router: Router, private auth: Auth) {
+  constructor(private router: Router, private auth: Auth) {
     this.router.events
         .pipe(distinctUntilChanged((prev: any, curr: any) => {
           if (curr instanceof NavigationEnd) {

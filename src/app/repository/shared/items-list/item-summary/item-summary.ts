@@ -34,7 +34,7 @@ export class ItemSummary {
   @Input() active: boolean;
 
   @Output()
-  select = new EventEmitter<number>()
+  select = new EventEmitter<number>();
 
       constructor(
           private activatedRoute: ActivatedRoute, public itemRecommendations: ItemRecommendations,

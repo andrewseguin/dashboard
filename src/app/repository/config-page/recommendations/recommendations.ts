@@ -12,7 +12,7 @@ export class Recommendations {
   sortedRecommendations = this.recommendationsDao.list.pipe(
       filter(list => !!list), map(list => {
         return list.sort((a, b) => a.dateCreated > b.dateCreated ? -1 : 1);
-      }))
+      }));
   trackById = (_i, r: Recommendation) => r.id;
   constructor(public recommendationsDao: RecommendationsDao) {}
 

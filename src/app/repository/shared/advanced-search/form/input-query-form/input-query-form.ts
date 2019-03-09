@@ -41,7 +41,7 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
   set options(o: string[]) {
     this._options.next(Array.from(new Set(o)));
   }
-  get options(): string[] {return this._options.value;}
+  get options(): string[] {return this._options.value; }
   _options = new BehaviorSubject([]);
 
   @Input() focusInput: boolean;

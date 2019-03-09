@@ -31,7 +31,7 @@ export class LabelList {
   @Input()
   set labelIds(labelIds: (string|number)[]) {
     this._labelIds.next(labelIds);
-  };
+  }
   _labelIds = new BehaviorSubject<(string | number)[]>([]);
 
   /** Whether the labels are a selection list */

@@ -8,7 +8,7 @@ import {Query} from './query';
 export interface MatcherContext {
   item: Item;
   repo: Repo;
-  recommendations: Recommendation[]
+  recommendations: Recommendation[];
 }
 
 export interface AutocompleteContext {
