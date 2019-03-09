@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Item} from 'app/service/github';
 import {isMobile} from 'app/utility/media-matcher';
 import {map} from 'rxjs/operators';
-import {IssueDetailDialog} from '../../dialog/issue-detail-dialog/issue-detail-dialog';
+import {ItemDetailDialog} from '../../dialog/item-detail-dialog/item-detail-dialog';
 
 
 @Component({
@@ -34,7 +34,7 @@ export class ItemsGroup {
         queryParamsHandling: 'merge',
       });
     } else {
-      this.dialog.open(IssueDetailDialog, {data: {item}});
+      this.dialog.open(ItemDetailDialog, {data: {item}});
     }
   }
 }

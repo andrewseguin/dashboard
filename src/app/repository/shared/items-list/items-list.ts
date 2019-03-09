@@ -8,7 +8,6 @@ import {
   NgZone,
   Output
 } from '@angular/core';
-import {Selection} from 'app/repository/services';
 import {ItemGroup} from 'app/repository/services/items-renderer/item-grouping';
 import {
   ItemRendererOptionsState
@@ -55,7 +54,7 @@ export class ItemsList {
 
   constructor(
       public itemsRenderer: ItemsRenderer, public cd: ChangeDetectorRef, public ngZone: NgZone,
-      public selection: Selection, public elementRef: ElementRef) {}
+      public elementRef: ElementRef) {}
 
   ngOnInit() {
     this.itemsRenderer.initialize(this.type);
@@ -86,7 +85,7 @@ export class ItemsList {
       }
     });
 
-    // When issue groups change, render the first ten, then debounce and
+    // When groups change, render the first ten, then debounce and
     // render more
     this.itemsRenderer.itemGroups.pipe(takeUntil(this.destroyed)).subscribe(itemGroups => {
       this.itemGroups = itemGroups;
@@ -155,9 +154,5 @@ export class ItemsList {
 
   getItemGroupKey(_i: number, itemGroup: ItemGroup) {
     return itemGroup.id;
-  }
-
-  selectGroup(index: number) {
-    this.selection.issues.select(...this.itemGroups[index].items.map(r => r.number));
   }
 }

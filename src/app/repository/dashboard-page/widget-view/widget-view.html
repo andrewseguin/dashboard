@@ -10,9 +10,10 @@
 <ng-container [ngSwitch]="widget.displayType">
 
   <ng-container *ngSwitchCase="'list'">
-    <ng-container *ngIf="issues; else loading">
-      <ng-container *ngFor="let issue of issues.slice(0, widget.listLength); trackBy: trackByNumber; let last = last">
-        <item-summary [item]="issue" (select)="openIssueModal($event)"
+    <ng-container *ngIf="items; else loading">
+      <ng-container
+                    *ngFor="let item of items.slice(0, widget.listLength); trackBy: trackByNumber; let last = last">
+        <item-summary [item]="item" (select)="openItemModal($event)"
                       [style.pointer-events]="editMode ? 'none' : ''">
         </item-summary>
         <mat-divider *ngIf="!last"></mat-divider>
@@ -22,9 +23,9 @@
 
 
   <ng-container *ngSwitchCase="'count'">
-    <ng-container *ngIf="issues; else loading">
+    <ng-container *ngIf="items; else loading">
       <div class="count">
-        {{issuesRenderer.itemCount | async}}
+        {{itemsRenderer.itemCount | async}}
       </div>
     </ng-container>
   </ng-container>

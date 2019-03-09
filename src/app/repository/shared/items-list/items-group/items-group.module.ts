@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
 
-import {IssueDetailDialogModule} from '../../dialog/issue-detail-dialog/issue-detail-dialog.module';
+import {IssueDetailDialogModule} from '../../dialog/item-detail-dialog/item-detail-dialog.module';
 import {ItemSummaryModule} from '../item-summary/item-summary.module';
 
 import {ItemsGroup} from './items-group';

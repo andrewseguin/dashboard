@@ -3,7 +3,7 @@ import {Query} from 'app/repository/services/dao/queries-dao';
 import {
   ItemRendererOptionsState
 } from 'app/repository/services/items-renderer/item-renderer-options';
-import {QueryDialog} from '../dialog/issue-query/issue-query-dialog';
+import {QueryDialog} from '../dialog/query/query-dialog';
 
 @Component({
   selector: 'query-menu',

@@ -15,7 +15,7 @@ import {
   ItemRendererOptions,
   ItemRendererOptionsState
 } from '../services/items-renderer/item-renderer-options';
-import {QueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
+import {QueryDialog} from '../shared/dialog/query/query-dialog';
 
 
 @Component({
@@ -28,8 +28,8 @@ export class QueryPage {
   isMobile = isMobile;
 
   set query(query: Query) {
-    // When a issue query is set, the options state should be updated to be
-    // whatever the issue query is, and the title should always match
+    // When a query is set, the options state should be updated to be
+    // whatever the query is, and the title should always match
     this._query = query;
     this.currentOptions = this.query.options;
     this.header.title.next(this.query.name);

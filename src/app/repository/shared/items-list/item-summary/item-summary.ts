@@ -8,7 +8,7 @@ import {
   Output
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
+import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {Item} from 'app/service/github';
 import {Subject} from 'rxjs';
@@ -37,7 +37,7 @@ export class ItemSummary {
   select = new EventEmitter<number>()
 
       constructor(
-          private activatedRoute: ActivatedRoute, public itemRecommendations: IssueRecommendations,
+          private activatedRoute: ActivatedRoute, public itemRecommendations: ItemRecommendations,
           private cd: ChangeDetectorRef, public itemsRenderer: ItemsRenderer,
           private router: Router) {
     this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed))

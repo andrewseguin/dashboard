@@ -19,44 +19,16 @@
     width: 100%;
     max-width: 100%;
   }
-
-  .issue {
-    padding: 16px;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
 }
 
 .title {
   flex: 1;
 }
 
-.selected-indicator {
-  color: transparent;
-  padding-left: 16px;
-
-  .issue.selected &, .issue:hover & {
-    color: inherit;
-  }
-}
-
 .detail {
   flex: 1;
   padding: 8px 24px;
   overflow: auto;
-}
-
-.issue-number {
-  font-size: 11px;
-}
-
-.has-recommendations {
-  font-size: 18px;
-  height: 18px;
-  width: 18px;
-  padding-left: 8px;
 }
 
 advanced-search {

@@ -4,18 +4,16 @@ import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
 import {Repository} from './repository';
-import {Header, Selection} from './services';
+import {Header} from './services';
 import {ActivatedRepository} from './services/activated-repository';
 import {DashboardsDao} from './services/dao/dashboards-dao';
 import {QueriesDao} from './services/dao/queries-dao';
 import {RecommendationsDao} from './services/dao/recommendations-dao';
-import {IssueRecommendations} from './services/issue-recommendations';
+import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
 import {Updater} from './services/updater';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
-import {SelectionHeaderModule} from './shared/selection-header/selection-header.module';
-
 
 const routes: Routes = [{
   path: '',
@@ -60,17 +58,15 @@ export class RepositoryRoutingModule {
     MaterialModule,
     NavModule,
     HeaderModule,
-    SelectionHeaderModule,
     RouterModule,
     RepositoryRoutingModule,
   ],
   declarations: [Repository],
   exports: [Repository],
   providers: [
-    Selection,
     Header,
     Updater,
-    IssueRecommendations,
+    ItemRecommendations,
     Markdown,
     ActivatedRepository,
     QueriesDao,

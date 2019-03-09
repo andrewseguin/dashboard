@@ -8,7 +8,7 @@ import {getRecommendations} from '../utility/get-recommendations';
 import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
 
 @Injectable()
-export class IssueRecommendations {
+export class ItemRecommendations {
   recommendations = new BehaviorSubject<Map<number, Recommendation[]>|null>(null);
 
   private destroyed = new Subject();
@@ -21,8 +21,8 @@ export class IssueRecommendations {
           const recommendations = result[1] as Recommendation[];
 
           const map = new Map<number, Recommendation[]>();
-          [...repo.issues, ...repo.pullRequests].forEach(issue => {
-            map.set(issue.number, getRecommendations(issue.number, repo, recommendations));
+          [...repo.issues, ...repo.pullRequests].forEach(item => {
+            map.set(item.number, getRecommendations(item.number, repo, recommendations));
           });
 
           this.recommendations.next(map);

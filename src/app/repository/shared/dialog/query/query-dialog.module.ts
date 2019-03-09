@@ -1,7 +1,9 @@
 import {NgModule} from '@angular/core';
+
 import {DeleteConfirmationModule} from '../delete-confirmation/delete-confirmation.module';
-import {QueryDialog} from './issue-query-dialog';
-import {QueryEditModule} from './issue-query-edit/query-edit.module';
+
+import {QueryEditModule} from './query-edit/query-edit.module';
+import {QueryDialog} from './query-dialog';
 
 @NgModule({
   imports: [

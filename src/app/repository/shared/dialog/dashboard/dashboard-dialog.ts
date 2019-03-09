@@ -29,8 +29,8 @@ export class DashboardDialog {
   }
 
   /**
-   * Shows delete issue query dialog. If user confirms deletion, remove the
-   * issue query and navigate to the issue queries page.
+   * Shows delete query dialog. If user confirms deletion, remove the
+   * query and navigate to the queries page.
    */
   removeDashboard(dashboard: Dashboard) {
     const data = {name: of(dashboard.name)};

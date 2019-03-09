@@ -6,7 +6,7 @@
       Load Data
     </button>
 
-    <div class="issues-form" [formGroup]="formGroup">
+    <div class="items-form" [formGroup]="formGroup">
       <mat-select formControlName="issueDateType">
         <mat-option *ngFor="let option of ['all data', 'since']"
                     [value]="option">
@@ -26,7 +26,7 @@
   <ng-container *ngIf="totalItemCount | async; let itemCount">
     <ng-container *ngIf="totalLabelsCount | async; let labelCount">
       <div class="data-to-load theme-secondary-text">
-        ({{itemCount}} issues, {{labelCount}} labels)
+        ({{itemCount}} items, {{labelCount}} labels)
       </div>
     </ng-container>
   </ng-container>

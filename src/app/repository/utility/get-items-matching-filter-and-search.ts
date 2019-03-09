@@ -5,10 +5,10 @@ import {ItemFilterer} from '../services/items-renderer/item-filterer';
 import {itemMatchesSearch} from './item-matches-search';
 
 export function getItemsMatchingFilterAndSearch(
-    issues: Item[], filterer: ItemFilterer, search: string) {
-  let filteredIssues = filterer.filter(issues);
-  return !search ? filteredIssues : filteredIssues.filter(issue => {
+    items: Item[], filterer: ItemFilterer, search: string) {
+  let filteredItems = filterer.filter(items);
+  return !search ? filteredItems : filteredItems.filter(item => {
     const searchTokens = search.split(' OR ');
-    return searchTokens.some(searchToken => itemMatchesSearch(searchToken, issue));
+    return searchTokens.some(searchToken => itemMatchesSearch(searchToken, item));
   });
 }

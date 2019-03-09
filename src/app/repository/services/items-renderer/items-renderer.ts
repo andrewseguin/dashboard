@@ -8,7 +8,7 @@ import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
 
 import {Recommendation} from '../dao/recommendations-dao';
-import {IssueRecommendations} from '../issue-recommendations';
+import {ItemRecommendations} from '../item-recommendations';
 
 import {ItemFilterer} from './item-filterer';
 import {ItemGroup, ItemGrouping} from './item-grouping';
@@ -28,7 +28,7 @@ export class ItemsRenderer {
 
   private initSubscription: Subscription;
 
-  constructor(private repoDao: RepoDao, private issuesRecommendations: IssueRecommendations) {}
+  constructor(private repoDao: RepoDao, private issuesRecommendations: ItemRecommendations) {}
 
   ngOnDestroy() {
     if (this.initSubscription) {

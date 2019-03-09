@@ -12,9 +12,7 @@ import {Router} from '@angular/router';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
-import {
-  IssueDetailDialog
-} from 'app/repository/shared/dialog/issue-detail-dialog/issue-detail-dialog';
+import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {Item} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -40,36 +38,35 @@ export class WidgetView {
 
   @Output() remove = new EventEmitter<void>();
 
-  issues: Item[];
+  items: Item[];
 
-  trackByNumber = (_i, issue: Item) => issue.number;
+  trackByNumber = (_i, item: Item) => item.number;
 
   private destroyed = new Subject();
 
   constructor(
-      public issuesRenderer: ItemsRenderer, private dialog: MatDialog,
-      private cd: ChangeDetectorRef, private router: Router,
-      private activatedRepository: ActivatedRepository) {}
+      public itemsRenderer: ItemsRenderer, private dialog: MatDialog, private cd: ChangeDetectorRef,
+      private router: Router, private activatedRepository: ActivatedRepository) {}
 
   ngOnInit() {
-    this.issuesRenderer.initialize(this.widget.itemType);
-    this.issuesRenderer.itemGroups
+    this.itemsRenderer.initialize(this.widget.itemType);
+    this.itemsRenderer.itemGroups
         .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
         .subscribe(itemGroups => {
-          this.issues = [];
-          itemGroups.forEach(itemGroup => this.issues.push(...itemGroup.items));
+          this.items = [];
+          itemGroups.forEach(itemGroup => this.items.push(...itemGroup.items));
           this.cd.markForCheck();
         });
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.issuesRenderer.options.setState(this.widget.options);
+      this.itemsRenderer.options.setState(this.widget.options);
     }
   }
 
-  openIssueModal(issueId: number) {
-    this.dialog.open(IssueDetailDialog, {data: {issueId}});
+  openItemModal(itemId: number) {
+    this.dialog.open(ItemDetailDialog, {data: {itemId}});
   }
 
   openQuery() {

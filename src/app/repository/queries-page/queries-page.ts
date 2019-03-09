@@ -8,7 +8,7 @@ import {delay, filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
 import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
-import {IssueRecommendations} from '../services/issue-recommendations';
+import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemFilterer} from '../services/items-renderer/item-filterer';
 import {getItemsMatchingFilterAndSearch} from '../utility/get-items-matching-filter-and-search';
 
@@ -60,7 +60,7 @@ export class QueriesPage {
 
   constructor(
       public queriesDao: QueriesDao, public repoDao: RepoDao, private router: Router,
-      private activatedRoute: ActivatedRoute, private issueRecommendations: IssueRecommendations,
+      private activatedRoute: ActivatedRoute, private issueRecommendations: ItemRecommendations,
       public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}
 

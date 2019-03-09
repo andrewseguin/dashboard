@@ -1,7 +1,7 @@
 import {Item} from 'app/service/github';
-import {tokenizeIssue} from './tokenize-issue';
+import {tokenizeItem} from './tokenize-item';
 
 export function itemMatchesSearch(token: string, issue: Item) {
-  const issueStr = tokenizeIssue(issue);
-  return issueStr.indexOf(token.toLowerCase()) != -1;
+  const str = tokenizeItem(issue);
+  return str.indexOf(token.toLowerCase()) != -1;
 }

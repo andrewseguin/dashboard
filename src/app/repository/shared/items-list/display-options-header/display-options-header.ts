@@ -35,8 +35,8 @@ export class DisplayOptionsHeader {
 
   private destroyed = new Subject();
 
-  constructor(public issuesRenderer: ItemsRenderer, private cd: ChangeDetectorRef) {
-    this.issuesRenderer.options.changed.pipe(takeUntil(this.destroyed)).subscribe(() => {
+  constructor(public itemsRenderer: ItemsRenderer, private cd: ChangeDetectorRef) {
+    this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed)).subscribe(() => {
       this.cd.markForCheck();
     });
   }
@@ -47,7 +47,7 @@ export class DisplayOptionsHeader {
   }
 
   setSort(sort: Sort) {
-    const options = this.issuesRenderer.options;
+    const options = this.itemsRenderer.options;
     if (options.sorting === sort) {
       options.reverseSort = !options.reverseSort;
     } else {
@@ -57,8 +57,8 @@ export class DisplayOptionsHeader {
   }
 
   toggleViewKey(viewKey: ViewKey) {
-    const view = {...this.issuesRenderer.options.view};
+    const view = {...this.itemsRenderer.options.view};
     view[viewKey] = !view[viewKey];
-    this.issuesRenderer.options.view = view;
+    this.itemsRenderer.options.view = view;
   }
 }

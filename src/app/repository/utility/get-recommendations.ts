@@ -5,10 +5,10 @@ import {getItemsMatchingFilterAndSearch} from './get-items-matching-filter-and-s
 
 export function getRecommendations(
     itemId: number, repo: Repo, recommendations: Recommendation[]): Recommendation[] {
-  const issue = repo.itemsMap.get(itemId);
+  const item = repo.itemsMap.get(itemId);
   return recommendations.filter(recommendation => {
     const filterer = new ItemFilterer(recommendation.filters || [], repo, new Map());
-    const matchedIssues = getItemsMatchingFilterAndSearch([issue], filterer, recommendation.search);
+    const matchedIssues = getItemsMatchingFilterAndSearch([item], filterer, recommendation.search);
     return !!matchedIssues.length;
   });
 }

@@ -17,9 +17,9 @@ export class Updater {
                                const items = repo.items;
 
                                let lastUpdated = '';
-                               items.forEach(issue => {
-                                 if (!lastUpdated || lastUpdated < issue.updated) {
-                                   lastUpdated = issue.updated;
+                               items.forEach(item => {
+                                 if (!lastUpdated || lastUpdated < item.updated) {
+                                   lastUpdated = item.updated;
                                  }
                                });
 

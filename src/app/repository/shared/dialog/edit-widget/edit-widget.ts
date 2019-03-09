@@ -37,12 +37,12 @@ export class EditWidget {
   private _destroyed = new Subject();
 
   constructor(
-      private dialogRef: MatDialogRef<EditWidget, Widget>, public issuesRenderer: ItemsRenderer,
+      private dialogRef: MatDialogRef<EditWidget, Widget>, public itemsRenderer: ItemsRenderer,
       public recommendationsDao: RecommendationsDao, public queriesDao: QueriesDao,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
-    this.issuesRenderer.initialize(this.widget.itemType);
-    this.issuesRenderer.options.setState(data.widget.options);
+    this.itemsRenderer.initialize(this.widget.itemType);
+    this.itemsRenderer.options.setState(data.widget.options);
     this.form = new FormGroup({
       title: new FormControl(this.widget.title),
       itemType: new FormControl(this.widget.itemType),
@@ -51,7 +51,7 @@ export class EditWidget {
     });
 
     this.form.get('itemType').valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
-      this.issuesRenderer.initialize(itemType);
+      this.itemsRenderer.initialize(itemType);
     });
   }
 
@@ -63,7 +63,7 @@ export class EditWidget {
   edit() {
     const result: Widget = {
       title: this.form.value.title,
-      options: this.issuesRenderer.options.getState(),
+      options: this.itemsRenderer.options.getState(),
       itemType: this.form.value.itemType,
       displayType: this.form.value.displayType,
     };
@@ -79,10 +79,10 @@ export class EditWidget {
     const options = new ItemRendererOptions();
     options.filters = recommendation.filters;
     options.search = recommendation.search;
-    this.issuesRenderer.options.setState(options.getState());
+    this.itemsRenderer.options.setState(options.getState());
   }
 
   loadFromQuery(query: Query) {
-    this.issuesRenderer.options.setState(query.options);
+    this.itemsRenderer.options.setState(query.options);
   }
 }

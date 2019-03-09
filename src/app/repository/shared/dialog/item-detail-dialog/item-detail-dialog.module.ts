@@ -3,7 +3,7 @@ import {MaterialModule} from 'app/material.module';
 
 import {ItemDetailModule} from '../../item-detail/item-detail.module';
 
-import {IssueDetailDialog} from './issue-detail-dialog';
+import {ItemDetailDialog} from './item-detail-dialog';
 
 
 @NgModule({
@@ -11,9 +11,9 @@ import {IssueDetailDialog} from './issue-detail-dialog';
     MaterialModule,
     ItemDetailModule,
   ],
-  declarations: [IssueDetailDialog],
-  exports: [IssueDetailDialog],
-  entryComponents: [IssueDetailDialog]
+  declarations: [ItemDetailDialog],
+  exports: [ItemDetailDialog],
+  entryComponents: [ItemDetailDialog]
 })
 export class IssueDetailDialogModule {
 }

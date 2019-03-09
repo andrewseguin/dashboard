@@ -1,6 +1,6 @@
 <div class="buttons">
   <div class="length">
-    {{issuesRenderer.itemCount | async}} results
+    {{itemsRenderer.itemCount | async}} results
   </div>
   <button mat-button [mat-menu-trigger-for]="rootMenu">
     <div class="options-menu-trigger"> Display Options </div>
@@ -18,8 +18,8 @@
 <!-- Group Menu -->
 <mat-menu #groupingMenu="matMenu">
   <button mat-menu-item *ngFor="let groupId of groupIds"
-          [class.selected]="issuesRenderer.options.grouping == groupId"
-          (click)="issuesRenderer.options.grouping = groupId; $event.stopPropagation();">
+          [class.selected]="itemsRenderer.options.grouping == groupId"
+          (click)="itemsRenderer.options.grouping = groupId; $event.stopPropagation();">
     <div class="button-content">
       <mat-icon>check</mat-icon>
       {{groups.get(groupId)}}
@@ -30,13 +30,13 @@
 <!-- Sort Menu -->
 <mat-menu #sortingMenu="matMenu">
   <button mat-menu-item *ngFor="let sort of sortIds"
-          [class.selected]="issuesRenderer.options.sorting == sort"
+          [class.selected]="itemsRenderer.options.sorting == sort"
           (click)="setSort(sort); $event.stopPropagation();">
     <div class="button-content">
-      <mat-icon *ngIf="!issuesRenderer.options.reverseSort">
+      <mat-icon *ngIf="!itemsRenderer.options.reverseSort">
         arrow_upward
       </mat-icon>
-      <mat-icon *ngIf="issuesRenderer.options.reverseSort">
+      <mat-icon *ngIf="itemsRenderer.options.reverseSort">
         arrow_downward
       </mat-icon>
       {{sorts.get(sort)}}
@@ -47,7 +47,7 @@
 <!-- View Menu -->
 <mat-menu #viewingMenu="matMenu">
   <button mat-menu-item *ngFor="let viewKey of viewKeys"
-          [class.selected]="!!issuesRenderer.options.view[viewKey]"
+          [class.selected]="!!itemsRenderer.options.view[viewKey]"
           (click)="toggleViewKey(viewKey); $event.stopPropagation();">
     <div class="button-content">
       <mat-icon>check</mat-icon>

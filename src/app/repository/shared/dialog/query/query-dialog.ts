@@ -14,7 +14,7 @@ import {take} from 'rxjs/operators';
 
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
 
-import {QueryEdit} from './issue-query-edit/query-edit';
+import {QueryEdit} from './query-edit/query-edit';
 
 
 @Injectable()

@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 
-import {QueryDialogModule} from '../shared/dialog/issue-query/issue-query-dialog.module';
+import {QueryDialogModule} from '../shared/dialog/query/query-dialog.module';
 import {IssuesListModule} from '../shared/items-list/items-list.module';
 import {QueryMenuModule} from '../shared/query-menu/query-menu.module';
 
