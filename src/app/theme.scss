@@ -1,14 +1,12 @@
 @import '~@angular/material/theming';
 
 @import './repository/shared/nav/nav-theme';
-@import './repository/shared/selection-header/selection-header-theme';
 
 @mixin themed-styles($theme) {
   @include angular-material-theme($theme);
 
   // Import and load component-specific themes here.
   @include nav-theme($theme);
-  @include selection-header-theme($theme);
 
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
