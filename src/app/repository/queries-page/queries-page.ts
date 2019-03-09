@@ -9,7 +9,7 @@ import {ActivatedRepository} from '../services/activated-repository';
 import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {IssueRecommendations} from '../services/issue-recommendations';
-import {IssueFilterer} from '../services/issues-renderer/issue-filterer';
+import {ItemFilterer} from '../services/items-renderer/item-filterer';
 import {getItemsMatchingFilterAndSearch} from '../utility/get-items-matching-filter-and-search';
 
 
@@ -47,10 +47,9 @@ export class QueriesPage {
 
                 const map = new Map<string, number>();
                 groups.forEach(group => group.queries.forEach(query => {
-                  const filterer = new IssueFilterer(query.options.filters, repo, recommendations);
+                  const filterer = new ItemFilterer(query.options.filters, repo, recommendations);
                   const count =
-                      getItemsMatchingFilterAndSearch(items, filterer, query.options.search)
-                          .length;
+                      getItemsMatchingFilterAndSearch(items, filterer, query.options.search).length;
                   map.set(query.id, count);
                 }));
 

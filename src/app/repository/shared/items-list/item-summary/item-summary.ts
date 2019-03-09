@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
-import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
+import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {Item} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';

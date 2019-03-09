@@ -11,7 +11,7 @@ import {MatDialog} from '@angular/material';
 import {Router} from '@angular/router';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
-import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
+import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {
   IssueDetailDialog
 } from 'app/repository/shared/dialog/issue-detail-dialog/issue-detail-dialog';

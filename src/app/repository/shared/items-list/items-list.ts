@@ -9,12 +9,12 @@ import {
   Output
 } from '@angular/core';
 import {Selection} from 'app/repository/services';
-import {ItemGroup} from 'app/repository/services/issues-renderer/issue-grouping';
+import {ItemGroup} from 'app/repository/services/items-renderer/item-grouping';
 import {
-  IssueRendererOptionsState
-} from 'app/repository/services/issues-renderer/issue-renderer-options';
-import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
-import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
+  ItemRendererOptionsState
+} from 'app/repository/services/items-renderer/item-renderer-options';
+import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
+import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {ItemType} from 'app/service/github';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
@@ -43,7 +43,7 @@ export class ItemsList {
   issueFilterMetadata = ItemsFilterMetadata;
 
   @Input()
-  set issuesRendererOptionsState(state: IssueRendererOptionsState) {
+  set issuesRendererOptionsState(state: ItemRendererOptionsState) {
     this.itemsRenderer.options.setState(state);
   }
 
@@ -51,7 +51,7 @@ export class ItemsList {
 
   @Input() type: ItemType;
 
-  @Output() issuesRendererOptionsChanged = new EventEmitter<IssueRendererOptionsState>();
+  @Output() issuesRendererOptionsChanged = new EventEmitter<ItemRendererOptionsState>();
 
   constructor(
       public itemsRenderer: ItemsRenderer, public cd: ChangeDetectorRef, public ngZone: NgZone,

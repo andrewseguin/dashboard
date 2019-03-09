@@ -16,7 +16,7 @@ import {
   DashboardsDao,
   Widget
 } from '../services/dao/dashboards-dao';
-import {IssueRendererOptions} from '../services/issues-renderer/issue-renderer-options';
+import {ItemRendererOptions} from '../services/items-renderer/item-renderer-options';
 import {EditWidget, EditWidgetData} from '../shared/dialog/edit-widget/edit-widget';
 
 
@@ -120,7 +120,7 @@ export class DashboardPage {
   addWidget(column: Column) {
     const widget: Widget = {
       title: 'New Widget',
-      options: new IssueRendererOptions().getState(),
+      options: new ItemRendererOptions().getState(),
       itemType: 'issue',
       displayType: 'list'
     };

@@ -1,6 +1,8 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Query} from 'app/repository/services/dao/queries-dao';
-import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer/issue-renderer-options';
+import {
+  ItemRendererOptionsState
+} from 'app/repository/services/items-renderer/item-renderer-options';
 import {QueryDialog} from '../dialog/issue-query/issue-query-dialog';
 
 @Component({
@@ -13,7 +15,7 @@ export class QueryMenu {
 
   @Input() icon: 'settings'|'more_vert';
 
-  @Input() optionsOverride: IssueRendererOptionsState;
+  @Input() optionsOverride: ItemRendererOptionsState;
 
   constructor(private queryDialog: QueryDialog) {}
 

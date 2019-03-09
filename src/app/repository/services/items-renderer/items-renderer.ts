@@ -10,15 +10,15 @@ import {debounceTime, filter, startWith} from 'rxjs/operators';
 import {Recommendation} from '../dao/recommendations-dao';
 import {IssueRecommendations} from '../issue-recommendations';
 
-import {IssueFilterer} from './issue-filterer';
-import {ItemGroup, ItemGrouping} from './issue-grouping';
-import {IssueRendererOptions} from './issue-renderer-options';
-import {IssueSorter} from './issue-sorter';
+import {ItemFilterer} from './item-filterer';
+import {ItemGroup, ItemGrouping} from './item-grouping';
+import {ItemRendererOptions} from './item-renderer-options';
+import {ItemSorter} from './item-sorter';
 
 
 @Injectable()
 export class ItemsRenderer {
-  options: IssueRendererOptions = new IssueRendererOptions();
+  options: ItemRendererOptions = new ItemRendererOptions();
 
   // Starts as null as a signal that no items have been processed.
   itemGroups = new BehaviorSubject<ItemGroup[]|null>(null);
@@ -56,7 +56,7 @@ export class ItemsRenderer {
               const recommendations = result[1] as Map<number, Recommendation[]>;
 
               // Filter and search
-              const filterer = new IssueFilterer(this.options.filters, repo, recommendations);
+              const filterer = new ItemFilterer(this.options.filters, repo, recommendations);
               const filteredAndSearchedItems =
                   getItemsMatchingFilterAndSearch(items, filterer, this.options.search);
 
@@ -66,7 +66,7 @@ export class ItemsRenderer {
               itemGroups = itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
 
               // Sort
-              const sorter = new IssueSorter();
+              const sorter = new ItemSorter();
               itemGroups.forEach(group => {
                 const sort = this.options.sorting;
                 const sortFn = sorter.getSortFunction(sort);

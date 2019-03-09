@@ -5,7 +5,7 @@ export type Group = 'all'|'reporter';
 
 export type Sort = 'created'|'title';
 
-export interface IssueRendererOptionsState {
+export interface ItemRendererOptionsState {
   filters: Filter[];
   search: string;
   grouping: Group;
@@ -23,7 +23,7 @@ export interface View {
   suggestions?: boolean;
 }
 
-export class IssueRendererOptions {
+export class ItemRendererOptions {
   set filters(v: Filter[]) {
     if (this._filters === v) {
       return;
@@ -98,7 +98,7 @@ export class IssueRendererOptions {
 
   changed = new Subject<void>();
 
-  setState(options: IssueRendererOptionsState) {
+  setState(options: ItemRendererOptionsState) {
     this._filters = options.filters;
     this._search = options.search;
     this._grouping = options.grouping;
@@ -120,7 +120,7 @@ export class IssueRendererOptions {
   }
 }
 
-export function areOptionStatesEqual(o1: IssueRendererOptionsState, o2: IssueRendererOptionsState) {
+export function areOptionStatesEqual(o1: ItemRendererOptionsState, o2: ItemRendererOptionsState) {
   return o1.grouping === o2.grouping && o1.reverseSort === o2.reverseSort &&
       o1.sorting === o2.sorting && o1.search === o2.search &&
       JSON.stringify(o1.view) === JSON.stringify(o2.view) &&

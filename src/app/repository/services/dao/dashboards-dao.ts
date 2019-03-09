@@ -4,7 +4,7 @@ import {Config} from 'app/service/config';
 import {ItemType} from 'app/service/github';
 
 import {ActivatedRepository} from '../activated-repository';
-import {IssueRendererOptionsState} from '../issues-renderer/issue-renderer-options';
+import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
 
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
@@ -15,12 +15,12 @@ export interface BaseWidget {
 }
 
 export interface IssueListWidget extends BaseWidget {
-  options?: IssueRendererOptionsState;
+  options?: ItemRendererOptionsState;
   listLength?: number;
 }
 
 export interface ItemCountWidget extends BaseWidget {
-  options?: IssueRendererOptionsState;
+  options?: ItemRendererOptionsState;
   fontSize?: number;
   colors?: {color: 'yellow'|'red'|'green', condition: 'less than'|'greater than'|'equal to'}[];
 }

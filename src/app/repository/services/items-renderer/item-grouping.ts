@@ -1,7 +1,7 @@
 import {Item} from 'app/service/github';
 import {Repo} from 'app/service/repo-dao';
 
-import {Group} from './issue-renderer-options';
+import {Group} from './item-renderer-options';
 
 export class ItemGroup {
   id: string;

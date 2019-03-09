@@ -6,8 +6,8 @@ import {
   Query,
 } from 'app/repository/services/dao/queries-dao';
 import {
-  IssueRendererOptionsState
-} from 'app/repository/services/issues-renderer/issue-renderer-options';
+  ItemRendererOptionsState
+} from 'app/repository/services/items-renderer/item-renderer-options';
 import {ItemType} from 'app/service/github';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
@@ -60,7 +60,7 @@ export class QueryDialog {
    * name, save the query and automatically navigate to the query
    * page with $key, replacing the current URL.
    */
-  saveAsQuery(currentOptions: IssueRendererOptionsState, repository: string, type: ItemType) {
+  saveAsQuery(currentOptions: ItemRendererOptionsState, repository: string, type: ItemType) {
     this.dialog.open(QueryEdit).afterClosed().pipe(take(1)).subscribe(result => {
       if (!result) {
         return;

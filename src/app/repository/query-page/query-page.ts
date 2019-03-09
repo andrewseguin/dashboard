@@ -12,9 +12,9 @@ import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {RecommendationsDao} from '../services/dao/recommendations-dao';
 import {
   areOptionStatesEqual,
-  IssueRendererOptions,
-  IssueRendererOptionsState
-} from '../services/issues-renderer/issue-renderer-options';
+  ItemRendererOptions,
+  ItemRendererOptionsState
+} from '../services/items-renderer/item-renderer-options';
 import {QueryDialog} from '../shared/dialog/issue-query/issue-query-dialog';
 
 
@@ -40,7 +40,7 @@ export class QueryPage {
   }
   private _query: Query;
 
-  set currentOptions(currentOptions: IssueRendererOptionsState) {
+  set currentOptions(currentOptions: ItemRendererOptionsState) {
     // When current options change, a check should be evaluated if they differ
     // from the current query's options. If so, the save button should
     // display.
@@ -48,10 +48,10 @@ export class QueryPage {
     this.canSave = this.query && this.query.options && this.currentOptions &&
         !areOptionStatesEqual(this.query.options, this.currentOptions);
   }
-  get currentOptions(): IssueRendererOptionsState {
+  get currentOptions(): ItemRendererOptionsState {
     return this._currentOptions;
   }
-  private _currentOptions: IssueRendererOptionsState;
+  private _currentOptions: ItemRendererOptionsState;
 
   canSave: boolean;
 
@@ -146,7 +146,7 @@ export class QueryPage {
     this.recommendationsDao.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
       list.forEach(r => {
         if (r.id === id) {
-          const options = new IssueRendererOptions();
+          const options = new ItemRendererOptions();
           options.filters = r.filters;
           options.search = r.search;
           this.query = createNewQuery('issue', r.message, options.getState());
@@ -158,8 +158,8 @@ export class QueryPage {
 }
 
 function createNewQuery(
-    type: ItemType, name = 'New Query', optionsState: IssueRendererOptionsState = null): Query {
-  const options = new IssueRendererOptions();
+    type: ItemType, name = 'New Query', optionsState: ItemRendererOptionsState = null): Query {
+  const options = new ItemRendererOptions();
 
   if (optionsState) {
     options.setState(optionsState);

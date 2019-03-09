@@ -4,9 +4,9 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
-import {IssueRendererOptions} from 'app/repository/services/issues-renderer/issue-renderer-options';
-import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
-import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
+import {ItemRendererOptions} from 'app/repository/services/items-renderer/item-renderer-options';
+import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
+import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 
@@ -76,7 +76,7 @@ export class EditWidget {
   }
 
   loadFromRecommendation(recommendation: Recommendation) {
-    const options = new IssueRendererOptions();
+    const options = new ItemRendererOptions();
     options.filters = recommendation.filters;
     options.search = recommendation.search;
     this.issuesRenderer.options.setState(options.getState());

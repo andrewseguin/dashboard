@@ -3,7 +3,7 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {Config} from 'app/service/config';
 
 import {ActivatedRepository} from '../activated-repository';
-import {IssueRendererOptionsState} from '../issues-renderer/issue-renderer-options';
+import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
 
 import {RepositoryCollectionDao} from './repository-collection-dao';
 
@@ -15,7 +15,7 @@ export interface Query {
   createdBy?: string;
   modifiedBy?: string;
   season?: string;
-  options?: IssueRendererOptionsState;
+  options?: ItemRendererOptionsState;
   dateCreated?: string;
   dateModified?: string;
 }

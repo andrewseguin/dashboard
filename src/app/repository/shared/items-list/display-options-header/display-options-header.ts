@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {Group, Sort, ViewKey} from 'app/repository/services/issues-renderer/issue-renderer-options';
-import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
+import {Group, Sort, ViewKey} from 'app/repository/services/items-renderer/item-renderer-options';
+import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 

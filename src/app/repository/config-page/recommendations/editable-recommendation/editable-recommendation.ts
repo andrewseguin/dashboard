@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
-import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
+import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';

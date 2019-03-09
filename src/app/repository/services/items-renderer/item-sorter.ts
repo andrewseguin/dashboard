@@ -1,8 +1,8 @@
 import {Item} from 'app/service/github';
 
-import {Sort} from './issue-renderer-options';
+import {Sort} from './item-renderer-options';
 
-export class IssueSorter {
+export class ItemSorter {
   getSortFunction(sort: Sort) {
     switch (sort) {
       case 'created':
