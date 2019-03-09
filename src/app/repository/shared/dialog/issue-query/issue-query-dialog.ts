@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import {
   QueriesDao,
   Query,
-} from 'app/repository/services/dao/issue-queries-dao';
+} from 'app/repository/services/dao/queries-dao';
 import {
   IssueRendererOptionsState
 } from 'app/repository/services/issues-renderer/issue-renderer-options';

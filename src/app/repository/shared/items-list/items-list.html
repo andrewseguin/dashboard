@@ -1,5 +1,5 @@
 <ng-container
-              *ngIf="(issuesRenderer.issueGroups | async) !== null; else loading">
+              *ngIf="(issuesRenderer.itemGroups | async) !== null; else loading">
   <advanced-search [search]="issuesRenderer.options.search"
                    [filters]="issuesRenderer.options.filters"
                    [metadata]="issueFilterMetadata"
@@ -9,8 +9,8 @@
   <display-options-header></display-options-header>
 
   <div class="issues-container">
-    <items-group *ngFor="let issueGroup of renderedIssueGroups; let index = index; trackBy:getIssueGroupKey"
-                 [items]="issueGroup.issues" [title]="issueGroup.title">
+    <items-group *ngFor="let itemGroup of renderedItemGroups; let index = index; trackBy:getItemGroupKey"
+                 [items]="itemGroup.issues" [title]="itemGroup.title">
     </items-group>
   </div>
 

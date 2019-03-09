@@ -6,11 +6,11 @@ import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 
 import {ActivatedRepository} from '../services/activated-repository';
-import {QueriesDao, Query} from '../services/dao/issue-queries-dao';
+import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {IssueRecommendations} from '../services/issue-recommendations';
 import {IssueFilterer} from '../services/issues-renderer/issue-filterer';
-import {getIssuesMatchingFilterAndSearch} from '../utility/get-issues-matching-filter-and-search';
+import {getItemsMatchingFilterAndSearch} from '../utility/get-items-matching-filter-and-search';
 
 
 interface QueryGroup {
@@ -49,7 +49,7 @@ export class QueriesPage {
                 groups.forEach(group => group.queries.forEach(query => {
                   const filterer = new IssueFilterer(query.options.filters, repo, recommendations);
                   const count =
-                      getIssuesMatchingFilterAndSearch(items, filterer, query.options.search)
+                      getItemsMatchingFilterAndSearch(items, filterer, query.options.search)
                           .length;
                   map.set(query.id, count);
                 }));

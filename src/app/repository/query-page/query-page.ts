@@ -8,7 +8,7 @@ import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {Widget} from '../services/dao/dashboards-dao';
-import {QueriesDao, Query} from '../services/dao/issue-queries-dao';
+import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {RecommendationsDao} from '../services/dao/recommendations-dao';
 import {
   areOptionStatesEqual,

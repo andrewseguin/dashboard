@@ -11,7 +11,7 @@ import {MatDialog} from '@angular/material';
 import {Router} from '@angular/router';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
-import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
+import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
 import {
   IssueDetailDialog
 } from 'app/repository/shared/dialog/issue-detail-dialog/issue-detail-dialog';
@@ -27,7 +27,7 @@ import {filter, takeUntil} from 'rxjs/operators';
   host: {
     'class': 'theme-background-card theme-border',
   },
-  providers: [IssuesRenderer]
+  providers: [ItemsRenderer]
 })
 export class WidgetView {
   @Input() widget: Widget;
@@ -47,17 +47,17 @@ export class WidgetView {
   private destroyed = new Subject();
 
   constructor(
-      public issuesRenderer: IssuesRenderer, private dialog: MatDialog,
+      public issuesRenderer: ItemsRenderer, private dialog: MatDialog,
       private cd: ChangeDetectorRef, private router: Router,
       private activatedRepository: ActivatedRepository) {}
 
   ngOnInit() {
     this.issuesRenderer.initialize(this.widget.itemType);
-    this.issuesRenderer.issueGroups
-        .pipe(filter(issueGroups => !!issueGroups), takeUntil(this.destroyed))
-        .subscribe(issueGroups => {
+    this.issuesRenderer.itemGroups
+        .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
+        .subscribe(itemGroups => {
           this.issues = [];
-          issueGroups.forEach(issueGroup => this.issues.push(...issueGroup.issues));
+          itemGroups.forEach(itemGroup => this.issues.push(...itemGroup.issues));
           this.cd.markForCheck();
         });
   }

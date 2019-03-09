@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {IssueRecommendations} from 'app/repository/services/issue-recommendations';
-import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
+import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
 import {Item} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
@@ -38,7 +38,7 @@ export class ItemSummary {
 
       constructor(
           private activatedRoute: ActivatedRoute, public itemRecommendations: IssueRecommendations,
-          private cd: ChangeDetectorRef, public itemsRenderer: IssuesRenderer,
+          private cd: ChangeDetectorRef, public itemsRenderer: ItemsRenderer,
           private router: Router) {
     this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed))
         .subscribe(() => this.cd.markForCheck());

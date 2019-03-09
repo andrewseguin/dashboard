@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
+import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
 import {Item} from 'app/service/github';
 
 export interface IssueDetailDialogData {
@@ -11,7 +11,7 @@ export interface IssueDetailDialogData {
   templateUrl: 'issue-detail-dialog.html',
   styleUrls: ['issue-detail-dialog.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [IssuesRenderer]
+  providers: [ItemsRenderer]
 })
 export class IssueDetailDialog {
   issue: Item;

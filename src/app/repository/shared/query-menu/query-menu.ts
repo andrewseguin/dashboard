@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {Query} from 'app/repository/services/dao/issue-queries-dao';
+import {Query} from 'app/repository/services/dao/queries-dao';
 import {IssueRendererOptionsState} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {QueryDialog} from '../dialog/issue-query/issue-query-dialog';
 

@@ -2,11 +2,11 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@an
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
-import {QueriesDao, Query} from 'app/repository/services/dao/issue-queries-dao';
+import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {IssueRendererOptions} from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
-import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
+import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
 import {Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 
@@ -18,7 +18,7 @@ export interface EditWidgetData {
   templateUrl: 'edit-widget.html',
   styleUrls: ['edit-widget.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [IssuesRenderer]
+  providers: [ItemsRenderer]
 })
 export class EditWidget {
   widget: Widget;
@@ -37,7 +37,7 @@ export class EditWidget {
   private _destroyed = new Subject();
 
   constructor(
-      private dialogRef: MatDialogRef<EditWidget, Widget>, public issuesRenderer: IssuesRenderer,
+      private dialogRef: MatDialogRef<EditWidget, Widget>, public issuesRenderer: ItemsRenderer,
       public recommendationsDao: RecommendationsDao, public queriesDao: QueriesDao,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};

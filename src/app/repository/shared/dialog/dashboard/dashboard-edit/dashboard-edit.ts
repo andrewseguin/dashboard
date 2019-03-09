@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {QueriesDao} from 'app/repository/services/dao/issue-queries-dao';
+import {QueriesDao} from 'app/repository/services/dao/queries-dao';
 
 export interface QueryEditData {
   name: string;

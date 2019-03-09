@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {Group, Sort, ViewKey} from 'app/repository/services/issues-renderer/issue-renderer-options';
-import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
+import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -35,7 +35,7 @@ export class DisplayOptionsHeader {
 
   private destroyed = new Subject();
 
-  constructor(public issuesRenderer: IssuesRenderer, private cd: ChangeDetectorRef) {
+  constructor(public issuesRenderer: ItemsRenderer, private cd: ChangeDetectorRef) {
     this.issuesRenderer.options.changed.pipe(takeUntil(this.destroyed)).subscribe(() => {
       this.cd.markForCheck();
     });

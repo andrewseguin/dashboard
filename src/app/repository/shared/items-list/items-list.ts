@@ -9,12 +9,12 @@ import {
   Output
 } from '@angular/core';
 import {Selection} from 'app/repository/services';
-import {IssueGroup} from 'app/repository/services/issues-renderer/issue-grouping';
+import {ItemGroup} from 'app/repository/services/issues-renderer/issue-grouping';
 import {
   IssueRendererOptionsState
 } from 'app/repository/services/issues-renderer/issue-renderer-options';
 import {ItemsFilterMetadata} from 'app/repository/services/issues-renderer/issues-filter-metadata';
-import {IssuesRenderer} from 'app/repository/services/issues-renderer/issues-renderer';
+import {ItemsRenderer} from 'app/repository/services/issues-renderer/items-renderer';
 import {ItemType} from 'app/service/github';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
@@ -24,7 +24,7 @@ import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
   templateUrl: 'items-list.html',
   styleUrls: ['items-list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [IssuesRenderer]
+  providers: [ItemsRenderer]
 })
 export class ItemsList {
   destroyed = new Subject();
@@ -36,8 +36,8 @@ export class ItemsList {
 
   loadingIssues: boolean;
 
-  issueGroups: IssueGroup[];
-  renderedIssueGroups: IssueGroup[];
+  itemGroups: ItemGroup[];
+  renderedItemGroups: ItemGroup[];
   issuesToDisplay = 20;
 
   issueFilterMetadata = ItemsFilterMetadata;
@@ -54,7 +54,7 @@ export class ItemsList {
   @Output() issuesRendererOptionsChanged = new EventEmitter<IssueRendererOptionsState>();
 
   constructor(
-      public issuesRenderer: IssuesRenderer, public cd: ChangeDetectorRef, public ngZone: NgZone,
+      public issuesRenderer: ItemsRenderer, public cd: ChangeDetectorRef, public ngZone: NgZone,
       public selection: Selection, public elementRef: ElementRef) {}
 
   ngOnInit() {
@@ -88,8 +88,8 @@ export class ItemsList {
 
     // When issue groups change, render the first ten, then debounce and
     // render more
-    this.issuesRenderer.issueGroups.pipe(takeUntil(this.destroyed)).subscribe(issueGroups => {
-      this.issueGroups = issueGroups;
+    this.issuesRenderer.itemGroups.pipe(takeUntil(this.destroyed)).subscribe(itemGroups => {
+      this.itemGroups = itemGroups;
       this.render();
     });
   }
@@ -100,7 +100,7 @@ export class ItemsList {
   }
 
   render() {
-    this.renderedIssueGroups = [];
+    this.renderedItemGroups = [];
     this.renderMoreIssues(this.issuesToDisplay);
     this.cd.markForCheck();
   }
@@ -108,24 +108,24 @@ export class ItemsList {
   /** Render more issues, shoud only be called by render and itself. */
   renderMoreIssues(threshold: number) {
     // Return if there are no groups to render
-    if (!this.issueGroups || !this.issueGroups.length) {
+    if (!this.itemGroups || !this.itemGroups.length) {
       return;
     }
 
     // If no groups are rendered yet, start by adding the first group
-    if (!this.renderedIssueGroups.length) {
+    if (!this.renderedItemGroups.length) {
       this.renderNextGroup();
     }
 
-    const groupIndex = this.renderedIssueGroups.length - 1;
-    const renderGroup = this.renderedIssueGroups[groupIndex];
+    const groupIndex = this.renderedItemGroups.length - 1;
+    const renderGroup = this.renderedItemGroups[groupIndex];
     const renderLength = renderGroup.issues.length;
 
-    const actualGroup = this.issueGroups[groupIndex];
+    const actualGroup = this.itemGroups[groupIndex];
     const actualLength = actualGroup.issues.length;
 
     // Return if all issues have been rendered
-    if (this.renderedIssueGroups.length === this.issueGroups.length &&
+    if (this.renderedItemGroups.length === this.itemGroups.length &&
         renderGroup.issues.length === actualGroup.issues.length) {
       this.loadingIssues = false;
       return;
@@ -145,19 +145,19 @@ export class ItemsList {
   }
 
   renderNextGroup() {
-    if (this.issueGroups.length === this.renderedIssueGroups.length) {
+    if (this.itemGroups.length === this.renderedItemGroups.length) {
       return;
     }
 
-    const nextRenderedIssueGroup = this.issueGroups[this.renderedIssueGroups.length];
-    this.renderedIssueGroups.push({...nextRenderedIssueGroup, issues: []});
+    const nextRenderedItemGroup = this.itemGroups[this.renderedItemGroups.length];
+    this.renderedItemGroups.push({...nextRenderedItemGroup, issues: []});
   }
 
-  getIssueGroupKey(_i: number, issueGroup: IssueGroup) {
-    return issueGroup.id;
+  getItemGroupKey(_i: number, itemGroup: ItemGroup) {
+    return itemGroup.id;
   }
 
   selectGroup(index: number) {
-    this.selection.issues.select(...this.issueGroups[index].issues.map(r => r.number));
+    this.selection.issues.select(...this.itemGroups[index].issues.map(r => r.number));
   }
 }

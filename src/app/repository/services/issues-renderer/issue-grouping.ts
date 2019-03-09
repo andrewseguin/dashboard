@@ -3,13 +3,13 @@ import {Repo} from 'app/service/repo-dao';
 
 import {Group} from './issue-renderer-options';
 
-export class IssueGroup {
+export class ItemGroup {
   id: string;
   title: string;
   issues: Item[];
 }
 
-export class IssueGrouping {
+export class ItemGrouping {
   constructor(private issues: Item[], private repo: Repo) {}
 
   getGroup(group: Group) {
@@ -21,7 +21,7 @@ export class IssueGrouping {
     }
   }
 
-  getGroupAll(): IssueGroup[] {
+  getGroupAll(): ItemGroup[] {
     return [{id: 'all', title: ``, issues: this.issues}];
   }
 
