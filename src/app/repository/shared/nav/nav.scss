@@ -19,8 +19,7 @@
   justify-content: center;
 }
 
-.profile {
-  font-size: 12px;
+.settings {
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -56,6 +55,12 @@
 
 .info {
   flex: 1;
+  font-size: 12px;
+}
+
+button.sign-in {
+  flex: 1;
+  text-align: left;
 }
 
 .link {

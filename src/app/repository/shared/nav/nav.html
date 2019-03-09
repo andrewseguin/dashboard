@@ -20,13 +20,19 @@
 
 <mat-divider></mat-divider>
 
-<div class="profile" *ngIf="false; let user">
-  <div class="pic" [style.backgroundImage]="'url(' + user.pic + ')'">
-  </div>
-  <div class="info">
-    <div> {{user.name}} </div>
-    <div class="user-email"> {{user.email}} </div>
-  </div>
+<div class="settings">
+  <ng-container *ngIf="afAuth.authState | async; let user; else settingsLabel">
+    <div class="pic" [style.backgroundImage]="'url(' + user.photoURL + ')'">
+    </div>
+    <div class="info">
+      <div> {{user.displayName}} </div>
+      <div class="user-email"> {{user.email}} </div>
+    </div>
+  </ng-container>
+  <ng-template #settingsLabel>
+    <button mat-button (click)="loginWithGithub()" class="sign-in">Login to
+      Github</button>
+  </ng-template>
   <button mat-icon-button [mat-menu-trigger-for]="settings">
     <mat-icon> settings </mat-icon>
   </button>
@@ -43,8 +49,8 @@
     Update cache
   </button>
 
-  <button mat-menu-item (click)="afAuth.auth.signOut()">
+  <button mat-menu-item (click)="signOut()">
     <mat-icon> exit_to_app </mat-icon>
-    Logout
+    {{(afAuth.authState | async) ? 'Logout' : 'Clear Access Token'}}
   </button>
 </mat-menu>

@@ -1,4 +1,4 @@
-import {AngularFireAuth} from '@angular/fire/auth';
+import {Auth} from 'app/service/auth';
 import {Collection, Config} from 'app/service/config';
 import {sendEvent} from 'app/utility/analytics';
 import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
@@ -49,8 +49,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
 
   set path(path: string) {
     this._path = path;
-    this.collection = this.config.getRepoConfig(path).pipe(
-        map(c => c[this.collectionId] || []));
+    this.collection = this.config.getRepoConfig(path).pipe(map(c => c[this.collectionId] || []));
 
     // If a list has already been accessed, unsubscribe from the previous
     // collection and get values from the new collection
@@ -66,11 +65,9 @@ export abstract class ListDao<T extends IdentifiedObject> {
 
   protected collection: Observable<Collection<T>>;
 
-  protected constructor(
-      protected afAuth: AngularFireAuth, protected config: Config,
-      protected collectionId) {
-    afAuth.authState.subscribe(auth => {
-      if (!auth) {
+  protected constructor(protected auth: Auth, protected config: Config, protected collectionId) {
+    auth.tokenChanged.subscribe(token => {
+      if (!token) {
         this.unsubscribe();
       }
     });
@@ -88,8 +85,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
     return new Promise(resolve => {
       this.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
         list.push(obj);
-        this.config.saveRepoConfigCollection(
-            this.path, this.collectionId, list);
+        this.config.saveRepoConfigCollection(this.path, this.collectionId, list);
         resolve(obj.id);
       });
     });
@@ -107,8 +103,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
       map.set(id, {...(map.get(id) as object), ...(update as object)} as T);
       const values = [];
       map.forEach(value => values.push(value));
-      this.config.saveRepoConfigCollection(
-          this.path, this.collectionId, values);
+      this.config.saveRepoConfigCollection(this.path, this.collectionId, values);
     });
   }
 
@@ -119,8 +114,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
       map.delete(id);
       const values = [];
       map.forEach(value => values.push(value));
-      this.config.saveRepoConfigCollection(
-          this.path, this.collectionId, values);
+      this.config.saveRepoConfigCollection(this.path, this.collectionId, values);
     });
   }
 
@@ -131,8 +125,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
     if (!this.collection) {
       this.needsSubscription = true;
     } else {
-      this.subscription =
-          this.collection.subscribe(v => this._list.next(Object.values(v)));
+      this.subscription = this.collection.subscribe(v => this._list.next(Object.values(v)));
     }
   }
 

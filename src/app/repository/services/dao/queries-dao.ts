@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {Config} from 'app/service/config';
+import { Injectable } from '@angular/core';
+import { Auth } from 'app/service/auth';
+import { Config } from 'app/service/config';
+import { ActivatedRepository } from '../activated-repository';
+import { ItemRendererOptionsState } from '../items-renderer/item-renderer-options';
+import { RepositoryCollectionDao } from './repository-collection-dao';
 
-import {ActivatedRepository} from '../activated-repository';
-import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
 
-import {RepositoryCollectionDao} from './repository-collection-dao';
 
 export interface Query {
   id?: string;
@@ -22,7 +22,7 @@ export interface Query {
 
 @Injectable()
 export class QueriesDao extends RepositoryCollectionDao<Query> {
-  constructor(afAuth: AngularFireAuth, activatedRepository: ActivatedRepository, config: Config) {
-    super(afAuth, activatedRepository, config, 'queries');
+  constructor(auth: Auth, activatedRepository: ActivatedRepository, config: Config) {
+    super(auth, activatedRepository, config, 'queries');
   }
 }

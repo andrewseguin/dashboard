@@ -15,8 +15,7 @@ import {sendPageview} from './utility/analytics';
   }
 })
 export class App {
-  constructor(
-      private snackBar: MatSnackBar, private router: Router, private auth: Auth) {
+  constructor(private snackBar: MatSnackBar, private router: Router, private auth: Auth) {
     this.router.events
         .pipe(distinctUntilChanged((prev: any, curr: any) => {
           if (curr instanceof NavigationEnd) {
@@ -26,9 +25,11 @@ export class App {
         }))
         .subscribe(x => sendPageview(x.urlAfterRedirects));
 
-    if (!this.auth.token) {
-      this.navigateToLogin();
-    }
+    this.auth.tokenChanged.subscribe(token => {
+      if (!token) {
+        this.navigateToLogin();
+      }
+    });
   }
 
   /**
@@ -37,14 +38,7 @@ export class App {
    */
   private navigateToLogin() {
     if (location.pathname !== '/login') {
-      this.router.navigate(['login'], {fragment: location.pathname, queryParamsHandling: 'merge'});
+      this.router.navigate(['login'], {fragment: location.pathname});
     }
-  }
-
-  /** Show snackbar showing the user who they are logged in as. */
-  private notifyLoggedInAs(email: string) {
-    const snackbarConfig = new MatSnackBarConfig();
-    snackbarConfig.duration = 2000;
-    this.snackBar.open(`Logged in as ${email}`, null, snackbarConfig);
   }
 }

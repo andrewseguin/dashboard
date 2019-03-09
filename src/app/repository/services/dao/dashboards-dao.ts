@@ -1,12 +1,12 @@
-import {Injectable} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {Config} from 'app/service/config';
-import {ItemType} from 'app/service/github';
+import { Injectable } from '@angular/core';
+import { Auth } from 'app/service/auth';
+import { Config } from 'app/service/config';
+import { ItemType } from 'app/service/github';
+import { ActivatedRepository } from '../activated-repository';
+import { ItemRendererOptionsState } from '../items-renderer/item-renderer-options';
+import { RepositoryCollectionDao } from './repository-collection-dao';
 
-import {ActivatedRepository} from '../activated-repository';
-import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
 
-import {RepositoryCollectionDao} from './repository-collection-dao';
 
 export interface BaseWidget {
   title?: string;
@@ -46,7 +46,7 @@ export interface Dashboard {
 
 @Injectable()
 export class DashboardsDao extends RepositoryCollectionDao<Dashboard> {
-  constructor(afAuth: AngularFireAuth, activatedRepository: ActivatedRepository, config: Config) {
-    super(afAuth, activatedRepository, config, 'dashboards');
+  constructor(auth: Auth, activatedRepository: ActivatedRepository, config: Config) {
+    super(auth, activatedRepository, config, 'dashboards');
   }
 }

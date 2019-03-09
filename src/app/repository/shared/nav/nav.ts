@@ -5,9 +5,10 @@ import {Router} from '@angular/router';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Theme} from 'app/repository/services/theme';
 import {Updater} from 'app/repository/services/updater';
+import {Auth} from 'app/service/auth';
 import {RepoDao} from 'app/service/repo-dao';
+import {auth} from 'firebase/app';
 import {Subject} from 'rxjs';
-import {filter, mergeMap} from 'rxjs/operators';
 
 export interface NavLink {
   route: string;
@@ -41,7 +42,7 @@ export class Nav {
   constructor(
       public afAuth: AngularFireAuth, public activatedRepository: ActivatedRepository,
       public repoDao: RepoDao, public cd: ChangeDetectorRef, public theme: Theme,
-      public router: Router, public updater: Updater) {}
+      public router: Router, private auth: Auth, public updater: Updater) {}
 
   ngOnDestroy() {
     this.destroyed.next();
@@ -52,5 +53,16 @@ export class Nav {
     this.updater.updateLabels(this.repo);
     this.updater.updateContributors(this.repo);
     this.updater.updateIssues(this.repo);
+  }
+
+  signOut() {
+    this.afAuth.auth.signOut();
+    this.auth.token = '';
+  }
+
+  loginWithGithub() {
+    const googleAuthProvider = new auth.GoogleAuthProvider();
+    googleAuthProvider.setCustomParameters({prompt: 'select_account'});
+    this.afAuth.auth.signInWithPopup(googleAuthProvider);
   }
 }
