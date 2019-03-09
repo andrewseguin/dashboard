@@ -57,7 +57,7 @@ export class WidgetView {
         .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
         .subscribe(itemGroups => {
           this.issues = [];
-          itemGroups.forEach(itemGroup => this.issues.push(...itemGroup.issues));
+          itemGroups.forEach(itemGroup => this.issues.push(...itemGroup.items));
           this.cd.markForCheck();
         });
   }

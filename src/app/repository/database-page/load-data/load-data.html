@@ -23,10 +23,10 @@
     </div>
   </div>
 
-  <ng-container *ngIf="totalIssueCount | async; let issueCount">
+  <ng-container *ngIf="totalItemCount | async; let itemCount">
     <ng-container *ngIf="totalLabelsCount | async; let labelCount">
       <div class="data-to-load theme-secondary-text">
-        ({{issueCount}} issues, {{labelCount}} labels)
+        ({{itemCount}} issues, {{labelCount}} labels)
       </div>
     </ng-container>
   </ng-container>

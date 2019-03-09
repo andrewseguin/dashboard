@@ -23,8 +23,8 @@ export class ItemsRenderer {
   // Starts as null as a signal that no items have been processed.
   itemGroups = new BehaviorSubject<ItemGroup[]|null>(null);
 
-  // Number of issues in the issue groups.
-  issueCount = new BehaviorSubject<number|null>(null);
+  // Number of items in the item groups.
+  itemCount = new BehaviorSubject<number|null>(null);
 
   private initSubscription: Subscription;
 
@@ -57,28 +57,28 @@ export class ItemsRenderer {
 
               // Filter and search
               const filterer = new IssueFilterer(this.options.filters, repo, recommendations);
-              const filteredAndSearchedIssues =
+              const filteredAndSearchedItems =
                   getItemsMatchingFilterAndSearch(items, filterer, this.options.search);
 
               // Group
-              const grouper = new ItemGrouping(filteredAndSearchedIssues, repo);
+              const grouper = new ItemGrouping(filteredAndSearchedItems, repo);
               let itemGroups = grouper.getGroup(this.options.grouping);
               itemGroups = itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
 
               // Sort
-              const issueSorter = new IssueSorter();
+              const sorter = new IssueSorter();
               itemGroups.forEach(group => {
                 const sort = this.options.sorting;
-                const sortFn = issueSorter.getSortFunction(sort);
-                group.issues = group.issues.sort(sortFn);
+                const sortFn = sorter.getSortFunction(sort);
+                group.items = group.items.sort(sortFn);
 
                 if (this.options.reverseSort) {
-                  group.issues = group.issues.reverse();
+                  group.items = group.items.reverse();
                 }
               });
 
               this.itemGroups.next(itemGroups);
-              this.issueCount.next(filteredAndSearchedIssues.length);
+              this.itemCount.next(filteredAndSearchedItems.length);
             });
   }
 }

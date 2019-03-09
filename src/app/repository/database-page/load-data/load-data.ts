@@ -39,7 +39,7 @@ export class LoadData {
     }
   })));
 
-  totalIssueCount = combineLatest(this.formGroup.valueChanges, this.activatedRepository.repository)
+  totalItemCount = combineLatest(this.formGroup.valueChanges, this.activatedRepository.repository)
                         .pipe(startWith(null), mergeMap(() => {
                                 const since = this.getIssuesDateSince();
                                 const repository = this.activatedRepository.repository.value;

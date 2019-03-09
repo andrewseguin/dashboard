@@ -24,7 +24,7 @@
   <ng-container *ngSwitchCase="'count'">
     <ng-container *ngIf="issues; else loading">
       <div class="count">
-        {{issuesRenderer.issueCount | async}}
+        {{issuesRenderer.itemCount | async}}
       </div>
     </ng-container>
   </ng-container>

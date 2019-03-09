@@ -1,6 +1,6 @@
 <div class="buttons">
   <div class="length">
-    {{issuesRenderer.issueCount | async}} results
+    {{issuesRenderer.itemCount | async}} results
   </div>
   <button mat-button [mat-menu-trigger-for]="rootMenu">
     <div class="options-menu-trigger"> Display Options </div>
@@ -8,7 +8,8 @@
 </div>
 
 <mat-menu #rootMenu="matMenu">
-  <button mat-menu-item *ngIf="!hideGrouping" [matMenuTriggerFor]="groupingMenu">Group
+  <button mat-menu-item *ngIf="!hideGrouping"
+          [matMenuTriggerFor]="groupingMenu">Group
     By</button>
   <button mat-menu-item [matMenuTriggerFor]="sortingMenu">Sort By</button>
   <button mat-menu-item [matMenuTriggerFor]="viewingMenu">View</button>
@@ -16,7 +17,8 @@
 
 <!-- Group Menu -->
 <mat-menu #groupingMenu="matMenu">
-  <button mat-menu-item *ngFor="let groupId of groupIds" [class.selected]="issuesRenderer.options.grouping == groupId"
+  <button mat-menu-item *ngFor="let groupId of groupIds"
+          [class.selected]="issuesRenderer.options.grouping == groupId"
           (click)="issuesRenderer.options.grouping = groupId; $event.stopPropagation();">
     <div class="button-content">
       <mat-icon>check</mat-icon>
@@ -27,7 +29,8 @@
 
 <!-- Sort Menu -->
 <mat-menu #sortingMenu="matMenu">
-  <button mat-menu-item *ngFor="let sort of sortIds" [class.selected]="issuesRenderer.options.sorting == sort"
+  <button mat-menu-item *ngFor="let sort of sortIds"
+          [class.selected]="issuesRenderer.options.sorting == sort"
           (click)="setSort(sort); $event.stopPropagation();">
     <div class="button-content">
       <mat-icon *ngIf="!issuesRenderer.options.reverseSort">
@@ -43,7 +46,8 @@
 
 <!-- View Menu -->
 <mat-menu #viewingMenu="matMenu">
-  <button mat-menu-item *ngFor="let viewKey of viewKeys" [class.selected]="!!issuesRenderer.options.view[viewKey]"
+  <button mat-menu-item *ngFor="let viewKey of viewKeys"
+          [class.selected]="!!issuesRenderer.options.view[viewKey]"
           (click)="toggleViewKey(viewKey); $event.stopPropagation();">
     <div class="button-content">
       <mat-icon>check</mat-icon>

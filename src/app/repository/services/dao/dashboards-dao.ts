@@ -19,13 +19,13 @@ export interface IssueListWidget extends BaseWidget {
   listLength?: number;
 }
 
-export interface IssueCountWidget extends BaseWidget {
+export interface ItemCountWidget extends BaseWidget {
   options?: IssueRendererOptionsState;
   fontSize?: number;
   colors?: {color: 'yellow'|'red'|'green', condition: 'less than'|'greater than'|'equal to'}[];
 }
 
-export type Widget = IssueListWidget&IssueCountWidget;
+export type Widget = IssueListWidget&ItemCountWidget;
 
 export interface Column {
   widgets: Widget[];

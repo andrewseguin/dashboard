@@ -6,13 +6,13 @@ import {Group} from './issue-renderer-options';
 export class ItemGroup {
   id: string;
   title: string;
-  issues: Item[];
+  items: Item[];
 }
 
 export class ItemGrouping {
-  constructor(private issues: Item[], private repo: Repo) {}
+  constructor(private items: Item[], private repo: Repo) {}
 
-  getGroup(group: Group) {
+  getGroup(group: Group): ItemGroup[] {
     switch (group) {
       case 'all':
         return this.getGroupAll();
@@ -22,25 +22,24 @@ export class ItemGrouping {
   }
 
   getGroupAll(): ItemGroup[] {
-    return [{id: 'all', title: ``, issues: this.issues}];
+    return [{id: 'all', title: ``, items: this.items}];
   }
 
   getGroupByProperty(property: string) {
     const groups: Map<string, Item[]> = new Map();
 
-    this.issues.forEach(issue => {
-      const value = issue[property];
+    this.items.forEach(item => {
+      const value = item[property];
       if (!groups.has(value)) {
         groups.set(value, []);
       }
 
-      groups.get(value).push(issue);
+      groups.get(value).push(item);
     });
 
-    const requestGroups = [];
-    groups.forEach((issues, value) => {
-      requestGroups.push(
-          {id: value, title: `${value} (${issues.length})`, issues});
+    const requestGroups: ItemGroup[] = [];
+    groups.forEach((items, value) => {
+      requestGroups.push({id: value, title: `${value} (${items.length})`, items});
     });
 
     return requestGroups;

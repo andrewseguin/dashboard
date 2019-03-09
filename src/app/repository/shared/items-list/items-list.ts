@@ -44,7 +44,7 @@ export class ItemsList {
 
   @Input()
   set issuesRendererOptionsState(state: IssueRendererOptionsState) {
-    this.issuesRenderer.options.setState(state);
+    this.itemsRenderer.options.setState(state);
   }
 
   @Input() printMode: boolean;
@@ -54,12 +54,12 @@ export class ItemsList {
   @Output() issuesRendererOptionsChanged = new EventEmitter<IssueRendererOptionsState>();
 
   constructor(
-      public issuesRenderer: ItemsRenderer, public cd: ChangeDetectorRef, public ngZone: NgZone,
+      public itemsRenderer: ItemsRenderer, public cd: ChangeDetectorRef, public ngZone: NgZone,
       public selection: Selection, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    this.issuesRenderer.initialize(this.type);
-    const options = this.issuesRenderer.options;
+    this.itemsRenderer.initialize(this.type);
+    const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.issuesRendererOptionsChanged.next(options.getState());
       this.elementRef.nativeElement.scrollTop = 0;
@@ -88,7 +88,7 @@ export class ItemsList {
 
     // When issue groups change, render the first ten, then debounce and
     // render more
-    this.issuesRenderer.itemGroups.pipe(takeUntil(this.destroyed)).subscribe(itemGroups => {
+    this.itemsRenderer.itemGroups.pipe(takeUntil(this.destroyed)).subscribe(itemGroups => {
       this.itemGroups = itemGroups;
       this.render();
     });
@@ -119,14 +119,14 @@ export class ItemsList {
 
     const groupIndex = this.renderedItemGroups.length - 1;
     const renderGroup = this.renderedItemGroups[groupIndex];
-    const renderLength = renderGroup.issues.length;
+    const renderLength = renderGroup.items.length;
 
     const actualGroup = this.itemGroups[groupIndex];
-    const actualLength = actualGroup.issues.length;
+    const actualLength = actualGroup.items.length;
 
     // Return if all issues have been rendered
     if (this.renderedItemGroups.length === this.itemGroups.length &&
-        renderGroup.issues.length === actualGroup.issues.length) {
+        renderGroup.items.length === actualGroup.items.length) {
       this.loadingIssues = false;
       return;
     } else {
@@ -136,9 +136,9 @@ export class ItemsList {
     const difference = actualLength - renderLength;
 
     if (difference > threshold) {
-      renderGroup.issues = actualGroup.issues.slice(0, renderLength + threshold);
+      renderGroup.items = actualGroup.items.slice(0, renderLength + threshold);
     } else {
-      renderGroup.issues = actualGroup.issues.slice();
+      renderGroup.items = actualGroup.items.slice();
       this.renderNextGroup();
       this.renderMoreIssues(threshold - difference);
     }
@@ -150,7 +150,7 @@ export class ItemsList {
     }
 
     const nextRenderedItemGroup = this.itemGroups[this.renderedItemGroups.length];
-    this.renderedItemGroups.push({...nextRenderedItemGroup, issues: []});
+    this.renderedItemGroups.push({...nextRenderedItemGroup, items: []});
   }
 
   getItemGroupKey(_i: number, itemGroup: ItemGroup) {
@@ -158,6 +158,6 @@ export class ItemsList {
   }
 
   selectGroup(index: number) {
-    this.selection.issues.select(...this.itemGroups[index].issues.map(r => r.number));
+    this.selection.issues.select(...this.itemGroups[index].items.map(r => r.number));
   }
 }
