@@ -4,7 +4,6 @@ import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {AngularFireModule} from '@angular/fire';
 import {AngularFireAuthModule} from '@angular/fire/auth';
-import {AngularFirestoreModule, FirestoreSettingsToken} from '@angular/fire/firestore';
 import {MatIconRegistry} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
@@ -15,7 +14,7 @@ import {TimeAgoPipe} from 'time-ago-pipe';
 
 import {App} from './app';
 import {FIREBASE_CONFIG} from './firebase.config';
-import {RepoDao} from './service/repo-dao';
+
 
 @NgModule({
   declarations: [TimeAgoPipe],
@@ -27,31 +26,20 @@ export class TimeAgoPipeModule {
 @NgModule({
   declarations: [App],
   imports: [
-    AngularFireModule.initializeApp(FIREBASE_CONFIG),
-    AngularFireAuthModule,
-    AngularFirestoreModule,
-    BrowserAnimationsModule,
-    LoginModule,
-    HttpClientModule,
-    RouterModule.forRoot(
-      [
-        {path: 'login', component: Login},
-        {
-          path: ':org/:name',
-          loadChildren: 'app/repository/repository.module#RepositoryModule'
-        },
-        {
-          path: '',
-          pathMatch: 'full',
-          redirectTo: 'angular/material2',
-        },
-      ]
-    )],
+    AngularFireModule.initializeApp(FIREBASE_CONFIG), AngularFireAuthModule,
+    BrowserAnimationsModule, LoginModule, HttpClientModule, RouterModule.forRoot([
+      {path: 'login', component: Login},
+      {path: ':org/:name', loadChildren: 'app/repository/repository.module#RepositoryModule'},
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'angular/material2',
+      },
+    ])
+  ],
   providers: [
     MatIconRegistry,
     Theme,
-    RepoDao,
-    {provide: FirestoreSettingsToken, useValue: {}},
   ],
   bootstrap: [App]
 })

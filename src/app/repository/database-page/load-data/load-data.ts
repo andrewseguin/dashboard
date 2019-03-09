@@ -3,7 +3,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Contributor, Github, Item, Label} from 'app/service/github';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
 

@@ -1,6 +1,6 @@
 import {Filter, MatcherContext} from 'app/repository/utility/search/filter';
 import {Item} from 'app/service/github';
-import {Repo} from 'app/service/repo-dao';
+import {Repo} from 'app/repository/services/repo-dao';
 
 import {Recommendation} from '../dao/recommendations-dao';
 

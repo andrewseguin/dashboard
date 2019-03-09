@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ItemType} from 'app/service/github';
-import {Repo, RepoDao} from 'app/service/repo-dao';
+import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 

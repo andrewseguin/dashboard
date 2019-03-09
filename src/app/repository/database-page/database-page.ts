@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, of} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 

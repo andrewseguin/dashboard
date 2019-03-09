@@ -14,7 +14,7 @@ import {Observable, Subject} from 'rxjs';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ANIMATION_DURATION} from 'app/utility/animations';
 import {IFilterMetadata, Filter} from 'app/repository/utility/search/filter';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 import {Query} from 'app/repository/utility/search/query';
 
 @Component({

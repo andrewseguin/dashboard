@@ -7,7 +7,7 @@ import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
 import {Filter} from 'app/repository/utility/search/filter';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {merge, of, Subject} from 'rxjs';
 import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';

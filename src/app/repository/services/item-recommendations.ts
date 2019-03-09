@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Repo, RepoDao} from 'app/service/repo-dao';
+import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 

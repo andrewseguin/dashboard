@@ -3,7 +3,7 @@ import {
   getItemsMatchingFilterAndSearch
 } from 'app/repository/utility/get-items-matching-filter-and-search';
 import {ItemType} from 'app/service/github';
-import {Repo, RepoDao} from 'app/service/repo-dao';
+import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
 

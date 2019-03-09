@@ -1,8 +1,9 @@
+import {Injectable} from '@angular/core';
+import {Contributor, Issue, Item, Label, PullRequest} from 'app/service/github';
 import {DB, deleteDb, openDb} from 'idb';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-
-import {Contributor, Issue, Item, Label, PullRequest} from './github';
+import {ActivatedRepository} from './activated-repository';
 
 export interface Repo {
   empty: boolean;
@@ -20,6 +21,7 @@ export interface Repo {
 
 const DB_VERSION = 1;
 
+@Injectable()
 export class RepoDao {
   repository: string;
 
@@ -27,7 +29,11 @@ export class RepoDao {
 
   private db: Promise<DB>;
 
-  constructor() {}
+  constructor(activatedRepository: ActivatedRepository) {
+    activatedRepository.repository.subscribe(repository => {
+      this.initialize(repository);
+    });
+  }
 
   initialize(repository: string) {
     this.repository = repository;

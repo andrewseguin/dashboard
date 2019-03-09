@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 import {interval, Subject} from 'rxjs';
 import {filter, mergeMap, takeUntil} from 'rxjs/operators';
-
 import {ActivatedRepository} from './services/activated-repository';
 import {Updater} from './services/updater';
+
 
 @Component({
   templateUrl: 'repository.html',
@@ -19,14 +18,12 @@ export class Repository {
   destroyed = new Subject();
 
   constructor(
-      public repoDao: RepoDao, private dialog: MatDialog, private router: Router,
-      private updater: Updater, private activatedRoute: ActivatedRoute,
-      private activatedRepository: ActivatedRepository) {
+      public repoDao: RepoDao, private router: Router, private updater: Updater,
+      private activatedRoute: ActivatedRoute, private activatedRepository: ActivatedRepository) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
       const name = params['name'];
       this.repository = `${org}/${name}`;
-      this.repoDao.initialize(this.repository);
       this.activatedRepository.repository.next(this.repository);
     });
 

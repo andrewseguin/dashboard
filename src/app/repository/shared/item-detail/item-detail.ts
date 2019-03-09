@@ -17,7 +17,7 @@ import {
   TimelineEvent,
   UserComment
 } from 'app/service/github';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 

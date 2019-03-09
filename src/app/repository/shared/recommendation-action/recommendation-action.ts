@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {Github, Item} from 'app/service/github';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 
 @Component({
   selector: 'recommendation-action',

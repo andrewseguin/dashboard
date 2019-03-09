@@ -1,5 +1,5 @@
 import {Item} from 'app/service/github';
-import {Repo} from 'app/service/repo-dao';
+import {Repo} from 'app/repository/services/repo-dao';
 
 import {Group} from './item-renderer-options';
 

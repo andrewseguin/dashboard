@@ -8,7 +8,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {Label} from 'app/service/github';
-import {Repo, RepoDao} from 'app/service/repo-dao';
+import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 

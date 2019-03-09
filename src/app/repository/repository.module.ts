@@ -2,7 +2,6 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
-
 import {Repository} from './repository';
 import {Header} from './services';
 import {ActivatedRepository} from './services/activated-repository';
@@ -11,9 +10,11 @@ import {QueriesDao} from './services/dao/queries-dao';
 import {RecommendationsDao} from './services/dao/recommendations-dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
+import {RepoDao} from './services/repo-dao';
 import {Updater} from './services/updater';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
+
 
 const routes: Routes = [{
   path: '',
@@ -72,6 +73,7 @@ export class RepositoryRoutingModule {
     QueriesDao,
     RecommendationsDao,
     DashboardsDao,
+    RepoDao,
   ]
 })
 export class RepositoryModule {

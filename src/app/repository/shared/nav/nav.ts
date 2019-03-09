@@ -6,7 +6,7 @@ import {ActivatedRepository} from 'app/repository/services/activated-repository'
 import {Theme} from 'app/repository/services/theme';
 import {Updater} from 'app/repository/services/updater';
 import {Auth} from 'app/service/auth';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 import {auth} from 'firebase/app';
 import {Subject} from 'rxjs';
 

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Github} from 'app/service/github';
-import {RepoDao} from 'app/service/repo-dao';
+import {RepoDao} from 'app/repository/services/repo-dao';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 
