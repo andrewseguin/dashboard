@@ -38,8 +38,9 @@ export class Header {
               break;
             case 'queries':
               this.title.next(
-                  subSection === 'issue' ? 'Issue Queries' :
-                                           subSection === 'pr' ? 'Pull Request Queries' : '');
+                  subSection.indexOf('issue') === 0 ?
+                      'Issue Queries' :
+                      subSection.indexOf('pr') === 0 ? 'Pull Request Queries' : '');
               break;
           }
 

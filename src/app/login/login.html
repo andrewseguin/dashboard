@@ -1,11 +1,37 @@
 <div class="center">
-  <mat-progress-spinner *ngIf="checkingAuth | async; else loginButton"
-                        mode="indeterminate">
-  </mat-progress-spinner>
+  <div class="app-title">GitHub Dashboard</div>
 
-  <ng-template #loginButton>
-    <button mat-raised-button color="primary" (click)="login()">
-      Login with Google
-    </button>
-  </ng-template>
+  <div class="login-button">
+    <mat-progress-spinner *ngIf="checkingAuth | async; else loginButton"
+                          mode="indeterminate">
+    </mat-progress-spinner>
+
+    <ng-template #loginButton>
+      <button mat-raised-button color="primary" (click)="loginWithGithub()">
+        Login with GitHub
+      </button>
+    </ng-template>
+  </div>
+
+  <div class="divider">
+    <mat-divider></mat-divider>
+    <span> OR </span>
+    <mat-divider></mat-divider>
+  </div>
+
+  <div class="manual">
+    <div class="description theme-secondary-text">
+      Provide an <a href="https://github.com/settings/tokens">access token</a>
+      with permissions: repo, gist
+    </div>
+    <mat-form-field appearance="outline">
+      <input matInput [formControl]="accessTokenInput" (keyup.Enter)="loginManually()"
+             placeholder="Enter access token">
+    </mat-form-field>
+
+    <button mat-raised-button color="primary"
+            [disabled]="!accessTokenInput.value" (click)="loginManually()">
+      Login </button>
+  </div>
+
 </div>

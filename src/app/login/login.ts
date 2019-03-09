@@ -1,7 +1,15 @@
-import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  NgZone,
+  OnDestroy
+} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
+import {FormControl} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Auth} from 'app/service/auth';
 import {sendEvent} from 'app/utility/analytics';
 import {auth} from 'firebase/app';
 import {BehaviorSubject, Subject} from 'rxjs';
@@ -19,11 +27,24 @@ import {takeUntil} from 'rxjs/operators';
 export class Login implements OnDestroy {
   checkingAuth = new BehaviorSubject<boolean>(true);
 
+  accessTokenInput = new FormControl('');
+
   private destroyed = new Subject();
 
   constructor(
-      private afAuth: AngularFireAuth, private snackBar: MatSnackBar,
-      private route: Router) {
+      private afAuth: AngularFireAuth, private route: Router,
+      private activatedRoute: ActivatedRoute, private ngZone: NgZone, private auth: Auth) {
+    const queryParamAccessToken = this.activatedRoute.snapshot.queryParamMap.get('accessToken');
+    if (queryParamAccessToken) {
+      this.accessTokenInput.setValue(queryParamAccessToken);
+      this.loginManually();
+    }
+
+
+    if (this.auth.token) {
+      this.navigateToSite();
+    }
+
     this.afAuth.authState.pipe(takeUntil(this.destroyed)).subscribe(auth => {
       if (!auth) {
         this.checkingAuth.next(false);
@@ -31,12 +52,7 @@ export class Login implements OnDestroy {
       }
 
       sendEvent('login', 'valid');
-      let hash = window.location.hash.substr(1);
-      if (hash) {
-        this.route.navigate([hash]);
-      } else {
-        this.route.navigate(['']);
-      }
+      this.navigateToSite();
     });
   }
 
@@ -45,10 +61,32 @@ export class Login implements OnDestroy {
     this.destroyed.complete();
   }
 
-  login() {
+  loginWithGithub() {
     this.checkingAuth.next(true);
     const googleAuthProvider = new auth.GoogleAuthProvider();
     googleAuthProvider.setCustomParameters({prompt: 'select_account'});
-    this.afAuth.auth.signInWithPopup(googleAuthProvider);
+    this.afAuth.auth.signInWithPopup(googleAuthProvider).catch(err => {
+      switch (err.code) {
+        case 'auth/popup-closed-by-user':
+          this.ngZone.run(() => this.checkingAuth.next(false));
+          break;
+      }
+    });
+  }
+
+  loginManually() {
+    if (this.accessTokenInput.value) {
+      this.auth.token = this.accessTokenInput.value;
+      this.navigateToSite();
+    }
+  }
+
+  private navigateToSite() {
+    let hash = window.location.hash.substr(1);
+    if (hash) {
+      this.route.navigate([hash]);
+    } else {
+      this.route.navigate(['']);
+    }
   }
 }

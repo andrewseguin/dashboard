@@ -11,13 +11,11 @@ import {RouterModule} from '@angular/router';
 import {Login} from 'app/login/login';
 import {LoginModule} from 'app/login/login.module';
 import {Theme} from 'app/repository/services/theme';
-import {GlobalConfigDao} from 'app/service/global-config-dao';
 import {TimeAgoPipe} from 'time-ago-pipe';
 
 import {App} from './app';
 import {FIREBASE_CONFIG} from './firebase.config';
 import {RepoDao} from './service/repo-dao';
-import {UsersDao} from './service/users-dao';
 
 @NgModule({
   declarations: [TimeAgoPipe],
@@ -51,8 +49,6 @@ export class TimeAgoPipeModule {
     )],
   providers: [
     MatIconRegistry,
-    UsersDao,
-    GlobalConfigDao,
     Theme,
     RepoDao,
     {provide: FirestoreSettingsToken, useValue: {}},

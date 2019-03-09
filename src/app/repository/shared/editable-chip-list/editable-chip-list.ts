@@ -1,6 +1,15 @@
 import {COMMA, ENTER, SPACE} from '@angular/cdk/keycodes';
 import {SimplePlaceholderMapper} from '@angular/compiler/src/i18n/serializers/serializer';
-import {ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {merge, Observable, Subject} from 'rxjs';
 import {delay, map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
@@ -48,9 +57,8 @@ export class EditableChipList {
           merge(this.formControl.valueChanges, this.listChange.pipe(delay(100)))
               .pipe(
                   startWith(null),
-                  map(() => this.formControl.value ?
-                          this._filter(this.formControl.value) :
-                          this.autocomplete.slice()));
+                  map(() => this.formControl.value ? this._filter(this.formControl.value) :
+                                                     this.autocomplete.slice()));
     }
   }
 
@@ -60,7 +68,6 @@ export class EditableChipList {
   }
 
   add(value: string): void {
-    console.log('add ' + value);
     value = (value || '').trim();
     if (!value) {
       return;
@@ -81,7 +88,6 @@ export class EditableChipList {
   }
 
   private _filter(value: string): string[] {
-    return this.autocomplete.filter(
-        v => v.toLowerCase().indexOf(value.toLowerCase()) === 0);
+    return this.autocomplete.filter(v => v.toLowerCase().indexOf(value.toLowerCase()) === 0);
   }
 }

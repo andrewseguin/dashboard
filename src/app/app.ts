@@ -1,20 +1,22 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
-import {NavigationEnd, Router} from '@angular/router';
-import {UsersDao} from 'app/service/users-dao';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {distinctUntilChanged} from 'rxjs/operators';
+
+import {Auth} from './service/auth';
 import {sendPageview} from './utility/analytics';
 
 @Component({
   selector: 'app-root',
   template: '<router-outlet></router-outlet>',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'class': 'theme-text',
+  }
 })
 export class App {
   constructor(
-      private snackBar: MatSnackBar, private router: Router,
-      private usersDao: UsersDao, private afAuth: AngularFireAuth) {
+      private snackBar: MatSnackBar, private router: Router, private auth: Auth) {
     this.router.events
         .pipe(distinctUntilChanged((prev: any, curr: any) => {
           if (curr instanceof NavigationEnd) {
@@ -24,16 +26,9 @@ export class App {
         }))
         .subscribe(x => sendPageview(x.urlAfterRedirects));
 
-    this.afAuth.authState.subscribe(auth => {
-      if (!auth) {
-        this.navigateToLogin();
-        return;
-      }
-
-      // Add or update the users profile in the db
-      this.usersDao.addUserData(auth);
-      this.notifyLoggedInAs(auth.email);
-    });
+    if (!this.auth.token) {
+      this.navigateToLogin();
+    }
   }
 
   /**
@@ -42,7 +37,7 @@ export class App {
    */
   private navigateToLogin() {
     if (location.pathname !== '/login') {
-      this.router.navigate(['login'], {fragment: location.pathname});
+      this.router.navigate(['login'], {fragment: location.pathname, queryParamsHandling: 'merge'});
     }
   }
 

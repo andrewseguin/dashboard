@@ -23,7 +23,7 @@
       </mat-button-toggle-group>
     </div>
 
-    <ng-container [ngSwitch]="form.value.type">
+    <ng-container [ngSwitch]="form.value.displayType">
       <ng-container *ngSwitchCase="'list'">
         <mat-form-field class="list-length">
           <mat-label> Max List Length </mat-label>

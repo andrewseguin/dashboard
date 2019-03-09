@@ -1,4 +1,4 @@
-import {ListDao} from 'app/utility/list-dao';
+import {ListDao} from 'app/repository/services/dao/list-dao';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 

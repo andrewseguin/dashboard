@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {UsersDao} from 'app/service/users-dao';
 import {sendEvent} from 'app/utility/analytics';
 import {Subject} from 'rxjs';
-import {distinctUntilChanged, filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
+import {take} from 'rxjs/operators';
 
 @Injectable()
 export class Theme {
@@ -11,8 +10,8 @@ export class Theme {
 
   private destroyed = new Subject();
 
-  constructor(private usersDao: UsersDao,
-              private afAuth: AngularFireAuth) {
+  constructor(private afAuth: AngularFireAuth) {
+    /**
     this.syncState();
     this.afAuth.authState.pipe(
         filter(auth => !!auth),
@@ -28,6 +27,8 @@ export class Theme {
             }
           }
         });
+        *
+  */
   }
 
   toggle(userToggled = false) {
@@ -41,9 +42,10 @@ export class Theme {
       sendEvent('theme_toggled', this.isLight ? 'light' : 'dark');
     }
 
-    this.afAuth.authState.pipe(take(1)).subscribe(auth => {
-      this.usersDao.update(auth.uid, {lightTheme: this.isLight});
-    });
+    this.afAuth.authState.pipe(take(1)).subscribe(
+        auth => {
+            // this.usersDao.update(auth.uid, {lightTheme: this.isLight});
+        });
   }
 
   private syncState() {
