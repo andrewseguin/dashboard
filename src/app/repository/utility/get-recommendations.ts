@@ -19,9 +19,10 @@ export function getRecommendations(
         ],  // Recommendations cannot be determined based on recommendations, TODO: or can they be?
       };
     };
-    const filterer = new ItemFilterer<Item, MatcherContext>(
-        recommendation.filters || [], contextProvider, tokenizeItem, ItemsFilterMetadata);
-    const matchedIssues = filterer.filter([item], recommendation.search);
+    const filterer =
+        new ItemFilterer<Item, MatcherContext>(contextProvider, tokenizeItem, ItemsFilterMetadata);
+    const matchedIssues =
+        filterer.filter([item], recommendation.filters || [], recommendation.search);
     return !!matchedIssues.length;
   });
 }

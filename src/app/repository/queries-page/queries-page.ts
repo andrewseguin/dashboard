@@ -58,8 +58,9 @@ export class QueriesPage {
                     };
                   };
                   const filterer = new ItemFilterer<Item, MatcherContext>(
-                      query.options.filters, contextProvider, tokenizeItem, ItemsFilterMetadata);
-                  const count = filterer.filter(items, query.options.search).length;
+                      contextProvider, tokenizeItem, ItemsFilterMetadata);
+                  const count =
+                      filterer.filter(items, query.options.filters, query.options.search).length;
                   map.set(query.id, count);
                 }));
 

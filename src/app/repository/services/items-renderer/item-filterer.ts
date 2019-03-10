@@ -3,13 +3,13 @@ import {Filter, IFilterMetadata} from 'app/repository/utility/search/filter';
 
 export class ItemFilterer<T, M> {
   constructor(
-      private filters: Filter[], private contextProvider: (item: T) => M,
+      private contextProvider: (item: T) => M,
       public tokenizeItem: (item: T) => string,
       private metadata: Map<string, IFilterMetadata<M, any>>) {}
 
-  filter(items: T[], search: string) {
+  filter(items: T[], filters: Filter[], search: string) {
     const filteredItems = items.filter(item => {
-      return this.filters.every(filter => {
+      return filters.every(filter => {
         if (!filter.query) {
           return true;
         }

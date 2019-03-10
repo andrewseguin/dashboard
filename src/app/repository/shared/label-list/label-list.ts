@@ -42,7 +42,7 @@ export class LabelList {
 
                        const labels: DisplayedLabel[] = [];
                        labelIds.forEach(labelId => {
-                         const label = labelsMap.get(labelId);
+                         const label = labelsMap.get(`${labelId}`);
                          labels.push(convertLabelToDisplayedLabel(label));
                        });
                        labels.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);

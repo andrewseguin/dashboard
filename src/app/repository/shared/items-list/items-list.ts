@@ -8,6 +8,8 @@ import {
   NgZone,
   Output
 } from '@angular/core';
+import {ItemType} from 'app/repository/services/dao';
+import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemGroup} from 'app/repository/services/items-renderer/item-grouping';
 import {
   ItemRendererOptionsState
@@ -15,8 +17,7 @@ import {
 import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
-import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
-import { ItemType } from 'app/repository/services/dao';
+import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'items-list',
@@ -53,11 +54,16 @@ export class ItemsList {
   @Output() issuesRendererOptionsChanged = new EventEmitter<ItemRendererOptionsState>();
 
   constructor(
-      public itemsRenderer: ItemsRenderer, public cd: ChangeDetectorRef, public ngZone: NgZone,
-      public elementRef: ElementRef) {}
+      public itemsRenderer: ItemsRenderer, public repoDao: RepoDao, public cd: ChangeDetectorRef,
+      public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    this.itemsRenderer.initialize(this.type);
+    const items =
+        this.repoDao.repo.pipe(filter(repo => !!repo), map(repo => {
+                                 return this.type === 'issue' ? repo.issues : repo.pullRequests;
+                               }));
+
+    this.itemsRenderer.initialize(items);
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.issuesRendererOptionsChanged.next(options.getState());

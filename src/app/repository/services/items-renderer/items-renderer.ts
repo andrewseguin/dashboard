@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
-import {AutocompleteContext, MatcherContext} from 'app/repository/utility/search/filter';
+import {MatcherContext} from 'app/repository/utility/search/filter';
 import {tokenizeItem} from 'app/repository/utility/tokenize-item';
-import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
-import {debounceTime, filter, startWith} from 'rxjs/operators';
-import {Item, ItemType, LabelsDao} from '../dao';
+import {BehaviorSubject, combineLatest, Observable, Subscription} from 'rxjs';
+import {debounceTime, filter, map, startWith} from 'rxjs/operators';
+import {Item, LabelsDao} from '../dao';
 import {ItemRecommendations} from '../item-recommendations';
 import {ItemFilterer} from './item-filterer';
 import {ItemGroup, ItemGrouping} from './item-grouping';
@@ -35,37 +35,27 @@ export class ItemsRenderer {
     }
   }
 
-  initialize(type: ItemType) {
+  initialize(items: Observable<Item[]>, filterer: Observable<ItemFilterer<any, any>>) {
     if (this.initSubscription) {
       this.initSubscription.unsubscribe();
     }
 
-
     this.initSubscription =
         combineLatest([
           this.repoDao.repo,
-          this.issuesRecommendations.recommendations,
-          this.labelsDao.map,
+          filterer,
+          items,
           this.options.changed.pipe(startWith(null)),
         ])
             .pipe(filter(result => !!result[0] && !!result[1] && !!result[2]), debounceTime(50))
             .subscribe(result => {
               const repo = result[0];
-              const items = type === 'issue' ? repo.issues : repo.pullRequests;
-              const recommendationsByItem = result[1];
-              const labelsMap = result[2];
+              const filterer = result[1];
+              const items = result[2];
 
               // Filter and search
-              const contextProvider = (item: Item) => {
-                return {
-                  item,
-                  labelsMap,
-                  recommendations: recommendationsByItem.get(item.id),
-                };
-              };
-              const filterer = new ItemFilterer<Item, MatcherContext>(
-                  this.options.filters, contextProvider, tokenizeItem, ItemsFilterMetadata);
-              const filteredItems = filterer.filter(items, this.options.search);
+              const filteredItems =
+                  filterer.filter(items, this.options.filters, this.options.search);
 
               // Group
               const grouper = new ItemGrouping(filteredItems, repo);

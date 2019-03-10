@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
+import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRendererOptions} from 'app/repository/services/items-renderer/item-renderer-options';
 import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
@@ -38,10 +39,17 @@ export class EditWidget {
 
   constructor(
       private dialogRef: MatDialogRef<EditWidget, Widget>, public itemsRenderer: ItemsRenderer,
-      public recommendationsDao: RecommendationsDao, public queriesDao: QueriesDao,
-      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+      public recommendationsDao: RecommendationsDao, private repoDao: RepoDao,
+      public queriesDao: QueriesDao, @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
-    this.itemsRenderer.initialize(this.widget.itemType);
+
+
+    const items = this.repoDao.repo.pipe(
+        filter(repo => !!repo), map(repo => {
+          return this.widget.itemType === 'issue' ? repo.issues : repo.pullRequests;
+        }));
+
+    this.itemsRenderer.initialize(items);
     this.itemsRenderer.options.setState(data.widget.options);
     this.form = new FormGroup({
       title: new FormControl(this.widget.title),
