@@ -11,7 +11,12 @@ import {
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
-import {Filter, IFilterMetadata} from 'app/repository/utility/search/filter';
+import {
+  AutocompleteContext,
+  Filter,
+  IFilterMetadata,
+  MatcherContext
+} from 'app/repository/utility/search/filter';
 import {Query} from 'app/repository/utility/search/query';
 import {ANIMATION_DURATION} from 'app/utility/animations';
 import {Observable, Subject} from 'rxjs';
@@ -56,7 +61,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = i => i;
 
-  @Input() metadata: Map<string, IFilterMetadata>;
+  @Input() metadata: Map<string, IFilterMetadata<MatcherContext, AutocompleteContext>>;
 
   @Input() filters: Filter[] = [];
 

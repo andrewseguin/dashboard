@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
-import {
-  getItemsMatchingFilterAndSearch
-} from 'app/repository/utility/get-items-matching-filter-and-search';
+import {AutocompleteContext, MatcherContext} from 'app/repository/utility/search/filter';
+import {tokenizeItem} from 'app/repository/utility/tokenize-item';
 import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
-import {ItemType, LabelsDao} from '../dao';
+import {Item, ItemType, LabelsDao} from '../dao';
 import {ItemRecommendations} from '../item-recommendations';
 import {ItemFilterer} from './item-filterer';
 import {ItemGroup, ItemGrouping} from './item-grouping';
 import {ItemRendererOptions} from './item-renderer-options';
 import {ItemSorter} from './item-sorter';
+import {ItemsFilterMetadata} from './items-filter-metadata';
 
 
 @Injectable()
@@ -52,16 +52,23 @@ export class ItemsRenderer {
             .subscribe(result => {
               const repo = result[0];
               const items = type === 'issue' ? repo.issues : repo.pullRequests;
-              const recommendations = result[1];
+              const recommendationsByItem = result[1];
               const labelsMap = result[2];
 
               // Filter and search
-              const filterer = new ItemFilterer(this.options.filters, labelsMap, recommendations);
-              const filteredAndSearchedItems =
-                  getItemsMatchingFilterAndSearch(items, filterer, this.options.search);
+              const contextProvider = (item: Item) => {
+                return {
+                  item,
+                  labelsMap,
+                  recommendations: recommendationsByItem.get(item.id),
+                };
+              };
+              const filterer = new ItemFilterer<Item, MatcherContext>(
+                  this.options.filters, contextProvider, tokenizeItem, ItemsFilterMetadata);
+              const filteredItems = filterer.filter(items, this.options.search);
 
               // Group
-              const grouper = new ItemGrouping(filteredAndSearchedItems, repo);
+              const grouper = new ItemGrouping(filteredItems, repo);
               let itemGroups = grouper.getGroup(this.options.grouping);
               itemGroups = itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
 
@@ -78,7 +85,7 @@ export class ItemsRenderer {
               });
 
               this.itemGroups.next(itemGroups);
-              this.itemCount.next(filteredAndSearchedItems.length);
+              this.itemCount.next(filteredItems.length);
             });
   }
 }

@@ -1,28 +1,33 @@
-import {Filter, MatcherContext} from 'app/repository/utility/search/filter';
-import {Item, Label} from '../dao';
-import {Recommendation} from '../dao/recommendations-dao';
-import {ItemsFilterMetadata} from './items-filter-metadata';
+import {Filter, IFilterMetadata} from 'app/repository/utility/search/filter';
 
 
-export class ItemFilterer {
+export class ItemFilterer<T, M> {
   constructor(
-      private filters: Filter[], private labelsMap: Map<string, Label>,
-      private recommendationsMap: Map<string, Recommendation[]>) {}
+      private filters: Filter[], private contextProvider: (item: T) => M,
+      public tokenizeItem: (item: T) => string,
+      private metadata: Map<string, IFilterMetadata<M, any>>) {}
 
-  filter(items: Item[]) {
-    return items.filter(item => {
+  filter(items: T[], search: string) {
+    const filteredItems = items.filter(item => {
       return this.filters.every(filter => {
         if (!filter.query) {
           return true;
         }
 
-        const recommendations = this.recommendationsMap.get(item.id);
-        const context: MatcherContext = {
-          item,
-          labelsMap: this.labelsMap,
-          recommendations,
-        };
-        return ItemsFilterMetadata.get(filter.type).matcher(context, filter.query);
+        const context = this.contextProvider(item);
+        return this.metadata.get(filter.type).matcher(context, filter.query);
+      });
+    });
+
+    return this.search(filteredItems, search);
+  }
+
+  private search(items: T[], search: string) {
+    return !search ? items : items.filter(item => {
+      const tokens = search.split(' OR ');
+      return tokens.some(token => {
+        const str = this.tokenizeItem(item);
+        return str.indexOf(token.toLowerCase()) != -1;
       });
     });
   }

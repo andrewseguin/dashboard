@@ -4,12 +4,14 @@ import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
-import {ItemType, LabelsDao} from '../services/dao';
+import {Item, ItemType, LabelsDao} from '../services/dao';
 import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemFilterer} from '../services/items-renderer/item-filterer';
-import {getItemsMatchingFilterAndSearch} from '../utility/get-items-matching-filter-and-search';
+import {ItemsFilterMetadata} from '../services/items-renderer/items-filter-metadata';
+import {MatcherContext} from '../utility/search/filter';
+import {tokenizeItem} from '../utility/tokenize-item';
 
 
 interface QueryGroup {
@@ -40,7 +42,7 @@ export class QueriesPage {
               delay(1000), map(result => {
                 const repo = result[0];
                 const groups = result[1];
-                const recommendations = result[2];
+                const recommendationsByItem = result[2];
                 const type = result[3];
                 const labelsMap = result[4];
                 const items =
@@ -48,10 +50,16 @@ export class QueriesPage {
 
                 const map = new Map<string, number>();
                 groups.forEach(group => group.queries.forEach(query => {
-                  const filterer =
-                      new ItemFilterer(query.options.filters, labelsMap, recommendations);
-                  const count =
-                      getItemsMatchingFilterAndSearch(items, filterer, query.options.search).length;
+                  const contextProvider = (item: Item) => {
+                    return {
+                      item,
+                      labelsMap,
+                      recommendations: recommendationsByItem.get(item.id),
+                    };
+                  };
+                  const filterer = new ItemFilterer<Item, MatcherContext>(
+                      query.options.filters, contextProvider, tokenizeItem, ItemsFilterMetadata);
+                  const count = filterer.filter(items, query.options.search).length;
                   map.set(query.id, count);
                 }));
 
