@@ -64,7 +64,7 @@ export const ItemsFilterMetadata = new Map<string, IFilterMetadata>([
       displayName: 'Labels',
       queryType: 'input',
       matcher: (c: MatcherContext, q: InputQuery) => {
-        return arrayContainsQuery(c.item.labels.map(l => c.repo.labelsMap.get(l).name), q);
+        return arrayContainsQuery(c.item.labels.map(l => c.labelsMap.get(l).name), q);
       },
       autocomplete: (c: AutocompleteContext) => {
         return c.repoDao.repo.pipe(filter(repo => !!repo), map(repo => {

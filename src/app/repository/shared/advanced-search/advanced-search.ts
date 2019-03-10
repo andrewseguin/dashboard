@@ -1,32 +1,45 @@
-import { animate, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { RepoDao } from 'app/repository/services/dao/repo-dao';
-import { Filter, IFilterMetadata } from 'app/repository/utility/search/filter';
-import { Query } from 'app/repository/utility/search/query';
-import { ANIMATION_DURATION } from 'app/utility/animations';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import {animate, style, transition, trigger} from '@angular/animations';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {RepoDao} from 'app/repository/services/dao/repo-dao';
+import {Filter, IFilterMetadata} from 'app/repository/utility/search/filter';
+import {Query} from 'app/repository/utility/search/query';
+import {ANIMATION_DURATION} from 'app/utility/animations';
+import {Observable, Subject} from 'rxjs';
+import {debounceTime, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'advanced-search',
   templateUrl: 'advanced-search.html',
   styleUrls: ['advanced-search.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '[class.has-filters]': 'hasDisplayedFilters()'
-  },
+  host: {'[class.has-filters]': 'hasDisplayedFilters()'},
   animations: [
-    trigger('expand', [
-      transition('void => true', [
-        style({ height: '0', opacity: 0 }),
-        animate(ANIMATION_DURATION, style({ height: '*', opacity: 1 })),
-      ]),
-      transition(':leave', [
-        style({ height: '*', opacity: 1 }),
-        animate(ANIMATION_DURATION, style({ height: '0', opacity: 0 })),
-      ]),
-    ]),
+    trigger(
+        'expand',
+        [
+          transition(
+              'void => true',
+              [
+                style({height: '0', opacity: 0}),
+                animate(ANIMATION_DURATION, style({height: '*', opacity: 1})),
+              ]),
+          transition(
+              ':leave',
+              [
+                style({height: '*', opacity: 1}),
+                animate(ANIMATION_DURATION, style({height: '0', opacity: 0})),
+              ]),
+        ]),
   ]
 })
 export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
@@ -48,39 +61,38 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
   @Input() filters: Filter[] = [];
 
   @Input()
-  set search(v: string) { this.searchFormControl.setValue(v, {emitEvent: false}); }
-  get search(): string { return this.searchFormControl.value; }
+  set search(v: string) {
+    this.searchFormControl.setValue(v, {emitEvent: false});
+  }
+  get search(): string {
+    return this.searchFormControl.value;
+  }
 
   @Output() searchChanged = new EventEmitter<string>();
 
   @Output() filtersChanged = new EventEmitter<Filter[]>();
 
-  constructor (private repoDao: RepoDao) { }
+  constructor(private repoDao: RepoDao) {}
 
   ngOnInit() {
     this.metadata.forEach((value, key) => {
       if (value.autocomplete) {
-        this.autocomplete.set(key, value.autocomplete({
-          repoDao: this.repoDao
-        }));
+        this.autocomplete.set(key, value.autocomplete({repoDao: this.repoDao}));
       }
     });
 
-    this.searchFormControl.valueChanges.pipe(
-      debounceTime(100),
-      takeUntil(this.destroyed))
-      .subscribe(value => {
-        this.searchChanged.emit(value);
-      });
-
-    this.displayedFilterTypes =
-      Array.from(this.metadata.keys())
-        .filter(key => this.metadata.get(key).displayName)
-        .sort((a, b) => {
-          const nameA = this.metadata.get(a).displayName;
-          const nameB = this.metadata.get(b).displayName;
-          return nameA < nameB ? -1 : 1;
+    this.searchFormControl.valueChanges.pipe(debounceTime(100), takeUntil(this.destroyed))
+        .subscribe(value => {
+          this.searchChanged.emit(value);
         });
+
+    this.displayedFilterTypes = Array.from(this.metadata.keys())
+                                    .filter(key => this.metadata.get(key).displayName)
+                                    .sort((a, b) => {
+                                      const nameA = this.metadata.get(a).displayName;
+                                      const nameB = this.metadata.get(b).displayName;
+                                      return nameA < nameB ? -1 : 1;
+                                    });
   }
 
   ngAfterViewInit() {

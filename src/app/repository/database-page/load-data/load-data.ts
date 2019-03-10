@@ -57,7 +57,7 @@ export class LoadData {
   private destroyed = new Subject();
 
   constructor(
-      private activatedRepository: ActivatedRepository, private repoDao: RepoDao,
+      private activatedRepository: ActivatedRepository, public repoDao: RepoDao,
       private itemsDao: ItemsDao, private contributorsDao: ContributorsDao,
       private labelsDao: LabelsDao, private snackbar: MatSnackBar, private github: Github,
       private cd: ChangeDetectorRef) {

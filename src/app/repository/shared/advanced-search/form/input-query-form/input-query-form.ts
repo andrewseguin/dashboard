@@ -10,8 +10,8 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {InputEquality, InputQuery} from 'app/repository/utility/search/query';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, takeUntil} from 'rxjs/operators';
 
 @Component({
@@ -41,7 +41,9 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
   set options(o: string[]) {
     this._options.next(Array.from(new Set(o)));
   }
-  get options(): string[] {return this._options.value; }
+  get options(): string[] {
+    return this._options.value;
+  }
   _options = new BehaviorSubject([]);
 
   @Input() focusInput: boolean;
@@ -49,14 +51,14 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
   @Output() queryChange = new EventEmitter<InputQuery>();
 
   constructor(private elementRef: ElementRef) {
-    this.form.valueChanges.pipe(
-      takeUntil(this.destroyed))
-      .subscribe(value => this.queryChange.next(value));
+    this.form.valueChanges.pipe(takeUntil(this.destroyed))
+        .subscribe(value => this.queryChange.next(value));
 
     const inputChanges = this.form.valueChanges.pipe(startWith(null));
     this.filteredOptions = combineLatest([this._options, inputChanges]).pipe(map(result => {
-      const options = result[0] as string[];
+      const options = result[0];
       const input = this.form.value.input as string;
+
       return options.filter(o => o.toLowerCase().includes(input.toLowerCase())).sort();
     }));
   }

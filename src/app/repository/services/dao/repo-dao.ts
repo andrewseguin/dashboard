@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {Contributor, ContributorsDao} from './contributors-dao';
+import {ContributorsDao} from './contributors-dao';
 import {Issue, Item, ItemsDao, PullRequest} from './items-dao';
 import {Label, LabelsDao} from './labels-dao';
 
@@ -14,52 +14,43 @@ export interface Repo {
   pullRequests: PullRequest[];
   pullRequestsMap: Map<string, PullRequest>;
   labels: Label[];
-  labelsMap: Map<string, Label>;
-  contributors: Contributor[];
-  contributorsMap: Map<string, Contributor>;
 }
 
 @Injectable()
 export class RepoDao {
-  repo: Observable<Repo> =
-      combineLatest(this.itemsDao.list, this.labelsDao.list, this.contributorsDao.list)
-          .pipe(filter(result => !!result[0] && !!result[1] && !!result[2]), map(result => {
-                  let items = result[0] as Item[];
-                  let labels = result[1] as Label[];
-                  let contributors = result[2] as Contributor[];
+  repo: Observable<Repo> = combineLatest(this.itemsDao.list, this.labelsDao.list)
+                               .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
+                                       let items = result[0];
+                                       let labels = result[1];
 
-                  const itemsMap = new Map<string, PullRequest>();
-                  items.forEach(o => itemsMap.set(o.id, o));
+                                       const itemsMap = new Map<string, PullRequest>();
+                                       items.forEach(o => itemsMap.set(o.id, o));
 
-                  const issues = result[0].filter((issue: Item) => !issue.pr);
-                  const issuesMap = new Map<string, Item>();
-                  issues.forEach(o => issuesMap.set(o.id, o));
+                                       const issues = result[0].filter((issue: Item) => !issue.pr);
+                                       const issuesMap = new Map<string, Item>();
+                                       issues.forEach(o => issuesMap.set(o.id, o));
 
-                  const pullRequests = result[0].filter((issue: PullRequest) => !!issue.pr);
-                  const pullRequestsMap = new Map<string, PullRequest>();
-                  issues.forEach(o => issuesMap.set(o.id, o));
+                                       const pullRequests =
+                                           result[0].filter((issue: PullRequest) => !!issue.pr);
+                                       const pullRequestsMap = new Map<string, PullRequest>();
+                                       issues.forEach(o => issuesMap.set(o.id, o));
 
-                  const labelsMap = new Map<string, Label>();
-                  labels.forEach(o => labelsMap.set(o.id, o));
-                  labels.forEach(o => labelsMap.set(o.name, o));
+                                       const labelsMap = new Map<string, Label>();
+                                       labels.forEach(o => labelsMap.set(o.id, o));
+                                       labels.forEach(o => labelsMap.set(o.name, o));
 
-                  const contributorsMap = new Map<string, Contributor>();
-                  contributors.forEach(o => contributorsMap.set(o.id, o));
-
-                  return {
-                    items,
-                    itemsMap,
-                    issues,
-                    issuesMap,
-                    pullRequests,
-                    pullRequestsMap,
-                    labels,
-                    labelsMap,
-                    contributors,
-                    contributorsMap,
-                    empty: ![...issues, ...labels, ...contributors].length
-                  };
-                }));
+                                       return {
+                                         items,
+                                         itemsMap,
+                                         issues,
+                                         issuesMap,
+                                         pullRequests,
+                                         pullRequestsMap,
+                                         labels,
+                                         labelsMap,
+                                         empty: ![...issues, ...labels].length
+                                       };
+                                     }));
 
   constructor(
       private labelsDao: LabelsDao, private itemsDao: ItemsDao,

@@ -34,10 +34,6 @@
 
 
 <ng-container *ngIf="state?.progress; let progress">
-  <div *ngFor="let completed of completedTypes">
-    {{completedType}}
-  </div>
-
   <div class="loading">
     {{state.label}}
     {{'(' + (state.progress.value | number:'1.0-0') + '% complete)'}}

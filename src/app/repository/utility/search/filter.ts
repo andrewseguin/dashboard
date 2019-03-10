@@ -1,4 +1,4 @@
-import {Item} from 'app/repository/services/dao';
+import {Item, Label} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {Repo, RepoDao} from 'app/repository/services/dao/repo-dao';
 import {Observable} from 'rxjs';
@@ -7,7 +7,7 @@ import {Query} from './query';
 
 export interface MatcherContext {
   item: Item;
-  repo: Repo;
+  labelsMap: Map<string, Label>;
   recommendations: Recommendation[];
 }
 

@@ -1,13 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output
-} from '@angular/core';
-import {Label} from 'app/repository/services/dao';
-import {Repo, RepoDao} from 'app/repository/services/dao/repo-dao';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {Label, LabelsDao} from 'app/repository/services/dao';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
@@ -31,28 +23,28 @@ export class LabelList {
   set labelIds(labelIds: string[]) {
     this._labelIds.next(labelIds);
   }
-  _labelIds = new BehaviorSubject<(string | number)[]>([]);
+  _labelIds = new BehaviorSubject<string[]>([]);
 
   /** Whether the labels are a selection list */
   @Input() selectable: boolean;
 
   @Output() selected = new EventEmitter<number>();
 
-  labels = combineLatest(this._labelIds, this.repoDao.repo)
+  labels = combineLatest(this._labelIds, this.labelsDao.map)
                .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
-                       const labelIds = result[0] as string[];
-                       const repo = result[1] as Repo;
+                       const labelIds = result[0];
+                       const labelsMap = result[1];
 
                        const labels: DisplayedLabel[] = [];
                        labelIds.forEach(labelId => {
-                         const label = repo.labelsMap.get(labelId);
+                         const label = labelsMap.get(labelId);
                          labels.push(convertLabelToDisplayedLabel(label));
                        });
                        labels.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
                        return labels;
                      }));
 
-  constructor(public repoDao: RepoDao, private cd: ChangeDetectorRef) {}
+  constructor(private labelsDao: LabelsDao) {}
 
   select(labelId: number) {
     if (this.selectable) {

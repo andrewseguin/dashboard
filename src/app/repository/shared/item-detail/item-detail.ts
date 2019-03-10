@@ -60,8 +60,8 @@ export class ItemDetail {
           combineLatest(...activityRequests)
               .pipe(
                   filter(result => {
-                    const commentsResult = result[0] as CombinedPagedResults<UserComment>;
-                    const timelineResult = result[1] as CombinedPagedResults<TimelineEvent>;
+                    const commentsResult = result[0];
+                    const timelineResult = result[1];
 
                     const commentsFinished = commentsResult.completed === commentsResult.total;
                     const timelineFinished = timelineResult.completed === timelineResult.total;

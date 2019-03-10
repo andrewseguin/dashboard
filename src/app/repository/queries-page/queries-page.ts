@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Repo, RepoDao} from 'app/repository/services/dao/repo-dao';
+import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
-import {ItemType} from '../services/dao';
+import {ItemType, LabelsDao} from '../services/dao';
 import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {ItemRecommendations} from '../services/item-recommendations';
@@ -33,20 +33,23 @@ export class QueriesPage {
 
   queryResultsCount =
       combineLatest(
-          this.repoDao.repo, this.queryGroups, this.issueRecommendations.recommendations, this.type)
+          this.repoDao.repo, this.queryGroups, this.issueRecommendations.recommendations, this.type,
+          this.labelsDao.map)
           .pipe(
-              filter(result => !!result[0] && !!result[1] && !!result[2]), delay(1000),
-              map(result => {
-                const repo = result[0] as Repo;
-                const groups = result[1] as QueryGroup[];
-                const recommendations = result[2] as Map<string, Recommendation[]>;
-                const type = result[3] as ItemType;
+              filter(result => !!result[0] && !!result[1] && !!result[2] && !!result[3]),
+              delay(1000), map(result => {
+                const repo = result[0];
+                const groups = result[1];
+                const recommendations = result[2];
+                const type = result[3];
+                const labelsMap = result[4];
                 const items =
                     type === 'issue' ? repo.issues : type === 'pr' ? repo.pullRequests : [];
 
                 const map = new Map<string, number>();
                 groups.forEach(group => group.queries.forEach(query => {
-                  const filterer = new ItemFilterer(query.options.filters, repo, recommendations);
+                  const filterer =
+                      new ItemFilterer(query.options.filters, labelsMap, recommendations);
                   const count =
                       getItemsMatchingFilterAndSearch(items, filterer, query.options.search).length;
                   map.set(query.id, count);
@@ -59,7 +62,8 @@ export class QueriesPage {
 
   constructor(
       public queriesDao: QueriesDao, public repoDao: RepoDao, private router: Router,
-      private activatedRoute: ActivatedRoute, private issueRecommendations: ItemRecommendations,
+      private labelsDao: LabelsDao, private activatedRoute: ActivatedRoute,
+      private issueRecommendations: ItemRecommendations,
       public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}
 
