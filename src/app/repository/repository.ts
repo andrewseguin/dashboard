@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {RepoDao} from 'app/repository/services/repo-dao';
+import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {Config} from 'app/service/config';
 import {combineLatest, interval, Subject} from 'rxjs';
 import {filter, mergeMap, takeUntil} from 'rxjs/operators';
@@ -15,8 +15,6 @@ import {Updater} from './services/updater';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Repository {
-  repository = 'angular/material2';
-
   destroyed = new Subject();
 
   constructor(
@@ -27,8 +25,7 @@ export class Repository {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
       const name = params['name'];
-      this.repository = `${org}/${name}`;
-      this.activatedRepository.repository.next(this.repository);
+      this.activatedRepository.repository.next(`${org}/${name}`);
     });
 
 
@@ -72,10 +69,10 @@ export class Repository {
     interval(60 * 1000)
         .pipe(mergeMap(() => this.repoDao.repo), filter(repo => !repo.empty))
         .subscribe(() => {
-          this.updater.updateIssues(this.repository);
+          this.updater.updateIssues(this.activatedRepository.repository.value);
         });
 
-    this.updater.updateContributors(this.repository);
-    this.updater.updateLabels(this.repository);
+    this.updater.updateContributors(this.activatedRepository.repository.value);
+    this.updater.updateLabels(this.activatedRepository.repository.value);
   }
 }

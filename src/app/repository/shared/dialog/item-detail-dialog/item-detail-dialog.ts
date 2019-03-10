@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 
 export interface ItemDetailDialogData {
-  itemId: number;
+  itemId: string;
 }
 
 @Component({

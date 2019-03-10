@@ -7,10 +7,11 @@ import {
 } from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
+import {ItemsDao} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
+import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
-import {RepoDao} from 'app/repository/services/repo-dao';
 import {CombinedPagedResults, Github, TimelineEvent, UserComment} from 'app/service/github';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
@@ -42,7 +43,7 @@ export class ItemDetail {
   constructor(
       private markdown: Markdown, public repoDao: RepoDao, private cd: ChangeDetectorRef,
       public activatedRepository: ActivatedRepository, public github: Github,
-      private itemRecommendations: ItemRecommendations) {}
+      public itemsDao: ItemsDao, private itemRecommendations: ItemRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {

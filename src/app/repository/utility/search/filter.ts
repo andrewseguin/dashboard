@@ -1,6 +1,6 @@
 import {Item} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
-import {Repo, RepoDao} from 'app/repository/services/repo-dao';
+import {Repo, RepoDao} from 'app/repository/services/dao/repo-dao';
 import {Observable} from 'rxjs';
 import {Query} from './query';
 

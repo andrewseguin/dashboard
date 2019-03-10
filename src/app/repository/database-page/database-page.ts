@@ -1,13 +1,15 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, of} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
-
 import {ActivatedRepository} from '../services/activated-repository';
+import {LabelsDao} from '../services/dao';
+import {RepoDao} from '../services/dao/repo-dao';
+import {RepoDao2} from '../services/repo-dao';
 import {Updater} from '../services/updater';
 import {DeleteConfirmation} from '../shared/dialog/delete-confirmation/delete-confirmation';
 import {UpdateState} from './update-button/update-button';
+
 
 @Component({
   selector: 'database-page',
@@ -17,15 +19,16 @@ import {UpdateState} from './update-button/update-button';
 })
 export class DatabasePage {
   repoLabels =
-      this.repoDao.repo.pipe(filter(repo => !!repo), map(repo => repo.labels.map(l => l.id)));
+      this.labelsDao.list.pipe(filter(list => !!list), map(labels => labels.map(l => l.id)));
 
   issuesUpdateState = new BehaviorSubject<UpdateState>('not-updating');
   labelsUpdateState = new BehaviorSubject<UpdateState>('not-updating');
 
 
   constructor(
-      private activatedRepository: ActivatedRepository, private repoDao: RepoDao,
-      private updater: Updater, private dialog: MatDialog, private snackbar: MatSnackBar) {}
+      private activatedRepository: ActivatedRepository, private repoDao2: RepoDao2,
+      public repoDao: RepoDao, private labelsDao: LabelsDao, private updater: Updater,
+      private dialog: MatDialog, private snackbar: MatSnackBar) {}
 
   removeData() {
     const repository = this.activatedRepository.repository.value;
@@ -37,7 +40,7 @@ export class DatabasePage {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.repoDao.removeData();
+            this.repoDao2.removeData();
             this.snackbar.open(`${name} deleted`, null, {duration: 2000});
           }
         });

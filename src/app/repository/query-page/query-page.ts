@@ -56,7 +56,7 @@ export class QueryPage {
   canSave: boolean;
 
   itemId =
-      this.activatedRoute.queryParamMap.pipe(map(queryParamsMap => +queryParamsMap.get('item')));
+      this.activatedRoute.queryParamMap.pipe(map(queryParamsMap => queryParamsMap.get('item')));
 
   private destroyed = new Subject();
   private getSubscription: Subscription;

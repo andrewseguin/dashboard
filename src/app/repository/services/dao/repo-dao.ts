@@ -1,13 +1,26 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {Repo} from '../repo-dao';
 import {Contributor, ContributorsDao} from './contributors-dao';
-import {Item, ItemsDao, PullRequest} from './items-dao';
+import {Issue, Item, ItemsDao, PullRequest} from './items-dao';
 import {Label, LabelsDao} from './labels-dao';
 
+export interface Repo {
+  empty: boolean;
+  items: Item[];
+  itemsMap: Map<string, Item>;
+  issues: Issue[];
+  issuesMap: Map<string, Item>;
+  pullRequests: PullRequest[];
+  pullRequestsMap: Map<string, PullRequest>;
+  labels: Label[];
+  labelsMap: Map<string, Label>;
+  contributors: Contributor[];
+  contributorsMap: Map<string, Contributor>;
+}
+
 @Injectable()
-export class RepoDao2 {
+export class RepoDao {
   repo: Observable<Repo> =
       combineLatest(this.itemsDao.list, this.labelsDao.list, this.contributorsDao.list)
           .pipe(filter(result => !!result[0] && !!result[1] && !!result[2]), map(result => {

@@ -7,7 +7,7 @@ import {
   Output
 } from '@angular/core';
 import {Label} from 'app/repository/services/dao';
-import {Repo, RepoDao} from 'app/repository/services/repo-dao';
+import {Repo, RepoDao} from 'app/repository/services/dao/repo-dao';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 

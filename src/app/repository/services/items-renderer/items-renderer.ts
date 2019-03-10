@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Repo, RepoDao} from 'app/repository/services/repo-dao';
+import {Repo, RepoDao} from 'app/repository/services/dao/repo-dao';
 import {
   getItemsMatchingFilterAndSearch
 } from 'app/repository/utility/get-items-matching-filter-and-search';

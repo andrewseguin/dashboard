@@ -1,21 +1,12 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
-import {debounceTime, takeUntil} from 'rxjs/operators';
-import {FormControl} from '@angular/forms';
-import {Observable, Subject} from 'rxjs';
-import {animate, style, transition, trigger} from '@angular/animations';
-import {ANIMATION_DURATION} from 'app/utility/animations';
-import {IFilterMetadata, Filter} from 'app/repository/utility/search/filter';
-import {RepoDao} from 'app/repository/services/repo-dao';
-import {Query} from 'app/repository/utility/search/query';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { RepoDao } from 'app/repository/services/dao/repo-dao';
+import { Filter, IFilterMetadata } from 'app/repository/utility/search/filter';
+import { Query } from 'app/repository/utility/search/query';
+import { ANIMATION_DURATION } from 'app/utility/animations';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'advanced-search',

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Auth} from 'app/service/auth';
 import {GithubContributor} from 'app/service/github';
-import {RepoDao} from '../repo-dao';
+import {RepoDao2} from '../repo-dao';
 import {ListDao} from './list-dao';
 
 export interface Contributor {
@@ -15,7 +15,7 @@ export interface Contributor {
 
 @Injectable()
 export class ContributorsDao extends ListDao<Contributor> {
-  constructor(auth: Auth, repoDao: RepoDao) {
+  constructor(auth: Auth, repoDao: RepoDao2) {
     super(auth, repoDao, 'contributors');
   }
 }

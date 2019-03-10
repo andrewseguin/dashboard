@@ -1,4 +1,4 @@
-import {Repo} from 'app/repository/services/repo-dao';
+import {Repo} from 'app/repository/services/dao/repo-dao';
 import {Filter, MatcherContext} from 'app/repository/utility/search/filter';
 import {Item} from '../dao';
 import {Recommendation} from '../dao/recommendations-dao';

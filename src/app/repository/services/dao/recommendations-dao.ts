@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Filter} from 'app/repository/utility/search/filter';
 import {Auth} from 'app/service/auth';
-import {RepoDao} from '../repo-dao';
 import {ListDao} from './list-dao';
+import { RepoDao2 } from '../repo-dao';
 
 
 export interface AddLabelAction {
@@ -32,7 +32,7 @@ export interface Recommendation {
 
 @Injectable()
 export class RecommendationsDao extends ListDao<Recommendation> {
-  constructor(auth: Auth, repoDao: RepoDao) {
+  constructor(auth: Auth, repoDao: RepoDao2) {
     super(auth, repoDao, 'recommendations');
   }
 }

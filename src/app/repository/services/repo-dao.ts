@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {DB, deleteDb, openDb} from 'idb';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {filter, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
-import {Contributor, Issue, Item, Label, PullRequest} from './dao';
+import {Contributor, Item, Label} from './dao';
 import {Dashboard} from './dao/dashboards-dao';
 import {Query} from './dao/queries-dao';
 import {Recommendation} from './dao/recommendations-dao';
@@ -12,20 +12,6 @@ export interface RepoConfig {
   dashboards: Dashboard[];
   queries: Query[];
   recommendations: Recommendation[];
-}
-
-export interface Repo {
-  empty: boolean;
-  items: Item[];
-  itemsMap: Map<string, Item>;
-  issues: Issue[];
-  issuesMap: Map<string, Item>;
-  pullRequests: PullRequest[];
-  pullRequestsMap: Map<string, PullRequest>;
-  labels: Label[];
-  labelsMap: Map<string, Label>;
-  contributors: Contributor[];
-  contributorsMap: Map<string, Contributor>;
 }
 
 const DB_VERSION = 1;
@@ -42,12 +28,17 @@ export const CollectionIds: CollectionId[] =
 export type CollectionId = GithubCollectionId|ConfigCollectionId;
 
 @Injectable()
-export class RepoDao {
+export class RepoDao2 {
   repository: string;
 
-  repo = new BehaviorSubject<Repo|null>(null);
-
-  config = new BehaviorSubject<Repo|null>(null);
+  values: {[key in CollectionId]: BehaviorSubject<null|any[]>} = {
+    dashboards: new BehaviorSubject<null|Dashboard[]>(null),
+    queries: new BehaviorSubject<null|Query[]>(null),
+    recommendations: new BehaviorSubject<null|Recommendation[]>(null),
+    items: new BehaviorSubject<null|Item[]>(null),
+    labels: new BehaviorSubject<null|Label[]>(null),
+    contributors: new BehaviorSubject<null|Contributor[]>(null),
+  };
 
   private db: Promise<DB>;
 
@@ -71,7 +62,7 @@ export class RepoDao {
 
     this.db = openDb(this.repository, DB_VERSION, function(db) {
       if (!db.objectStoreNames.contains('items')) {
-        db.createObjectStore('items', {keyPath: 'number'});
+        db.createObjectStore('items', {keyPath: 'id'});
       }
       if (!db.objectStoreNames.contains('labels')) {
         db.createObjectStore('labels', {keyPath: 'id'});
@@ -88,7 +79,6 @@ export class RepoDao {
     });
     this.db.then(() => CollectionIds.forEach(id => {
       this.initializeAllValues();
-      this.update();
     }));
   }
 
@@ -105,22 +95,6 @@ export class RepoDao {
     });
   }
 
-  getItem(item: string): Observable<Item> {
-    return this.repo.pipe(filter(repo => !!repo), map(repo => repo.itemsMap.get(item)));
-  }
-
-  setItems(items: Item[]): Promise<void> {
-    return this.setValues(items, 'items');
-  }
-
-  setLabels(labels: Label[]): Promise<void> {
-    return this.setValues(labels, 'labels');
-  }
-
-  setContributors(contributors: Contributor[]): Promise<void> {
-    return this.setValues(contributors, 'contributors');
-  }
-
   setCollection(collectionId: CollectionId, values: any[]): Promise<void> {
     return this.setValues(values, collectionId);
   }
@@ -132,7 +106,6 @@ export class RepoDao {
           return deleteDb(this.repository);
         })
         .then(() => {
-          this.repo.next(null);
           this.initialize(this.repository);
         });
   }
@@ -140,71 +113,11 @@ export class RepoDao {
   private setValues(values: any[], collectionId: CollectionId) {
     this.values[collectionId].next(values);
 
-    return this.db
-        .then(db => {
-          const transaction = db.transaction(collectionId, 'readwrite');
-          const store = transaction.objectStore(collectionId);
-          values.forEach(v => store.put(v));
-          return transaction.complete;
-        })
-        .then(() => this.update());
-  }
-
-  values: {[key in CollectionId]: BehaviorSubject<null|any[]>} = {
-    dashboards: new BehaviorSubject<null|Dashboard[]>(null),
-    queries: new BehaviorSubject<null|Query[]>(null),
-    recommendations: new BehaviorSubject<null|Recommendation[]>(null),
-    items: new BehaviorSubject<null|Item[]>(null),
-    labels: new BehaviorSubject<null|Label[]>(null),
-    contributors: new BehaviorSubject<null|Contributor[]>(null),
-  };
-
-  private update() {
-    this.db
-        .then(db => {
-          const stores: CollectionId[] =
-              ['items', 'labels', 'contributors', 'dashboards', 'queries', 'recommendations'];
-          const promises =
-              stores.map(store => db.transaction(store, 'readonly').objectStore(store).getAll());
-          return Promise.all(promises);
-        })
-        .then(result => {
-          const items = result[0];
-          const labels = result[1];
-          const contributors = result[2];
-
-
-          const itemsMap = new Map<string, PullRequest>();
-          items.forEach(o => itemsMap.set(o.number, o));
-
-          const issues = result[0].filter((issue: Item) => !issue.pr);
-          const issuesMap = new Map<string, Item>();
-          issues.forEach(o => issuesMap.set(o.number, o));
-
-          const pullRequests = result[0].filter((issue: PullRequest) => !!issue.pr);
-          const pullRequestsMap = new Map<string, PullRequest>();
-          issues.forEach(o => issuesMap.set(o.number, o));
-
-          const labelsMap = new Map<string, Label>();
-          labels.forEach(o => labelsMap.set(o.id, o));
-          labels.forEach(o => labelsMap.set(o.name, o));
-
-          const contributorsMap = new Map<string, Contributor>();
-          contributors.forEach(o => contributorsMap.set(o.id, o));
-
-          this.repo.next({
-            items,
-            itemsMap,
-            issues,
-            issuesMap,
-            pullRequests,
-            pullRequestsMap,
-            labels,
-            labelsMap,
-            contributors,
-            contributorsMap,
-            empty: ![...issues, ...labels, ...contributors].length
-          });
-        });
+    return this.db.then(db => {
+      const transaction = db.transaction(collectionId, 'readwrite');
+      const store = transaction.objectStore(collectionId);
+      values.forEach(v => store.put(v));
+      return transaction.complete;
+    });
   }
 }

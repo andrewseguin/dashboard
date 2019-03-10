@@ -2,11 +2,18 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/co
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
-import {RepoDao} from 'app/repository/services/repo-dao';
+import {
+  Contributor,
+  ContributorsDao,
+  Item,
+  ItemsDao,
+  Label,
+  LabelsDao
+} from 'app/repository/services/dao';
+import {RepoDao} from 'app/repository/services/dao/repo-dao';
+import {Github} from 'app/service/github';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
-import { Github } from 'app/service/github';
-import { Label, Item, Contributor } from 'app/repository/services/dao';
 
 
 interface StorageState {
@@ -41,17 +48,19 @@ export class LoadData {
   })));
 
   totalItemCount = combineLatest(this.formGroup.valueChanges, this.activatedRepository.repository)
-                        .pipe(startWith(null), mergeMap(() => {
-                                const since = this.getIssuesDateSince();
-                                const repository = this.activatedRepository.repository.value;
-                                return this.github.getItemsCount(repository, since);
-                              }));
+                       .pipe(startWith(null), mergeMap(() => {
+                               const since = this.getIssuesDateSince();
+                               const repository = this.activatedRepository.repository.value;
+                               return this.github.getItemsCount(repository, since);
+                             }));
 
   private destroyed = new Subject();
 
   constructor(
       private activatedRepository: ActivatedRepository, private repoDao: RepoDao,
-      private snackbar: MatSnackBar, private github: Github, private cd: ChangeDetectorRef) {
+      private itemsDao: ItemsDao, private contributorsDao: ContributorsDao,
+      private labelsDao: LabelsDao, private snackbar: MatSnackBar, private github: Github,
+      private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
     this.formGroup.get('issueDate').setValue(lastMonth, {emitEvent: false});
@@ -69,17 +78,17 @@ export class LoadData {
 
     await this.getValues(
         'labels', () => this.github.getLabels(repository),
-        (values: Label[]) => this.repoDao.setLabels(values));
+        (values: Label[]) => this.labelsDao.updateBulk(values));
     this.completedTypes.add('labels');
 
     await this.getValues(
         'issues', () => this.github.getIssues(repository, this.getIssuesDateSince()),
-        (values: Item[]) => this.repoDao.setItems(values));
+        (values: Item[]) => this.itemsDao.updateBulk(values));
     this.completedTypes.add('issues');
 
     await this.getValues(
         'contributors', () => this.github.getContributors(repository),
-        (values: Contributor[]) => this.repoDao.setContributors(values));
+        (values: Contributor[]) => this.contributorsDao.updateBulk(values));
     this.completedTypes.add('contributors');
 
     this.state = null;

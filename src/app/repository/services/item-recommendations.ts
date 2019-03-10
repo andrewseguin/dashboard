@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Repo, RepoDao} from 'app/repository/services/repo-dao';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
-
+import {Repo, RepoDao} from 'app/repository/services/dao/repo-dao';
+import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
+import {filter, takeUntil} from 'rxjs/operators';
 import {getRecommendations} from '../utility/get-recommendations';
-
 import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
+
 
 @Injectable()
 export class ItemRecommendations {

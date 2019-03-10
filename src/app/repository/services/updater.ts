@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Github} from 'app/service/github';
-import {RepoDao} from 'app/repository/services/repo-dao';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
+import {ContributorsDao, ItemsDao, LabelsDao} from './dao';
+import {RepoDao2} from './repo-dao';
 
 
 export interface StaleIssuesState {
@@ -13,26 +14,26 @@ export interface StaleIssuesState {
 @Injectable()
 export class Updater {
   lastUpdatedIssueDate =
-      this.repoDao.repo.pipe(filter(repo => !!repo), map(repo => {
-                               const items = repo.items;
+      this.itemsDao.list.pipe(filter(list => !!list), map(items => {
+                                let lastUpdated = '';
+                                items.forEach(item => {
+                                  if (!lastUpdated || lastUpdated < item.updated) {
+                                    lastUpdated = item.updated;
+                                  }
+                                });
 
-                               let lastUpdated = '';
-                               items.forEach(item => {
-                                 if (!lastUpdated || lastUpdated < item.updated) {
-                                   lastUpdated = item.updated;
-                                 }
-                               });
+                                return lastUpdated;
+                              }));
 
-                               return lastUpdated;
-                             }));
-
-  constructor(private repoDao: RepoDao, private github: Github) {}
+  constructor(
+      private repoDao: RepoDao2, private itemsDao: ItemsDao, private labelsDao: LabelsDao,
+      private contributorsDao: ContributorsDao, private github: Github) {}
 
   updateLabels(repo: string) {
     return new Promise(resolve => {
       this.github.getLabels(repo).subscribe(result => {
         if (result.completed === result.total) {
-          this.repoDao.setLabels(result.current);
+          this.labelsDao.updateBulk(result.current);
           resolve();
         }
       });
@@ -43,7 +44,7 @@ export class Updater {
     return new Promise(resolve => {
       this.github.getContributors(repo).subscribe(result => {
         if (result.completed === result.total) {
-          this.repoDao.setContributors(result.current);
+          this.contributorsDao.updateBulk(result.current);
           resolve();
         }
       });
@@ -61,7 +62,7 @@ export class Updater {
               take(1))
           .subscribe(result => {
             if (result) {
-              this.repoDao.setItems(result.current);
+              this.itemsDao.updateBulk(result.current);
             }
 
             resolve();

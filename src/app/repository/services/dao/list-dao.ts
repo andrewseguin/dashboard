@@ -1,7 +1,7 @@
 import {Auth} from 'app/service/auth';
 import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
-import {CollectionId, RepoDao} from '../repo-dao';
+import {CollectionId, RepoDao2} from '../repo-dao';
 
 export interface IdentifiedObject {
   id?: string;
@@ -43,7 +43,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
   _map: BehaviorSubject<Map<string, T>>;
 
   protected constructor(
-      protected auth: Auth, protected repoDao: RepoDao, protected collectionId: CollectionId) {
+      protected auth: Auth, protected repoDao: RepoDao2, protected collectionId: CollectionId) {
     auth.tokenChanged.subscribe(token => {
       if (!token) {
         this.unsubscribe();
@@ -59,7 +59,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
 
   // TODO: Combine with add
   addBulk(objArr: T[]): Promise<void> {
-    objArr.forEach(o => this.decorateForAdd(o));
+    objArr.forEach(o => this.decorateForDb(o));
 
     return new Promise(resolve => {
       this.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
@@ -71,7 +71,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
   }
 
   add(obj: T): Promise<string> {
-    this.decorateForAdd(obj);
+    this.decorateForDb(obj);
 
     return new Promise(resolve => {
       this.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
@@ -86,14 +86,34 @@ export abstract class ListDao<T extends IdentifiedObject> {
     return this.map.pipe(map(map => map ? map.get(id) : null));
   }
 
-  update(id: string, update: T) {
-    update.dbModified = new Date().toISOString();
+  updateBulk(objArr: T[]): Promise<void> {
+    objArr.forEach(obj => this.decorateForDb(obj));
 
-    this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
-      map.set(id, {...(map.get(id) as object), ...(update as object)} as T);
-      const values = [];
-      map.forEach(value => values.push(value));
-      this.repoDao.setCollection(this.collectionId, values);
+    return new Promise(resolve => {
+      this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
+        objArr.forEach(obj => {
+          map.set(obj.id, {...(map.get(obj.id) as object), ...(obj as object)} as T);
+        });
+
+        const values = [];
+        map.forEach(value => values.push(value));
+        this.repoDao.setCollection(this.collectionId, values);
+        resolve();
+      });
+    });
+  }
+
+  update(id: string, obj: T): Promise<T> {
+    obj.dbModified = new Date().toISOString();
+
+    return new Promise(resolve => {
+      this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
+        map.set(id, {...(map.get(id) as object), ...(obj as object)} as T);
+        const values = [];
+        map.forEach(value => values.push(value));
+        this.repoDao.setCollection(this.collectionId, values);
+        resolve(obj);
+      });
     });
   }
 
@@ -120,12 +140,15 @@ export abstract class ListDao<T extends IdentifiedObject> {
     }
   }
 
-  private decorateForAdd(obj: T) {
+  private decorateForDb(obj: T) {
     if (!obj.id) {
       obj.id = this.createId();
     }
 
-    obj.dbAdded = new Date().toISOString();
+    if (!obj.dbAdded) {
+      obj.dbAdded = new Date().toISOString();
+    }
+
     obj.dbModified = new Date().toISOString();
   }
 

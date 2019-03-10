@@ -15,11 +15,11 @@ import {
 } from './services/dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
-import {RepoDao} from './services/repo-dao';
+import {RepoDao2} from './services/repo-dao';
 import {Updater} from './services/updater';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
-import { RepoDao2 } from './services/dao/repo-dao';
+import { RepoDao } from './services/dao/repo-dao';
 
 
 const routes: Routes = [{

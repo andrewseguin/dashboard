@@ -65,7 +65,7 @@ export class WidgetView {
     }
   }
 
-  openItemModal(itemId: number) {
+  openItemModal(itemId: string) {
     this.dialog.open(ItemDetailDialog, {data: {itemId}});
   }
 
