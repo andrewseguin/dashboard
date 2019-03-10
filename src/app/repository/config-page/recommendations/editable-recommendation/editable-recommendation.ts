@@ -58,7 +58,7 @@ export class EditableRecommendation {
   metadata = ItemsFilterMetadata;
 
   actionTypeOptions = [
-    {label: 'No action', value: 'no-action'}, {label: 'Add label', value: 'add-label'},
+    {label: 'No action', value: 'none'}, {label: 'Add label', value: 'add-label'},
     {label: 'Add assignee', value: 'add-assignee'}
   ];
 

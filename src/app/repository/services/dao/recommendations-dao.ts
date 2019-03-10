@@ -16,7 +16,7 @@ export type Action = AddLabelAction;
 
 export type RecommendationType = 'warning'|'suggestion';
 
-export type ActionType = 'add-label'|'add-assignee';
+export type ActionType = 'none'|'add-label'|'add-assignee';
 
 export interface Recommendation {
   id?: string;

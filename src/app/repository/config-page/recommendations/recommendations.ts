@@ -20,7 +20,7 @@ export class Recommendations {
     this.recommendationsDao.add({
       message: 'New recommendation',
       type: 'warning',
-      actionType: 'add-label',
+      actionType: 'none',
       action: {labels: []},
       filters: [],
       search: '',
