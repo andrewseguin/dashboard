@@ -28,7 +28,6 @@ export class RepoDao {
                   let labels = result[1] as Label[];
                   let contributors = result[2] as Contributor[];
 
-
                   const itemsMap = new Map<string, PullRequest>();
                   items.forEach(o => itemsMap.set(o.id, o));
 

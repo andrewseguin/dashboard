@@ -15,7 +15,7 @@ import {
 } from './services/dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
-import {RepoDao2} from './services/repo-dao';
+import {RepoDataStore} from './services/repo-data-store';
 import {Updater} from './services/updater';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
@@ -83,7 +83,7 @@ export class RepositoryRoutingModule {
     QueriesDao,
     RecommendationsDao,
     DashboardsDao,
-    RepoDao2,
+    RepoDataStore,
 
     RepoDao,
   ]

@@ -3,7 +3,7 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {ContributorsDao, ItemsDao, LabelsDao} from './dao';
-import {RepoDao2} from './repo-dao';
+import {RepoDataStore} from './repo-data-store';
 
 
 export interface StaleIssuesState {
@@ -26,7 +26,7 @@ export class Updater {
                               }));
 
   constructor(
-      private repoDao: RepoDao2, private itemsDao: ItemsDao, private labelsDao: LabelsDao,
+      private repoDao: RepoDataStore, private itemsDao: ItemsDao, private labelsDao: LabelsDao,
       private contributorsDao: ContributorsDao, private github: Github) {}
 
   updateLabels(repo: string) {

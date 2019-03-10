@@ -5,7 +5,7 @@ import {filter, map, take} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
 import {LabelsDao} from '../services/dao';
 import {RepoDao} from '../services/dao/repo-dao';
-import {RepoDao2} from '../services/repo-dao';
+import {RepoDataStore} from '../services/repo-data-store';
 import {Updater} from '../services/updater';
 import {DeleteConfirmation} from '../shared/dialog/delete-confirmation/delete-confirmation';
 import {UpdateState} from './update-button/update-button';
@@ -26,7 +26,7 @@ export class DatabasePage {
 
 
   constructor(
-      private activatedRepository: ActivatedRepository, private repoDao2: RepoDao2,
+      private activatedRepository: ActivatedRepository, private repoDataStore: RepoDataStore,
       public repoDao: RepoDao, private labelsDao: LabelsDao, private updater: Updater,
       private dialog: MatDialog, private snackbar: MatSnackBar) {}
 
@@ -40,7 +40,7 @@ export class DatabasePage {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.repoDao2.removeData();
+            this.repoDataStore.removeData();
             this.snackbar.open(`${name} deleted`, null, {duration: 2000});
           }
         });

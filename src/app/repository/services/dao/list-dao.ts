@@ -1,7 +1,7 @@
 import {Auth} from 'app/service/auth';
 import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
-import {CollectionId, RepoDao2} from '../repo-dao';
+import {StoreId, RepoDataStore} from '../repo-data-store';
 
 export interface IdentifiedObject {
   id?: string;
@@ -43,7 +43,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
   _map: BehaviorSubject<Map<string, T>>;
 
   protected constructor(
-      protected auth: Auth, protected repoDao: RepoDao2, protected collectionId: CollectionId) {
+      protected auth: Auth, protected repoDao: RepoDataStore, protected collectionId: StoreId) {
     auth.tokenChanged.subscribe(token => {
       if (!token) {
         this.unsubscribe();

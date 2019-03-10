@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Auth} from 'app/service/auth';
 import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
-import {RepoDao2} from '../repo-dao';
+import {RepoDataStore} from '../repo-data-store';
 import {ItemType} from './items-dao';
 import {ListDao} from './list-dao';
 
@@ -44,7 +44,7 @@ export interface Dashboard {
 
 @Injectable()
 export class DashboardsDao extends ListDao<Dashboard> {
-  constructor(auth: Auth, repoDao: RepoDao2) {
+  constructor(auth: Auth, repoDao: RepoDataStore) {
     super(auth, repoDao, 'dashboards');
   }
 }
