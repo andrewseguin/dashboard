@@ -1,12 +1,9 @@
 import {Injectable} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
 import {Filter} from 'app/repository/utility/search/filter';
 import {Auth} from 'app/service/auth';
-import {Config} from 'app/service/config';
-
-import {ActivatedRepository} from '../activated-repository';
-
+import {RepoDao} from '../repo-dao';
 import {RepositoryCollectionDao} from './repository-collection-dao';
+
 
 export interface AddLabelAction {
   labels: string[];
@@ -35,7 +32,7 @@ export interface Recommendation {
 
 @Injectable()
 export class RecommendationsDao extends RepositoryCollectionDao<Recommendation> {
-  constructor(auth: Auth, activatedRepository: ActivatedRepository, config: Config) {
-    super(auth, activatedRepository, config, 'recommendations');
+  constructor(auth: Auth, repoDao: RepoDao) {
+    super(auth, repoDao, 'recommendations');
   }
 }

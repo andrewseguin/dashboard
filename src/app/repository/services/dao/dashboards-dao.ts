@@ -1,11 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Auth } from 'app/service/auth';
-import { Config } from 'app/service/config';
-import { ItemType } from 'app/service/github';
-import { ActivatedRepository } from '../activated-repository';
-import { ItemRendererOptionsState } from '../items-renderer/item-renderer-options';
-import { RepositoryCollectionDao } from './repository-collection-dao';
-
+import {Injectable} from '@angular/core';
+import {Auth} from 'app/service/auth';
+import {ItemType} from 'app/service/github';
+import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
+import {RepoDao} from '../repo-dao';
+import {RepositoryCollectionDao} from './repository-collection-dao';
 
 
 export interface BaseWidget {
@@ -46,7 +44,7 @@ export interface Dashboard {
 
 @Injectable()
 export class DashboardsDao extends RepositoryCollectionDao<Dashboard> {
-  constructor(auth: Auth, activatedRepository: ActivatedRepository, config: Config) {
-    super(auth, activatedRepository, config, 'dashboards');
+  constructor(auth: Auth, repoDao: RepoDao) {
+    super(auth, repoDao, 'dashboards');
   }
 }

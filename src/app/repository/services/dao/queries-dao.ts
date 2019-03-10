@@ -1,10 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Auth } from 'app/service/auth';
-import { Config } from 'app/service/config';
-import { ActivatedRepository } from '../activated-repository';
-import { ItemRendererOptionsState } from '../items-renderer/item-renderer-options';
-import { RepositoryCollectionDao } from './repository-collection-dao';
-
+import {Injectable} from '@angular/core';
+import {Auth} from 'app/service/auth';
+import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
+import {RepoDao} from '../repo-dao';
+import {RepositoryCollectionDao} from './repository-collection-dao';
 
 
 export interface Query {
@@ -22,7 +20,7 @@ export interface Query {
 
 @Injectable()
 export class QueriesDao extends RepositoryCollectionDao<Query> {
-  constructor(auth: Auth, activatedRepository: ActivatedRepository, config: Config) {
-    super(auth, activatedRepository, config, 'queries');
+  constructor(auth: Auth, repoDao: RepoDao) {
+    super(auth, repoDao, 'queries');
   }
 }

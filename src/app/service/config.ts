@@ -1,21 +1,21 @@
-import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
-
+import {Dashboard} from 'app/repository/services/dao/dashboards-dao';
+import {Query} from 'app/repository/services/dao/queries-dao';
+import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {filter, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {Github} from './github';
 import {Gist} from './github-types/gist';
 
-export interface Collection<T> {
-  [key: string]: T;
-}
 
 export interface DashboardConfig {
   useDarkTheme: boolean;
 }
 
 export interface RepoConfig {
-  [key: string]: Collection<any>;
+  queries?: Query[];
+  dashboards?: Dashboard[];
+  recommendations?: Recommendation[];
 }
 
 export interface ConfigValues {
@@ -41,25 +41,11 @@ export class Config {
 
   getRepoConfig(repository: string): Observable<RepoConfig> {
     return this.config.pipe(
-        filter(config => !!config),
-        map(config => (config[repository] as RepoConfig) || {}));
+        filter(config => !!config), map(config => (config[repository] as RepoConfig) || {}));
   }
 
-  saveRepoConfigCollection(
-      repository: string, id: string, collection: Collection<any>) {
-    const saved = new Subject();
-    this.getRepoConfig(repository)
-        .pipe(takeUntil(saved))
-        .subscribe(repoConfig => {
-          repoConfig[id] = collection;
-          this.saveToGist(repository, repoConfig);
-          saved.next();
-          saved.complete();
-
-          const currentConfig = this.config.value;
-          currentConfig[repository] = repoConfig;
-          this.config.next(currentConfig);
-        });
+  saveRepoConfigToGist(repository: string, repoConfig: RepoConfig) {
+    this.saveToGist(repository, repoConfig);
   }
 
   private saveToGist(filename: string, content: DashboardConfig|RepoConfig) {
@@ -67,11 +53,10 @@ export class Config {
     const saveFn = mergeMap((gist: Gist) => {
       return this.github.editGist(gist.id, filename, JSON.stringify(content));
     });
-    this._gist.pipe(takeUntil(saved), filter(gist => !!gist), saveFn)
-        .subscribe(() => {
-          saved.next();
-          saved.complete();
-        });
+    this._gist.pipe(takeUntil(saved), filter(gist => !!gist), saveFn).subscribe(() => {
+      saved.next();
+      saved.complete();
+    });
   }
 
   private syncFromGist() {

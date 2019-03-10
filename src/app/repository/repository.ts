@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RepoDao} from 'app/repository/services/repo-dao';
+import {Config, RepoConfig} from 'app/service/config';
 import {interval, Subject} from 'rxjs';
 import {filter, mergeMap, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './services/activated-repository';
@@ -19,12 +20,26 @@ export class Repository {
 
   constructor(
       public repoDao: RepoDao, private router: Router, private updater: Updater,
-      private activatedRoute: ActivatedRoute, private activatedRepository: ActivatedRepository) {
+      private config: Config, private activatedRoute: ActivatedRoute,
+      private activatedRepository: ActivatedRepository) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
       const name = params['name'];
       this.repository = `${org}/${name}`;
       this.activatedRepository.repository.next(this.repository);
+    });
+
+
+    // TODO: Load from gist, merge with repo, and store back to gist
+
+    // Do only once for now - needs to happen only when config changes, not any other time
+    this.repoDao.repo.pipe(filter(repo => !!repo), takeUntil(this.destroyed)).subscribe(repo => {
+      const repoConfig: RepoConfig = {
+        dashboards: repo.config.dashboards,
+        queries: repo.config.queries,
+        recommendations: repo.config.recommendations,
+      };
+      this.config.saveRepoConfigToGist(this.activatedRepository.repository.value, repoConfig);
     });
 
     const checked = new Subject();

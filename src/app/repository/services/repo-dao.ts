@@ -1,12 +1,22 @@
 import {Injectable} from '@angular/core';
 import {Contributor, Issue, Item, Label, PullRequest} from 'app/service/github';
 import {DB, deleteDb, openDb} from 'idb';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
+import {Dashboard} from './dao/dashboards-dao';
+import {Query} from './dao/queries-dao';
+import {Recommendation} from './dao/recommendations-dao';
+
+export interface RepoConfig {
+  dashboards: Dashboard[];
+  queries: Query[];
+  recommendations: Recommendation[];
+}
 
 export interface Repo {
   empty: boolean;
+  config: RepoConfig;
   items: Item[];
   itemsMap: Map<number, Item>;
   issues: Issue[];
@@ -21,22 +31,42 @@ export interface Repo {
 
 const DB_VERSION = 1;
 
+export type GithubCollectionId = 'items'|'labels'|'contributors';
+
+export type ConfigCollectionId = 'dashboards'|'queries'|'recommendations';
+export const ConfigCollectionIds: ConfigCollectionId[] =
+    ['dashboards', 'queries', 'recommendations'];
+
+export type CollectionId = GithubCollectionId|ConfigCollectionId;
+
 @Injectable()
 export class RepoDao {
   repository: string;
 
   repo = new BehaviorSubject<Repo|null>(null);
 
+  config = new BehaviorSubject<Repo|null>(null);
+
   private db: Promise<DB>;
 
+  private destroyed = new Subject();
+
   constructor(activatedRepository: ActivatedRepository) {
-    activatedRepository.repository.subscribe(repository => {
-      this.initialize(repository);
-    });
+    activatedRepository.repository
+        .pipe(filter(repository => !!repository), takeUntil(this.destroyed))
+        .subscribe(repository => {
+          this.initialize(repository);
+        });
+  }
+
+  ngOnDestroy() {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
   initialize(repository: string) {
     this.repository = repository;
+
     this.db = openDb(this.repository, DB_VERSION, function(db) {
       if (!db.objectStoreNames.contains('items')) {
         db.createObjectStore('items', {keyPath: 'number'});
@@ -47,6 +77,12 @@ export class RepoDao {
       if (!db.objectStoreNames.contains('contributors')) {
         db.createObjectStore('contributors', {keyPath: 'id'});
       }
+
+      ConfigCollectionIds.forEach(collectionId => {
+        if (!db.objectStoreNames.contains(collectionId)) {
+          db.createObjectStore(collectionId, {keyPath: 'id'});
+        }
+      });
     });
     this.db.then(() => this.update());
   }
@@ -67,6 +103,10 @@ export class RepoDao {
     return this.setValues(contributors, 'contributors');
   }
 
+  setConfig(collectionId: CollectionId, values: any[]): Promise<void> {
+    return this.setValues(values, collectionId);
+  }
+
   removeData() {
     this.db
         .then(db => {
@@ -79,7 +119,7 @@ export class RepoDao {
         });
   }
 
-  private setValues(values: any[], objectStore: string) {
+  private setValues(values: any[], objectStore: CollectionId) {
     return this.db
         .then(db => {
           const transaction = db.transaction(objectStore, 'readwrite');
@@ -93,14 +133,21 @@ export class RepoDao {
   private update() {
     this.db
         .then(db => {
-          return Promise.all([
-            db.transaction('items', 'readonly').objectStore('items').getAll(),
-            db.transaction('labels', 'readonly').objectStore('labels').getAll(),
-            db.transaction('contributors', 'readonly').objectStore('contributors').getAll()
-          ]);
+          const stores: CollectionId[] =
+              ['items', 'labels', 'contributors', 'dashboards', 'queries', 'recommendations'];
+          const promises =
+              stores.map(store => db.transaction(store, 'readonly').objectStore(store).getAll());
+          return Promise.all(promises);
         })
         .then(result => {
           const items = result[0];
+          const labels = result[1];
+          const contributors = result[2];
+          const dashboards = result[3];
+          const queries = result[4];
+          const recommendations = result[5];
+
+
           const itemsMap = new Map<number, PullRequest>();
           items.forEach(o => itemsMap.set(o.number, o));
 
@@ -112,12 +159,10 @@ export class RepoDao {
           const pullRequestsMap = new Map<number, PullRequest>();
           issues.forEach(o => issuesMap.set(o.number, o));
 
-          const labels = result[1];
           const labelsMap = new Map<number, Label>();
           labels.forEach(o => labelsMap.set(o.id, o));
           labels.forEach(o => labelsMap.set(o.name, o));
 
-          const contributors = result[2];
           const contributorsMap = new Map<number, Contributor>();
           contributors.forEach(o => contributorsMap.set(o.id, o));
 
@@ -132,6 +177,7 @@ export class RepoDao {
             labelsMap,
             contributors,
             contributorsMap,
+            config: {dashboards, queries, recommendations},
             empty: ![...issues, ...labels, ...contributors].length
           });
         });
