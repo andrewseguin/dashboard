@@ -10,9 +10,9 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
-import {Item} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
+import { Item } from 'app/repository/services/dao';
 
 @Component({
   selector: 'item-summary',

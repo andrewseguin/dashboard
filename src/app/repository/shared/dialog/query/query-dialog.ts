@@ -8,13 +8,13 @@ import {
 import {
   ItemRendererOptionsState
 } from 'app/repository/services/items-renderer/item-renderer-options';
-import {ItemType} from 'app/service/github';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
 
 import {QueryEdit} from './query-edit/query-edit';
+import { ItemType } from 'app/repository/services/dao';
 
 
 @Injectable()

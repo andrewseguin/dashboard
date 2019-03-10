@@ -5,15 +5,21 @@ import {MaterialModule} from 'app/material.module';
 import {Repository} from './repository';
 import {Header} from './services';
 import {ActivatedRepository} from './services/activated-repository';
-import {DashboardsDao} from './services/dao/dashboards-dao';
-import {QueriesDao} from './services/dao/queries-dao';
-import {RecommendationsDao} from './services/dao/recommendations-dao';
+import {
+  ContributorsDao,
+  DashboardsDao,
+  ItemsDao,
+  LabelsDao,
+  QueriesDao,
+  RecommendationsDao
+} from './services/dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
 import {RepoDao} from './services/repo-dao';
 import {Updater} from './services/updater';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
+import { RepoDao2 } from './services/dao/repo-dao';
 
 
 const routes: Routes = [{
@@ -70,9 +76,15 @@ export class RepositoryRoutingModule {
     ItemRecommendations,
     Markdown,
     ActivatedRepository,
+
+    ItemsDao,
+    LabelsDao,
+    ContributorsDao,
     QueriesDao,
     RecommendationsDao,
     DashboardsDao,
+    RepoDao2,
+
     RepoDao,
   ]
 })

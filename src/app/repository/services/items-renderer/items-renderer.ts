@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {
   getItemsMatchingFilterAndSearch
 } from 'app/repository/utility/get-items-matching-filter-and-search';
-import {ItemType} from 'app/service/github';
 import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
@@ -14,6 +13,7 @@ import {ItemFilterer} from './item-filterer';
 import {ItemGroup, ItemGrouping} from './item-grouping';
 import {ItemRendererOptions} from './item-renderer-options';
 import {ItemSorter} from './item-sorter';
+import { ItemType } from '../dao';
 
 
 @Injectable()

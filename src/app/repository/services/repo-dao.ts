@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Contributor, Issue, Item, Label, PullRequest} from 'app/service/github';
 import {DB, deleteDb, openDb} from 'idb';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
+import {Item, Label, Issue, PullRequest, Contributor} from './dao';
 import {Dashboard} from './dao/dashboards-dao';
 import {Query} from './dao/queries-dao';
 import {Recommendation} from './dao/recommendations-dao';
@@ -36,6 +36,9 @@ export type GithubCollectionId = 'items'|'labels'|'contributors';
 export type ConfigCollectionId = 'dashboards'|'queries'|'recommendations';
 export const ConfigCollectionIds: ConfigCollectionId[] =
     ['dashboards', 'queries', 'recommendations'];
+
+export const CollectionIds: CollectionId[] =
+    ['items', 'labels', 'contributors', 'dashboards', 'queries', 'recommendations'];
 
 export type CollectionId = GithubCollectionId|ConfigCollectionId;
 
@@ -84,7 +87,23 @@ export class RepoDao {
         }
       });
     });
-    this.db.then(() => this.update());
+    this.db.then(() => CollectionIds.forEach(id => {
+      this.initializeAllValues();
+      this.update();
+    }));
+  }
+
+  initializeAllValues() {
+    const stores = ['items', 'labels', 'contributors', 'dashboards', 'queries', 'recommendations'];
+    stores.forEach(store => {
+      this.db
+          .then(db => {
+            return db.transaction(store, 'readonly').objectStore(store).getAll();
+          })
+          .then(result => {
+            this.values[store].next(result);
+          });
+    });
   }
 
   getItem(item: number): Observable<Item> {
@@ -103,7 +122,7 @@ export class RepoDao {
     return this.setValues(contributors, 'contributors');
   }
 
-  setConfig(collectionId: CollectionId, values: any[]): Promise<void> {
+  setCollection(collectionId: CollectionId, values: any[]): Promise<void> {
     return this.setValues(values, collectionId);
   }
 
@@ -119,16 +138,27 @@ export class RepoDao {
         });
   }
 
-  private setValues(values: any[], objectStore: CollectionId) {
+  private setValues(values: any[], collectionId: CollectionId) {
+    this.values[collectionId].next(values);
+
     return this.db
         .then(db => {
-          const transaction = db.transaction(objectStore, 'readwrite');
-          const store = transaction.objectStore(objectStore);
+          const transaction = db.transaction(collectionId, 'readwrite');
+          const store = transaction.objectStore(collectionId);
           values.forEach(v => store.put(v));
           return transaction.complete;
         })
         .then(() => this.update());
   }
+
+  values: {[key in CollectionId]: BehaviorSubject<null|any[]>} = {
+    dashboards: new BehaviorSubject<null|Dashboard[]>(null),
+    queries: new BehaviorSubject<null|Query[]>(null),
+    recommendations: new BehaviorSubject<null|Recommendation[]>(null),
+    items: new BehaviorSubject<null|Item[]>(null),
+    labels: new BehaviorSubject<null|Label[]>(null),
+    contributors: new BehaviorSubject<null|Contributor[]>(null),
+  };
 
   private update() {
     this.db

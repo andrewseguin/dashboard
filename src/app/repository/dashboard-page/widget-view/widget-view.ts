@@ -13,9 +13,9 @@ import {ActivatedRepository} from 'app/repository/services/activated-repository'
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
-import {Item} from 'app/service/github';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
+import { Item } from 'app/repository/services/dao';
 
 @Component({
   selector: 'widget-view',

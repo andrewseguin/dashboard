@@ -1,5 +1,5 @@
-import {Item} from 'app/service/github';
 
+import {Item} from '../dao';
 import {Sort} from './item-renderer-options';
 
 export class ItemSorter {

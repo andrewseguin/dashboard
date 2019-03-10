@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Auth} from 'app/service/auth';
-import {ItemType} from 'app/service/github';
 import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
 import {RepoDao} from '../repo-dao';
-import {RepositoryCollectionDao} from './repository-collection-dao';
+import {ItemType} from './items-dao';
+import {ListDao} from './list-dao';
 
 
 export interface BaseWidget {
@@ -38,12 +38,12 @@ export interface Dashboard {
   name?: string;
   description?: string;
   columnGroups?: ColumnGroup[];
-  dateCreated?: string;
-  dateModified?: string;
+  dbAdded?: string;
+  dbModified?: string;
 }
 
 @Injectable()
-export class DashboardsDao extends RepositoryCollectionDao<Dashboard> {
+export class DashboardsDao extends ListDao<Dashboard> {
   constructor(auth: Auth, repoDao: RepoDao) {
     super(auth, repoDao, 'dashboards');
   }

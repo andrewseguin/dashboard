@@ -1,7 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {Item} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
-import {Github, Item} from 'app/service/github';
 import {RepoDao} from 'app/repository/services/repo-dao';
+import {Github} from 'app/service/github';
 
 @Component({
   selector: 'recommendation-action',
@@ -16,7 +17,7 @@ export class RecommendationAction {
 
   constructor(private repoDao: RepoDao, private cd: ChangeDetectorRef, private github: Github) {}
 
-  addLabel(labelId: number) {
+  addLabel(labelId: string) {
     // TODO: Send to github
     const newIssue = {...this.item};
     newIssue.labels = [...this.item.labels, labelId];

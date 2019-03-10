@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ItemType} from 'app/service/github';
 import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
@@ -11,6 +10,7 @@ import {Recommendation, RecommendationsDao} from '../services/dao/recommendation
 import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemFilterer} from '../services/items-renderer/item-filterer';
 import {getItemsMatchingFilterAndSearch} from '../utility/get-items-matching-filter-and-search';
+import { ItemType } from '../services/dao';
 
 
 interface QueryGroup {

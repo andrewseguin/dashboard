@@ -1,10 +1,10 @@
 import {Filter, MatcherContext} from 'app/repository/utility/search/filter';
-import {Item} from 'app/service/github';
 import {Repo} from 'app/repository/services/repo-dao';
 
 import {Recommendation} from '../dao/recommendations-dao';
 
 import {ItemsFilterMetadata} from './items-filter-metadata';
+import { Item } from '../dao';
 
 export class ItemFilterer {
   constructor(

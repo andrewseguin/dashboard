@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Item} from 'app/service/github';
+import {Item} from 'app/repository/services/dao';
 import {isMobile} from 'app/utility/media-matcher';
 import {map} from 'rxjs/operators';
 import {ItemDetailDialog} from '../../dialog/item-detail-dialog/item-detail-dialog';

@@ -1,4 +1,4 @@
-import {Item} from 'app/service/github';
+import {Item} from '../services/dao';
 
 /**
  * Returns a lower-cased string that contains the searchable tokens of Item.

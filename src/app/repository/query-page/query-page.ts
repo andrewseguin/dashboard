@@ -1,7 +1,6 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ItemType} from 'app/service/github';
 import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
@@ -16,6 +15,7 @@ import {
   ItemRendererOptionsState
 } from '../services/items-renderer/item-renderer-options';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
+import { ItemType } from '../services/dao';
 
 
 @Component({

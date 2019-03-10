@@ -4,16 +4,15 @@ import {
   Component,
   EventEmitter,
   Input,
-  Output,
-  SimpleChanges
+  Output
 } from '@angular/core';
-import {Label} from 'app/service/github';
+import {Label} from 'app/repository/services/dao';
 import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
 interface DisplayedLabel {
-  id: number;
+  id: string;
   name: string;
   textColor: string;
   borderColor: string;

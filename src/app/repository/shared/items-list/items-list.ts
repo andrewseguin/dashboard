@@ -14,9 +14,9 @@ import {
 } from 'app/repository/services/items-renderer/item-renderer-options';
 import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
-import {ItemType} from 'app/service/github';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, delay, takeUntil} from 'rxjs/operators';
+import { ItemType } from 'app/repository/services/dao';
 
 @Component({
   selector: 'items-list',

@@ -1,5 +1,12 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {
+  Contributor,
+  githubContributorToContributor,
+  githubIssueToIssue,
+  Item
+} from 'app/repository/services/dao';
+import {githubLabelToLabel, Label} from 'app/repository/services/dao/labels-dao';
 import {getLinkMap} from 'app/utility/link-map';
 import {empty, Observable} from 'rxjs';
 import {expand, map} from 'rxjs/operators';
@@ -343,68 +350,6 @@ export interface UserComment {
   updated: string;
 }
 
-export type ItemType = 'issue'|'pr';
-
-export interface Item {
-  assignees: string[];
-  body: string;
-  title: string;
-  comments: number;
-  labels: number[];
-  number: number;
-  state: string;
-  reporter: string;
-  created: string;
-  updated: string;
-  reactions: Reactions;
-  pr: boolean;
-  url: string;
-}
-
-export interface PullRequest extends Item {}
-export interface Issue extends Item {}
-
-export interface Label {
-  id: number;
-  name: string;
-  description: string;
-  color: string;
-}
-
-export interface Contributor {
-  login: string;
-  id: number;
-  avatar_url: string;
-  contributions: number;
-}
-
-function githubIssueToIssue(o: GithubIssue): Item {
-  return {
-    assignees: o.assignees.map(a => a.login),
-    body: o.body,
-    title: o.title,
-    comments: o.comments,
-    labels: o.labels.map(l => l.id),
-    number: o.number,
-    state: o.state,
-    reporter: o.user.login,
-    created: o.created_at,
-    updated: o.updated_at,
-    reactions: o.reactions,
-    pr: !!o.pull_request,
-    url: o.html_url,
-  };
-}
-
-function githubLabelToLabel(o: GithubLabel): Label {
-  return {
-    id: o.id,
-    name: o.name,
-    description: o.description,
-    color: o.color,
-  };
-}
-
 function githubCommentToUserComment(o: GithubComment): UserComment {
   return {
     message: o.body,
@@ -430,9 +375,4 @@ function githubTimelineEventtoTimelineEvent(o: GithubTimelineEvent): TimelineEve
     requestedReviewers: o.requested_reviewers,
     reviewRequester: o.review_requester,
   };
-}
-
-
-function githubContributorToContributor(o: GithubContributor): Contributor {
-  return {login: o.login, id: o.id, avatar_url: o.avatar_url, contributions: o.contributions};
 }

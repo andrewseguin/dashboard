@@ -5,19 +5,16 @@ import {CollectionId, RepoDao} from '../repo-dao';
 
 export interface IdentifiedObject {
   id?: string;
-  dateCreated?: string;
-  dateModified?: string;
+  dbAdded?: string;
+  dbModified?: string;
 }
 
 export abstract class ListDao<T extends IdentifiedObject> {
-  private needsSubscription = false;
-
   protected destroyed = new Subject();
 
   private subscription: Subscription;
 
-  private config =
-      this.repoDao.repo.pipe(filter(repo => !!repo), map(repo => repo.config[this.collectionId]));
+  private config: Observable<T[]> = this.repoDao.values[this.collectionId].pipe(filter(v => !!v));
 
   get list(): BehaviorSubject<T[]|null> {
     this.subscribe();
@@ -60,13 +57,26 @@ export abstract class ListDao<T extends IdentifiedObject> {
     this.destroyed.complete();
   }
 
+  // TODO: Combine with add
+  addBulk(objArr: T[]): Promise<void> {
+    objArr.forEach(o => this.decorateForAdd(o));
+
+    return new Promise(resolve => {
+      this.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
+        list = list.concat(objArr);
+        this.repoDao.setCollection(this.collectionId, list);
+        resolve();
+      });
+    });
+  }
+
   add(obj: T): Promise<string> {
     this.decorateForAdd(obj);
 
     return new Promise(resolve => {
       this.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
         list.push(obj);
-        this.repoDao.setConfig(this.collectionId, list);
+        this.repoDao.setCollection(this.collectionId, list);
         resolve(obj.id);
       });
     });
@@ -77,13 +87,13 @@ export abstract class ListDao<T extends IdentifiedObject> {
   }
 
   update(id: string, update: T) {
-    update.dateModified = new Date().toISOString();
+    update.dbModified = new Date().toISOString();
 
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
       map.set(id, {...(map.get(id) as object), ...(update as object)} as T);
       const values = [];
       map.forEach(value => values.push(value));
-      this.repoDao.setConfig(this.collectionId, values);
+      this.repoDao.setCollection(this.collectionId, values);
     });
   }
 
@@ -92,7 +102,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
       map.delete(id);
       const values = [];
       map.forEach(value => values.push(value));
-      this.repoDao.setConfig(this.collectionId, values);
+      this.repoDao.setCollection(this.collectionId, values);
     });
   }
 
@@ -115,8 +125,8 @@ export abstract class ListDao<T extends IdentifiedObject> {
       obj.id = this.createId();
     }
 
-    obj.dateCreated = new Date().toISOString();
-    obj.dateModified = new Date().toISOString();
+    obj.dbAdded = new Date().toISOString();
+    obj.dbModified = new Date().toISOString();
   }
 
   private createId(): string {

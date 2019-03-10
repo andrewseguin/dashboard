@@ -1,8 +1,8 @@
-import {Item} from 'app/service/github';
 
+import {Item} from '../services/dao';
 import {ItemFilterer} from '../services/items-renderer/item-filterer';
-
 import {itemMatchesSearch} from './item-matches-search';
+
 
 export function getItemsMatchingFilterAndSearch(
     items: Item[], filterer: ItemFilterer, search: string) {
