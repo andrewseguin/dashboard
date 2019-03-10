@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RepoDao} from 'app/repository/services/repo-dao';
-import {Config, RepoConfig} from 'app/service/config';
-import {interval, Subject} from 'rxjs';
+import {Config} from 'app/service/config';
+import {combineLatest, interval, Subject} from 'rxjs';
 import {filter, mergeMap, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './services/activated-repository';
+import {DashboardsDao, QueriesDao, RecommendationsDao} from './services/dao';
 import {Updater} from './services/updater';
 
 
@@ -20,8 +21,9 @@ export class Repository {
 
   constructor(
       public repoDao: RepoDao, private router: Router, private updater: Updater,
-      private config: Config, private activatedRoute: ActivatedRoute,
-      private activatedRepository: ActivatedRepository) {
+      private dashboardsDao: DashboardsDao, private queriesDao: QueriesDao,
+      private recommendationsDao: RecommendationsDao, private config: Config,
+      private activatedRoute: ActivatedRoute, private activatedRepository: ActivatedRepository) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
       const name = params['name'];
@@ -32,15 +34,17 @@ export class Repository {
 
     // TODO: Load from gist, merge with repo, and store back to gist
 
-    // Do only once for now - needs to happen only when config changes, not any other time
-    this.repoDao.repo.pipe(filter(repo => !!repo), takeUntil(this.destroyed)).subscribe(repo => {
-      const repoConfig: RepoConfig = {
-        dashboards: repo.config.dashboards,
-        queries: repo.config.queries,
-        recommendations: repo.config.recommendations,
-      };
-      this.config.saveRepoConfigToGist(this.activatedRepository.repository.value, repoConfig);
-    });
+    combineLatest(this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list)
+        .pipe(
+            filter(result => !!result[0] && !!result[1] && !!result[2]), takeUntil(this.destroyed))
+        .subscribe(result => {
+          const dashboards = result[0];
+          const queries = result[1];
+          const recommendations = result[2];
+
+          this.config.saveRepoConfigToGist(
+              this.activatedRepository.repository.value, {dashboards, queries, recommendations});
+        });
 
     const checked = new Subject();
     this.repoDao.repo.pipe(takeUntil(checked)).subscribe(result => {

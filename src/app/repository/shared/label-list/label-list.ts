@@ -28,7 +28,7 @@ interface DisplayedLabel {
 export class LabelList {
   /** Label identification either by id or name */
   @Input()
-  set labelIds(labelIds: (string|number)[]) {
+  set labelIds(labelIds: string[]) {
     this._labelIds.next(labelIds);
   }
   _labelIds = new BehaviorSubject<(string | number)[]>([]);
@@ -40,7 +40,7 @@ export class LabelList {
 
   labels = combineLatest(this._labelIds, this.repoDao.repo)
                .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
-                       const labelIds = result[0] as (string | number)[];
+                       const labelIds = result[0] as string[];
                        const repo = result[1] as Repo;
 
                        const labels: DisplayedLabel[] = [];

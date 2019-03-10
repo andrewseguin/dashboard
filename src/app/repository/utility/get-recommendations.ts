@@ -4,7 +4,7 @@ import {ItemFilterer} from '../services/items-renderer/item-filterer';
 import {getItemsMatchingFilterAndSearch} from './get-items-matching-filter-and-search';
 
 export function getRecommendations(
-    itemId: number, repo: Repo, recommendations: Recommendation[]): Recommendation[] {
+    itemId: string, repo: Repo, recommendations: Recommendation[]): Recommendation[] {
   const item = repo.itemsMap.get(itemId);
   return recommendations.filter(recommendation => {
     const filterer = new ItemFilterer(recommendation.filters || [], repo, new Map());

@@ -45,7 +45,8 @@ export class Config {
   }
 
   saveRepoConfigToGist(repository: string, repoConfig: RepoConfig) {
-    this.saveToGist(repository, repoConfig);
+    // TODO: Enable once this can be called once reliably (too many calls right now)
+    // this.saveToGist(repository, repoConfig);
   }
 
   private saveToGist(filename: string, content: DashboardConfig|RepoConfig) {

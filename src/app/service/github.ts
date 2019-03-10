@@ -47,7 +47,7 @@ export class Github {
     return this.getPagedResults<Gist, Gist>(url, g => g);
   }
 
-  getTimeline(repo: string, id: number): Observable<CombinedPagedResults<TimelineEvent>> {
+  getTimeline(repo: string, id: string): Observable<CombinedPagedResults<TimelineEvent>> {
     const url = this.constructUrl(`repos/${repo}/issues/${id}/events`, 'per_page=100');
     return this.getPagedResults<GithubTimelineEvent, TimelineEvent>(
         url, githubTimelineEventtoTimelineEvent);
@@ -70,7 +70,7 @@ export class Github {
     }));
   }
 
-  getComments(repo: string, id: number): Observable<CombinedPagedResults<UserComment>> {
+  getComments(repo: string, id: string): Observable<CombinedPagedResults<UserComment>> {
     const url = this.constructUrl(`repos/${repo}/issues/${id}/comments`, 'per_page=100');
     return this.getPagedResults<GithubComment, UserComment>(url, githubCommentToUserComment);
   }

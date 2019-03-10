@@ -40,7 +40,7 @@ export class QueriesPage {
               map(result => {
                 const repo = result[0] as Repo;
                 const groups = result[1] as QueryGroup[];
-                const recommendations = result[2] as Map<number, Recommendation[]>;
+                const recommendations = result[2] as Map<string, Recommendation[]>;
                 const type = result[3] as ItemType;
                 const items =
                     type === 'issue' ? repo.issues : type === 'pr' ? repo.pullRequests : [];

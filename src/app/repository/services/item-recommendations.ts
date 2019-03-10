@@ -9,7 +9,7 @@ import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
 
 @Injectable()
 export class ItemRecommendations {
-  recommendations = new BehaviorSubject<Map<number, Recommendation[]>|null>(null);
+  recommendations = new BehaviorSubject<Map<string, Recommendation[]>|null>(null);
 
   private destroyed = new Subject();
 
@@ -20,9 +20,9 @@ export class ItemRecommendations {
           const repo = result[0] as Repo;
           const recommendations = result[1] as Recommendation[];
 
-          const map = new Map<number, Recommendation[]>();
+          const map = new Map<string, Recommendation[]>();
           [...repo.issues, ...repo.pullRequests].forEach(item => {
-            map.set(item.number, getRecommendations(item.number, repo, recommendations));
+            map.set(item.id, getRecommendations(item.id, repo, recommendations));
           });
 
           this.recommendations.next(map);

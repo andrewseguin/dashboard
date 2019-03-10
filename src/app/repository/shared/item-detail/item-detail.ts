@@ -10,14 +10,8 @@ import {ActivatedRepository} from 'app/repository/services/activated-repository'
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
-import {
-  CombinedPagedResults,
-  Github,
-  GithubTimelineEvent,
-  TimelineEvent,
-  UserComment
-} from 'app/service/github';
 import {RepoDao} from 'app/repository/services/repo-dao';
+import {CombinedPagedResults, Github, TimelineEvent, UserComment} from 'app/service/github';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
@@ -41,7 +35,7 @@ export class ItemDetail {
 
   activities: Observable<Activity[]>;
 
-  @Input() itemId: number;
+  @Input() itemId: string;
 
   private destroyed = new Subject();
 

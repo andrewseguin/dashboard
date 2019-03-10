@@ -3,7 +3,7 @@ import {DB, deleteDb, openDb} from 'idb';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
-import {Item, Label, Issue, PullRequest, Contributor} from './dao';
+import {Contributor, Issue, Item, Label, PullRequest} from './dao';
 import {Dashboard} from './dao/dashboards-dao';
 import {Query} from './dao/queries-dao';
 import {Recommendation} from './dao/recommendations-dao';
@@ -16,17 +16,16 @@ export interface RepoConfig {
 
 export interface Repo {
   empty: boolean;
-  config: RepoConfig;
   items: Item[];
-  itemsMap: Map<number, Item>;
+  itemsMap: Map<string, Item>;
   issues: Issue[];
-  issuesMap: Map<number, Item>;
+  issuesMap: Map<string, Item>;
   pullRequests: PullRequest[];
-  pullRequestsMap: Map<number, PullRequest>;
+  pullRequestsMap: Map<string, PullRequest>;
   labels: Label[];
-  labelsMap: Map<string|number, Label>;
+  labelsMap: Map<string, Label>;
   contributors: Contributor[];
-  contributorsMap: Map<number, Contributor>;
+  contributorsMap: Map<string, Contributor>;
 }
 
 const DB_VERSION = 1;
@@ -106,7 +105,7 @@ export class RepoDao {
     });
   }
 
-  getItem(item: number): Observable<Item> {
+  getItem(item: string): Observable<Item> {
     return this.repo.pipe(filter(repo => !!repo), map(repo => repo.itemsMap.get(item)));
   }
 
@@ -173,27 +172,24 @@ export class RepoDao {
           const items = result[0];
           const labels = result[1];
           const contributors = result[2];
-          const dashboards = result[3];
-          const queries = result[4];
-          const recommendations = result[5];
 
 
-          const itemsMap = new Map<number, PullRequest>();
+          const itemsMap = new Map<string, PullRequest>();
           items.forEach(o => itemsMap.set(o.number, o));
 
           const issues = result[0].filter((issue: Item) => !issue.pr);
-          const issuesMap = new Map<number, Item>();
+          const issuesMap = new Map<string, Item>();
           issues.forEach(o => issuesMap.set(o.number, o));
 
           const pullRequests = result[0].filter((issue: PullRequest) => !!issue.pr);
-          const pullRequestsMap = new Map<number, PullRequest>();
+          const pullRequestsMap = new Map<string, PullRequest>();
           issues.forEach(o => issuesMap.set(o.number, o));
 
-          const labelsMap = new Map<number, Label>();
+          const labelsMap = new Map<string, Label>();
           labels.forEach(o => labelsMap.set(o.id, o));
           labels.forEach(o => labelsMap.set(o.name, o));
 
-          const contributorsMap = new Map<number, Contributor>();
+          const contributorsMap = new Map<string, Contributor>();
           contributors.forEach(o => contributorsMap.set(o.id, o));
 
           this.repo.next({
@@ -207,7 +203,6 @@ export class RepoDao {
             labelsMap,
             contributors,
             contributorsMap,
-            config: {dashboards, queries, recommendations},
             empty: ![...issues, ...labels, ...contributors].length
           });
         });

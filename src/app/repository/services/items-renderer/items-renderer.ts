@@ -1,19 +1,17 @@
 import {Injectable} from '@angular/core';
+import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {
   getItemsMatchingFilterAndSearch
 } from 'app/repository/utility/get-items-matching-filter-and-search';
-import {Repo, RepoDao} from 'app/repository/services/repo-dao';
 import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
-
+import {ItemType} from '../dao';
 import {Recommendation} from '../dao/recommendations-dao';
 import {ItemRecommendations} from '../item-recommendations';
-
 import {ItemFilterer} from './item-filterer';
 import {ItemGroup, ItemGrouping} from './item-grouping';
 import {ItemRendererOptions} from './item-renderer-options';
 import {ItemSorter} from './item-sorter';
-import { ItemType } from '../dao';
 
 
 @Injectable()
@@ -53,7 +51,7 @@ export class ItemsRenderer {
             .subscribe(result => {
               const repo = result[0] as Repo;
               const items = type === 'issue' ? repo.issues : repo.pullRequests;
-              const recommendations = result[1] as Map<number, Recommendation[]>;
+              const recommendations = result[1] as Map<string, Recommendation[]>;
 
               // Filter and search
               const filterer = new ItemFilterer(this.options.filters, repo, recommendations);
