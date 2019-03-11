@@ -80,7 +80,7 @@ export class Config {
     return this.github.getGists().pipe(
         map(result => {
           if (result.completed === result.total) {
-            const gists = result.current;
+            const gists = result.accumulated;
 
             let configGist: Gist;
             gists.forEach(gist => {

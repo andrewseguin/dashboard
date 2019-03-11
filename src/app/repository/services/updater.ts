@@ -33,7 +33,7 @@ export class Updater {
     return new Promise(resolve => {
       this.github.getLabels(repo).subscribe(result => {
         if (result.completed === result.total) {
-          this.labelsDao.update(result.current);
+          this.labelsDao.update(result.accumulated);
           resolve();
         }
       });
@@ -44,7 +44,7 @@ export class Updater {
     return new Promise(resolve => {
       this.github.getContributors(repo).subscribe(result => {
         if (result.completed === result.total) {
-          this.contributorsDao.update(result.current);
+          this.contributorsDao.update(result.accumulated);
           resolve();
         }
       });
@@ -62,7 +62,7 @@ export class Updater {
               take(1))
           .subscribe(result => {
             if (result) {
-              this.itemsDao.update(result.current);
+              this.itemsDao.update(result.accumulated);
             }
 
             resolve();

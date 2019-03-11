@@ -32,7 +32,7 @@
 
   <button mat-button class="remove"
           *ngIf="!repo.empty && !(loadData.isLoading | async)" color="warn"
-          (click)="removeData()">
+          (click)="remover.removeAllData()">
     Remove all locally stored data
   </button>
 </ng-container>

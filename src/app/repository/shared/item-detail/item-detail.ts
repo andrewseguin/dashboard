@@ -12,7 +12,7 @@ import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
-import {CombinedPagedResults, Github, TimelineEvent, UserComment} from 'app/service/github';
+import {Github, TimelineEvent, UserComment} from 'app/service/github';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
@@ -68,12 +68,12 @@ export class ItemDetail {
                     return commentsFinished && timelineFinished;
                   }),
                   map(result => {
-                    const comments = result[0].current as UserComment[];
+                    const comments = result[0].accumulated as UserComment[];
 
                     const filteredTimelineEvents =
                         new Set(['mentioned', 'subscribed', 'referenced']);
                     const timelineEvents =
-                        (result[1].current as TimelineEvent[])
+                        (result[1].accumulated as TimelineEvent[])
                             .filter(
                                 timelineEvent => !filteredTimelineEvents.has(timelineEvent.type));
 

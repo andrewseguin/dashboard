@@ -91,6 +91,11 @@ export abstract class ListDao<T extends IdentifiedObject> {
     });
   }
 
+  removeAll() {
+    this.list.next([]);
+    this.repoIndexedDb.removeValues(this._list.value.map(item => item.id), this.collectionId);
+  }
+
   private decorateForDb(obj: T) {
     if (!obj.id) {
       obj.id = this.createId();

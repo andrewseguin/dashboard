@@ -15,6 +15,7 @@ import {Gist} from './github-types/gist';
 export interface CombinedPagedResults<T> {
   total: number;
   current: T[];
+  accumulated: T[];
   completed: number;
 }
 
@@ -105,13 +106,14 @@ export class Github {
       Observable<CombinedPagedResults<R>> {
     let completed = 0;
     let total = 0;
-    let current = [];
+    let accumulated = [];
 
     return this.get<T>(url).pipe(
         expand(result => result.next ? this.get(result.next) : empty()), map(result => {
           completed++;
           const transformedResponse = result.response.map(transform);
-          current = current.concat(transformedResponse);
+          const current = transformedResponse;
+          accumulated = current.concat(transformedResponse);
 
           // Determine this on the first pass but not subsequent ones. The
           // last page will have result.numPages equal to 1 since it is
@@ -120,7 +122,7 @@ export class Github {
             total = result.numPages;
           }
 
-          return {completed, total, current};
+          return {completed, total, current, accumulated};
         }));
   }
 

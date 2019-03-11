@@ -1,13 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {MatDialog, MatSnackBar} from '@angular/material';
-import {BehaviorSubject, of} from 'rxjs';
-import {filter, map, take} from 'rxjs/operators';
+import {BehaviorSubject} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
 import {LabelsDao} from '../services/dao';
+import {Remover} from '../services/remover';
 import {RepoDao} from '../services/dao/repo-dao';
-import {RepoIndexedDb} from '../services/repo-indexed-db';
 import {Updater} from '../services/updater';
-import {DeleteConfirmation} from '../shared/dialog/delete-confirmation/delete-confirmation';
 import {UpdateState} from './update-button/update-button';
 
 
@@ -24,27 +22,9 @@ export class DatabasePage {
   issuesUpdateState = new BehaviorSubject<UpdateState>('not-updating');
   labelsUpdateState = new BehaviorSubject<UpdateState>('not-updating');
 
-
   constructor(
-      private activatedRepository: ActivatedRepository, private repoIndexedDb: RepoIndexedDb,
-      public repoDao: RepoDao, private labelsDao: LabelsDao, private updater: Updater,
-      private dialog: MatDialog, private snackbar: MatSnackBar) {}
-
-  removeData() {
-    const repository = this.activatedRepository.repository.value;
-    const name = `locally stored data for ${repository}`;
-    const data = {name: of(name)};
-
-    this.dialog.open(DeleteConfirmation, {data})
-        .afterClosed()
-        .pipe(take(1))
-        .subscribe(confirmed => {
-          if (confirmed) {
-            this.repoIndexedDb.removeData();
-            this.snackbar.open(`${name} deleted`, null, {duration: 2000});
-          }
-        });
-  }
+      private activatedRepository: ActivatedRepository, public repoDao: RepoDao,
+      private labelsDao: LabelsDao, private updater: Updater, public remover: Remover) {}
 
   updateLabels() {
     this.labelsUpdateState.next('updating');

@@ -13,13 +13,17 @@ import {
   QueriesDao,
   RecommendationsDao
 } from './services/dao';
+import {RepoDao} from './services/dao/repo-dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
+import {Remover} from './services/remover';
 import {RepoIndexedDb} from './services/repo-indexed-db';
 import {Updater} from './services/updater';
+import {
+  DeleteConfirmationModule
+} from './shared/dialog/delete-confirmation/delete-confirmation.module';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
-import { RepoDao } from './services/dao/repo-dao';
 
 
 const routes: Routes = [{
@@ -59,6 +63,16 @@ const routes: Routes = [{
 export class RepositoryRoutingModule {
 }
 
+const DaoList = [
+  ItemsDao,
+  LabelsDao,
+  ContributorsDao,
+  QueriesDao,
+  RecommendationsDao,
+  DashboardsDao,
+  RepoIndexedDb,
+];
+
 @NgModule({
   imports: [
     CommonModule,
@@ -67,25 +81,13 @@ export class RepositoryRoutingModule {
     HeaderModule,
     RouterModule,
     RepositoryRoutingModule,
+    DeleteConfirmationModule,
   ],
   declarations: [Repository],
   exports: [Repository],
   providers: [
-    Header,
-    Updater,
-    ItemRecommendations,
-    Markdown,
-    ActivatedRepository,
-
-    ItemsDao,
-    LabelsDao,
-    ContributorsDao,
-    QueriesDao,
-    RecommendationsDao,
-    DashboardsDao,
-    RepoIndexedDb,
-
-    RepoDao,
+    Header, Updater, Remover, ItemRecommendations, Markdown, ActivatedRepository, RepoDao,
+    ...DaoList
   ]
 })
 export class RepositoryModule {

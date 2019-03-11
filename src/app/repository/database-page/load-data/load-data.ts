@@ -43,7 +43,7 @@ export class LoadData {
       return this.github.getLabels(repository)
           .pipe(
               filter(result => result.completed === result.total),
-              map(result => result.current.length));
+              map(result => result.accumulated.length));
     }
   })));
 
@@ -76,17 +76,17 @@ export class LoadData {
     const repository = this.activatedRepository.repository.value;
     this.isLoading.next(true);
 
-    this.getValues(
+    await this.getValues(
         'labels', () => this.github.getLabels(repository),
         (values: Label[]) => this.labelsDao.update(values));
     this.completedTypes.add('labels');
 
-    this.getValues(
+    await this.getValues(
         'issues', () => this.github.getIssues(repository, this.getIssuesDateSince()),
         (values: Item[]) => this.itemsDao.update(values));
     this.completedTypes.add('issues');
 
-    this.getValues(
+    await this.getValues(
         'contributors', () => this.github.getContributors(repository),
         (values: Contributor[]) => this.contributorsDao.update(values));
     this.completedTypes.add('contributors');
@@ -111,15 +111,9 @@ export class LoadData {
       loadFn().pipe(takeUntil(this.destroyed)).subscribe(result => {
         this.state.progress.value = result.completed / result.total * 100;
         this.cd.markForCheck();
+        saver(result.current);
 
         if (result.completed === result.total) {
-          saver(result.current);
-          this.state = {
-            id: 'saving',
-            label: `Saving ${type}`,
-            progress: {type: 'indeterminate'},
-          };
-          this.cd.markForCheck();
           resolve();
         }
       });
