@@ -8,8 +8,8 @@ import {
 } from 'app/repository/services/dao';
 import {githubLabelToLabel, Label} from 'app/repository/services/dao/labels-dao';
 import {getLinkMap} from 'app/utility/link-map';
-import {empty, Observable} from 'rxjs';
-import {expand, map} from 'rxjs/operators';
+import {empty, Observable, of} from 'rxjs';
+import {expand, map, mergeMap} from 'rxjs/operators';
 import {Gist} from './github-types/gist';
 
 export interface CombinedPagedResults<T> {
@@ -18,6 +18,8 @@ export interface CombinedPagedResults<T> {
   accumulated: T[];
   completed: number;
 }
+
+const GIST_DESCRIPTION = 'Dashboard Config';
 
 @Injectable({providedIn: 'root'})
 export class Github {
@@ -71,6 +73,22 @@ export class Github {
     }));
   }
 
+  getDashboardGist(): Observable<Gist|null> {
+    return this.getGists().pipe(mergeMap(result => {
+      if (result.completed === result.total) {
+        const gists = result.accumulated;
+
+        for (let i = 0; i < gists.length; i++) {
+          if (gists[i].description.indexOf(GIST_DESCRIPTION) === 0) {
+            return this.getGist(gists[i].id);
+          }
+        }
+
+        return of(null);
+      }
+    }));
+  }
+
   getComments(repo: string, id: string): Observable<CombinedPagedResults<UserComment>> {
     const url = this.constructUrl(`repos/${repo}/issues/${id}/comments`, 'per_page=100');
     return this.getPagedResults<GithubComment, UserComment>(url, githubCommentToUserComment);
@@ -91,7 +109,7 @@ export class Github {
         url, githubContributorToContributor);
   }
 
-  createGist(): Observable<Gist> {
+  createDashboardGist(): Observable<Gist> {
     const url = 'https://api.github.com/gists';
     const body = {
       files: {dashboardConfig: {content: '{}'}},

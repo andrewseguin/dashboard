@@ -129,7 +129,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
 
 function decorateForDb(obj: any) {
   if (!obj.id) {
-    obj.id = this.createId();
+    obj.id = createId();
   }
 
   if (!obj.dbAdded) {

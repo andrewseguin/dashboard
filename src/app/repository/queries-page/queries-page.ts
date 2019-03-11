@@ -36,7 +36,6 @@ export class QueriesPage {
           this.itemsDao.list, this.queryGroups, this.issueRecommendations.recommendations,
           this.type, this.labelsDao.map)
           .pipe(filter(result => result.every(r => !!r)), delay(1000), map(result => {
-                  console.log(result);
                   const groups = result[1];
                   const recommendationsByItem = result[2];
                   const type = result[3];
@@ -45,8 +44,6 @@ export class QueriesPage {
                   const issues = result[0].filter(item => !item.pr);
                   const pullRequests = result[0].filter(item => !!item.pr);
                   const items = type === 'issue' ? issues : type === 'pr' ? pullRequests : [];
-
-                  console.log(issues);
 
                   const map = new Map<string, number>();
                   groups.forEach(group => group.queries.forEach(query => {

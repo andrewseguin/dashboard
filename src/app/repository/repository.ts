@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Config} from 'app/service/config';
-import {combineLatest, interval, Subject} from 'rxjs';
+import {interval, Subject} from 'rxjs';
 import {filter, mergeMap, take, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './services/activated-repository';
-import {DashboardsDao, ItemsDao, QueriesDao, RecommendationsDao} from './services/dao';
+import {ItemsDao} from './services/dao';
 import {DaoState} from './services/dao/dao-state';
+import {RepoGist} from './services/repo-gist';
 import {Updater} from './services/updater';
 
 
@@ -18,29 +18,14 @@ export class Repository {
   destroyed = new Subject();
 
   constructor(
-      private router: Router, private updater: Updater, private dashboardsDao: DashboardsDao,
-      private queriesDao: QueriesDao, private daoState: DaoState,
-      private recommendationsDao: RecommendationsDao, private config: Config,
-      private activatedRoute: ActivatedRoute, private itemsDao: ItemsDao,
-      private activatedRepository: ActivatedRepository) {
+      private router: Router, private updater: Updater, private daoState: DaoState,
+      private repoGist: RepoGist, private activatedRoute: ActivatedRoute,
+      private itemsDao: ItemsDao, private activatedRepository: ActivatedRepository) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
       const name = params['name'];
       this.activatedRepository.repository.next(`${org}/${name}`);
     });
-
-    // TODO: Load from gist, merge with repo, and store back to gist
-
-    combineLatest(this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list)
-        .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
-        .subscribe(result => {
-          const dashboards = result[0];
-          const queries = result[1];
-          const recommendations = result[2];
-
-          this.config.saveRepoConfigToGist(
-              this.activatedRepository.repository.value, {dashboards, queries, recommendations});
-        });
 
     this.daoState.isEmpty.pipe(take(1)).subscribe(isEmpty => {
       if (isEmpty) {

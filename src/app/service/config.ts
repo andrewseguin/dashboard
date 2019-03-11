@@ -2,10 +2,9 @@ import {Injectable} from '@angular/core';
 import {Dashboard} from 'app/repository/services/dao/dashboards-dao';
 import {Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {filter, map, mergeMap, takeUntil} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {filter, map, mergeMap, take} from 'rxjs/operators';
 import {Github} from './github';
-import {Gist} from './github-types/gist';
 
 
 export interface DashboardConfig {
@@ -25,75 +24,39 @@ export interface ConfigValues {
 
 @Injectable({providedIn: 'root'})
 export class Config {
-  config = new BehaviorSubject<ConfigValues|null>(null);
-  _gist = new BehaviorSubject<Gist|null>(null);
-
-  _configValuesGist: Observable<Gist>;
-
-  constructor(private github: Github) {
-    this.getConfigValuesGist().subscribe(gist => this._gist.next(gist));
-    this.syncFromGist();
-  }
+  constructor(private github: Github) {}
 
   saveDashboardConfig(dashboardConfig: DashboardConfig) {
     this.saveToGist('dashboardConfig', dashboardConfig);
   }
 
+  getDashboardConfig(): Observable<DashboardConfig> {
+    return this.syncFromGist<DashboardConfig>('dashboardConfig');
+  }
+
+  saveRepoConfigToGist(repository: string, repoConfig: RepoConfig): Promise<void> {
+    return this.saveToGist(repository, repoConfig);
+  }
+
   getRepoConfig(repository: string): Observable<RepoConfig> {
-    return this.config.pipe(
-        filter(config => !!config), map(config => (config[repository] as RepoConfig) || {}));
+    return this.syncFromGist<RepoConfig>(repository);
   }
 
-  saveRepoConfigToGist(repository: string, repoConfig: RepoConfig) {
-    // TODO: Enable once this can be called once reliably (too many calls right now)
-    // this.saveToGist(repository, repoConfig);
-  }
-
-  private saveToGist(filename: string, content: DashboardConfig|RepoConfig) {
-    const saved = new Subject();
-    const saveFn = mergeMap((gist: Gist) => {
-      return this.github.editGist(gist.id, filename, JSON.stringify(content));
-    });
-    this._gist.pipe(takeUntil(saved), filter(gist => !!gist), saveFn).subscribe(() => {
-      saved.next();
-      saved.complete();
+  private saveToGist(filename: string, content: DashboardConfig|RepoConfig): Promise<void> {
+    return new Promise(resolve => {
+      this.github.getDashboardGist()
+          .pipe(
+              mergeMap(gist => gist ? of(gist) : this.github.createDashboardGist()),
+              mergeMap(gist => this.github.editGist(gist.id, filename, JSON.stringify(content))),
+              take(1))
+          .subscribe(() => resolve());
     });
   }
 
-  private syncFromGist() {
-    const synced = new Subject();
-    this._gist.pipe(takeUntil(synced)).subscribe(gist => {
-      if (gist) {
-        const settings: ConfigValues = {};
-        Object.keys(gist.files).forEach(fileName => {
-          settings[fileName] = JSON.parse(gist.files[fileName].content);
-        });
-        this.config.next(settings);
-
-        synced.next();
-        synced.complete();
-      }
-    });
-  }
-
-  private getConfigValuesGist(): Observable<Gist> {
-    return this.github.getGists().pipe(
-        map(result => {
-          if (result.completed === result.total) {
-            const gists = result.accumulated;
-
-            let configGist: Gist;
-            gists.forEach(gist => {
-              if (gist.description.indexOf('Dashboard Config') === 0) {
-                configGist = gist;
-              }
-            });
-
-            return configGist;
-          }
-        }),
-        mergeMap(gist => {
-          return gist ? this.github.getGist(gist.id) : this.github.createGist();
-        }));
+  private syncFromGist<T>(filename: string): Observable<T> {
+    return this.github.getDashboardGist().pipe(filter(gist => !!gist), map(gist => {
+                                                 const file = gist.files[filename];
+                                                 return file ? JSON.parse(file.content) : {};
+                                               }));
   }
 }
