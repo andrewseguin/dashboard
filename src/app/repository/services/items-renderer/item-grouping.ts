@@ -1,50 +1,47 @@
-import {Item} from '../dao';
 import {Group} from './item-renderer-options';
 
-
-export class ItemGroup {
+export class ItemGroup<T> {
   id: string;
   title: string;
-  items: Item[];
+  items: T[];
 }
 
-export class ItemGrouping {
-  groupingFunctions = new Map<string, (items: Item[]) => ItemGroup[]>();
+export class ItemGrouping<T> {
+  groupingFunctions = new Map<string, (items: T[]) => ItemGroup<T>[]>();
 
   constructor() {
-    this.groupingFunctions.set('all', (items: Item[]) => {
+    this.groupingFunctions.set('all', (items: T[]) => {
       return [{id: 'all', title: ``, items}];
     });
 
     const properties = ['reporter'];
     properties.forEach(property => {
-      this.groupingFunctions.set(property, (items: Item[]) => {
-        return this.getGroupByProperty(items, property);
-      });
+      this.groupingFunctions.set(property, (items: T[]) => getGroupByProperty(items, property));
     });
   }
 
-  getGroups(items: Item[], group: Group): ItemGroup[] {
+  getGroups(items: T[], group: Group): ItemGroup<T>[] {
     return this.groupingFunctions.get(group)(items);
   }
+}
 
-  getGroupByProperty(items: Item[], property: string) {
-    const groups: Map<string, Item[]> = new Map();
 
-    items.forEach(item => {
-      const value = item[property];
-      if (!groups.has(value)) {
-        groups.set(value, []);
-      }
+export function getGroupByProperty<T>(items: T[], property: string): ItemGroup<T>[] {
+  const groups: Map<string, T[]> = new Map();
 
-      groups.get(value).push(item);
-    });
+  items.forEach(item => {
+    const value = item[property];
+    if (!groups.has(value)) {
+      groups.set(value, []);
+    }
 
-    const requestGroups: ItemGroup[] = [];
-    groups.forEach((items, value) => {
-      requestGroups.push({id: value, title: `${value} (${items.length})`, items});
-    });
+    groups.get(value).push(item);
+  });
 
-    return requestGroups;
-  }
+  const requestGroups: ItemGroup<T>[] = [];
+  groups.forEach((items, value) => {
+    requestGroups.push({id: value, title: `${value} (${items.length})`, items});
+  });
+
+  return requestGroups;
 }

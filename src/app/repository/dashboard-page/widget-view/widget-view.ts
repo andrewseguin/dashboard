@@ -19,6 +19,7 @@ import {ItemGrouping} from 'app/repository/services/items-renderer/item-grouping
 import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
+import {MyItemSorter} from 'app/repository/utility/items-renderer.ts/item-sorter';
 import {MatcherContext} from 'app/repository/utility/search/filter';
 import {tokenizeItem} from 'app/repository/utility/tokenize-item';
 import {combineLatest, Subject} from 'rxjs';
@@ -52,8 +53,8 @@ export class WidgetView {
   private destroyed = new Subject();
 
   constructor(
-      public itemsRenderer: ItemsRenderer, private dialog: MatDialog, private cd: ChangeDetectorRef,
-      private repoDao: RepoDao, private router: Router,
+      public itemsRenderer: ItemsRenderer<Item>, private dialog: MatDialog,
+      private cd: ChangeDetectorRef, private repoDao: RepoDao, private router: Router,
       private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
       private activatedRepository: ActivatedRepository) {}
 
@@ -80,7 +81,7 @@ export class WidgetView {
                                }));
 
 
-    this.itemsRenderer.initialize(items, filterer, new ItemGrouping());
+    this.itemsRenderer.initialize(items, filterer, new ItemGrouping(), new MyItemSorter());
     this.itemsRenderer.itemGroups
         .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
         .subscribe(itemGroups => {

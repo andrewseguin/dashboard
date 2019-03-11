@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {LabelsDao} from 'app/repository/services/dao';
+import {Item, LabelsDao} from 'app/repository/services/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
@@ -12,6 +12,7 @@ import {ItemRendererOptions} from 'app/repository/services/items-renderer/item-r
 import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {getItemsFilterer} from 'app/repository/utility/get-items-filterer';
+import {MyItemSorter} from 'app/repository/utility/items-renderer.ts/item-sorter';
 import {Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 
@@ -42,10 +43,11 @@ export class EditWidget {
   private _destroyed = new Subject();
 
   constructor(
-      private dialogRef: MatDialogRef<EditWidget, Widget>, public itemsRenderer: ItemsRenderer,
-      public recommendationsDao: RecommendationsDao, private repoDao: RepoDao,
-      private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
-      public queriesDao: QueriesDao, @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+      private dialogRef: MatDialogRef<EditWidget, Widget>,
+      public itemsRenderer: ItemsRenderer<Item>, public recommendationsDao: RecommendationsDao,
+      private repoDao: RepoDao, private itemRecommendations: ItemRecommendations,
+      private labelsDao: LabelsDao, public queriesDao: QueriesDao,
+      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
 
     const items = this.repoDao.repo.pipe(
@@ -54,7 +56,8 @@ export class EditWidget {
         }));
 
     this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping());
+        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
+        new MyItemSorter());
     this.itemsRenderer.options.setState(data.widget.options);
     this.form = new FormGroup({
       title: new FormControl(this.widget.title),
@@ -70,7 +73,8 @@ export class EditWidget {
           }));
 
       this.itemsRenderer.initialize(
-          items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping());
+          items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
+          new MyItemSorter());
     });
   }
 

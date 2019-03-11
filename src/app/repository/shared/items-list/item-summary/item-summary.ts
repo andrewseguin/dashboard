@@ -6,7 +6,7 @@ import {
   Input,
   Output
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {Item} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
@@ -35,8 +35,8 @@ export class ItemSummary {
   @Output() select = new EventEmitter<number>();
 
   constructor(
-      private activatedRoute: ActivatedRoute, public itemRecommendations: ItemRecommendations,
-      private cd: ChangeDetectorRef, public itemsRenderer: ItemsRenderer, private router: Router) {
+      public itemRecommendations: ItemRecommendations,
+      private cd: ChangeDetectorRef, public itemsRenderer: ItemsRenderer<any>) {
     this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed))
         .subscribe(() => this.cd.markForCheck());
   }

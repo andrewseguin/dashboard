@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subscription} from 'rxjs';
 import {filter, startWith} from 'rxjs/operators';
-import {Item} from '../dao';
 import {ItemFilterer} from './item-filterer';
 import {ItemGroup, ItemGrouping} from './item-grouping';
 import {ItemRendererOptions} from './item-renderer-options';
@@ -9,11 +8,11 @@ import {ItemSorter} from './item-sorter';
 
 
 @Injectable()
-export class ItemsRenderer {
+export class ItemsRenderer<T> {
   options: ItemRendererOptions = new ItemRendererOptions();
 
   // Starts as null as a signal that no items have been processed.
-  itemGroups = new BehaviorSubject<ItemGroup[]|null>(null);
+  itemGroups = new BehaviorSubject<ItemGroup<T>[]|null>(null);
 
   // Number of items in the item groups.
   itemCount = new BehaviorSubject<number|null>(null);
@@ -29,8 +28,8 @@ export class ItemsRenderer {
   }
 
   initialize(
-      items: Observable<Item[]>, filterer: Observable<ItemFilterer<any, any>>,
-      grouper: ItemGrouping) {
+      items: Observable<T[]>, filterer: Observable<ItemFilterer<T, any>>,
+      grouper: ItemGrouping<T>, sorter: ItemSorter<T>) {
     if (this.initSubscription) {
       this.initSubscription.unsubscribe();
     }
@@ -53,7 +52,6 @@ export class ItemsRenderer {
               itemGroups = itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
 
               // Sort
-              const sorter = new ItemSorter();
               itemGroups.forEach(group => {
                 const sort = this.options.sorting;
                 const sortFn = sorter.getSortFunction(sort);

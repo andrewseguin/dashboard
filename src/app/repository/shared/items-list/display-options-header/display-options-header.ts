@@ -35,7 +35,7 @@ export class DisplayOptionsHeader {
 
   private destroyed = new Subject();
 
-  constructor(public itemsRenderer: ItemsRenderer, private cd: ChangeDetectorRef) {
+  constructor(public itemsRenderer: ItemsRenderer<any>, private cd: ChangeDetectorRef) {
     this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed)).subscribe(() => {
       this.cd.markForCheck();
     });
