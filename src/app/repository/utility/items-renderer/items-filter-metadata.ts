@@ -1,18 +1,30 @@
+import {IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
 import {
-  AutocompleteContext,
-  IFilterMetadata,
-  MatcherContext
-} from 'app/repository/utility/search/filter';
-import {DateQuery, InputQuery, NumberQuery, StateQuery} from 'app/repository/utility/search/query';
+  DateQuery,
+  InputQuery,
+  NumberQuery,
+  StateQuery
+} from 'app/package/items-renderer/search-utility/query';
 import {
   arrayContainsQuery,
   dateMatchesEquality,
   numberMatchesEquality,
   stateMatchesEquality,
   stringContainsQuery
-} from 'app/repository/utility/search/query-matcher';
+} from 'app/package/items-renderer/search-utility/query-matcher';
+import {Item, Label, Recommendation} from 'app/repository/services/dao';
+import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {filter, map} from 'rxjs/operators';
 
+export interface MatcherContext {
+  item: Item;
+  labelsMap: Map<string, Label>;
+  recommendations: Recommendation[];
+}
+
+export interface AutocompleteContext {
+  repoDao?: RepoDao;
+}
 
 export const ItemsFilterMetadata =
     new Map<string, IFilterMetadata<MatcherContext, AutocompleteContext>>([

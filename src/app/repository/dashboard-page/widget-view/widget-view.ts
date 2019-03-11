@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {Router} from '@angular/router';
-import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {ItemGrouping} from 'app/package/items-renderer/item-grouping';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
@@ -18,12 +17,10 @@ import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
-import {MyItemSorter} from 'app/repository/utility/items-renderer.ts/item-sorter';
-import {MatcherContext} from 'app/repository/utility/search/filter';
-import {tokenizeItem} from 'app/repository/utility/tokenize-item';
-import {combineLatest, Subject} from 'rxjs';
+import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
+import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
+import {Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
-import { ItemsFilterMetadata } from 'app/repository/utility/items-filter-metadata';
 
 @Component({
   selector: 'widget-view',
@@ -64,24 +61,9 @@ export class WidgetView {
           return this.widget.itemType === 'issue' ? repo.issues : repo.pullRequests;
         }));
 
-
-    const filterer = combineLatest(this.itemRecommendations.recommendations, this.labelsDao.map)
-                         .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
-                                 const recommendationsByItem = result[0];
-                                 const labelsMap = result[1];
-                                 const contextProvider = (item: Item) => {
-                                   return {
-                                     item,
-                                     labelsMap,
-                                     recommendations: recommendationsByItem.get(item.id),
-                                   };
-                                 };
-                                 return new ItemFilterer<Item, MatcherContext>(
-                                     contextProvider, tokenizeItem, ItemsFilterMetadata);
-                               }));
-
-
-    this.itemsRenderer.initialize(items, filterer, new ItemGrouping(), new MyItemSorter());
+    this.itemsRenderer.initialize(
+        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
+        new MyItemSorter());
     this.itemsRenderer.itemGroups
         .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
         .subscribe(itemGroups => {

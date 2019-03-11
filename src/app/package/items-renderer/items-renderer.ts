@@ -1,10 +1,10 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, Subscription} from 'rxjs';
-import {filter, startWith} from 'rxjs/operators';
-import {ItemFilterer} from './item-filterer';
-import {ItemGroup, ItemGrouping} from './item-grouping';
-import {ItemRendererOptions} from './item-renderer-options';
-import {ItemSorter} from './item-sorter';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
+import { filter, startWith } from 'rxjs/operators';
+import { ItemFilterer } from './item-filterer';
+import { ItemGroup, ItemGrouping } from './item-grouping';
+import { ItemRendererOptions } from './item-renderer-options';
+import { ItemSorter } from './item-sorter';
 
 
 @Injectable()

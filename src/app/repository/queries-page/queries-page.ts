@@ -9,8 +9,7 @@ import {Item, ItemType, LabelsDao} from '../services/dao';
 import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {ItemRecommendations} from '../services/item-recommendations';
-import {ItemsFilterMetadata} from '../utility/items-filter-metadata';
-import {MatcherContext} from '../utility/search/filter';
+import {ItemsFilterMetadata, MatcherContext} from '../utility/items-renderer/items-filter-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
 
 

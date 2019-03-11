@@ -10,7 +10,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {isMobile} from 'app/utility/media-matcher';
-import {DateEquality, DateQuery} from 'app/repository/utility/search/query';
+import {DateEquality, DateQuery} from 'app/package/items-renderer/search-utility/query';
 
 @Component({
   selector: 'date-query-form',

@@ -79,4 +79,7 @@ export class RepoDataStore {
       return transaction.complete;
     });
   }
+
+  // Need to be able to remove values
+  private removeValues(values: any[], collectionId: StoreId) {}
 }

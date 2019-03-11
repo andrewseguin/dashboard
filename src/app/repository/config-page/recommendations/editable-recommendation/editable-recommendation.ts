@@ -1,16 +1,16 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
+import {Filter} from 'app/package/items-renderer/search-utility/filter';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
-import {Filter} from 'app/repository/utility/search/filter';
+import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {merge, of, Subject} from 'rxjs';
 import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
-import { ItemsFilterMetadata } from 'app/repository/utility/items-filter-metadata';
 
 
 @Component({
@@ -117,6 +117,7 @@ export class EditableRecommendation {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
+            debugger;
             this.recommendationsDao.remove(this.recommendation.id);
             this.snackbar.open(`Recommendation deleted`, null, {duration: 2000});
           }

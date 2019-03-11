@@ -1,4 +1,4 @@
-import {Filter, IFilterMetadata} from 'app/repository/utility/search/filter';
+import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
 
 
 export class ItemFilterer<T, M> {

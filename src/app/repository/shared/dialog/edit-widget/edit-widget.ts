@@ -10,9 +10,9 @@ import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {getItemsFilterer} from 'app/repository/utility/get-items-filterer';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-filter-metadata';
-import {MyItemSorter} from 'app/repository/utility/items-renderer.ts/item-sorter';
+import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
+import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
+import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
 import {Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Filter} from 'app/repository/utility/search/filter';
+import {Filter} from 'app/package/items-renderer/search-utility/filter';
 import {Auth} from 'app/service/auth';
 import {ListDao} from './list-dao';
 import { RepoDataStore } from '../repo-data-store';

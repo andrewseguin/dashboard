@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Subject} from 'rxjs';
-import {NumberEquality, NumberQuery} from 'app/repository/utility/search/query';
+import {NumberEquality, NumberQuery} from 'app/package/items-renderer/search-utility/query';
 import {takeUntil} from 'rxjs/operators';
 
 @Component({

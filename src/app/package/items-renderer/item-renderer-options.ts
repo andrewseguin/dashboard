@@ -1,4 +1,4 @@
-import {Filter} from 'app/repository/utility/search/filter';
+import {Filter} from 'app/package/items-renderer/search-utility/filter';
 import {Subject} from 'rxjs';
 
 export type Group = 'all'|'reporter';
