@@ -8,7 +8,6 @@ import {Label, LabelsDao} from './labels-dao';
 export interface Repo {
   empty: boolean;
   items: Item[];
-  itemsMap: Map<string, Item>;
   issues: Issue[];
   issuesMap: Map<string, Item>;
   pullRequests: PullRequest[];

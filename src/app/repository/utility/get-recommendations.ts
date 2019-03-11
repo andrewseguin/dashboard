@@ -1,14 +1,13 @@
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
-import {Repo} from 'app/repository/services/dao/repo-dao';
 import {Item, Label} from '../services/dao';
 import {Recommendation} from '../services/dao/recommendations-dao';
 import {ItemsFilterMetadata, MatcherContext} from './items-renderer/items-filter-metadata';
 import {tokenizeItem} from './tokenize-item';
 
 export function getRecommendations(
-    itemId: string, repo: Repo, recommendations: Recommendation[],
+    itemId: string, itemsMap: Map<string, Item>, recommendations: Recommendation[],
     labelsMap: Map<string, Label>): Recommendation[] {
-  const item = repo.itemsMap.get(itemId);
+  const item = itemsMap.get(itemId);
   return recommendations.filter(recommendation => {
     const contextProvider = (item: Item) => {
       return {
