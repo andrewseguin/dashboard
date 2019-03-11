@@ -12,6 +12,7 @@ import {
 import {FormControl} from '@angular/forms';
 import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
 import {Query} from 'app/package/items-renderer/search-utility/query';
+import {LabelsDao} from 'app/repository/services/dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ANIMATION_DURATION} from 'app/utility/animations';
 import {Observable, Subject} from 'rxjs';
@@ -72,12 +73,13 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   @Output() filtersChanged = new EventEmitter<Filter[]>();
 
-  constructor(private repoDao: RepoDao) {}
+  constructor(private repoDao: RepoDao, private labelsDao: LabelsDao) {}
 
   ngOnInit() {
     this.metadata.forEach((value, key) => {
       if (value.autocomplete) {
-        this.autocomplete.set(key, value.autocomplete({repoDao: this.repoDao}));
+        this.autocomplete.set(
+            key, value.autocomplete({repoDao: this.repoDao, labelsDao: LabelsDao}));
       }
     });
 

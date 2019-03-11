@@ -13,7 +13,6 @@ export interface Repo {
   issuesMap: Map<string, Item>;
   pullRequests: PullRequest[];
   pullRequestsMap: Map<string, PullRequest>;
-  labels: Label[];
 }
 
 @Injectable()

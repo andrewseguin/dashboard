@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
+import {LabelsDao} from 'app/repository/services/dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {
@@ -66,14 +67,14 @@ export class EditableRecommendation {
   actionLabels = [];
   actionAssignees = [];
 
-  addLabelsAutocomplete =
-      this.repoDao.repo.pipe(filter(repo => !!repo), map(repo => repo.labels.map(l => l.name)));
+  addLabelsAutocomplete = this.labelsDao.list.pipe(
+      filter(list => !!list), map(labels => labels.map(l => l.name).sort()));
 
   private _destroyed = new Subject();
 
   constructor(
       private recommendationsDao: RecommendationsDao, public repoDao: RepoDao,
-      private snackbar: MatSnackBar, private dialog: MatDialog) {}
+      private labelsDao: LabelsDao, private snackbar: MatSnackBar, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.form = new FormGroup({

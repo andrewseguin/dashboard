@@ -12,7 +12,7 @@ import {
   stateMatchesEquality,
   stringContainsQuery
 } from 'app/package/items-renderer/search-utility/query-matcher';
-import {Item, Label, Recommendation} from 'app/repository/services/dao';
+import {Item, Label, LabelsDao, Recommendation} from 'app/repository/services/dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {filter, map} from 'rxjs/operators';
 
@@ -23,7 +23,8 @@ export interface MatcherContext {
 }
 
 export interface AutocompleteContext {
-  repoDao?: RepoDao;
+  repoDao: RepoDao;
+  labelsDao: LabelsDao;
 }
 
 export const ItemsFilterMetadata =
@@ -84,9 +85,8 @@ export const ItemsFilterMetadata =
             return arrayContainsQuery(c.item.labels.map(l => c.labelsMap.get(l).name), q);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.repoDao.repo.pipe(filter(repo => !!repo), map(repo => {
-                                         return repo.labels.map(issue => issue.name);
-                                       }));
+            return c.labelsDao.list.pipe(
+                filter(list => !!list), map(labels => labels.map(issue => issue.name).sort()));
           }
         }
       ],
