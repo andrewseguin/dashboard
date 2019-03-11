@@ -91,16 +91,15 @@ export class EditableRecommendation {
     merge(this.form.valueChanges, this.queryChanged)
         .pipe(debounceTime(2000), takeUntil(this._destroyed))
         .subscribe(() => {
-          const update: Recommendation = {
+          this.recommendationsDao.update({
+            id: this.recommendation.id,
             message: this.form.value.message,
             type: this.form.value.type,
             actionType: this.form.value.actionType,
             action: this.form.value.action,
             filters: this.filters,
             search: this.search
-          };
-
-          this.recommendationsDao.update(this.recommendation.id, update);
+          });
         });
   }
 

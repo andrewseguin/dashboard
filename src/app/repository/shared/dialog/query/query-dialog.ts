@@ -25,7 +25,7 @@ export class QueryDialog {
 
     this.dialog.open(QueryEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
       if (result) {
-        this.queriesDao.update(query.id, {name: result['name'], group: result['group']});
+        this.queriesDao.update({id: query.id, name: result['name'], group: result['group']});
       }
     });
   }
@@ -62,10 +62,9 @@ export class QueryDialog {
       const query:
           Query = {name: result['name'], group: result['group'], options: currentOptions, type};
 
-      this.queriesDao.add(query).then(id => {
-        this.router.navigate(
-            [`${repository}/query/${id}`], {replaceUrl: true, queryParamsHandling: 'merge'});
-      });
+      const newQueryId = this.queriesDao.add(query);
+      this.router.navigate(
+          [`${repository}/query/${newQueryId}`], {replaceUrl: true, queryParamsHandling: 'merge'});
     });
   }
 }

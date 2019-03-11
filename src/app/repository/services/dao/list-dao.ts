@@ -1,7 +1,7 @@
 import {Auth} from 'app/service/auth';
-import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
-import {StoreId, RepoDataStore} from '../repo-data-store';
+import {RepoDataStore, StoreId} from '../repo-data-store';
 
 export interface IdentifiedObject {
   id?: string;
@@ -10,21 +10,12 @@ export interface IdentifiedObject {
 }
 
 export abstract class ListDao<T extends IdentifiedObject> {
-  protected destroyed = new Subject();
-
-  private subscription: Subscription;
-
-  private config: Observable<T[]> = this.repoDao.values[this.collectionId].pipe(filter(v => !!v));
-
   get list(): BehaviorSubject<T[]|null> {
-    this.subscribe();
     return this._list;
   }
-  _list = new BehaviorSubject<T[]>(null);
+  _list = new BehaviorSubject<T[]|null>(null);
 
   get map(): BehaviorSubject<Map<string, T>> {
-    this.subscribe();
-
     if (!this._map) {
       this._map = new BehaviorSubject<Map<string, T>>(new Map());
       this.list.subscribe(list => {
@@ -43,101 +34,64 @@ export abstract class ListDao<T extends IdentifiedObject> {
   _map: BehaviorSubject<Map<string, T>>;
 
   protected constructor(
-      protected auth: Auth, protected repoDao: RepoDataStore, protected collectionId: StoreId) {
-    auth.tokenChanged.subscribe(token => {
-      if (!token) {
-        this.unsubscribe();
-      }
+      protected auth: Auth, protected repoDataStore: RepoDataStore,
+      protected collectionId: StoreId) {
+    this.repoDataStore.initialValues[collectionId].pipe(take(1)).subscribe(values => {
+      this._list.next(values);
     });
   }
 
-  ngOnDestroy() {
-    this.unsubscribe();
-    this.destroyed.next();
-    this.destroyed.complete();
-  }
-
-  // TODO: Combine with add
-  addBulk(objArr: T[]): Promise<void> {
-    objArr.forEach(o => this.decorateForDb(o));
-
-    return new Promise(resolve => {
-      this.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
-        list = list.concat(objArr);
-        this.repoDao.setCollection(this.collectionId, list);
-        resolve();
-      });
-    });
-  }
-
-  add(obj: T): Promise<string> {
-    this.decorateForDb(obj);
-
-    return new Promise(resolve => {
-      this.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
-        list.push(obj);
-        this.repoDao.setCollection(this.collectionId, list);
-        resolve(obj.id);
-      });
-    });
+  add(item: T): string;
+  add(items: T[]): string[];
+  add(itemOrItems: T|T[]): string|string[] {
+    const items = (itemOrItems instanceof Array) ? itemOrItems : [itemOrItems];
+    items.forEach(o => this.decorateForDb(o));
+    this.repoDataStore.updateValues(items, this.collectionId);
+    this.list.next([...this._list.value, ...items]);
+    return items.map(obj => obj.id);
   }
 
   get(id: string): Observable<T> {
     return this.map.pipe(map(map => map ? map.get(id) : null));
   }
 
-  updateBulk(objArr: T[]): Promise<void> {
-    objArr.forEach(obj => this.decorateForDb(obj));
-
-    return new Promise(resolve => {
-      this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
-        objArr.forEach(obj => {
-          map.set(obj.id, {...(map.get(obj.id) as object), ...(obj as object)} as T);
-        });
-
-        const values = [];
-        map.forEach(value => values.push(value));
-        this.repoDao.setCollection(this.collectionId, values);
-        resolve();
-      });
+  update(item: T): void;
+  update(items: T[]): void;
+  update(itemOrItems: T|T[]): void {
+    const items = (itemOrItems instanceof Array) ? itemOrItems : [itemOrItems];
+    items.forEach(obj => {
+      if (!obj.id) {
+        throw new Error('Must have an on the object in order to update: ' + JSON.stringify(obj));
+      }
     });
-  }
 
-  update(id: string, obj: T): Promise<T> {
-    obj.dbModified = new Date().toISOString();
+    items.forEach(obj => this.decorateForDb(obj));
+    this.repoDataStore.updateValues(items, this.collectionId);
 
-    return new Promise(resolve => {
-      this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
-        map.set(id, {...(map.get(id) as object), ...(obj as object)} as T);
-        const values = [];
-        map.forEach(value => values.push(value));
-        this.repoDao.setCollection(this.collectionId, values);
-        resolve(obj);
-      });
-    });
-  }
-
-  remove(id: string) {
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
-      map.delete(id);
+      items.forEach(obj => {
+        map.set(obj.id, {...(map.get(obj.id) as object), ...(obj as object)} as T);
+      });
+
       const values = [];
       map.forEach(value => values.push(value));
-      this.repoDao.setCollection(this.collectionId, values);
+      this.list.next(values);
     });
   }
 
-  private subscribe() {
-    if (!this.subscription) {
-      this.subscription = this.config.subscribe(v => this._list.next(v));
-    }
-  }
+  remove(id: string): void;
+  remove(ids: string[]): void;
+  remove(idOrIds: string|string[]) {
+    const ids = (idOrIds instanceof Array) ? idOrIds : [idOrIds];
+    this.repoDataStore.removeValues(ids, this.collectionId);
 
-  unsubscribe() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-      this.subscription = null;
-      this._list.next(null);
-    }
+    this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
+      ids.forEach(id => map.delete(id));
+
+      const values = [];
+      map.forEach(value => values.push(value));
+      this.list.next(values);
+    });
   }
 
   private decorateForDb(obj: T) {

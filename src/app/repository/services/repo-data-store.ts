@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {DB, deleteDb, openDb} from 'idb';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
 
@@ -13,7 +13,7 @@ export const StoreIds: StoreId[] =
 
 @Injectable()
 export class RepoDataStore {
-  values: {[key in StoreId]?: BehaviorSubject<null|any[]>} = {};
+  initialValues: {[key in StoreId]?: Subject<any[]>} = {};
 
   private repository: string;
 
@@ -22,7 +22,7 @@ export class RepoDataStore {
   private destroyed = new Subject();
 
   constructor(activatedRepository: ActivatedRepository) {
-    StoreIds.forEach(id => this.values[id] = new BehaviorSubject<null|any[]>(null));
+    StoreIds.forEach(id => this.initialValues[id] = new Subject<any[]>());
 
     activatedRepository.repository
         .pipe(filter(repository => !!repository), takeUntil(this.destroyed))
@@ -37,10 +37,6 @@ export class RepoDataStore {
     this.destroyed.complete();
   }
 
-  setCollection(collectionId: StoreId, values: any[]): Promise<void> {
-    return this.setValues(values, collectionId);
-  }
-
   removeData() {
     this.db
         .then(db => {
@@ -48,6 +44,24 @@ export class RepoDataStore {
           return deleteDb(this.repository);
         })
         .then(() => this.openDb());
+  }
+
+  updateValues(values: any[], collectionId) {
+    return this.db.then(db => {
+      const transaction = db.transaction(collectionId, 'readwrite');
+      const store = transaction.objectStore(collectionId);
+      values.forEach(v => store.put(v));
+      return transaction.complete;
+    });
+  }
+
+  removeValues(ids: string[], collectionId: string) {
+    return this.db.then(db => {
+      const transaction = db.transaction(collectionId, 'readwrite');
+      const store = transaction.objectStore(collectionId);
+      ids.forEach(id => store.delete(id));
+      return transaction.complete;
+    });
   }
 
   private openDb() {
@@ -64,22 +78,8 @@ export class RepoDataStore {
   private initializeAllValues() {
     StoreIds.forEach(id => {
       this.db.then(db => db.transaction(id, 'readonly').objectStore(id).getAll()).then(result => {
-        this.values[id].next(result);
+        this.initialValues[id].next(result);
       });
     });
   }
-
-  private setValues(values: any[], collectionId: StoreId) {
-    this.values[collectionId].next(values);
-
-    return this.db.then(db => {
-      const transaction = db.transaction(collectionId, 'readwrite');
-      const store = transaction.objectStore(collectionId);
-      values.forEach(v => store.put(v));
-      return transaction.complete;
-    });
-  }
-
-  // Need to be able to remove values
-  private removeValues(values: any[], collectionId: StoreId) {}
 }

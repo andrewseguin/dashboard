@@ -23,7 +23,7 @@ export class DashboardDialog {
     this.dialog.open(DashboardEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
       if (result) {
         this.dashboardsDao.update(
-            dashboard.id, {name: result['name'], description: result['description']});
+            {id: dashboard.id, name: result['name'], description: result['description']});
       }
     });
   }

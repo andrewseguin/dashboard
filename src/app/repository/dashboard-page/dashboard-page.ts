@@ -4,9 +4,9 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '
 import {FormControl} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
 import {Subject, Subscription} from 'rxjs';
 import {delay, filter, take, takeUntil} from 'rxjs/operators';
-
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {
@@ -17,7 +17,6 @@ import {
   Widget
 } from '../services/dao/dashboards-dao';
 import {EditWidget, EditWidgetData} from '../shared/dialog/edit-widget/edit-widget';
-import { ItemRendererOptions } from 'app/package/items-renderer/item-renderer-options';
 
 
 @Component({
@@ -75,11 +74,10 @@ export class DashboardPage {
         const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
         const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
         this.dashboard = newDashboard;
-        this.dashboardsDao.add(newDashboard).then(id => {
-          this.router.navigate(
-              [`${this.activatedRepository.repository.value}/dashboard/${id}`],
-              {replaceUrl: true, queryParamsHandling: 'merge'});
-        });
+        const newDashboardId = this.dashboardsDao.add(newDashboard);
+        this.router.navigate(
+            [`${this.activatedRepository.repository.value}/dashboard/${newDashboardId}`],
+            {replaceUrl: true, queryParamsHandling: 'merge'});
         return;
       }
 
@@ -162,7 +160,7 @@ export class DashboardPage {
   }
 
   private save() {
-    this.dashboardsDao.update(this.dashboard.id, this.dashboard);
+    this.dashboardsDao.update(this.dashboard);
     this.cd.markForCheck();
   }
 

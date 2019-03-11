@@ -19,6 +19,6 @@ export class RecommendationAction {
     // TODO: Send to github
     const newItem: Item = {...this.item};
     newItem.labels = [...this.item.labels, labelId];
-    this.itemsDao.update(this.item.id, newItem);
+    this.itemsDao.update(newItem);
   }
 }

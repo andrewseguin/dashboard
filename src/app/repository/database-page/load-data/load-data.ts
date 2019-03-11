@@ -76,19 +76,19 @@ export class LoadData {
     const repository = this.activatedRepository.repository.value;
     this.isLoading.next(true);
 
-    await this.getValues(
+    this.getValues(
         'labels', () => this.github.getLabels(repository),
-        (values: Label[]) => this.labelsDao.updateBulk(values));
+        (values: Label[]) => this.labelsDao.update(values));
     this.completedTypes.add('labels');
 
-    await this.getValues(
+    this.getValues(
         'issues', () => this.github.getIssues(repository, this.getIssuesDateSince()),
-        (values: Item[]) => this.itemsDao.updateBulk(values));
+        (values: Item[]) => this.itemsDao.update(values));
     this.completedTypes.add('issues');
 
-    await this.getValues(
+    this.getValues(
         'contributors', () => this.github.getContributors(repository),
-        (values: Contributor[]) => this.contributorsDao.updateBulk(values));
+        (values: Contributor[]) => this.contributorsDao.update(values));
     this.completedTypes.add('contributors');
 
     this.state = null;
@@ -97,9 +97,7 @@ export class LoadData {
     this.cd.markForCheck();
   }
 
-  async getValues(
-      type: string, loadFn: () => Observable<any>,
-      saver: (values: any) => Promise<void>): Promise<void> {
+  async getValues(type: string, loadFn: () => Observable<any>, saver: (values: any) => void) {
     return new Promise<void>(resolve => {
       this.state = {
         id: 'loading',
@@ -115,16 +113,14 @@ export class LoadData {
         this.cd.markForCheck();
 
         if (result.completed === result.total) {
-          saver(result.current)
-              .then(() => {
-                this.state = {
-                  id: 'saving',
-                  label: `Saving ${type}`,
-                  progress: {type: 'indeterminate'},
-                };
-                this.cd.markForCheck();
-              })
-              .then(resolve);
+          saver(result.current);
+          this.state = {
+            id: 'saving',
+            label: `Saving ${type}`,
+            progress: {type: 'indeterminate'},
+          };
+          this.cd.markForCheck();
+          resolve();
         }
       });
     });

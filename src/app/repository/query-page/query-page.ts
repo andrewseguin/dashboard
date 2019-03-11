@@ -129,7 +129,7 @@ export class QueryPage {
   }
 
   save() {
-    this.queriesDao.update(this.query.id, {options: this.currentOptions});
+    this.queriesDao.update({id: this.query.id, options: this.currentOptions});
   }
 
   setBack(fromDashboard?: string) {
