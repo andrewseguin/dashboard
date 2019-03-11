@@ -95,6 +95,7 @@ export class Github {
   }
 
   editGist(id: string, filename: string, content: string) {
+    debugger;
     filename = filename.replace('/', '_');
 
     const files = {};
@@ -144,9 +145,9 @@ export class Github {
         }));
   }
 
-  private constructUrl(path: string, query = '') {
+  private constructUrl(path: string, query = '', avoidCache = true) {
     const domain = 'https://api.github.com';
-    return `${domain}/${path}?${query}`;
+    return `${domain}/${path}?${query}${avoidCache ? '&' + new Date().toISOString() : ''}`;
   }
 
   query<T>(url: string) {
