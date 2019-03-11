@@ -12,7 +12,7 @@ import {
   stateMatchesEquality,
   stringContainsQuery
 } from 'app/package/items-renderer/search-utility/query-matcher';
-import {Item, Label, LabelsDao, Recommendation} from 'app/repository/services/dao';
+import {Item, ItemsDao, Label, LabelsDao, Recommendation} from 'app/repository/services/dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {filter, map} from 'rxjs/operators';
 
@@ -24,6 +24,7 @@ export interface MatcherContext {
 
 export interface AutocompleteContext {
   repoDao: RepoDao;
+  itemsDao: ItemsDao;
   labelsDao: LabelsDao;
 }
 
@@ -40,9 +41,9 @@ export const ItemsFilterMetadata =
             return stringContainsQuery(c.item.title, q);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.repoDao.repo.pipe(map(repo => {
-              return repo.issues.map(issue => issue.title);
-            }));
+            return c.itemsDao.list.pipe(filter(list => !!list), map(items => {
+                                          return items.map(issue => issue.title);
+                                        }));
           }
         }
       ],
@@ -55,14 +56,15 @@ export const ItemsFilterMetadata =
             return arrayContainsQuery(c.item.assignees, q);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.repoDao.repo.pipe(map(repo => {
-              const assigneesSet = new Set<string>();
-              repo.issues.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
+            return c.itemsDao.list.pipe(
+                filter(list => !!list), map(items => {
+                  const assigneesSet = new Set<string>();
+                  items.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
 
-              const assignees = [];
-              assigneesSet.forEach(a => assignees.push(a));
-              return assignees;
-            }));
+                  const assignees = [];
+                  assigneesSet.forEach(a => assignees.push(a));
+                  return assignees;
+                }));
           }
         }
       ],

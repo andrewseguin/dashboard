@@ -4,15 +4,14 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ItemGrouping} from 'app/package/items-renderer/item-grouping';
 import {ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, LabelsDao} from 'app/repository/services/dao';
+import {Item, ItemsDao, LabelsDao} from 'app/repository/services/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
+import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 
@@ -45,15 +44,17 @@ export class EditWidget {
   constructor(
       private dialogRef: MatDialogRef<EditWidget, Widget>,
       public itemsRenderer: ItemsRenderer<Item>, public recommendationsDao: RecommendationsDao,
-      private repoDao: RepoDao, private itemRecommendations: ItemRecommendations,
+      private itemsDao: ItemsDao, private itemRecommendations: ItemRecommendations,
       private labelsDao: LabelsDao, public queriesDao: QueriesDao,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
 
-    const items = this.repoDao.repo.pipe(
-        filter(repo => !!repo), map(repo => {
-          return this.widget.itemType === 'issue' ? repo.issues : repo.pullRequests;
-        }));
+    const items =
+        this.itemsDao.list.pipe(filter(list => !!list), map(items => {
+                                  const issues = items.filter(item => !item.pr);
+                                  const pullRequests = items.filter(item => !!item.pr);
+                                  return this.widget.itemType === 'issue' ? issues : pullRequests;
+                                }));
 
     this.itemsRenderer.initialize(
         items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
@@ -67,11 +68,6 @@ export class EditWidget {
     });
 
     this.form.get('itemType').valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
-      const items = this.repoDao.repo.pipe(
-          filter(repo => !!repo), map(repo => {
-            return this.widget.itemType === 'issue' ? repo.issues : repo.pullRequests;
-          }));
-
       this.itemsRenderer.initialize(
           items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
           new MyItemSorter());

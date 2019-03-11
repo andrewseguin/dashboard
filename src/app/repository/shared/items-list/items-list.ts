@@ -11,12 +11,12 @@ import {
 import {ItemGroup, ItemGrouping} from 'app/package/items-renderer/item-grouping';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, ItemType, LabelsDao} from 'app/repository/services/dao';
+import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
+import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
 
@@ -56,14 +56,15 @@ export class ItemsList {
 
   constructor(
       private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
-      public itemsRenderer: ItemsRenderer<any>, public repoDao: RepoDao,
+      public itemsRenderer: ItemsRenderer<any>, public repoDao: RepoDao, private itemsDao: ItemsDao,
       public cd: ChangeDetectorRef, public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    const items =
-        this.repoDao.repo.pipe(filter(repo => !!repo), map(repo => {
-                                 return this.type === 'issue' ? repo.issues : repo.pullRequests;
-                               }));
+    const items = this.itemsDao.list.pipe(filter(list => !!list), map(items => {
+                                            const issues = items.filter(item => !item.pr);
+                                            const pullRequests = items.filter(item => !!item.pr);
+                                            return this.type === 'issue' ? issues : pullRequests;
+                                          }));
 
     this.itemsRenderer.initialize(
         items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping<Item>(),

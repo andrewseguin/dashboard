@@ -5,7 +5,7 @@ import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
-import {Item, ItemType, LabelsDao} from '../services/dao';
+import {Item, ItemsDao, ItemType, LabelsDao} from '../services/dao';
 import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {ItemRecommendations} from '../services/item-recommendations';
@@ -34,16 +34,20 @@ export class QueriesPage {
 
   queryResultsCount =
       combineLatest(
-          this.repoDao.repo, this.queryGroups, this.issueRecommendations.recommendations, this.type,
-          this.labelsDao.map)
+          this.itemsDao.list, this.queryGroups, this.issueRecommendations.recommendations,
+          this.type, this.labelsDao.map)
           .pipe(filter(result => result.every(r => !!r)), delay(1000), map(result => {
-                  const repo = result[0];
+                  console.log(result);
                   const groups = result[1];
                   const recommendationsByItem = result[2];
                   const type = result[3];
                   const labelsMap = result[4];
-                  const items =
-                      type === 'issue' ? repo.issues : type === 'pr' ? repo.pullRequests : [];
+
+                  const issues = result[0].filter(item => !item.pr);
+                  const pullRequests = result[0].filter(item => !!item.pr);
+                  const items = type === 'issue' ? issues : type === 'pr' ? pullRequests : [];
+
+                  console.log(issues);
 
                   const map = new Map<string, number>();
                   groups.forEach(group => group.queries.forEach(query => {
@@ -67,8 +71,8 @@ export class QueriesPage {
   queryKeyTrackBy = (_i, itemQuery: Query) => itemQuery.id;
 
   constructor(
-      public queriesDao: QueriesDao, public repoDao: RepoDao, private router: Router,
-      private labelsDao: LabelsDao, private activatedRoute: ActivatedRoute,
+      private itemsDao: ItemsDao, public queriesDao: QueriesDao, public repoDao: RepoDao,
+      private router: Router, private labelsDao: LabelsDao, private activatedRoute: ActivatedRoute,
       private issueRecommendations: ItemRecommendations,
       public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}
