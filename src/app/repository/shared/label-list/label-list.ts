@@ -31,7 +31,7 @@ export class LabelList {
   @Output() selected = new EventEmitter<number>();
 
   labels = combineLatest(this._labelIds, this.labelsDao.list)
-               .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
+               .pipe(filter(result => result.every(r => !!r)), map(result => {
                        const labelIds = result[0];
 
                        const labelsMap = new Map<string, Label>();

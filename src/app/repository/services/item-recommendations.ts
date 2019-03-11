@@ -17,8 +17,7 @@ export class ItemRecommendations {
       private repoDao: RepoDao, private recommendationsDao: RecommendationsDao,
       private labelsDao: LabelsDao) {
     combineLatest(this.repoDao.repo, this.recommendationsDao.list, this.labelsDao.map)
-        .pipe(
-            filter(result => !!result[0] && !!result[1] && !!result[2]), takeUntil(this.destroyed))
+        .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
         .subscribe(result => {
           const repo = result[0];
           const recommendations = result[1];

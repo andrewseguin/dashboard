@@ -33,7 +33,7 @@ export class Repository {
 
     combineLatest(this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list)
         .pipe(
-            filter(result => !!result[0] && !!result[1] && !!result[2]), takeUntil(this.destroyed))
+            filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
         .subscribe(result => {
           const dashboards = result[0];
           const queries = result[1];

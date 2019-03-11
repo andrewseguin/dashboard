@@ -18,7 +18,7 @@ export interface Repo {
 @Injectable()
 export class RepoDao {
   repo: Observable<Repo> = combineLatest(this.itemsDao.list, this.labelsDao.list)
-                               .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
+                               .pipe(filter(result => result.every(r => !!r)), map(result => {
                                        let items = result[0];
                                        let labels = result[1];
 

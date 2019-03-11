@@ -40,7 +40,7 @@ export class ItemsRenderer<T> {
           items,
           this.options.changed.pipe(startWith(null)),
         ])
-            .pipe(filter(result => !!result[0] && !!result[1]))
+            .pipe(filter(result => result.every(r => !!r)))
             .subscribe(result => {
               const filterer = result[0];
               const items = result[1];

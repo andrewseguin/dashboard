@@ -9,7 +9,7 @@ import {ItemsFilterMetadata, MatcherContext} from './items-filter-metadata';
 
 export function getItemsFilterer(itemRecommendations: ItemRecommendations, labelsDao: LabelsDao) {
   return combineLatest(itemRecommendations.recommendations, labelsDao.map)
-      .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
+      .pipe(filter(result => result.every(r => !!r)), map(result => {
               const recommendationsByItem = result[0];
               const labelsMap = result[1];
               const contextProvider = (item: Item) => {

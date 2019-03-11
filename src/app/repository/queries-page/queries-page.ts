@@ -28,7 +28,7 @@ export class QueriesPage {
 
   queryGroups = combineLatest(this.queriesDao.list, this.type)
                     .pipe(
-                        filter(result => !!result[0]),
+                        filter(result => result.every(r => !!r)),
                         map(result => result[0].filter(item => item.type === result[1])),
                         map(getSortedGroups));
 
@@ -36,35 +36,33 @@ export class QueriesPage {
       combineLatest(
           this.repoDao.repo, this.queryGroups, this.issueRecommendations.recommendations, this.type,
           this.labelsDao.map)
-          .pipe(
-              filter(result => !!result[0] && !!result[1] && !!result[2] && !!result[3]),
-              delay(1000), map(result => {
-                const repo = result[0];
-                const groups = result[1];
-                const recommendationsByItem = result[2];
-                const type = result[3];
-                const labelsMap = result[4];
-                const items =
-                    type === 'issue' ? repo.issues : type === 'pr' ? repo.pullRequests : [];
+          .pipe(filter(result => result.every(r => !!r)), delay(1000), map(result => {
+                  const repo = result[0];
+                  const groups = result[1];
+                  const recommendationsByItem = result[2];
+                  const type = result[3];
+                  const labelsMap = result[4];
+                  const items =
+                      type === 'issue' ? repo.issues : type === 'pr' ? repo.pullRequests : [];
 
-                const map = new Map<string, number>();
-                groups.forEach(group => group.queries.forEach(query => {
-                  const contextProvider = (item: Item) => {
-                    return {
-                      item,
-                      labelsMap,
-                      recommendations: recommendationsByItem.get(item.id),
+                  const map = new Map<string, number>();
+                  groups.forEach(group => group.queries.forEach(query => {
+                    const contextProvider = (item: Item) => {
+                      return {
+                        item,
+                        labelsMap,
+                        recommendations: recommendationsByItem.get(item.id),
+                      };
                     };
-                  };
-                  const filterer = new ItemFilterer<Item, MatcherContext>(
-                      contextProvider, tokenizeItem, ItemsFilterMetadata);
-                  const count =
-                      filterer.filter(items, query.options.filters, query.options.search).length;
-                  map.set(query.id, count);
-                }));
+                    const filterer = new ItemFilterer<Item, MatcherContext>(
+                        contextProvider, tokenizeItem, ItemsFilterMetadata);
+                    const count =
+                        filterer.filter(items, query.options.filters, query.options.search).length;
+                    map.set(query.id, count);
+                  }));
 
-                return map;
-              }));
+                  return map;
+                }));
 
   queryKeyTrackBy = (_i, itemQuery: Query) => itemQuery.id;
 

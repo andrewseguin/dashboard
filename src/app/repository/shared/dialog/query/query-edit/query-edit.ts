@@ -3,7 +3,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {QueriesDao} from 'app/repository/services/dao/queries-dao';
 import {combineLatest} from 'rxjs';
-import {filter, map, startWith} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 
 export interface QueryEditData {
   name: string;
@@ -22,7 +22,7 @@ export class QueryEdit {
 
   filteredGroupOptions =
       combineLatest(this.queriesDao.list, this.formGroup.valueChanges)
-          .pipe(filter(result => !!result[0] && !!result[1]), map(result => {
+          .pipe(filter(result => result.every(r => !!r)), map(result => {
                   const queries = result[0];
                   const groupOptionsSet = new Set<string>();
                   queries.forEach(query => groupOptionsSet.add(query.group));
