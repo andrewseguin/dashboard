@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {Config} from 'app/service/config';
 import {combineLatest, interval, Subject} from 'rxjs';
 import {filter, mergeMap, take, takeUntil} from 'rxjs/operators';
@@ -19,10 +18,10 @@ export class Repository {
   destroyed = new Subject();
 
   constructor(
-      public repoDao: RepoDao, private router: Router, private updater: Updater,
-      private dashboardsDao: DashboardsDao, private queriesDao: QueriesDao,
-      private daoState: DaoState, private recommendationsDao: RecommendationsDao,
-      private config: Config, private activatedRoute: ActivatedRoute, private itemsDao: ItemsDao,
+      private router: Router, private updater: Updater, private dashboardsDao: DashboardsDao,
+      private queriesDao: QueriesDao, private daoState: DaoState,
+      private recommendationsDao: RecommendationsDao, private config: Config,
+      private activatedRoute: ActivatedRoute, private itemsDao: ItemsDao,
       private activatedRepository: ActivatedRepository) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];

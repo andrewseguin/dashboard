@@ -29,8 +29,8 @@ export interface Issue extends Item {}
 
 @Injectable()
 export class ItemsDao extends ListDao<Item> {
-  constructor(repoDao: RepoIndexedDb) {
-    super(repoDao, 'items');
+  constructor(repoIndexedDB: RepoIndexedDb) {
+    super(repoIndexedDB, 'items');
   }
 }
 

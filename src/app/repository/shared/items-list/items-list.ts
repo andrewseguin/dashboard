@@ -12,7 +12,6 @@ import {ItemGroup, ItemGrouping} from 'app/package/items-renderer/item-grouping'
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
@@ -56,7 +55,7 @@ export class ItemsList {
 
   constructor(
       private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
-      public itemsRenderer: ItemsRenderer<any>, public repoDao: RepoDao, private itemsDao: ItemsDao,
+      public itemsRenderer: ItemsRenderer<any>, private itemsDao: ItemsDao,
       public cd: ChangeDetectorRef, public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {

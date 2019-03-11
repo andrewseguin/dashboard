@@ -4,7 +4,6 @@ import {MatSidenav} from '@angular/material';
 import {Router} from '@angular/router';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {DaoState} from 'app/repository/services/dao/dao-state';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {Theme} from 'app/repository/services/theme';
 import {Updater} from 'app/repository/services/updater';
 import {Auth} from 'app/service/auth';
@@ -42,8 +41,8 @@ export class Nav {
 
   constructor(
       public afAuth: AngularFireAuth, public activatedRepository: ActivatedRepository,
-      public daoState: DaoState, public repoDao: RepoDao, public cd: ChangeDetectorRef,
-      public theme: Theme, public router: Router, private auth: Auth, public updater: Updater) {}
+      public daoState: DaoState, public cd: ChangeDetectorRef, public theme: Theme,
+      public router: Router, private auth: Auth, public updater: Updater) {}
 
   ngOnDestroy() {
     this.destroyed.next();

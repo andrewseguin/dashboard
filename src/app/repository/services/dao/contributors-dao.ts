@@ -14,8 +14,8 @@ export interface Contributor {
 
 @Injectable()
 export class ContributorsDao extends ListDao<Contributor> {
-  constructor(repoDao: RepoIndexedDb) {
-    super(repoDao, 'contributors');
+  constructor(repoIndexedDb: RepoIndexedDb) {
+    super(repoIndexedDb, 'contributors');
   }
 }
 

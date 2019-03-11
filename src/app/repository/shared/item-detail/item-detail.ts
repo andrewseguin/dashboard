@@ -1,15 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {ItemsDao} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';
@@ -41,9 +34,9 @@ export class ItemDetail {
   private destroyed = new Subject();
 
   constructor(
-      private markdown: Markdown, public repoDao: RepoDao, private cd: ChangeDetectorRef,
-      public activatedRepository: ActivatedRepository, public github: Github,
-      public itemsDao: ItemsDao, private itemRecommendations: ItemRecommendations) {}
+      private markdown: Markdown, public activatedRepository: ActivatedRepository,
+      public github: Github, public itemsDao: ItemsDao,
+      private itemRecommendations: ItemRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {

@@ -11,7 +11,6 @@ import {
   LabelsDao
 } from 'app/repository/services/dao';
 import {DaoState} from 'app/repository/services/dao/dao-state';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {Github} from 'app/service/github';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
@@ -59,7 +58,7 @@ export class LoadData {
 
   constructor(
       public daoState: DaoState, private activatedRepository: ActivatedRepository,
-      public repoDao: RepoDao, private itemsDao: ItemsDao, private contributorsDao: ContributorsDao,
+      private itemsDao: ItemsDao, private contributorsDao: ContributorsDao,
       private labelsDao: LabelsDao, private snackbar: MatSnackBar, private github: Github,
       private cd: ChangeDetectorRef) {
     const lastMonth = new Date();

@@ -19,7 +19,7 @@ export interface Query {
 
 @Injectable()
 export class QueriesDao extends ListDao<Query> {
-  constructor(repoDao: RepoIndexedDb) {
-    super(repoDao, 'queries');
+  constructor(repoIndexedDB: RepoIndexedDb) {
+    super(repoIndexedDB, 'queries');
   }
 }

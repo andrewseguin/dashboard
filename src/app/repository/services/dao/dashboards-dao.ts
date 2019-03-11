@@ -43,7 +43,7 @@ export interface Dashboard {
 
 @Injectable()
 export class DashboardsDao extends ListDao<Dashboard> {
-  constructor(repoDao: RepoIndexedDb) {
-    super(repoDao, 'dashboards');
+  constructor(repoIndexedDB: RepoIndexedDb) {
+    super(repoIndexedDB, 'dashboards');
   }
 }

@@ -4,7 +4,6 @@ import {MatDialog, MatSnackBar} from '@angular/material';
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
 import {LabelsDao} from 'app/repository/services/dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
@@ -73,8 +72,8 @@ export class EditableRecommendation {
   private _destroyed = new Subject();
 
   constructor(
-      private recommendationsDao: RecommendationsDao, public repoDao: RepoDao,
-      private labelsDao: LabelsDao, private snackbar: MatSnackBar, private dialog: MatDialog) {}
+      private recommendationsDao: RecommendationsDao, private labelsDao: LabelsDao,
+      private snackbar: MatSnackBar, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -117,7 +116,6 @@ export class EditableRecommendation {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            debugger;
             this.recommendationsDao.remove(this.recommendation.id);
             this.snackbar.open(`Recommendation deleted`, null, {duration: 2000});
           }

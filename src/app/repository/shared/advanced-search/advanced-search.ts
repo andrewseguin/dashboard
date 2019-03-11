@@ -12,8 +12,8 @@ import {
 import {FormControl} from '@angular/forms';
 import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
 import {Query} from 'app/package/items-renderer/search-utility/query';
-import {LabelsDao} from 'app/repository/services/dao';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
+import {ItemsDao, LabelsDao} from 'app/repository/services/dao';
+import {AutocompleteContext} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {ANIMATION_DURATION} from 'app/utility/animations';
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, takeUntil} from 'rxjs/operators';
@@ -57,7 +57,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = i => i;
 
-  @Input() metadata: Map<string, IFilterMetadata<any, any>>;
+  @Input() metadata: Map<string, IFilterMetadata<any, AutocompleteContext>>;
 
   @Input() filters: Filter[] = [];
 
@@ -73,13 +73,13 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   @Output() filtersChanged = new EventEmitter<Filter[]>();
 
-  constructor(private repoDao: RepoDao, private labelsDao: LabelsDao) {}
+  constructor(private itemsDao: ItemsDao, private labelsDao: LabelsDao) {}
 
   ngOnInit() {
     this.metadata.forEach((value, key) => {
       if (value.autocomplete) {
         this.autocomplete.set(
-            key, value.autocomplete({repoDao: this.repoDao, labelsDao: LabelsDao}));
+            key, value.autocomplete({itemsDao: this.itemsDao, labelsDao: this.labelsDao}));
       }
     });
 

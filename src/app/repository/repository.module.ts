@@ -14,7 +14,6 @@ import {
   RecommendationsDao
 } from './services/dao';
 import {DaoState} from './services/dao/dao-state';
-import {RepoDao} from './services/dao/repo-dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
 import {Remover} from './services/remover';
@@ -87,7 +86,7 @@ const DaoList = [
   declarations: [Repository],
   exports: [Repository],
   providers: [
-    Header, Updater, Remover, ItemRecommendations, Markdown, ActivatedRepository, RepoDao, DaoState,
+    Header, Updater, Remover, ItemRecommendations, Markdown, ActivatedRepository, DaoState,
     ...DaoList
   ]
 })

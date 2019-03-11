@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
@@ -71,8 +70,8 @@ export class QueriesPage {
   queryKeyTrackBy = (_i, itemQuery: Query) => itemQuery.id;
 
   constructor(
-      private itemsDao: ItemsDao, public queriesDao: QueriesDao, public repoDao: RepoDao,
-      private router: Router, private labelsDao: LabelsDao, private activatedRoute: ActivatedRoute,
+      private itemsDao: ItemsDao, public queriesDao: QueriesDao, private router: Router,
+      private labelsDao: LabelsDao, private activatedRoute: ActivatedRoute,
       private issueRecommendations: ItemRecommendations,
       public recommendationsDao: RecommendationsDao,
       private activatedRepository: ActivatedRepository) {}

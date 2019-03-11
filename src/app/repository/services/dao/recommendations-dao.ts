@@ -31,7 +31,7 @@ export interface Recommendation {
 
 @Injectable()
 export class RecommendationsDao extends ListDao<Recommendation> {
-  constructor(repoDao: RepoIndexedDb) {
-    super(repoDao, 'recommendations');
+  constructor(repoIndexedDB: RepoIndexedDb) {
+    super(repoIndexedDB, 'recommendations');
   }
 }

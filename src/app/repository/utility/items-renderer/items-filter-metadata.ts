@@ -13,7 +13,6 @@ import {
   stringContainsQuery
 } from 'app/package/items-renderer/search-utility/query-matcher';
 import {Item, ItemsDao, Label, LabelsDao, Recommendation} from 'app/repository/services/dao';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {filter, map} from 'rxjs/operators';
 
 export interface MatcherContext {
@@ -23,7 +22,6 @@ export interface MatcherContext {
 }
 
 export interface AutocompleteContext {
-  repoDao: RepoDao;
   itemsDao: ItemsDao;
   labelsDao: LabelsDao;
 }
