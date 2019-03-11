@@ -8,14 +8,16 @@ import {
   NgZone,
   Output
 } from '@angular/core';
-import {ItemType} from 'app/repository/services/dao';
+import {ItemType, LabelsDao} from 'app/repository/services/dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
-import {ItemGroup} from 'app/repository/services/items-renderer/item-grouping';
+import {ItemRecommendations} from 'app/repository/services/item-recommendations';
+import {ItemGroup, ItemGrouping} from 'app/repository/services/items-renderer/item-grouping';
 import {
   ItemRendererOptionsState
 } from 'app/repository/services/items-renderer/item-renderer-options';
 import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
+import {getItemsFilterer} from 'app/repository/utility/get-items-filterer';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
 
@@ -54,6 +56,7 @@ export class ItemsList {
   @Output() issuesRendererOptionsChanged = new EventEmitter<ItemRendererOptionsState>();
 
   constructor(
+      private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
       public itemsRenderer: ItemsRenderer, public repoDao: RepoDao, public cd: ChangeDetectorRef,
       public ngZone: NgZone, public elementRef: ElementRef) {}
 
@@ -63,7 +66,8 @@ export class ItemsList {
                                  return this.type === 'issue' ? repo.issues : repo.pullRequests;
                                }));
 
-    this.itemsRenderer.initialize(items);
+    this.itemsRenderer.initialize(
+        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping());
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.issuesRendererOptionsChanged.next(options.getState());

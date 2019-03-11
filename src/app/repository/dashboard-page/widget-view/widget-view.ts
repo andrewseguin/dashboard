@@ -15,6 +15,7 @@ import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {ItemFilterer} from 'app/repository/services/items-renderer/item-filterer';
+import {ItemGrouping} from 'app/repository/services/items-renderer/item-grouping';
 import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
@@ -79,7 +80,7 @@ export class WidgetView {
                                }));
 
 
-    this.itemsRenderer.initialize(items, filterer);
+    this.itemsRenderer.initialize(items, filterer, new ItemGrouping());
     this.itemsRenderer.itemGroups
         .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
         .subscribe(itemGroups => {

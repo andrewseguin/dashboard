@@ -1,4 +1,3 @@
-import {Repo} from 'app/repository/services/dao/repo-dao';
 import {Item} from '../dao';
 import {Group} from './item-renderer-options';
 
@@ -10,25 +9,29 @@ export class ItemGroup {
 }
 
 export class ItemGrouping {
-  constructor(private items: Item[], private repo: Repo) {}
+  groupingFunctions = new Map<string, (items: Item[]) => ItemGroup[]>();
 
-  getGroup(group: Group): ItemGroup[] {
-    switch (group) {
-      case 'all':
-        return this.getGroupAll();
-      case 'reporter':
-        return this.getGroupByProperty('reporter');
-    }
+  constructor() {
+    this.groupingFunctions.set('all', (items: Item[]) => {
+      return [{id: 'all', title: ``, items}];
+    });
+
+    const properties = ['reporter'];
+    properties.forEach(property => {
+      this.groupingFunctions.set(property, (items: Item[]) => {
+        return this.getGroupByProperty(items, property);
+      });
+    });
   }
 
-  getGroupAll(): ItemGroup[] {
-    return [{id: 'all', title: ``, items: this.items}];
+  getGroups(items: Item[], group: Group): ItemGroup[] {
+    return this.groupingFunctions.get(group)(items);
   }
 
-  getGroupByProperty(property: string) {
+  getGroupByProperty(items: Item[], property: string) {
     const groups: Map<string, Item[]> = new Map();
 
-    this.items.forEach(item => {
+    items.forEach(item => {
       const value = item[property];
       if (!groups.has(value)) {
         groups.set(value, []);

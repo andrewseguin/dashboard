@@ -1,16 +1,11 @@
 import {Injectable} from '@angular/core';
-import {RepoDao} from 'app/repository/services/dao/repo-dao';
-import {MatcherContext} from 'app/repository/utility/search/filter';
-import {tokenizeItem} from 'app/repository/utility/tokenize-item';
 import {BehaviorSubject, combineLatest, Observable, Subscription} from 'rxjs';
-import {debounceTime, filter, map, startWith} from 'rxjs/operators';
-import {Item, LabelsDao} from '../dao';
-import {ItemRecommendations} from '../item-recommendations';
+import {filter, startWith} from 'rxjs/operators';
+import {Item} from '../dao';
 import {ItemFilterer} from './item-filterer';
 import {ItemGroup, ItemGrouping} from './item-grouping';
 import {ItemRendererOptions} from './item-renderer-options';
 import {ItemSorter} from './item-sorter';
-import {ItemsFilterMetadata} from './items-filter-metadata';
 
 
 @Injectable()
@@ -25,9 +20,7 @@ export class ItemsRenderer {
 
   private initSubscription: Subscription;
 
-  constructor(
-      private repoDao: RepoDao, private issuesRecommendations: ItemRecommendations,
-      private labelsDao: LabelsDao) {}
+  constructor() {}
 
   ngOnDestroy() {
     if (this.initSubscription) {
@@ -35,31 +28,28 @@ export class ItemsRenderer {
     }
   }
 
-  initialize(items: Observable<Item[]>, filterer: Observable<ItemFilterer<any, any>>) {
+  initialize(
+      items: Observable<Item[]>, filterer: Observable<ItemFilterer<any, any>>,
+      grouper: ItemGrouping) {
     if (this.initSubscription) {
       this.initSubscription.unsubscribe();
     }
 
     this.initSubscription =
         combineLatest([
-          this.repoDao.repo,
           filterer,
           items,
           this.options.changed.pipe(startWith(null)),
         ])
-            .pipe(filter(result => !!result[0] && !!result[1] && !!result[2]), debounceTime(50))
+            .pipe(filter(result => !!result[0] && !!result[1]))
             .subscribe(result => {
-              const repo = result[0];
-              const filterer = result[1];
-              const items = result[2];
+              const filterer = result[0];
+              const items = result[1];
 
-              // Filter and search
               const filteredItems =
                   filterer.filter(items, this.options.filters, this.options.search);
+              let itemGroups = grouper.getGroups(filteredItems, this.options.grouping);
 
-              // Group
-              const grouper = new ItemGrouping(filteredItems, repo);
-              let itemGroups = grouper.getGroup(this.options.grouping);
               itemGroups = itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
 
               // Sort

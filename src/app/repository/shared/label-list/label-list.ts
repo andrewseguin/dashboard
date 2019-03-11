@@ -43,7 +43,9 @@ export class LabelList {
                        const labels: DisplayedLabel[] = [];
                        labelIds.forEach(labelId => {
                          const label = labelsMap.get(`${labelId}`);
-                         labels.push(convertLabelToDisplayedLabel(label));
+                         if (label) {  // labels may be applied but no longer exist
+                           labels.push(convertLabelToDisplayedLabel(label));
+                         }
                        });
                        labels.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
                        return labels;
