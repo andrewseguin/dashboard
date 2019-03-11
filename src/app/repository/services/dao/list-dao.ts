@@ -42,7 +42,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
   add(items: T[]): string[];
   add(itemOrItems: T|T[]): string|string[] {
     const items = (itemOrItems instanceof Array) ? itemOrItems : [itemOrItems];
-    items.forEach(o => this.decorateForDb(o));
+    items.forEach(decorateForDb);
     this.repoIndexedDb.updateValues(items, this.collectionId);
     this.list.next([...this._list.value, ...items]);
     return items.map(obj => obj.id);
@@ -62,7 +62,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
       }
     });
 
-    items.forEach(obj => this.decorateForDb(obj));
+    items.forEach(decorateForDb);
     this.repoIndexedDb.updateValues(items, this.collectionId);
 
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
@@ -73,6 +73,30 @@ export abstract class ListDao<T extends IdentifiedObject> {
       const values = [];
       map.forEach(value => values.push(value));
       this.list.next(values);
+    });
+  }
+
+  /**
+   * Incoming items will be considered the source-of-truth - items already existing will be updated
+   * to reflect this list, and stored items that do not appear will be removed.
+   */
+  sync(items: T[]) {
+    const syncMap = new Map<string, T>();
+    items.forEach(item => {
+      decorateForDb(item);
+      syncMap.set(item.id, item);
+    });
+
+    this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
+      const toRemove: T[] = [];
+      const toUpdate: T[] = [];
+      map.forEach(
+          (value, key) =>
+              syncMap.has(key) ? toUpdate.push(syncMap.get(key)) : toRemove.push(value));
+
+      this.repoIndexedDb.removeValues(toRemove.map(item => item.id), this.collectionId);
+      this.repoIndexedDb.updateValues(toUpdate, this.collectionId);
+      this.list.next(toUpdate);
     });
   }
 
@@ -95,20 +119,20 @@ export abstract class ListDao<T extends IdentifiedObject> {
     this.list.next([]);
     this.repoIndexedDb.removeValues(this._list.value.map(item => item.id), this.collectionId);
   }
+}
 
-  private decorateForDb(obj: T) {
-    if (!obj.id) {
-      obj.id = this.createId();
-    }
-
-    if (!obj.dbAdded) {
-      obj.dbAdded = new Date().toISOString();
-    }
-
-    obj.dbModified = new Date().toISOString();
+function decorateForDb(obj: any) {
+  if (!obj.id) {
+    obj.id = this.createId();
   }
 
-  private createId(): string {
-    return Math.random().toString(16).substring(2);
+  if (!obj.dbAdded) {
+    obj.dbAdded = new Date().toISOString();
   }
+
+  obj.dbModified = new Date().toISOString();
+}
+
+function createId(): string {
+  return Math.random().toString(16).substring(2);
 }
