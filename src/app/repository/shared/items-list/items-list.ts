@@ -51,7 +51,7 @@ export class ItemsList {
 
   @Input() type: ItemType;
 
-  @Output() optionsChanged = new EventEmitter<ItemRendererOptionsState>();
+  @Output() optionsStateChanged = new EventEmitter<ItemRendererOptionsState>();
 
   constructor(
       private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
@@ -70,7 +70,7 @@ export class ItemsList {
         new MyItemSorter());
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
-      this.optionsChanged.next(options.getState());
+      this.optionsStateChanged.next(options.getState());
       this.elementRef.nativeElement.scrollTop = 0;
     });
 
