@@ -1,7 +1,7 @@
 <div class="master theme-border">
   <items-list *ngIf="query?.options" [type]="query.type"
-              [issuesRendererOptionsState]="query.options"
-              (issuesRendererOptionsChanged)="currentOptions = $event">
+              [optionsState]="query.options"
+              (optionsStateChanged)="currentOptions = $event">
   </items-list>
 
   <ng-template cdkPortal>

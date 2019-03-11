@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
+import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {Auth} from 'app/service/auth';
-import {ItemRendererOptionsState} from '../items-renderer/item-renderer-options';
 import {RepoDataStore} from '../repo-data-store';
 import {ItemType} from './items-dao';
 import {ListDao} from './list-dao';

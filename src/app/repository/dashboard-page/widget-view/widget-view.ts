@@ -9,21 +9,21 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {Router} from '@angular/router';
+import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
+import {ItemGrouping} from 'app/package/items-renderer/item-grouping';
+import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Item, LabelsDao} from 'app/repository/services/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {ItemFilterer} from 'app/repository/services/items-renderer/item-filterer';
-import {ItemGrouping} from 'app/repository/services/items-renderer/item-grouping';
-import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
-import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {MyItemSorter} from 'app/repository/utility/items-renderer.ts/item-sorter';
 import {MatcherContext} from 'app/repository/utility/search/filter';
 import {tokenizeItem} from 'app/repository/utility/tokenize-item';
 import {combineLatest, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
+import { ItemsFilterMetadata } from 'app/repository/utility/items-filter-metadata';
 
 @Component({
   selector: 'widget-view',

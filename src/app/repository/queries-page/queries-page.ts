@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
@@ -8,8 +9,7 @@ import {Item, ItemType, LabelsDao} from '../services/dao';
 import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
 import {ItemRecommendations} from '../services/item-recommendations';
-import {ItemFilterer} from '../services/items-renderer/item-filterer';
-import {ItemsFilterMetadata} from '../services/items-renderer/items-filter-metadata';
+import {ItemsFilterMetadata} from '../utility/items-filter-metadata';
 import {MatcherContext} from '../utility/search/filter';
 import {tokenizeItem} from '../utility/tokenize-item';
 

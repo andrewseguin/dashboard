@@ -3,7 +3,6 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
-import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
@@ -11,6 +10,8 @@ import {Filter} from 'app/repository/utility/search/filter';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {merge, of, Subject} from 'rxjs';
 import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
+import { ItemsFilterMetadata } from 'app/repository/utility/items-filter-metadata';
+
 
 @Component({
   selector: 'editable-recommendation',

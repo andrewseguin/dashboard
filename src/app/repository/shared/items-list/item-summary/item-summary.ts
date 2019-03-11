@@ -6,10 +6,9 @@ import {
   Input,
   Output
 } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
@@ -35,8 +34,8 @@ export class ItemSummary {
   @Output() select = new EventEmitter<number>();
 
   constructor(
-      public itemRecommendations: ItemRecommendations,
-      private cd: ChangeDetectorRef, public itemsRenderer: ItemsRenderer<any>) {
+      public itemRecommendations: ItemRecommendations, private cd: ChangeDetectorRef,
+      public itemsRenderer: ItemsRenderer<any>) {
     this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed))
         .subscribe(() => this.cd.markForCheck());
   }

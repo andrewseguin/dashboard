@@ -1,20 +1,13 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
-import {
-  QueriesDao,
-  Query,
-} from 'app/repository/services/dao/queries-dao';
-import {
-  ItemRendererOptionsState
-} from 'app/repository/services/items-renderer/item-renderer-options';
+import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
+import {ItemType} from 'app/repository/services/dao';
+import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
-
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
-
 import {QueryEdit} from './query-edit/query-edit';
-import { ItemType } from 'app/repository/services/dao';
 
 
 @Injectable()

@@ -1,8 +1,8 @@
+import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {Repo} from 'app/repository/services/dao/repo-dao';
 import {Item, Label} from '../services/dao';
 import {Recommendation} from '../services/dao/recommendations-dao';
-import {ItemFilterer} from '../services/items-renderer/item-filterer';
-import {ItemsFilterMetadata} from '../services/items-renderer/items-filter-metadata';
+import {ItemsFilterMetadata} from './items-filter-metadata';
 import {MatcherContext} from './search/filter';
 import {tokenizeItem} from './tokenize-item';
 

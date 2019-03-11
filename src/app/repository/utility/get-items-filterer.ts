@@ -1,9 +1,9 @@
+import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {Item, LabelsDao} from '../services/dao';
 import {ItemRecommendations} from '../services/item-recommendations';
-import {ItemFilterer} from '../services/items-renderer/item-filterer';
-import {ItemsFilterMetadata} from '../services/items-renderer/items-filter-metadata';
+import {ItemsFilterMetadata} from './items-filter-metadata';
 import {MatcherContext} from './search/filter';
 import {tokenizeItem} from './tokenize-item';
 

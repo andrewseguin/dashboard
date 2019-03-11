@@ -16,8 +16,8 @@ import {
   DashboardsDao,
   Widget
 } from '../services/dao/dashboards-dao';
-import {ItemRendererOptions} from '../services/items-renderer/item-renderer-options';
 import {EditWidget, EditWidgetData} from '../shared/dialog/edit-widget/edit-widget';
+import { ItemRendererOptions } from 'app/package/items-renderer/item-renderer-options';
 
 
 @Component({

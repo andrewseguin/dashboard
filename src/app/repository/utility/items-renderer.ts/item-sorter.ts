@@ -1,6 +1,6 @@
+import {Sort} from 'app/package/items-renderer/item-renderer-options';
+import {ItemSorter} from 'app/package/items-renderer/item-sorter';
 import {Item} from 'app/repository/services/dao';
-import {Sort} from 'app/repository/services/items-renderer/item-renderer-options';
-import {ItemSorter} from 'app/repository/services/items-renderer/item-sorter';
 
 export class MyItemSorter extends ItemSorter<Item> {
   getSortFunction(sort: Sort): (a: Item, b: Item) => number {

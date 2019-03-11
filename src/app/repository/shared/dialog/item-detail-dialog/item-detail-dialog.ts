@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
+import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 
 export interface ItemDetailDialogData {
   itemId: string;

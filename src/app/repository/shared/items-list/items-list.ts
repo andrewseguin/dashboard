@@ -8,16 +8,14 @@ import {
   NgZone,
   Output
 } from '@angular/core';
+import {ItemGroup, ItemGrouping} from 'app/package/items-renderer/item-grouping';
+import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
+import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemType, LabelsDao} from 'app/repository/services/dao';
 import {RepoDao} from 'app/repository/services/dao/repo-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {ItemGroup, ItemGrouping} from 'app/repository/services/items-renderer/item-grouping';
-import {
-  ItemRendererOptionsState
-} from 'app/repository/services/items-renderer/item-renderer-options';
-import {ItemsFilterMetadata} from 'app/repository/services/items-renderer/items-filter-metadata';
-import {ItemsRenderer} from 'app/repository/services/items-renderer/items-renderer';
 import {getItemsFilterer} from 'app/repository/utility/get-items-filterer';
+import {ItemsFilterMetadata} from 'app/repository/utility/items-filter-metadata';
 import {MyItemSorter} from 'app/repository/utility/items-renderer.ts/item-sorter';
 import {fromEvent, Observable, Observer, Subject} from 'rxjs';
 import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
@@ -46,7 +44,7 @@ export class ItemsList {
   issueFilterMetadata = ItemsFilterMetadata;
 
   @Input()
-  set issuesRendererOptionsState(state: ItemRendererOptionsState) {
+  set optionsState(state: ItemRendererOptionsState) {
     this.itemsRenderer.options.setState(state);
   }
 
@@ -54,7 +52,7 @@ export class ItemsList {
 
   @Input() type: ItemType;
 
-  @Output() issuesRendererOptionsChanged = new EventEmitter<ItemRendererOptionsState>();
+  @Output() optionsChanged = new EventEmitter<ItemRendererOptionsState>();
 
   constructor(
       private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
@@ -72,7 +70,7 @@ export class ItemsList {
         new MyItemSorter());
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
-      this.issuesRendererOptionsChanged.next(options.getState());
+      this.optionsChanged.next(options.getState());
       this.elementRef.nativeElement.scrollTop = 0;
     });
 

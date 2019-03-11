@@ -1,4 +1,10 @@
 import {
+  AutocompleteContext,
+  IFilterMetadata,
+  MatcherContext
+} from 'app/repository/utility/search/filter';
+import {DateQuery, InputQuery, NumberQuery, StateQuery} from 'app/repository/utility/search/query';
+import {
   arrayContainsQuery,
   dateMatchesEquality,
   numberMatchesEquality,
@@ -6,8 +12,6 @@ import {
   stringContainsQuery
 } from 'app/repository/utility/search/query-matcher';
 import {filter, map} from 'rxjs/operators';
-import {AutocompleteContext, IFilterMetadata, MatcherContext} from '../../utility/search/filter';
-import {DateQuery, InputQuery, NumberQuery, StateQuery} from '../../utility/search/query';
 
 
 export const ItemsFilterMetadata =

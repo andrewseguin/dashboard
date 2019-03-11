@@ -1,21 +1,21 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {
+  areOptionStatesEqual,
+  ItemRendererOptions,
+  ItemRendererOptionsState
+} from 'app/package/items-renderer/item-renderer-options';
 import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
+import {ItemType} from '../services/dao';
 import {Widget} from '../services/dao/dashboards-dao';
 import {QueriesDao, Query} from '../services/dao/queries-dao';
 import {RecommendationsDao} from '../services/dao/recommendations-dao';
-import {
-  areOptionStatesEqual,
-  ItemRendererOptions,
-  ItemRendererOptionsState
-} from '../services/items-renderer/item-renderer-options';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
-import { ItemType } from '../services/dao';
 
 
 @Component({
