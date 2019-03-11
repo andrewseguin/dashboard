@@ -12,7 +12,7 @@ export const StoreIds: StoreId[] =
     ['items', 'labels', 'contributors', 'dashboards', 'queries', 'recommendations'];
 
 @Injectable()
-export class RepoDataStore {
+export class RepoIndexedDb {
   initialValues: {[key in StoreId]?: Subject<any[]>} = {};
 
   private repository: string;

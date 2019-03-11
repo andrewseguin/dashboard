@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Auth} from 'app/service/auth';
 import {GithubIssue, Reactions} from 'app/service/github';
-import {RepoDataStore} from '../repo-data-store';
+import {RepoIndexedDb} from '../repo-indexed-db';
 import {ListDao} from './list-dao';
 
 export type ItemType = 'issue'|'pr';
@@ -30,7 +30,7 @@ export interface Issue extends Item {}
 
 @Injectable()
 export class ItemsDao extends ListDao<Item> {
-  constructor(auth: Auth, repoDao: RepoDataStore) {
+  constructor(auth: Auth, repoDao: RepoIndexedDb) {
     super(auth, repoDao, 'items');
   }
 }

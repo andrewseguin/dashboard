@@ -1,7 +1,7 @@
 import {Auth} from 'app/service/auth';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
-import {RepoDataStore, StoreId} from '../repo-data-store';
+import {RepoIndexedDb, StoreId} from '../repo-indexed-db';
 
 export interface IdentifiedObject {
   id?: string;
@@ -34,9 +34,9 @@ export abstract class ListDao<T extends IdentifiedObject> {
   _map: BehaviorSubject<Map<string, T>>;
 
   protected constructor(
-      protected auth: Auth, protected repoDataStore: RepoDataStore,
+      protected auth: Auth, protected repoIndexedDb: RepoIndexedDb,
       protected collectionId: StoreId) {
-    this.repoDataStore.initialValues[collectionId].pipe(take(1)).subscribe(values => {
+    this.repoIndexedDb.initialValues[collectionId].pipe(take(1)).subscribe(values => {
       this._list.next(values);
     });
   }
@@ -46,7 +46,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
   add(itemOrItems: T|T[]): string|string[] {
     const items = (itemOrItems instanceof Array) ? itemOrItems : [itemOrItems];
     items.forEach(o => this.decorateForDb(o));
-    this.repoDataStore.updateValues(items, this.collectionId);
+    this.repoIndexedDb.updateValues(items, this.collectionId);
     this.list.next([...this._list.value, ...items]);
     return items.map(obj => obj.id);
   }
@@ -66,7 +66,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
     });
 
     items.forEach(obj => this.decorateForDb(obj));
-    this.repoDataStore.updateValues(items, this.collectionId);
+    this.repoIndexedDb.updateValues(items, this.collectionId);
 
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
       items.forEach(obj => {
@@ -83,7 +83,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
   remove(ids: string[]): void;
   remove(idOrIds: string|string[]) {
     const ids = (idOrIds instanceof Array) ? idOrIds : [idOrIds];
-    this.repoDataStore.removeValues(ids, this.collectionId);
+    this.repoIndexedDb.removeValues(ids, this.collectionId);
 
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
       ids.forEach(id => map.delete(id));
