@@ -95,7 +95,6 @@ export class Github {
   }
 
   editGist(id: string, filename: string, content: string) {
-    debugger;
     filename = filename.replace('/', '_');
 
     const files = {};
