@@ -2,11 +2,12 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
-import {LabelsDao} from '../services/dao';
-import {Remover} from '../services/remover';
+import {ItemsDao, LabelsDao} from '../services/dao';
 import {RepoDao} from '../services/dao/repo-dao';
+import {Remover} from '../services/remover';
 import {Updater} from '../services/updater';
 import {UpdateState} from './update-button/update-button';
+import { DaoState } from '../services/dao/dao-state';
 
 
 @Component({
@@ -22,9 +23,10 @@ export class DatabasePage {
   issuesUpdateState = new BehaviorSubject<UpdateState>('not-updating');
   labelsUpdateState = new BehaviorSubject<UpdateState>('not-updating');
 
-  constructor(
-      private activatedRepository: ActivatedRepository, public repoDao: RepoDao,
-      private labelsDao: LabelsDao, private updater: Updater, public remover: Remover) {}
+  constructor(public daoState: DaoState, 
+      public activatedRepository: ActivatedRepository, public repoDao: RepoDao,
+      public labelsDao: LabelsDao, public itemsDao: ItemsDao, private updater: Updater,
+      public remover: Remover) {}
 
   updateLabels() {
     this.labelsUpdateState.next('updating');

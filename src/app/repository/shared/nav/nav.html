@@ -7,7 +7,7 @@
 <div class="link-list">
   <ng-container *ngFor="let link of links">
     <div mat-button class="link theme-text" (click)="sidenav.close()"
-         *ngIf="link.requiresData ? !(repoDao.repo | async)?.empty : true"
+         *ngIf="link.requiresData ? !(daoState.isEmpty | async) : true"
          routerLinkActive="active" [routerLink]="link.route">
       <div class="link-highlight"></div>
       <div class="link-text">

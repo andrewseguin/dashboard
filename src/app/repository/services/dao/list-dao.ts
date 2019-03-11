@@ -94,8 +94,14 @@ export abstract class ListDao<T extends IdentifiedObject> {
           (value, key) =>
               syncMap.has(key) ? toUpdate.push(syncMap.get(key)) : toRemove.push(value));
 
-      this.repoIndexedDb.removeValues(toRemove.map(item => item.id), this.collectionId);
-      this.repoIndexedDb.updateValues(toUpdate, this.collectionId);
+      if (toRemove.length) {
+        this.repoIndexedDb.removeValues(toRemove.map(item => item.id), this.collectionId);
+      }
+
+      if (toUpdate) {
+        this.repoIndexedDb.updateValues(toUpdate, this.collectionId);
+      }
+
       this.list.next(toUpdate);
     });
   }
@@ -116,8 +122,8 @@ export abstract class ListDao<T extends IdentifiedObject> {
   }
 
   removeAll() {
-    this.list.next([]);
     this.repoIndexedDb.removeValues(this._list.value.map(item => item.id), this.collectionId);
+    this.list.next([]);
   }
 }
 

@@ -1,38 +1,36 @@
 <div class="title"> {{activatedRepository.repository | async}} </div>
 
-<ng-container *ngIf="repoDao.repo | async; let repo">
-  <load-data #loadData></load-data>
+<load-data #loadData></load-data>
 
-  <div class="description">
-    <div class="type issues theme-border theme-background-card"
-         *ngIf="repo.issues.length; let count">
-      <div class="type-title">
-        {{(count)}} Issues
+<div class="description">
+  <div class="type issues theme-border theme-background-card"
+       *ngIf="(itemsDao.list | async)?.length; let count">
+    <div class="type-title">
+      {{(count)}} Issues
 
-        <update-button [updateState]="issuesUpdateState | async"
-                       (update)="updateIssues()">
-        </update-button>
-      </div>
-    </div>
-
-    <div class="type issues theme-border theme-background-card"
-         *ngIf="repo.labels.length; let count">
-      <div class="type-title">
-        {{(count)}} Labels
-
-        <update-button [updateState]="labelsUpdateState | async"
-                       (update)="updateLabels()">
-        </update-button>
-      </div>
-
-      <label-list [labelIds]="repoLabels | async"> </label-list>
-
+      <update-button [updateState]="issuesUpdateState | async"
+                     (update)="updateIssues()">
+      </update-button>
     </div>
   </div>
 
-  <button mat-button class="remove"
-          *ngIf="!repo.empty && !(loadData.isLoading | async)" color="warn"
-          (click)="remover.removeAllData()">
-    Remove all locally stored data
-  </button>
-</ng-container>
+  <div class="type issues theme-border theme-background-card"
+       *ngIf="(labelsDao.list | async)?.length; let count">
+    <div class="type-title">
+      {{(count)}} Labels
+
+      <update-button [updateState]="labelsUpdateState | async"
+                     (update)="updateLabels()">
+      </update-button>
+    </div>
+
+    <label-list [labelIds]="repoLabels | async"> </label-list>
+
+  </div>
+</div>
+
+<button mat-button class="remove"
+        *ngIf="!(daoState.isEmpty | async) && !(loadData.isLoading | async)"
+        color="warn" (click)="remover.removeAllData()">
+  Remove all locally stored data
+</button>

@@ -3,7 +3,6 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {ContributorsDao, ItemsDao, LabelsDao} from './dao';
-import {RepoIndexedDb} from './repo-indexed-db';
 
 
 export interface StaleIssuesState {
@@ -26,7 +25,7 @@ export class Updater {
                               }));
 
   constructor(
-      private repoDao: RepoIndexedDb, private itemsDao: ItemsDao, private labelsDao: LabelsDao,
+      private itemsDao: ItemsDao, private labelsDao: LabelsDao,
       private contributorsDao: ContributorsDao, private github: Github) {}
 
   updateLabels(repo: string) {

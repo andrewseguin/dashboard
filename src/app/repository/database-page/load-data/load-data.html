@@ -1,4 +1,4 @@
-<div class="load" *ngIf="!state && (repoDao.repo | async)?.empty">
+<div class="load" *ngIf="!state && (daoState.isEmpty | async)">
 
   <div class="action">
     <button mat-raised-button color="primary" class="load-data"
