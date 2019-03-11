@@ -1,4 +1,3 @@
-import {Auth} from 'app/service/auth';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 import {RepoIndexedDb, StoreId} from '../repo-indexed-db';
@@ -33,9 +32,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
   }
   _map: BehaviorSubject<Map<string, T>>;
 
-  protected constructor(
-      protected auth: Auth, protected repoIndexedDb: RepoIndexedDb,
-      protected collectionId: StoreId) {
+  protected constructor(protected repoIndexedDb: RepoIndexedDb, protected collectionId: StoreId) {
     this.repoIndexedDb.initialValues[collectionId].pipe(take(1)).subscribe(values => {
       this._list.next(values);
     });

@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Auth} from 'app/service/auth';
 import {GithubContributor} from 'app/service/github';
 import {RepoIndexedDb} from '../repo-indexed-db';
 import {ListDao} from './list-dao';
@@ -15,8 +14,8 @@ export interface Contributor {
 
 @Injectable()
 export class ContributorsDao extends ListDao<Contributor> {
-  constructor(auth: Auth, repoDao: RepoIndexedDb) {
-    super(auth, repoDao, 'contributors');
+  constructor(repoDao: RepoIndexedDb) {
+    super(repoDao, 'contributors');
   }
 }
 

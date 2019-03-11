@@ -15,8 +15,8 @@ export interface Label {
 
 @Injectable()
 export class LabelsDao extends ListDao<Label> {
-  constructor(auth: Auth, repoDao: RepoIndexedDb) {
-    super(auth, repoDao, 'labels');
+  constructor(repoDao: RepoIndexedDb) {
+    super(repoDao, 'labels');
   }
 }
 
