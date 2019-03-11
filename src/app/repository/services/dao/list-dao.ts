@@ -81,28 +81,35 @@ export abstract class ListDao<T extends IdentifiedObject> {
    * to reflect this list, and stored items that do not appear will be removed.
    */
   sync(items: T[]) {
-    const syncMap = new Map<string, T>();
-    items.forEach(item => {
-      decorateForDb(item);
-      syncMap.set(item.id, item);
-    });
+    return new Promise(resolve => {
+      const syncMap = new Map<string, T>();
+      items.forEach(item => {
+        decorateForDb(item);
+        syncMap.set(item.id, item);
+      });
 
-    this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
-      const toRemove: T[] = [];
-      const toUpdate: T[] = [];
-      map.forEach(
-          (value, key) =>
-              syncMap.has(key) ? toUpdate.push(syncMap.get(key)) : toRemove.push(value));
+      this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
+        // Remove any values that are not in the gist
+        const toRemove: T[] = [];
+        map.forEach((value, key) => {
+          if (!syncMap.has(key)) {
+            toRemove.push(value);
+          }
+        });
+        if (toRemove.length) {
+          this.repoIndexedDb.removeValues(toRemove.map(item => item.id), this.collectionId);
+        }
 
-      if (toRemove.length) {
-        this.repoIndexedDb.removeValues(toRemove.map(item => item.id), this.collectionId);
-      }
+        // Update any values that are in the gist
+        const toUpdate: T[] = [];
+        syncMap.forEach(item => toUpdate.push(item));
+        if (toUpdate.length) {
+          this.repoIndexedDb.updateValues(toUpdate, this.collectionId);
+        }
 
-      if (toUpdate) {
-        this.repoIndexedDb.updateValues(toUpdate, this.collectionId);
-      }
-
-      this.list.next(toUpdate);
+        this.list.next(toUpdate);
+        resolve();
+      });
     });
   }
 
