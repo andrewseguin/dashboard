@@ -27,6 +27,9 @@ export class Repository {
       this.activatedRepository.repository.next(`${org}/${name}`);
     });
 
+    // Sync from Github Gist, then begin saving any changes to the IndexedDB
+    this.repoGist.sync().then(() => this.repoGist.saveChanges());
+
     this.daoState.isEmpty.pipe(take(1)).subscribe(isEmpty => {
       if (isEmpty) {
         this.router.navigate([`${this.activatedRepository.repository.value}/database`]);

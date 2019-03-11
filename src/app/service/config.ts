@@ -12,9 +12,9 @@ export interface DashboardConfig {
 }
 
 export interface RepoConfig {
-  queries?: Query[];
-  dashboards?: Dashboard[];
-  recommendations?: Recommendation[];
+  queries: Query[];
+  dashboards: Dashboard[];
+  recommendations: Recommendation[];
 }
 
 export interface ConfigValues {

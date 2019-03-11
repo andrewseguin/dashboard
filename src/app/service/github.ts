@@ -99,7 +99,7 @@ export class Github {
 
     const files = {};
     files[filename] = {filename, content};
-    const url = this.constructUrl(`gists/${id}`);
+    const url = this.constructUrl(`gists/${id}`, 'random=' + Math.random());
     return this.patch(url, {files});
   }
 

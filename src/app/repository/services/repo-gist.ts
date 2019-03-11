@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Config} from 'app/service/config';
 import {combineLatest, Subject} from 'rxjs';
-import {filter, mergeMap, takeUntil} from 'rxjs/operators';
+import {filter, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
 import {DashboardsDao} from './dao/dashboards-dao';
 import {QueriesDao} from './dao/queries-dao';
@@ -15,12 +15,9 @@ export class RepoGist {
       private activatedRepository: ActivatedRepository, private dashboardsDao: DashboardsDao,
       private queriesDao: QueriesDao, private recommendationsDao: RecommendationsDao,
       private config: Config) {
-    // Wait to save until sync has happened
-    this.sync();
-    this.save();
   }
 
-  save() {
+  saveChanges() {
     combineLatest(this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list)
         .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
         .subscribe(result => {
@@ -33,10 +30,18 @@ export class RepoGist {
         });
   }
 
-  sync() {
-    this.activatedRepository.repository.pipe(
-        filter(repository => !!repository),
-        mergeMap(repository => this.config.getRepoConfig(repository)));
+  sync(): Promise<void> {
+    return new Promise(resolve => {
+      return this.activatedRepository.repository
+          .pipe(
+              filter(repository => !!repository),
+              mergeMap(repository => this.config.getRepoConfig(repository)), map(repoConfig => {
+                this.dashboardsDao.sync(repoConfig.dashboards);
+                this.queriesDao.sync(repoConfig.queries);
+                this.recommendationsDao.sync(repoConfig.recommendations);
+              }))
+          .subscribe(() => resolve());
+    });
   }
 
   ngOnDestroy() {

@@ -8,7 +8,7 @@
     <div class="type-title">
       {{(count)}} Issues
 
-      <update-button [updateState]="issuesUpdateState | async"
+      <update-button *ngIf="!(loadData.isLoading | async)" [updateState]="issuesUpdateState | async"
                      (update)="updateIssues()">
       </update-button>
     </div>
@@ -19,7 +19,7 @@
     <div class="type-title">
       {{(count)}} Labels
 
-      <update-button [updateState]="labelsUpdateState | async"
+      <update-button *ngIf="!(loadData.isLoading | async)" [updateState]="labelsUpdateState | async"
                      (update)="updateLabels()">
       </update-button>
     </div>

@@ -1,23 +1,20 @@
 <div class="load" *ngIf="!state && (daoState.isEmpty | async)">
 
   <div class="action">
-    <button mat-raised-button color="primary" class="load-data"
-            (click)="store()">
+    <button mat-raised-button color="primary" class="load-data" (click)="store()">
       Load Data
     </button>
 
     <div class="items-form" [formGroup]="formGroup">
       <mat-select formControlName="issueDateType">
-        <mat-option *ngFor="let option of ['all data', 'since']"
-                    [value]="option">
+        <mat-option *ngFor="let option of ['all data', 'since']" [value]="option">
           {{option}}
         </mat-option>
       </mat-select>
 
       <div class="datepicker" *ngIf="formGroup.value.issueDateType === 'since'">
-        <input formControlName="issueDate" [matDatepicker]="picker"
-               class="theme-border" (click)="picker.open()"
-               placeholder="Choose a date">
+        <input formControlName="issueDate" [matDatepicker]="picker" class="theme-border"
+               (click)="picker.open()" placeholder="Choose a date">
         <mat-datepicker #picker></mat-datepicker>
       </div>
     </div>
@@ -34,7 +31,7 @@
 
 
 <ng-container *ngIf="state?.progress; let progress">
-  <div class="loading">
+  <div class="loading theme-secondary-text">
     {{state.label}}
     {{'(' + (state.progress.value | number:'1.0-0') + '% complete)'}}
   </div>
@@ -42,7 +39,6 @@
                     [value]="state.progress.value">
   </mat-progress-bar>
 
-  <mat-progress-bar *ngIf="progress.type === 'indeterminate'"
-                    mode="indeterminate">
+  <mat-progress-bar *ngIf="progress.type === 'indeterminate'" mode="indeterminate">
   </mat-progress-bar>
 </ng-container>
