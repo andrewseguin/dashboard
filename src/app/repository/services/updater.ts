@@ -67,7 +67,7 @@ export class Updater {
                 return state.count ? this.github.getIssues(state.repository, state.lastUpdated) :
                                      of(null);
               }),
-              take(1))
+              take(1), filter(v => !!v))
           .subscribe((result) => {
             this.itemsDao.update(result!.accumulated);
             resolve();
