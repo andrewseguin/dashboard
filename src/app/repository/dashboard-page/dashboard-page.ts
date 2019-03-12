@@ -33,7 +33,7 @@ export class DashboardPage {
 
     const hasWidgets = this.dashboard.columnGroups.some(columnGroup => {
       return columnGroup.columns.some(column => {
-        return column.widgets.some(widget => true);
+        return column.widgets.some(widget => !!widget);
       });
     });
 

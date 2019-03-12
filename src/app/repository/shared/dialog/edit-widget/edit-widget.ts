@@ -4,7 +4,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ItemGrouping} from 'app/package/items-renderer/item-grouping';
 import {ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, ItemsDao, LabelsDao} from 'app/repository/services/dao';
+import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
@@ -49,16 +49,7 @@ export class EditWidget {
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
 
-    const items =
-        this.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                  const issues = items.filter(item => !item.pr);
-                                  const pullRequests = items.filter(item => !!item.pr);
-                                  return this.widget.itemType === 'issue' ? issues : pullRequests;
-                                }));
-
-    this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
-        new MyItemSorter());
+    this.initializeItemsRenderer(this.widget.itemType);
     this.itemsRenderer.options.setState(data.widget.options);
     this.form = new FormGroup({
       title: new FormControl(this.widget.title),
@@ -68,10 +59,20 @@ export class EditWidget {
     });
 
     this.form.get('itemType').valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
-      this.itemsRenderer.initialize(
-          items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
-          new MyItemSorter());
+      this.initializeItemsRenderer(itemType);
     });
+  }
+
+  private initializeItemsRenderer(itemType: ItemType) {
+    const items = this.itemsDao.list.pipe(filter(list => !!list), map(items => {
+                                            const issues = items.filter(item => !item.pr);
+                                            const pullRequests = items.filter(item => !!item.pr);
+                                            return itemType === 'issue' ? issues : pullRequests;
+                                          }));
+
+    this.itemsRenderer.initialize(
+        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
+        new MyItemSorter());
   }
 
   ngOnDestroy() {
