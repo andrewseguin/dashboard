@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {GithubContributor} from 'app/service/github';
 import {RepoIndexedDb} from '../repo-indexed-db';
 import {ListDao} from './list-dao';
+import { GithubContributor } from 'app/service/github-types/contributor';
 
 export interface Contributor {
   login: string;

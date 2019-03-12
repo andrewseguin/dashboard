@@ -10,7 +10,12 @@ import {githubLabelToLabel, Label} from 'app/repository/services/dao/labels-dao'
 import {getLinkMap} from 'app/utility/link-map';
 import {empty, Observable, of} from 'rxjs';
 import {expand, map, mergeMap} from 'rxjs/operators';
+import {GithubComment} from './github-types/comment';
+import {GithubContributor} from './github-types/contributor';
 import {Gist} from './github-types/gist';
+import {GithubIssue} from './github-types/issue';
+import {GithubLabel} from './github-types/label';
+import {GithubTimelineEvent} from './github-types/timeline';
 
 export interface CombinedPagedResults<T> {
   total: number;
@@ -198,171 +203,6 @@ export class Github {
   }
 }
 
-
-export interface User {
-  login: string;
-  avatar_url: string;
-  id: number;
-  node_id: string;
-  gravatar_id: string;
-  url: string;
-  html_url: string;
-  followers_url: string;
-  following_url: string;
-  gists_url: string;
-  starred_url: string;
-  subscriptions_url: string;
-  organizations_url: string;
-  repos_url: string;
-  events_url: string;
-  received_events_url: string;
-  type: string;
-  site_admin: boolean;
-}
-
-export interface Reactions {
-  url: string;
-  total_count: number;
-  '+1': number;
-  '-1': number;
-  laugh: number;
-  hooray: number;
-  confused: number;
-  heart: number;
-  rocket: number;
-  eyes: number;
-}
-export interface GithubIssue {
-  url: string;
-  id: number;
-  node_id: string;
-  number: number;
-  title: string;
-  user: User;
-  labels: any[];
-  state: string;
-  locked: boolean;
-  assignee?: any;
-  assignees: any[];
-  milestone?: any;
-  comments: number;
-  created_at: string;
-  updated_at: string;
-  closed_at: string;
-  author_association: string;
-  body: string;
-  reactions: Reactions;
-
-  repository_url: string;
-  labels_url: string;
-  comments_url: string;
-  events_url: string;
-  html_url: string;
-  pull_request: any;
-}
-
-export interface GithubLabel {
-  id: number;
-  node_id: string;
-  url: string;
-  name: string;
-  description: string;
-  color: string;
-  default: boolean;
-}
-
-export interface GithubContributor {
-  login: string;
-  id: number;
-  node_id: string;
-  avatar_url: string;
-  gravatar_id: string;
-  url: string;
-  html_url: string;
-  followers_url: string;
-  following_url: string;
-  gists_url: string;
-  starred_url: string;
-  subscriptions_url: string;
-  organizations_url: string;
-  repos_url: string;
-  events_url: string;
-  received_events_url: string;
-  type: string;
-  site_admin: boolean;
-  contributions: number;
-}
-
-export interface GithubComment {
-  id: number;
-  node_id: string;
-  url: string;
-  html_url: string;
-  body: string;
-  user: User;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface GithubActor {
-  login: string;
-  id: number;
-  node_id: string;
-  avatar_url: string;
-  gravatar_id: string;
-  url: string;
-  html_url: string;
-  followers_url: string;
-  following_url: string;
-  gists_url: string;
-  starred_url: string;
-  subscriptions_url: string;
-  organizations_url: string;
-  repos_url: string;
-  events_url: string;
-  received_events_url: string;
-  type: string;
-  site_admin: boolean;
-}
-
-export interface GithubTimelineEvent {
-  id: number;
-  node_id: string;
-  url: string;
-  actor: GithubActor;
-  event: string;
-  commit_id: string;
-  commit_url: string;
-  created_at: string;
-  label: {name: string, color: string};
-  labels: {name: string, color: string}[];
-  lock_reason: string;
-  assignee: User;
-  assignees: User[];
-
-  assigner: User;
-  dismissed_review: any;
-  milestone: {title: string};
-  rename: {from: string, to: string};
-  requested_reviewers: any;
-  review_requester: any;
-}
-
-export interface TimelineEvent {
-  actor: string;
-  type: string;
-  created: string;
-  labels: string[];
-  lockReason: string;
-  assignees: string[];
-  assigner: string;
-  dismissed_review: any;
-  milestone: {title: string};
-  rename: {from: string, to: string};
-  requestedReviewers: any;
-  reviewRequester: any;
-}
-
 export interface UserComment {
   message: string;
   user: string;
@@ -379,6 +219,20 @@ function githubCommentToUserComment(o: GithubComment): UserComment {
   };
 }
 
+export interface TimelineEvent {
+  actor: string;
+  type: string;
+  created: string;
+  labels: string[];
+  lockReason: string;
+  assignees: string[];
+  assigner: string;
+  dismissed_review: any;
+  milestone: {title: string};
+  rename: {from: string, to: string};
+  requestedReviewers: any;
+  reviewRequester: any;
+}
 
 function githubTimelineEventtoTimelineEvent(o: GithubTimelineEvent): TimelineEvent {
   return {
