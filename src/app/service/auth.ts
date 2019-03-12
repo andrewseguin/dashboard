@@ -3,11 +3,11 @@ import {Subject} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class Auth {
-  set token(token: string) {
-    window.localStorage.setItem('accessToken', token);
+  set token(token: string|null) {
+    window.localStorage.setItem('accessToken', token || '');
     this.tokenChanged.next();
   }
-  get token(): string {
+  get token(): string|null {
     return window.localStorage.getItem('accessToken');
   }
 

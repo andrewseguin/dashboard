@@ -10,13 +10,13 @@ import {ItemsFilterMetadata, MatcherContext} from './items-filter-metadata';
 export function getItemsFilterer(itemRecommendations: ItemRecommendations, labelsDao: LabelsDao) {
   return combineLatest(itemRecommendations.allRecommendations, labelsDao.map)
       .pipe(filter(result => result.every(r => !!r)), map(result => {
-              const recommendationsByItem = result[0];
-              const labelsMap = result[1];
+              const recommendationsByItem = result[0]!;
+              const labelsMap = result[1]!;
               const contextProvider = (item: Item) => {
                 return {
                   item,
                   labelsMap,
-                  recommendations: recommendationsByItem.get(item.id),
+                  recommendations: recommendationsByItem.get(item.id) || [],
                 };
               };
               return new ItemFilterer<Item, MatcherContext>(

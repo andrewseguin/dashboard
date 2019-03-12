@@ -9,7 +9,7 @@ import {
 import {githubLabelToLabel, Label} from 'app/repository/services/dao/labels-dao';
 import {getLinkMap} from 'app/utility/link-map';
 import {empty, Observable, of} from 'rxjs';
-import {expand, map, mergeMap} from 'rxjs/operators';
+import {expand, filter, map, mergeMap} from 'rxjs/operators';
 import {GithubComment} from './github-types/comment';
 import {GithubContributor} from './github-types/contributor';
 import {Gist} from './github-types/gist';
@@ -77,6 +77,10 @@ export class Github {
     return this.get<Gist>(url, true).pipe(map(result => {
       const gist = result.body;
 
+      if (!gist) {
+        return null;
+      }
+
       // Transform keys so that understores in keys become slashes to match repo string
       const transformedFiles = {};
       Object.keys(gist.files).forEach(key => {
@@ -89,19 +93,18 @@ export class Github {
   }
 
   getDashboardGist(): Observable<Gist|null> {
-    return this.getGists().pipe(mergeMap(result => {
-      if (result.completed === result.total) {
-        const gists = result.accumulated;
+    return this.getGists().pipe(
+        filter(result => result.completed === result.total), mergeMap(result => {
+          const gists = result.accumulated;
 
-        for (let i = 0; i < gists.length; i++) {
-          if (gists[i].description.indexOf(GIST_DESCRIPTION) === 0) {
-            return this.getGist(gists[i].id);
+          for (let i = 0; i < gists.length; i++) {
+            if (gists[i].description.indexOf(GIST_DESCRIPTION) === 0) {
+              return this.getGist(gists[i].id);
+            }
           }
-        }
 
-        return of(null);
-      }
-    }));
+          return of(null);
+        }));
   }
 
   editGist(id: string, filename: string, content: string) {
@@ -129,7 +132,7 @@ export class Github {
       requiresAuthorization = false): Observable<CombinedPagedResults<R>> {
     let completed = 0;
     let total = 0;
-    let accumulated = [];
+    let accumulated: R[] = [];
 
     return this.getPaged<T>(url, requiresAuthorization)
         .pipe(expand(result => result.next ? this.getPaged(result.next) : empty()), map(result => {
@@ -155,16 +158,14 @@ export class Github {
   }
 
   private getPaged<T>(url: string, requiresAuthorization = false):
-      Observable<{response: T[], next: string|null, numPages: number}> {
+      Observable<{response: T[], next: string, numPages: number}> {
     return this.get<T[]>(url, requiresAuthorization).pipe(map(result => {
-      const response = result.body;
+      const response = result.body || [];
       const linkMap = getLinkMap(result.headers);
-      const next = linkMap.get('next');
+      const next = linkMap.get('next') || '';
 
-      let numPages = 1;
-      if (linkMap.get('last')) {
-        numPages = +linkMap.get('last').split('&page=')[1];
-      }
+      const last = linkMap.get('last') ? +linkMap.get('last')!.split('&page=')[1] : 0;
+      const numPages = last || 1;
       return {response, next, numPages};
     }));
   }
@@ -198,7 +199,7 @@ export class Github {
       return of();
     }
 
-    const accept = [];
+    const accept: string[] = [];
 
     // Label descriptions
     accept.push('application/vnd.github.symmetra-preview+json');

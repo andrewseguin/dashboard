@@ -38,21 +38,21 @@ export class LoadData {
   formGroup =
       new FormGroup({issueDateType: new FormControl('since'), issueDate: new FormControl('')});
 
-  totalLabelsCount = this.activatedRepository.repository.pipe(mergeMap((repository => {
-    if (repository) {
-      return this.github.getLabels(repository)
-          .pipe(
-              filter(result => result.completed === result.total),
-              map(result => result.accumulated.length));
-    }
-  })));
+  totalLabelsCount = this.activatedRepository.repository.pipe(
+      filter(v => !!v), mergeMap((repository => {
+        return this.github.getLabels(repository!)
+            .pipe(
+                filter(result => result.completed === result.total),
+                map(result => result.accumulated.length));
+      })));
 
-  totalItemCount = combineLatest(this.formGroup.valueChanges, this.activatedRepository.repository)
-                       .pipe(startWith(null), mergeMap(() => {
-                               const since = this.getIssuesDateSince();
-                               const repository = this.activatedRepository.repository.value;
-                               return this.github.getItemsCount(repository, since);
-                             }));
+  totalItemCount =
+      combineLatest(this.activatedRepository.repository, this.formGroup.valueChanges)
+          .pipe(startWith([null, null]), filter(result => !!result[0]), mergeMap(() => {
+                  const since = this.getIssuesDateSince();
+                  const repository = this.activatedRepository.repository.value;
+                  return this.github.getItemsCount(repository!, since);
+                }));
 
   private destroyed = new Subject();
 
@@ -63,7 +63,7 @@ export class LoadData {
       private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
-    this.formGroup.get('issueDate').setValue(lastMonth, {emitEvent: false});
+    this.formGroup.get('issueDate')!.setValue(lastMonth, {emitEvent: false});
   }
 
   ngOnDestroy() {
@@ -109,7 +109,7 @@ export class LoadData {
       };
 
       loadFn().pipe(takeUntil(this.destroyed)).subscribe(result => {
-        this.state.progress.value = result.completed / result.total * 100;
+        this.state!.progress!.value = result.completed / result.total * 100;
         this.cd.markForCheck();
         saver(result.current);
 

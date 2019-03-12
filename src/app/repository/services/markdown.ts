@@ -3,7 +3,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import * as hljs from 'highlight.js';
 import * as Remarkable from 'remarkable';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {ItemsDao} from './dao';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class Markdown {
   constructor(private sanitizer: DomSanitizer, private itemsDao: ItemsDao) {}
 
   getItemBodyMarkdown(id: string): Observable<SafeHtml> {
-    return this.itemsDao.get(id).pipe(map(item => this.render(item.body)));
+    return this.itemsDao.get(id).pipe(filter(v => !!v), map(item => this.render(item!.body)));
   }
 
   render(text: string): SafeHtml {

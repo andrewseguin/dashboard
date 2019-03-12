@@ -24,7 +24,6 @@ export interface NavLink {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Nav {
-  repo = 'angular/material2';
   isUserProfileExpanded = false;
 
   links: NavLink[] = [
@@ -47,12 +46,6 @@ export class Nav {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
-  }
-
-  updateCache() {
-    this.updater.updateLabels(this.repo);
-    this.updater.updateContributors(this.repo);
-    this.updater.updateIssues(this.repo);
   }
 
   signOut() {

@@ -20,8 +20,10 @@ export class ItemsGroup {
 
   trackByItemNumber = (_i, item: Item) => item.number;
 
-  activeItem =
-      this.activatedRoute.queryParamMap.pipe(map(queryParamMap => +queryParamMap.get('item')));
+  activeItem = this.activatedRoute.queryParamMap.pipe(map(queryParamMap => {
+    const item = queryParamMap.get('item');
+    return item ? +item : '';
+  }));
 
   constructor(
       private router: Router, private dialog: MatDialog, private activatedRoute: ActivatedRoute) {}

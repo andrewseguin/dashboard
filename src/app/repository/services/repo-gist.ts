@@ -17,15 +17,17 @@ export class RepoGist {
       private config: Config) {}
 
   saveChanges() {
-    combineLatest(this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list)
+    combineLatest(
+        this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list,
+        this.activatedRepository.repository)
         .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
         .subscribe(result => {
-          const dashboards = result[0];
-          const queries = result[1];
-          const recommendations = result[2];
+          const dashboards = result[0]!;
+          const queries = result[1]!;
+          const recommendations = result[2]!;
+          const repository = result[3]!;
 
-          this.config.saveRepoConfigToGist(
-              this.activatedRepository.repository.value, {dashboards, queries, recommendations});
+          this.config.saveRepoConfigToGist(repository, {dashboards, queries, recommendations});
         });
   }
 
@@ -34,7 +36,7 @@ export class RepoGist {
       return this.activatedRepository.repository
           .pipe(
               filter(repository => !!repository),
-              mergeMap(repository => this.config.getRepoConfig(repository)),
+              mergeMap(repository => this.config.getRepoConfig(repository!)),
               mergeMap(repoConfig => {
                 if (!repoConfig) {
                   return of(null);

@@ -8,6 +8,10 @@ export function getRecommendations(
     itemId: string, itemsMap: Map<string, Item>, recommendations: Recommendation[],
     labelsMap: Map<string, Label>): Recommendation[] {
   const item = itemsMap.get(itemId);
+  if (!item) {
+    return [];
+  }
+
   return recommendations.filter(recommendation => {
     const contextProvider = (item: Item) => {
       return {
@@ -20,7 +24,7 @@ export function getRecommendations(
     const filterer =
         new ItemFilterer<Item, MatcherContext>(contextProvider, tokenizeItem, ItemsFilterMetadata);
     const matchedIssues =
-        filterer.filter([item], recommendation.filters || [], recommendation.search);
+        filterer.filter([item], recommendation.filters || [], recommendation.search || '');
     return !!matchedIssues.length;
   });
 }

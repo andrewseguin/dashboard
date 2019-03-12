@@ -42,8 +42,8 @@ export class QueryDialog {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.queriesDao.remove(query.id);
-            this.snackbar.open(`Query "${query.name}" deleted`, null, {duration: 2000});
+            this.queriesDao.remove(query.id!);
+            this.snackbar.open(`Query "${query.name}" deleted`, '', {duration: 2000});
           }
         });
   }

@@ -15,7 +15,7 @@ export function highlight(id: string) {
   if (elementExists(id)) {
     performAction(id, el => {
       el.classList.add('highlight');
-      setTimeout(() => el.classList.remove('highlight'), 5000); // Length of anim
+      setTimeout(() => el.classList.remove('highlight'), 5000);  // Length of anim
     });
   }
 }
@@ -32,7 +32,10 @@ export function focusElement(id: string, selector = 'input') {
 
 function performAction(id: string, action: (el: Element) => void) {
   setTimeout(() => {
-    action(document.getElementById(id));
+    const element = document.getElementById(id);
+    if (element) {
+      action(element);
+    }
   });
 }
 

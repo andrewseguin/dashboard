@@ -7,7 +7,7 @@ import {ItemRecommendations} from 'app/repository/services/item-recommendations'
 import {Markdown} from 'app/repository/services/markdown';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';
 import {combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {filter, map, mergeMap} from 'rxjs/operators';
 
 export interface Activity {
   type: 'comment'|'timeline';
@@ -42,43 +42,38 @@ export class ItemDetail {
     if (simpleChanges['itemId'] && this.itemId) {
       this.bodyMarkdown = this.markdown.getItemBodyMarkdown(this.itemId);
       this.recommendations = this.itemRecommendations.allRecommendations.pipe(
-          filter(r => !!r), map(recommendations => recommendations.get(this.itemId)));
+          filter(v => !!v), map(recommendations => recommendations!.get(this.itemId) || []));
 
-      const activityRequests = [
-        this.github.getComments(this.activatedRepository.repository.value, this.itemId),
-        this.github.getTimeline(this.activatedRepository.repository.value, this.itemId)
-      ];
+      this.activities = this.activatedRepository.repository.pipe(
+          filter(v => !!v), mergeMap(repository => {
+            return combineLatest(
+                this.github.getComments(repository!, this.itemId),
+                this.github.getTimeline(repository!, this.itemId));
+          }),
+          filter(result => {
+            const commentsResult = result[0];
+            const timelineResult = result[1];
 
-      this.activities =
-          combineLatest(...activityRequests)
-              .pipe(
-                  filter(result => {
-                    const commentsResult = result[0];
-                    const timelineResult = result[1];
+            const commentsFinished = commentsResult.completed === commentsResult.total;
+            const timelineFinished = timelineResult.completed === timelineResult.total;
+            return commentsFinished && timelineFinished;
+          }),
+          map(result => {
+            const comments = result[0].accumulated as UserComment[];
 
-                    const commentsFinished = commentsResult.completed === commentsResult.total;
-                    const timelineFinished = timelineResult.completed === timelineResult.total;
-                    return commentsFinished && timelineFinished;
-                  }),
-                  map(result => {
-                    const comments = result[0].accumulated as UserComment[];
+            const filteredTimelineEvents = new Set(['mentioned', 'subscribed', 'referenced']);
+            const timelineEvents =
+                (result[1].accumulated as TimelineEvent[])
+                    .filter(timelineEvent => !filteredTimelineEvents.has(timelineEvent.type));
 
-                    const filteredTimelineEvents =
-                        new Set(['mentioned', 'subscribed', 'referenced']);
-                    const timelineEvents =
-                        (result[1].accumulated as TimelineEvent[])
-                            .filter(
-                                timelineEvent => !filteredTimelineEvents.has(timelineEvent.type));
+            const activities: Activity[] = [];
+            comments.forEach(c => activities.push({type: 'comment', date: c.created, context: c}));
+            timelineEvents.forEach(
+                e => activities.push({type: 'timeline', date: e.created, context: e}));
+            activities.sort((a, b) => a.date < b.date ? -1 : 1);
 
-                    const activities: Activity[] = [];
-                    comments.forEach(
-                        c => activities.push({type: 'comment', date: c.created, context: c}));
-                    timelineEvents.forEach(
-                        e => activities.push({type: 'timeline', date: e.created, context: e}));
-                    activities.sort((a, b) => a.date < b.date ? -1 : 1);
-
-                    return activities;
-                  }));
+            return activities;
+          }));
     }
   }
 

@@ -43,11 +43,11 @@ export class StateQueryForm implements OnChanges {
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges.query) {
       if (this.query && this.query.equality) {
-        this.form.get('equality').setValue(this.query.equality || '', {emitEvent: false});
+        this.form.get('equality')!.setValue(this.query.equality || '', {emitEvent: false});
       }
 
       if (this.query && this.query.state) {
-        this.form.get('state').setValue(this.query.state || '', {emitEvent: false});
+        this.form.get('state')!.setValue(this.query.state || '', {emitEvent: false});
       }
     }
   }

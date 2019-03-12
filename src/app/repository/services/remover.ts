@@ -39,7 +39,7 @@ export class Remover {
             this.queriesDao.removeAll();
             this.recommendationsDao.removeAll();
 
-            this.snackbar.open(`${name} deleted`, null, {duration: 2000});
+            this.snackbar.open(`${name} deleted`, '', {duration: 2000});
           }
         });
   }

@@ -7,10 +7,10 @@ import {
   Output
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
+import {DateEquality, DateQuery} from 'app/package/items-renderer/search-utility/query';
+import {isMobile} from 'app/utility/media-matcher';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {isMobile} from 'app/utility/media-matcher';
-import {DateEquality, DateQuery} from 'app/package/items-renderer/search-utility/query';
 
 @Component({
   selector: 'date-query-form',
@@ -24,10 +24,7 @@ export class DateQueryForm {
     {id: 'on', label: 'on'},
     {id: 'after', label: 'after'},
   ];
-  form = new FormGroup({
-    equality: new FormControl('on'),
-    date: new FormControl('')
-  });
+  form = new FormGroup({equality: new FormControl('on'), date: new FormControl('')});
   destroyed = new Subject();
 
   isMobile = isMobile;
@@ -41,14 +38,16 @@ export class DateQueryForm {
     }
 
     if (query.equality) {
-      this.form.get('equality').setValue(query.equality, {emitEvent: false});
+      this.form.get('equality')!.setValue(query.equality, {emitEvent: false});
     }
 
     if (query.date) {
-      this.form.get('date').setValue(new Date(query.date), {emitEvent: false});
+      this.form.get('date')!.setValue(new Date(query.date), {emitEvent: false});
     }
   }
-  get query(): DateQuery { return this._query; }
+  get query(): DateQuery {
+    return this._query;
+  }
   _query: DateQuery;
 
   @Input() focusInput: boolean;
@@ -56,9 +55,7 @@ export class DateQueryForm {
   @Output() queryChange = new EventEmitter<DateQuery>();
 
   constructor(private elementRef: ElementRef) {
-    this.form.valueChanges.pipe(
-        takeUntil(this.destroyed))
-        .subscribe(() => this.emit());
+    this.form.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.emit());
   }
 
   emit() {

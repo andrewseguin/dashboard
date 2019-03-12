@@ -35,9 +35,9 @@ export class EditWidget {
   metadata = ItemsFilterMetadata;
 
   issueQueries = this.queriesDao.list.pipe(
-      filter(list => !!list), map(list => list.filter(q => q.type === 'issue')));
+      filter(v => !!v), map(queries => queries!.filter(q => q.type === 'issue')));
   prQueries = this.queriesDao.list.pipe(
-      filter(list => !!list), map(list => list.filter(q => q.type === 'pr')));
+      filter(v => !!v), map(queries => queries!.filter(q => q.type === 'pr')));
 
   private _destroyed = new Subject();
 
@@ -50,7 +50,10 @@ export class EditWidget {
     this.widget = {...data.widget};
 
     this.initializeItemsRenderer(this.widget.itemType);
-    this.itemsRenderer.options.setState(data.widget.options);
+    if (data.widget.options) {
+      this.itemsRenderer.options.setState(data.widget.options);
+    }
+
     this.form = new FormGroup({
       title: new FormControl(this.widget.title),
       itemType: new FormControl(this.widget.itemType),
@@ -58,15 +61,15 @@ export class EditWidget {
       listLength: new FormControl(this.widget.listLength || 3),
     });
 
-    this.form.get('itemType').valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
+    this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
       this.initializeItemsRenderer(itemType);
     });
   }
 
   private initializeItemsRenderer(itemType: ItemType) {
-    const items = this.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                            const issues = items.filter(item => !item.pr);
-                                            const pullRequests = items.filter(item => !!item.pr);
+    const items = this.itemsDao.list.pipe(filter(v => !!v), map(items => {
+                                            const issues = items!.filter(item => !item.pr);
+                                            const pullRequests = items!.filter(item => !!item.pr);
                                             return itemType === 'issue' ? issues : pullRequests;
                                           }));
 
@@ -97,12 +100,14 @@ export class EditWidget {
 
   loadFromRecommendation(recommendation: Recommendation) {
     const options = new ItemRendererOptions();
-    options.filters = recommendation.filters;
-    options.search = recommendation.search;
+    options.filters = recommendation.filters || [];
+    options.search = recommendation.search || '';
     this.itemsRenderer.options.setState(options.getState());
   }
 
   loadFromQuery(query: Query) {
-    this.itemsRenderer.options.setState(query.options);
+    if (query.options) {
+      this.itemsRenderer.options.setState(query.options);
+    }
   }
 }

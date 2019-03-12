@@ -18,27 +18,28 @@ export interface RepoConfig {
 }
 
 export interface ConfigValues {
-  dashboardConfig?: DashboardConfig;
   [key: string]: DashboardConfig|RepoConfig;
 }
+
+const DASHBOARD_CONFIG_FILENAME = 'dashboardConfig';
 
 @Injectable({providedIn: 'root'})
 export class Config {
   constructor(private github: Github) {}
 
   saveDashboardConfig(dashboardConfig: DashboardConfig) {
-    this.saveToGist('dashboardConfig', dashboardConfig);
+    this.saveToGist(DASHBOARD_CONFIG_FILENAME, dashboardConfig);
   }
 
-  getDashboardConfig(): Observable<DashboardConfig> {
-    return this.syncFromGist<DashboardConfig>('dashboardConfig');
+  getDashboardConfig(): Observable<DashboardConfig|null> {
+    return this.syncFromGist<DashboardConfig>(DASHBOARD_CONFIG_FILENAME);
   }
 
   saveRepoConfigToGist(repository: string, repoConfig: RepoConfig): Promise<void> {
     return this.saveToGist(repository, repoConfig);
   }
 
-  getRepoConfig(repository: string): Observable<RepoConfig> {
+  getRepoConfig(repository: string): Observable<RepoConfig|null> {
     return this.syncFromGist<RepoConfig>(repository);
   }
 
@@ -58,7 +59,7 @@ export class Config {
   private syncFromGist<T>(filename: string): Observable<T|null> {
     return this.github.getDashboardGist().pipe(map(gist => {
       if (gist && gist.files[filename]) {
-        return JSON.parse(gist.files[filename].content);
+        return JSON.parse(gist.files[filename].content || '');
       } else {
         return null;
       }

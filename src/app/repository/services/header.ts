@@ -10,11 +10,11 @@ const TOP_LEVEL_SECTIONS = new Set<string>(['queries', 'config', 'dashboards', '
 
 @Injectable()
 export class Header {
-  goBack: () => void | null;
+  goBack: (() => void)|null;
 
   title = new BehaviorSubject<string>('Loading...');
 
-  toolbarOutlet = new BehaviorSubject<CdkPortal>(null);
+  toolbarOutlet = new BehaviorSubject<CdkPortal|null>(null);
 
   destroyed = new Subject();
 

@@ -31,8 +31,11 @@ export class QueryPage {
     // When a query is set, the options state should be updated to be
     // whatever the query is, and the title should always match
     this._query = query;
-    this.currentOptions = this.query.options;
-    this.header.title.next(this.query.name);
+    if (this.query.options) {
+      this.currentOptions = this.query.options;
+    }
+
+    this.header.title.next(this.query.name || '');
     this.setBack();
   }
   get query(): Query {
@@ -45,7 +48,7 @@ export class QueryPage {
     // from the current query's options. If so, the save button should
     // display.
     this._currentOptions = currentOptions;
-    this.canSave = this.query && this.query.options && this.currentOptions &&
+    this.canSave = !!this.query && !!this.query.options && this.currentOptions &&
         !areOptionStatesEqual(this.query.options, this.currentOptions);
   }
   get currentOptions(): ItemRendererOptionsState {
@@ -102,8 +105,8 @@ export class QueryPage {
         this.getSubscription =
             this.queriesDao.map.pipe(takeUntil(this.destroyed), filter(map => !!map))
                 .subscribe(map => {
-                  if (map.get(id)) {
-                    this.query = map.get(id);
+                  if (map!.get(id)) {
+                    this.query = map!.get(id)!;
                   } else {
                     this.router.navigate([`${this.activatedRepository.repository.value}/queries`]);
                   }
@@ -124,8 +127,13 @@ export class QueryPage {
   }
 
   saveAs() {
-    this.queryDialog.saveAsQuery(
-        this.currentOptions, this.activatedRepository.repository.value, this.query.type);
+    this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+      const queryType = this.query.type;
+      if (!queryType) {
+        throw Error('Missing query type');
+      }
+      this.queryDialog.saveAsQuery(this.currentOptions, repository!, queryType);
+    });
   }
 
   save() {
@@ -144,11 +152,11 @@ export class QueryPage {
 
   private createNewQueryFromRecommendation(id: string) {
     this.recommendationsDao.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
-      list.forEach(r => {
+      list!.forEach(r => {
         if (r.id === id) {
           const options = new ItemRendererOptions();
-          options.filters = r.filters;
-          options.search = r.search;
+          options.filters = r.filters || [];
+          options.search = r.search || '';
           this.query = createNewQuery('issue', r.message, options.getState());
           this.cd.markForCheck();
         }
@@ -158,7 +166,7 @@ export class QueryPage {
 }
 
 function createNewQuery(
-    type: ItemType, name = 'New Query', optionsState: ItemRendererOptionsState = null): Query {
+    type: ItemType, name = 'New Query', optionsState: ItemRendererOptionsState|null = null): Query {
   const options = new ItemRendererOptions();
 
   if (optionsState) {

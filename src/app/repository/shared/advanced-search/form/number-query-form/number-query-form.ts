@@ -9,8 +9,8 @@ import {
   Output
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {Subject} from 'rxjs';
 import {NumberEquality, NumberQuery} from 'app/package/items-renderer/search-utility/query';
+import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 @Component({
@@ -42,27 +42,27 @@ export class NumberQueryForm implements AfterViewInit {
     }
 
     if (query.equality) {
-      this.form.get('equality').setValue(query.equality, {emitEvent: false});
+      this.form.get('equality')!.setValue(query.equality, {emitEvent: false});
     }
 
     if (query.value) {
-      this.form.get('value').setValue(query.value, {emitEvent: false});
+      this.form.get('value')!.setValue(query.value, {emitEvent: false});
     }
   }
-  get query(): NumberQuery { return this._query; }
+  get query(): NumberQuery {
+    return this._query;
+  }
   _query: NumberQuery;
 
   @Output() queryChange = new EventEmitter<NumberQuery>();
 
   constructor(private elementRef: ElementRef, public cd: ChangeDetectorRef) {
-    this.form.valueChanges.pipe(
-        takeUntil(this.destroyed))
-        .subscribe(value => {
-          this.queryChange.next({
-            equality: value.equality,
-            value: value.value,
-          });
-        });
+    this.form.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(value => {
+      this.queryChange.next({
+        equality: value.equality,
+        value: value.value,
+      });
+    });
   }
 
   ngAfterViewInit() {

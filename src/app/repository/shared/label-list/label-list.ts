@@ -35,7 +35,7 @@ export class LabelList {
                        const labelIds = result[0];
 
                        const labelsMap = new Map<string, Label>();
-                       result[1].forEach(label => {
+                       result[1]!.forEach(label => {
                          labelsMap.set(label.id, label);
                          labelsMap.set(label.name, label);
                        });

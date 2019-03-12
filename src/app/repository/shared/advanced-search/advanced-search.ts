@@ -88,13 +88,14 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
           this.searchChanged.emit(value);
         });
 
-    this.displayedFilterTypes = Array.from(this.metadata.keys())
-                                    .filter(key => this.metadata.get(key).displayName)
-                                    .sort((a, b) => {
-                                      const nameA = this.metadata.get(a).displayName;
-                                      const nameB = this.metadata.get(b).displayName;
-                                      return nameA < nameB ? -1 : 1;
-                                    });
+    this.displayedFilterTypes =
+        Array.from(this.metadata.keys())
+            .filter(key => this.metadata.get(key) && this.metadata.get(key)!.displayName)
+            .sort((a, b) => {
+              const nameA = this.metadata.get(a)!.displayName || '';
+              const nameB = this.metadata.get(b)!.displayName || '';
+              return nameA < nameB ? -1 : 1;
+            });
   }
 
   ngAfterViewInit() {
@@ -109,7 +110,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
   addFilter(type: string) {
     this.focusInput = true;
     const filters = this.filters.slice();
-    filters.push({type, query: null});
+    filters.push({type});
     this.filtersChanged.emit(filters);
   }
 

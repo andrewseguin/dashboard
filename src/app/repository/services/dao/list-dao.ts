@@ -14,13 +14,13 @@ export abstract class ListDao<T extends IdentifiedObject> {
   }
   _list = new BehaviorSubject<T[]|null>(null);
 
-  get map(): BehaviorSubject<Map<string, T>> {
+  get map(): BehaviorSubject<Map<string, T>|null> {
     if (!this._map) {
       this._map = new BehaviorSubject<Map<string, T>>(new Map());
       this.list.subscribe(list => {
         if (list) {
           const map = new Map<string, T>();
-          list.forEach(obj => map.set(obj.id, obj));
+          list.forEach(obj => map.set(obj.id!, obj));
           this._map.next(map);
         } else {
           this._map.next(null);
@@ -30,12 +30,15 @@ export abstract class ListDao<T extends IdentifiedObject> {
 
     return this._map;
   }
-  _map: BehaviorSubject<Map<string, T>>;
+  _map: BehaviorSubject<Map<string, T>|null>;
 
   protected constructor(protected repoIndexedDb: RepoIndexedDb, protected collectionId: StoreId) {
-    this.repoIndexedDb.initialValues[collectionId].pipe(take(1)).subscribe(values => {
-      this._list.next(values);
-    });
+    const initialValues = this.repoIndexedDb.initialValues[collectionId];
+    if (!initialValues) {
+      throw Error('Object store not initialized: ' + collectionId);
+    }
+
+    initialValues.pipe(take(1)).subscribe(values => this._list.next(values));
   }
 
   add(item: T): string;
@@ -44,12 +47,12 @@ export abstract class ListDao<T extends IdentifiedObject> {
     const items = (itemOrItems instanceof Array) ? itemOrItems : [itemOrItems];
     items.forEach(decorateForDb);
     this.repoIndexedDb.updateValues(items, this.collectionId);
-    this.list.next([...this._list.value, ...items]);
-    return items.map(obj => obj.id);
+    this.list.next([...(this._list.value || []), ...items]);
+    return items.map(obj => obj.id!);
   }
 
-  get(id: string): Observable<T> {
-    return this.map.pipe(map(map => map ? map.get(id) : null));
+  get(id: string): Observable<T|null> {
+    return this.map.pipe(map(map => (map && map.get(id)) ? map.get(id)! : null));
   }
 
   update(item: T): void;
@@ -67,11 +70,11 @@ export abstract class ListDao<T extends IdentifiedObject> {
 
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
       items.forEach(obj => {
-        map.set(obj.id, {...(map.get(obj.id) as object), ...(obj as object)} as T);
+        map!.set(obj.id!, {...(map!.get(obj.id!) as object), ...(obj as object)} as T);
       });
 
-      const values = [];
-      map.forEach(value => values.push(value));
+      const values: T[] = [];
+      map!.forEach(value => values.push(value));
       this.list.next(values);
     });
   }
@@ -85,19 +88,19 @@ export abstract class ListDao<T extends IdentifiedObject> {
       const syncMap = new Map<string, T>();
       items.forEach(item => {
         decorateForDb(item);
-        syncMap.set(item.id, item);
+        syncMap.set(item.id!, item);
       });
 
-      this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
+      this.map.pipe(filter(v => !!v), take(1)).subscribe(map => {
         // Remove any values that are not in the gist
         const toRemove: T[] = [];
-        map.forEach((value, key) => {
+        map!.forEach((value, key) => {
           if (!syncMap.has(key)) {
             toRemove.push(value);
           }
         });
         if (toRemove.length) {
-          this.repoIndexedDb.removeValues(toRemove.map(item => item.id), this.collectionId);
+          this.repoIndexedDb.removeValues(toRemove.map(item => item.id!), this.collectionId);
         }
 
         // Update any values that are in the gist
@@ -120,16 +123,17 @@ export abstract class ListDao<T extends IdentifiedObject> {
     this.repoIndexedDb.removeValues(ids, this.collectionId);
 
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
-      ids.forEach(id => map.delete(id));
+      ids.forEach(id => map!.delete(id));
 
-      const values = [];
-      map.forEach(value => values.push(value));
+      const values: T[] = [];
+      map!.forEach(value => values.push(value));
       this.list.next(values);
     });
   }
 
   removeAll() {
-    this.repoIndexedDb.removeValues(this._list.value.map(item => item.id), this.collectionId);
+    this.repoIndexedDb.removeValues(
+        (this._list.value || []).map(item => item.id!), this.collectionId);
     this.list.next([]);
   }
 }

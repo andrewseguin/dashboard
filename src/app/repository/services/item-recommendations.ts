@@ -35,9 +35,9 @@ export class ItemRecommendations {
     combineLatest(this.itemsDao.map, this.recommendationsDao.list, this.labelsDao.map)
         .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
         .subscribe(result => {
-          const items = result[0];
-          const recommendations = result[1];
-          const labelsMap = result[2];
+          const items = result[0]!;
+          const recommendations = result[1]!;
+          const labelsMap = result[2]!;
 
           const map = new Map<string, Recommendation[]>();
           items.forEach(item => {

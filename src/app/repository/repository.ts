@@ -46,14 +46,13 @@ export class Repository {
 
   private initializAutoIssueUpdates() {
     interval(60 * 1000)
-        .pipe(mergeMap(() => this.itemsDao.list), filter(list => !!list))
-        .subscribe(items => {
-          if (items.length) {
-            this.updater.updateIssues(this.activatedRepository.repository.value);
-          }
+        .pipe(
+            mergeMap(() => this.itemsDao.list.pipe(take(1))),
+            filter(items => !!items && items.length > 0))
+        .subscribe(() => {
+          this.updater.updateIssues();
         });
-
-    this.updater.updateContributors(this.activatedRepository.repository.value);
-    this.updater.updateLabels(this.activatedRepository.repository.value);
+    this.updater.updateContributors();
+    this.updater.updateLabels();
   }
 }

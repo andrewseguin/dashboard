@@ -29,9 +29,10 @@ import {EditWidget, EditWidgetData} from '../shared/dialog/edit-widget/edit-widg
 export class DashboardPage {
   set dashboard(dashboard: Dashboard) {
     this._dashboard = dashboard;
-    this.header.title.next(this.dashboard.name);
+    this.header.title.next(this.dashboard.name || '');
 
-    const hasWidgets = this.dashboard.columnGroups.some(columnGroup => {
+    const columnGroups = this.dashboard.columnGroups || [];
+    const hasWidgets = columnGroups.some(columnGroup => {
       return columnGroup.columns.some(column => {
         return column.widgets.some(widget => !!widget);
       });
@@ -85,8 +86,8 @@ export class DashboardPage {
       this.getSubscription =
           this.dashboardsDao.map.pipe(delay(0), takeUntil(this.destroyed), filter(map => !!map))
               .subscribe(map => {
-                if (map.get(id)) {
-                  this.dashboard = map.get(id);
+                if (map!.get(id)) {
+                  this.dashboard = map!.get(id)!;
                 } else {
                   this.router.navigate([`${this.activatedRepository.repository.value}/dashboards`]);
                 }
@@ -106,6 +107,10 @@ export class DashboardPage {
   }
 
   addColumnGroup() {
+    if (!this.dashboard.columnGroups) {
+      this.dashboard.columnGroups = [];
+    }
+
     this.dashboard.columnGroups.push({columns: [{widgets: []}]});
     this.save();
   }
@@ -145,8 +150,10 @@ export class DashboardPage {
   }
 
   removeColumnGroup(index: number) {
-    this.dashboard.columnGroups.splice(index, 1);
-    this.save();
+    if (this.dashboard.columnGroups) {
+      this.dashboard.columnGroups.splice(index, 1);
+      this.save();
+    }
   }
 
   removeColumn(columnGroup: ColumnGroup, index: number) {

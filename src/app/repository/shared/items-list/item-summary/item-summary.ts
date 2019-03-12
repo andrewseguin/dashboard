@@ -7,7 +7,7 @@ import {
   Output
 } from '@angular/core';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, Recommendation, RecommendationType} from 'app/repository/services/dao';
+import {Item} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
@@ -32,10 +32,6 @@ export class ItemSummary {
   @Input() active: boolean;
 
   @Output() select = new EventEmitter<number>();
-
-  getRecommendations(recommendations: Recommendation[], type: RecommendationType) {
-    return recommendations.filter(r => r.type === 'warning');
-  }
 
   constructor(
       public itemRecommendations: ItemRecommendations, private cd: ChangeDetectorRef,

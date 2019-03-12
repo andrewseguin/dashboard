@@ -60,8 +60,8 @@ export class ItemsList {
 
   ngOnInit() {
     const items = this.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                            const issues = items.filter(item => !item.pr);
-                                            const pullRequests = items.filter(item => !!item.pr);
+                                            const issues = items!.filter(item => !item.pr);
+                                            const pullRequests = items!.filter(item => !!item.pr);
                                             return this.type === 'issue' ? issues : pullRequests;
                                           }));
 
@@ -97,10 +97,11 @@ export class ItemsList {
 
     // When groups change, render the first ten, then debounce and
     // render more
-    this.itemsRenderer.itemGroups.pipe(takeUntil(this.destroyed)).subscribe(itemGroups => {
-      this.itemGroups = itemGroups;
-      this.render();
-    });
+    this.itemsRenderer.itemGroups.pipe(filter(v => !!v), takeUntil(this.destroyed))
+        .subscribe(itemGroups => {
+          this.itemGroups = itemGroups!;
+          this.render();
+        });
   }
 
   ngOnDestroy() {

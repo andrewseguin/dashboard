@@ -27,7 +27,7 @@ export class RepoIndexedDb {
     activatedRepository.repository
         .pipe(filter(repository => !!repository), takeUntil(this.destroyed))
         .subscribe(repository => {
-          this.repository = repository;
+          this.repository = repository!;
           this.openDb();
         });
   }
@@ -78,7 +78,11 @@ export class RepoIndexedDb {
   private initializeAllValues() {
     StoreIds.forEach(id => {
       this.db.then(db => db.transaction(id, 'readonly').objectStore(id).getAll()).then(result => {
-        this.initialValues[id].next(result);
+        const initialValues = this.initialValues[id];
+        if (!initialValues) {
+          throw Error('Object store not initialized :' + id);
+        }
+        initialValues.next(result);
       });
     });
   }
