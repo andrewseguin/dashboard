@@ -28,22 +28,24 @@ export class QueriesPage {
   queryGroups = combineLatest(this.queriesDao.list, this.type)
                     .pipe(
                         filter(result => result.every(r => !!r)),
-                        map(result => result[0].filter(item => item.type === result[1])),
+                        map(result => result[0]!.filter(item => item.type === result[1])),
                         map(getSortedGroups));
 
   queryResultsCount =
       combineLatest(
-          this.itemsDao.list, this.queryGroups, this.issueRecommendations.recommendations,
+          this.itemsDao.list, this.queryGroups, this.issueRecommendations.allRecommendations,
           this.type, this.labelsDao.map)
           .pipe(filter(result => result.every(r => !!r)), delay(1000), map(result => {
-                  const groups = result[1];
-                  const recommendationsByItem = result[2];
-                  const type = result[3];
-                  const labelsMap = result[4];
+                  const items = result[0]!;
+                  const groups = result[1]!;
+                  const recommendationsByItem = result[2]!;
+                  const type = result[3]!;
+                  const labelsMap = result[4]!;
 
-                  const issues = result[0].filter(item => !item.pr);
-                  const pullRequests = result[0].filter(item => !!item.pr);
-                  const items = type === 'issue' ? issues : type === 'pr' ? pullRequests : [];
+                  const issues = items.filter(item => !item.pr);
+                  const pullRequests = items.filter(item => !!item.pr);
+                  const itemsToFilter =
+                      type === 'issue' ? issues : type === 'pr' ? pullRequests : [];
 
                   const map = new Map<string, number>();
                   groups.forEach(group => group.queries.forEach(query => {
@@ -51,14 +53,15 @@ export class QueriesPage {
                       return {
                         item,
                         labelsMap,
-                        recommendations: recommendationsByItem.get(item.id),
+                        recommendations: recommendationsByItem.get(item.id) || [],
                       };
                     };
                     const filterer = new ItemFilterer<Item, MatcherContext>(
                         contextProvider, tokenizeItem, ItemsFilterMetadata);
-                    const count =
-                        filterer.filter(items, query.options.filters, query.options.search).length;
-                    map.set(query.id, count);
+                    const filters = query.options ? query.options.filters : [];
+                    const search = query.options ? query.options.search : '';
+                    const count = filterer.filter(itemsToFilter, filters, search).length;
+                    map.set(query.id!, count);
                   }));
 
                   return map;
@@ -98,13 +101,13 @@ function getSortedGroups(queries: Query[]) {
       groups.set(group, []);
     }
 
-    groups.get(group).push(query);
+    groups.get(group)!.push(query);
   });
 
   const sortedGroups: QueryGroup[] = [];
   Array.from(groups.keys()).sort().forEach(group => {
-    const queries = groups.get(group);
-    queries.sort((a, b) => a.name < b.name ? -1 : 1);
+    const queries = groups.get(group)!;
+    queries.sort((a, b) => a.name! < b.name!? -1 : 1);
     sortedGroups.push({name: group, queries});
   });
 

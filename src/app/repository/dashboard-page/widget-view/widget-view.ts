@@ -57,8 +57,8 @@ export class WidgetView {
   ngOnInit() {
     const items =
         this.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                  const issues = items.filter(item => !item.pr);
-                                  const pullRequests = items.filter(item => !!item.pr);
+                                  const issues = items!.filter(item => !item.pr);
+                                  const pullRequests = items!.filter(item => !!item.pr);
                                   return this.widget.itemType === 'issue' ? issues : pullRequests;
                                 }));
 
@@ -69,14 +69,20 @@ export class WidgetView {
         .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
         .subscribe(itemGroups => {
           this.items = [];
-          itemGroups.forEach(itemGroup => this.items.push(...itemGroup.items));
+          itemGroups!.forEach(itemGroup => this.items.push(...itemGroup.items));
           this.cd.markForCheck();
         });
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemsRenderer.options.setState(this.widget.options);
+      const options = this.widget.options;
+
+      if (!options) {
+        throw Error('Missing options for widget ' + JSON.stringify(this.widget));
+      }
+
+      this.itemsRenderer.options.setState(options);
     }
   }
 

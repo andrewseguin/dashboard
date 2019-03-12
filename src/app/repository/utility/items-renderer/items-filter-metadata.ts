@@ -40,7 +40,7 @@ export const ItemsFilterMetadata =
           },
           autocomplete: (c: AutocompleteContext) => {
             return c.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                          return items.map(issue => issue.title);
+                                          return items!.map(issue => issue.title);
                                         }));
           }
         }
@@ -57,9 +57,9 @@ export const ItemsFilterMetadata =
             return c.itemsDao.list.pipe(
                 filter(list => !!list), map(items => {
                   const assigneesSet = new Set<string>();
-                  items.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
+                  items!.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
 
-                  const assignees = [];
+                  const assignees: string[] = [];
                   assigneesSet.forEach(a => assignees.push(a));
                   return assignees;
                 }));
@@ -82,11 +82,21 @@ export const ItemsFilterMetadata =
           displayName: 'Labels',
           queryType: 'input',
           matcher: (c: MatcherContext, q: InputQuery) => {
-            return arrayContainsQuery(c.item.labels.map(l => c.labelsMap.get(l).name), q);
+            return arrayContainsQuery(
+                c.item.labels.map(l => {
+                  const label = c.labelsMap.get(l);
+
+                  if (!label) {
+                    return '';
+                  }
+
+                  return label.name;
+                }),
+                q);
           },
           autocomplete: (c: AutocompleteContext) => {
             return c.labelsDao.list.pipe(
-                filter(list => !!list), map(labels => labels.map(issue => issue.name).sort()));
+                filter(list => !!list), map(labels => labels!.map(issue => issue.name).sort()));
           }
         }
       ],
@@ -127,7 +137,7 @@ export const ItemsFilterMetadata =
               ['open', c.item.state === 'open'],
               ['closed', c.item.state === 'closed'],
             ]);
-            return stateMatchesEquality(values.get(q.state), q);
+            return stateMatchesEquality(values.get(q.state)!, q);
           },
         }
       ],
@@ -143,7 +153,7 @@ export const ItemsFilterMetadata =
               ['at least one warning', c.recommendations.some(r => r.type === 'warning')],
               ['at least one suggestion', c.recommendations.some(r => r.type === 'suggestion')],
             ]);
-            return stateMatchesEquality(values.get(q.state), q);
+            return stateMatchesEquality(values.get(q.state)!, q);
           },
         }
       ],

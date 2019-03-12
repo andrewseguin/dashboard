@@ -21,7 +21,8 @@ export class ItemGrouping<T> {
   }
 
   getGroups(items: T[], group: Group): ItemGroup<T>[] {
-    return this.groupingFunctions.get(group)(items);
+    const groupingFunction = this.groupingFunctions.get(group);
+    return groupingFunction ? groupingFunction(items) : [];
   }
 }
 
@@ -35,7 +36,7 @@ export function getGroupByProperty<T>(items: T[], property: string): ItemGroup<T
       groups.set(value, []);
     }
 
-    groups.get(value).push(item);
+    groups.get(value)!.push(item);
   });
 
   const requestGroups: ItemGroup<T>[] = [];

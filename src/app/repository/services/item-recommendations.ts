@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
-import {filter, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {getRecommendations} from '../utility/get-recommendations';
 import {ItemsDao, LabelsDao} from './dao';
 import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
@@ -8,7 +8,24 @@ import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
 
 @Injectable()
 export class ItemRecommendations {
-  recommendations = new BehaviorSubject<Map<string, Recommendation[]>|null>(null);
+  allRecommendations = new BehaviorSubject<Map<string, Recommendation[]>|null>(null);
+
+  warnings = this.allRecommendations.pipe(filter(map => !!map), map(allRecommendations => {
+                                            const map = new Map<string, Recommendation[]>();
+                                            allRecommendations!.forEach((value, key) => {
+                                              map.set(key, value.filter(v => v.type === 'warning'));
+                                            });
+                                            return map;
+                                          }));
+
+  suggestions =
+      this.allRecommendations.pipe(filter(map => !!map), map(allRecommendations => {
+                                     const map = new Map<string, Recommendation[]>();
+                                     allRecommendations!.forEach((value, key) => {
+                                       map.set(key, value.filter(v => v.type === 'suggestion'));
+                                     });
+                                     return map;
+                                   }));
 
   private destroyed = new Subject();
 
@@ -27,7 +44,7 @@ export class ItemRecommendations {
             map.set(item.id, getRecommendations(item.id, items, recommendations, labelsMap));
           });
 
-          this.recommendations.next(map);
+          this.allRecommendations.next(map);
         });
   }
 

@@ -41,7 +41,7 @@ export class ItemDetail {
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
       this.bodyMarkdown = this.markdown.getItemBodyMarkdown(this.itemId);
-      this.recommendations = this.itemRecommendations.recommendations.pipe(
+      this.recommendations = this.itemRecommendations.allRecommendations.pipe(
           filter(r => !!r), map(recommendations => recommendations.get(this.itemId)));
 
       const activityRequests = [

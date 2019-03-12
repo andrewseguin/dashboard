@@ -67,7 +67,7 @@ export class EditableRecommendation {
   actionAssignees = [];
 
   addLabelsAutocomplete = this.labelsDao.list.pipe(
-      filter(list => !!list), map(labels => labels.map(l => l.name).sort()));
+      filter(list => !!list), map(labels => labels!.map(l => l.name).sort()));
 
   private _destroyed = new Subject();
 
@@ -83,7 +83,7 @@ export class EditableRecommendation {
       action: new FormControl(this.recommendation.action),
     });
 
-    this._search = this.recommendation.search;
+    this._search = this.recommendation.search || '';
     this._filters = this.recommendation.filters || [];
   }
 
@@ -116,13 +116,13 @@ export class EditableRecommendation {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.recommendationsDao.remove(this.recommendation.id);
-            this.snackbar.open(`Recommendation deleted`, null, {duration: 2000});
+            this.recommendationsDao.remove(this.recommendation.id!);
+            this.snackbar.open(`Recommendation deleted`, undefined, {duration: 2000});
           }
         });
   }
 
   setAddLabelAction(labelNames: number[]) {
-    this.form.get('action').setValue({labels: labelNames});
+    this.form.get('action')!.setValue({labels: labelNames});
   }
 }

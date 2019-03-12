@@ -3,8 +3,7 @@ import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility
 
 export class ItemFilterer<T, M> {
   constructor(
-      private contextProvider: (item: T) => M,
-      public tokenizeItem: (item: T) => string,
+      private contextProvider: (item: T) => M, public tokenizeItem: (item: T) => string,
       private metadata: Map<string, IFilterMetadata<M, any>>) {}
 
   filter(items: T[], filters: Filter[], search: string) {
@@ -15,7 +14,13 @@ export class ItemFilterer<T, M> {
         }
 
         const context = this.contextProvider(item);
-        return this.metadata.get(filter.type).matcher(context, filter.query);
+        const filterConfig = this.metadata.get(filter.type);
+
+        if (filterConfig && filterConfig.matcher) {
+          return filterConfig.matcher(context, filter.query);
+        } else {
+          throw Error('Missing matcher for ' + filter.type);
+        }
       });
     });
 

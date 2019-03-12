@@ -7,10 +7,10 @@ import {
   Output
 } from '@angular/core';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item} from 'app/repository/services/dao';
+import {Item, Recommendation, RecommendationType} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Subject} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'item-summary',
@@ -20,10 +20,10 @@ import {map, takeUntil} from 'rxjs/operators';
   host: {'(click)': 'select.emit(this.item.number)'}
 })
 export class ItemSummary {
-  warnings = this.itemRecommendations.recommendations.pipe(
-      map(map => this.item ? map.get(this.item.id).filter(r => r.type === 'warning') : null));
-  suggestions = this.itemRecommendations.recommendations.pipe(
-      map(map => this.item ? map.get(this.item.id).filter(r => r.type === 'suggestion') : null));
+  warnings = this.itemRecommendations.warnings.pipe(
+      filter(map => !!map), map(map => map.get(this.item.id)));
+  suggestions = this.itemRecommendations.suggestions.pipe(
+      filter(map => !!map), map(map => map.get(this.item.id)));
 
   private destroyed = new Subject();
 
@@ -32,6 +32,10 @@ export class ItemSummary {
   @Input() active: boolean;
 
   @Output() select = new EventEmitter<number>();
+
+  getRecommendations(recommendations: Recommendation[], type: RecommendationType) {
+    return recommendations.filter(r => r.type === 'warning');
+  }
 
   constructor(
       public itemRecommendations: ItemRecommendations, private cd: ChangeDetectorRef,

@@ -19,7 +19,7 @@
     ],
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    //  "strictNullChecks": true,
+    "strictNullChecks": true,
     //  "strictFunctionTypes": true,
     //  "noImplicitAny": true,
     //  "noImplicitThis": true

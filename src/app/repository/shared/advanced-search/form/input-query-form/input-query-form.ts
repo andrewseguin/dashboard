@@ -44,7 +44,7 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
   get options(): string[] {
     return this._options.value;
   }
-  _options = new BehaviorSubject([]);
+  _options = new BehaviorSubject<string[]>([]);
 
   @Input() focusInput: boolean;
 
@@ -71,10 +71,10 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
     if (simpleChanges.query) {
       if (this.query) {
         if (this.query.input) {
-          this.form.get('input').setValue(this.query.input || '', {emitEvent: false});
+          this.form.get('input')!.setValue(this.query.input || '', {emitEvent: false});
         }
         if (this.query.equality) {
-          this.form.get('equality').setValue(this.query.equality || '', {emitEvent: false});
+          this.form.get('equality')!.setValue(this.query.equality || '', {emitEvent: false});
         }
       }
     }

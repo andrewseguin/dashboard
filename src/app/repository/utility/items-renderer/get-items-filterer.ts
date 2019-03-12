@@ -8,7 +8,7 @@ import {ItemsFilterMetadata, MatcherContext} from './items-filter-metadata';
 
 
 export function getItemsFilterer(itemRecommendations: ItemRecommendations, labelsDao: LabelsDao) {
-  return combineLatest(itemRecommendations.recommendations, labelsDao.map)
+  return combineLatest(itemRecommendations.allRecommendations, labelsDao.map)
       .pipe(filter(result => result.every(r => !!r)), map(result => {
               const recommendationsByItem = result[0];
               const labelsMap = result[1];
