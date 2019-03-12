@@ -10,6 +10,7 @@ import {githubLabelToLabel, Label} from 'app/repository/services/dao/labels-dao'
 import {getLinkMap} from 'app/utility/link-map';
 import {empty, Observable, of} from 'rxjs';
 import {expand, filter, map, mergeMap} from 'rxjs/operators';
+import {Auth} from './auth';
 import {GithubComment} from './github-types/comment';
 import {GithubContributor} from './github-types/contributor';
 import {Gist} from './github-types/gist';
@@ -28,7 +29,7 @@ const GIST_DESCRIPTION = 'Dashboard Config';
 
 @Injectable({providedIn: 'root'})
 export class Github {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: Auth) {}
 
   getItemsCount(repo: string, since?: string): Observable<number> {
     let query = `q=type:issue repo:${repo}`;
@@ -172,31 +173,31 @@ export class Github {
   }
 
   private post<T>(url: string, body: any, requiresAuthorization = true): Observable<T> {
-    if (requiresAuthorization && !getAuthorization()) {
+    if (requiresAuthorization && !this.auth.token) {
       return of();
     }
 
     return this.http.post<T>(url, body, {
       headers: new HttpHeaders({
-        'Authorization': getAuthorization(),
+        'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
       })
     });
   }
 
   private patch<T>(url: string, body: any, requiresAuthorization = true): Observable<T> {
-    if (requiresAuthorization && !getAuthorization()) {
+    if (requiresAuthorization && !this.auth.token) {
       return of();
     }
 
     return this.http.patch<T>(url, body, {
       headers: new HttpHeaders({
-        'Authorization': getAuthorization(),
+        'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
       })
     });
   }
 
   private get<T>(url: string, requiresAuthorization = false): Observable<HttpResponse<T>> {
-    if (requiresAuthorization && !getAuthorization()) {
+    if (requiresAuthorization && !this.auth.token) {
       return of();
     }
 
@@ -212,16 +213,11 @@ export class Github {
     return this.http.get<T>(url, {
       observe: 'response',
       headers: new HttpHeaders({
-        'Authorization': getAuthorization(),
+        'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
         'Accept': accept,
       })
     });
   }
-}
-
-function getAuthorization(): string {
-  const accessToken = localStorage.getItem('accessToken');
-  return accessToken ? `token ${accessToken}` : '';
 }
 
 export interface UserComment {
