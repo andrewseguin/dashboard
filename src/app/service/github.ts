@@ -8,14 +8,15 @@ import {
 } from 'app/repository/services/dao';
 import {githubLabelToLabel, Label} from 'app/repository/services/dao/labels-dao';
 import {getLinkMap} from 'app/utility/link-map';
-import {empty, Observable, of} from 'rxjs';
-import {expand, filter, map, mergeMap} from 'rxjs/operators';
+import {BehaviorSubject, empty, Observable, of} from 'rxjs';
+import {expand, filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Auth} from './auth';
 import {GithubComment} from './github-types/comment';
 import {GithubContributor} from './github-types/contributor';
 import {Gist} from './github-types/gist';
 import {GithubIssue} from './github-types/issue';
 import {GithubLabel} from './github-types/label';
+import {GithubRateLimitResources, GithubRateLimitResponse} from './github-types/rate-limit';
 import {GithubTimelineEvent} from './github-types/timeline';
 
 export interface CombinedPagedResults<T> {
@@ -25,11 +26,17 @@ export interface CombinedPagedResults<T> {
   completed: number;
 }
 
+type RateLimitType = 'core'|'search';
+
 const GIST_DESCRIPTION = 'Dashboard Config';
 
 @Injectable({providedIn: 'root'})
 export class Github {
-  constructor(private http: HttpClient, private auth: Auth) {}
+  rateLimit = new BehaviorSubject<GithubRateLimitResources|null>(null);
+
+  constructor(private http: HttpClient, private auth: Auth) {
+    this.getRateLimit().pipe(take(1)).subscribe(v => this.rateLimit.next(v));
+  }
 
   getItemsCount(repo: string, since?: string): Observable<number> {
     let query = `q=type:issue repo:${repo}`;
@@ -37,7 +44,8 @@ export class Github {
       query += ` updated:>${since}`;
     }
     const url = this.constructUrl('search/issues', query);
-    return this.get(url).pipe(map(result => (result.body as any).total_count));
+    return this.get(url, false, 'search')
+        .pipe(filter(v => !!v), map(result => (result!.body as any).total_count));
   }
 
   getIssues(repo: string, since?: string): Observable<CombinedPagedResults<Item>> {
@@ -73,24 +81,32 @@ export class Github {
     return this.getPagedResults<Gist, Gist>(url, g => g, true);
   }
 
+  getRateLimit(): Observable<GithubRateLimitResources|null> {
+    const url = this.constructUrl(`rate_limit`);
+    return this.get<GithubRateLimitResponse>(url).pipe(
+        filter(v => !!v && !!v.body), map(result => result!.body!.resources));
+  }
+
   getGist(id: string): Observable<Gist|null> {
     const url = this.constructUrl(`gists/${id}`);
-    return this.get<Gist>(url, true).pipe(map(result => {
-      const gist = result.body;
+    return this.get<Gist>(url, true).pipe(filter(v => !!v), map(result => {
+                                            const gist = result!.body;
 
-      if (!gist) {
-        return null;
-      }
+                                            if (!gist) {
+                                              return null;
+                                            }
 
-      // Transform keys so that understores in keys become slashes to match repo string
-      const transformedFiles: {[key in string]: any} = {};
-      Object.keys(gist.files).forEach(key => {
-        transformedFiles[key.replace('_', '/')] = gist.files[key];
-      });
-      gist.files = transformedFiles;
+                                            // Transform keys so that understores in keys become
+                                            // slashes to match repo string
+                                            const transformedFiles: {[key in string]: any} = {};
+                                            Object.keys(gist.files).forEach(key => {
+                                              transformedFiles[key.replace('_', '/')] =
+                                                  gist.files[key];
+                                            });
+                                            gist.files = transformedFiles;
 
-      return gist;
-    }));
+                                            return gist;
+                                          }));
   }
 
   getDashboardGist(): Observable<Gist|null> {
@@ -117,7 +133,7 @@ export class Github {
     return this.patch(url, {files});
   }
 
-  createDashboardGist(): Observable<Gist> {
+  createDashboardGist(): Observable<Gist|null> {
     const url = 'https://api.github.com/gists';
     const body = {
       files: {dashboardConfig: {content: '{}'}},
@@ -125,19 +141,22 @@ export class Github {
       public: false,
     };
 
-    return this.post<Gist>(url, body, true);
+    return this.post<Gist>(url, body, true).pipe(filter(v => !!v), map(response => response!.body));
   }
 
   private getPagedResults<T, R>(
-      url: string, transform: (values: T) => R,
-      requiresAuthorization = false): Observable<CombinedPagedResults<R>> {
+      url: string, transform: (values: T) => R, needsAuth = false,
+      rateLimitType: RateLimitType = 'core'): Observable<CombinedPagedResults<R>> {
     let completed = 0;
     let total = 0;
     let accumulated: R[] = [];
 
-    return this.getPaged<T>(url, requiresAuthorization)
+    return this.getPaged<T>(url, needsAuth, rateLimitType)
         .pipe(
-            expand(result => result.next ? this.getPaged<T>(result.next) : empty()), map(result => {
+            expand(
+                result => result.next ? this.getPaged<T>(result.next, needsAuth, rateLimitType) :
+                                        empty()),
+            map(result => {
               completed++;
               const transformedResponse = result.response.map(transform);
               const current = transformedResponse;
@@ -159,46 +178,56 @@ export class Github {
     return `${domain}/${path}?${query}${avoidCache ? '&' + new Date().toISOString() : ''}`;
   }
 
-  private getPaged<T>(url: string, requiresAuthorization = false):
+  private getPaged<T>(url: string, needsAuth = false, rateLimitType: RateLimitType = 'core'):
       Observable<{response: T[], next: string, numPages: number}> {
-    return this.get<T[]>(url, requiresAuthorization).pipe(map(result => {
-      const response = result.body || [];
-      const linkMap = getLinkMap(result.headers);
-      const next = linkMap.get('next') || '';
+    return this.get<T[]>(url, needsAuth, rateLimitType)
+        .pipe(filter(v => !!v), map(result => {
+                const response = result!.body || [];
+                const linkMap = getLinkMap(result!.headers);
+                const next = linkMap.get('next') || '';
 
-      const last = linkMap.get('last') ? +linkMap.get('last')!.split('&page=')[1] : 0;
-      const numPages = last || 1;
-      return {response, next, numPages};
-    }));
+                const last = linkMap.get('last') ? +linkMap.get('last')!.split('&page=')[1] : 0;
+                const numPages = last || 1;
+                return {response, next, numPages};
+              }));
   }
 
-  private post<T>(url: string, body: any, requiresAuthorization = true): Observable<T> {
-    if (requiresAuthorization && !this.auth.token) {
-      return of();
+  private post<T>(url: string, body: any, needsAuth = true, rateLimitType: RateLimitType = 'core'):
+      Observable<HttpResponse<T>|null> {
+    if (needsAuth && !this.auth.token) {
+      return of(null);
     }
 
-    return this.http.post<T>(url, body, {
-      headers: new HttpHeaders({
-        'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
-      })
-    });
+    return this.http
+        .post<T>(url, body, {
+          observe: 'response',
+          headers: new HttpHeaders({
+            'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
+          })
+        })
+        .pipe(tap(response => this.updateRateLimit(rateLimitType, response)));
   }
 
-  private patch<T>(url: string, body: any, requiresAuthorization = true): Observable<T> {
-    if (requiresAuthorization && !this.auth.token) {
-      return of();
+  private patch<T>(url: string, body: any, needsAuth = true, rateLimitType: RateLimitType = 'core'):
+      Observable<HttpResponse<T>|null> {
+    if (needsAuth && !this.auth.token) {
+      return of(null);
     }
 
-    return this.http.patch<T>(url, body, {
-      headers: new HttpHeaders({
-        'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
-      })
-    });
+    return this.http
+        .patch<T>(url, body, {
+          observe: 'response',
+          headers: new HttpHeaders({
+            'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
+          })
+        })
+        .pipe(tap(response => this.updateRateLimit(rateLimitType, response)));
   }
 
-  private get<T>(url: string, requiresAuthorization = false): Observable<HttpResponse<T>> {
-    if (requiresAuthorization && !this.auth.token) {
-      return of();
+  private get<T>(url: string, needsAuth = false, rateLimitType: RateLimitType = 'core'):
+      Observable<HttpResponse<T>|null> {
+    if (needsAuth && !this.auth.token) {
+      return of(null);
     }
 
     const accept: string[] = [];
@@ -210,12 +239,29 @@ export class Github {
     accept.push('application/vnd.github.squirrel-girl-preview');
 
 
-    return this.http.get<T>(url, {
-      observe: 'response',
-      headers: new HttpHeaders({
-        'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
-        'Accept': accept,
-      })
+    return this.http
+        .get<T>(url, {
+          observe: 'response',
+          headers: new HttpHeaders({
+            'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
+            'Accept': accept,
+          })
+        })
+        .pipe(tap(response => this.updateRateLimit(rateLimitType, response)));
+  }
+
+  updateRateLimit(type: RateLimitType, response: HttpResponse<any>|null) {
+    if (!response) {
+      return;
+    }
+
+    const reset = +(response.headers.get('x-ratelimit-reset') || '0');
+    const limit = +(response.headers.get('x-ratelimit-limit') || '0');
+    const remaining = +(response.headers.get('x-ratelimit-remaining') || '0');
+
+    this.rateLimit.pipe(filter(v => !!v), take(1)).subscribe(rateLimit => {
+      rateLimit![type] = {reset, limit, remaining};
+      this.rateLimit.next(rateLimit);
     });
   }
 }

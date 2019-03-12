@@ -44,9 +44,12 @@ export class Config {
       this.github.getDashboardGist()
           .pipe(
               mergeMap(gist => gist ? of(gist) : this.github.createDashboardGist()),
-              mergeMap(
-                  gist =>
-                      this.github.editGist(gist.id, filename, JSON.stringify(content, null, 2))),
+              mergeMap(gist => {
+                if (!gist) {
+                  return of(null);
+                }
+                return this.github.editGist(gist.id, filename, JSON.stringify(content, null, 2));
+              }),
               take(1))
           .subscribe(() => resolve());
     });
