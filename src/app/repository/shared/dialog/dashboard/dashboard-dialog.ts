@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {Router} from '@angular/router';
 import {Dashboard, DashboardsDao} from 'app/repository/services/dao/dashboards-dao';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
@@ -11,7 +10,7 @@ import {DashboardEdit} from './dashboard-edit/dashboard-edit';
 @Injectable()
 export class DashboardDialog {
   constructor(
-      private dialog: MatDialog, private snackbar: MatSnackBar, private router: Router,
+      private dialog: MatDialog, private snackbar: MatSnackBar,
       private dashboardsDao: DashboardsDao) {}
 
   editDashboard(dashboard: Dashboard) {

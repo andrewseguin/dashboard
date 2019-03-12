@@ -1,5 +1,4 @@
-import {COMMA, ENTER, SPACE} from '@angular/cdk/keycodes';
-import {SimplePlaceholderMapper} from '@angular/compiler/src/i18n/serializers/serializer';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,7 +11,7 @@ import {
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {merge, Observable, Subject} from 'rxjs';
-import {delay, map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
+import {delay, map, startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'editable-chip-list',

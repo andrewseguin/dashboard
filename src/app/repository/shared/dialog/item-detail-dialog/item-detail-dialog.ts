@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 
 export interface ItemDetailDialogData {
@@ -13,7 +13,5 @@ export interface ItemDetailDialogData {
   providers: [ItemsRenderer]
 })
 export class ItemDetailDialog {
-  constructor(
-      private dialogRef: MatDialogRef<ItemDetailDialog, void>,
-      @Inject(MAT_DIALOG_DATA) public data: ItemDetailDialogData) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ItemDetailDialogData) {}
 }

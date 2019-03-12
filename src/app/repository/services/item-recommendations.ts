@@ -13,8 +13,8 @@ export class ItemRecommendations {
   private destroyed = new Subject();
 
   constructor(
-      private recommendationsDao: RecommendationsDao, private issuesDao: ItemsDao,
-      private itemsDao: ItemsDao, private labelsDao: LabelsDao) {
+      private recommendationsDao: RecommendationsDao, private itemsDao: ItemsDao,
+      private labelsDao: LabelsDao) {
     combineLatest(this.itemsDao.map, this.recommendationsDao.list, this.labelsDao.map)
         .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
         .subscribe(result => {

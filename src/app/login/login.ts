@@ -1,13 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  NgZone,
-  OnDestroy
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, NgZone, OnDestroy} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {FormControl} from '@angular/forms';
-import {MatSnackBar} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Auth} from 'app/service/auth';
 import {sendEvent} from 'app/utility/analytics';
