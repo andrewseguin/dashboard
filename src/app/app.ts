@@ -24,7 +24,7 @@ export class App {
         }))
         .subscribe(x => sendPageview(x.urlAfterRedirects));
 
-    this.auth.tokenChanged.subscribe(token => {
+    this.auth.token$.subscribe(token => {
       if (!token) {
         this.navigateToLogin();
       }

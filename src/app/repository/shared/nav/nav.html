@@ -20,17 +20,17 @@
 <mat-divider></mat-divider>
 
 <div class="settings">
-  <ng-container *ngIf="afAuth.authState | async; let user; else settingsLabel">
-    <div class="pic" [style.backgroundImage]="'url(' + user.photoURL + ')'">
-    </div>
-    <div class="info">
-      <div> {{user.displayName}} </div>
-      <div class="user-email"> {{user.email}} </div>
-    </div>
+  <ng-container *ngIf="auth.token$ | async; let token; else settingsLabel">
+    <ng-container *ngIf="auth.user$ | async; let user">
+      <div class="pic" [style.backgroundImage]="'url(https://github.com/' + user + '.png)'">
+      </div>
+      <div class="username"> {{user}} </div>
+    </ng-container>
   </ng-container>
   <ng-template #settingsLabel>
-    <button mat-button (click)="loginWithGithub()" class="sign-in">Login to
-      Github</button>
+    <button mat-button (click)="auth.signIn()" class="sign-in">
+      Login to Github
+    </button>
   </ng-template>
   <button mat-icon-button [mat-menu-trigger-for]="settings">
     <mat-icon> settings </mat-icon>
@@ -43,8 +43,8 @@
     Use {{theme.isLight ? 'Dark' : 'Light' }} Theme
   </button>
 
-  <button mat-menu-item (click)="signOut()">
+  <button mat-menu-item (click)="auth.signOut()" *ngIf="auth.token$ | async">
     <mat-icon> exit_to_app </mat-icon>
-    {{(afAuth.authState | async) ? 'Logout' : 'Clear Access Token'}}
+    Logout
   </button>
 </mat-menu>

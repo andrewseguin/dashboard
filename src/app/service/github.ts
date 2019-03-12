@@ -288,7 +288,7 @@ export class Github {
               this.rateLimitMessageOpen = true;
             }
 
-            return merge(this.auth.tokenChanged.pipe(filter(v => !v)), timer(refreshedDate));
+            return merge(this.auth.token$.pipe(filter(v => !v)), timer(refreshedDate));
           } else {
             return of(null);
           }

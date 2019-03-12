@@ -7,7 +7,6 @@ import {DaoState} from 'app/repository/services/dao/dao-state';
 import {Theme} from 'app/repository/services/theme';
 import {Updater} from 'app/repository/services/updater';
 import {Auth} from 'app/service/auth';
-import {Subject} from 'rxjs';
 
 export interface NavLink {
   route: string;
@@ -35,24 +34,8 @@ export class Nav {
 
   @Input() sidenav: MatSidenav;
 
-  private destroyed = new Subject();
-
   constructor(
       public afAuth: AngularFireAuth, public activatedRepository: ActivatedRepository,
       public daoState: DaoState, public cd: ChangeDetectorRef, public theme: Theme,
-      public router: Router, private auth: Auth, public updater: Updater) {}
-
-  ngOnDestroy() {
-    this.destroyed.next();
-    this.destroyed.complete();
-  }
-
-  signOut() {
-    this.afAuth.auth.signOut();
-    this.auth.token = '';
-  }
-
-  loginWithGithub() {
-    this.auth.signIn();
-  }
+      public router: Router, public auth: Auth, public updater: Updater) {}
 }
