@@ -1,4 +1,4 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {
   Contributor,
@@ -36,7 +36,7 @@ export class Github {
       query += ` updated:>${since}`;
     }
     const url = this.constructUrl('search/issues', query);
-    return this.query(url).pipe(map(result => (result.body as any).total_count));
+    return this.get(url).pipe(map(result => (result.body as any).total_count));
   }
 
   getIssues(repo: string, since?: string): Observable<CombinedPagedResults<Item>> {
@@ -50,24 +50,34 @@ export class Github {
     return this.getPagedResults<GithubLabel, Label>(url, githubLabelToLabel);
   }
 
-  getGists(): Observable<CombinedPagedResults<Gist>> {
-    const url = this.constructUrl(`gists`, `per_page=100`);
-    return this.getPagedResults<Gist, Gist>(url, g => g);
-  }
-
   getTimeline(repo: string, id: string): Observable<CombinedPagedResults<TimelineEvent>> {
     const url = this.constructUrl(`repos/${repo}/issues/${id}/events`, 'per_page=100');
     return this.getPagedResults<GithubTimelineEvent, TimelineEvent>(
         url, githubTimelineEventtoTimelineEvent);
   }
 
-  getGist(id: string): Observable<Gist> {
+  getContributors(repo: string): Observable<CombinedPagedResults<Contributor>> {
+    const url = this.constructUrl(`repos/${repo}/contributors`, `per_page=100`);
+    return this.getPagedResults<GithubContributor, Contributor>(
+        url, githubContributorToContributor);
+  }
+
+  getComments(repo: string, id: string): Observable<CombinedPagedResults<UserComment>> {
+    const url = this.constructUrl(`repos/${repo}/issues/${id}/comments`, 'per_page=100');
+    return this.getPagedResults<GithubComment, UserComment>(url, githubCommentToUserComment);
+  }
+
+  getGists(): Observable<CombinedPagedResults<Gist>> {
+    const url = this.constructUrl(`gists`, `per_page=100`);
+    return this.getPagedResults<Gist, Gist>(url, g => g, true);
+  }
+
+  getGist(id: string): Observable<Gist|null> {
     const url = this.constructUrl(`gists/${id}`);
-    return this.query<Gist>(url).pipe(map(result => {
+    return this.get<Gist>(url, true).pipe(map(result => {
       const gist = result.body;
 
-      // Transform keys so that understores in keys become slashes to match repo
-      // string
+      // Transform keys so that understores in keys become slashes to match repo string
       const transformedFiles = {};
       Object.keys(gist.files).forEach(key => {
         transformedFiles[key.replace('_', '/')] = gist.files[key];
@@ -94,11 +104,6 @@ export class Github {
     }));
   }
 
-  getComments(repo: string, id: string): Observable<CombinedPagedResults<UserComment>> {
-    const url = this.constructUrl(`repos/${repo}/issues/${id}/comments`, 'per_page=100');
-    return this.getPagedResults<GithubComment, UserComment>(url, githubCommentToUserComment);
-  }
-
   editGist(id: string, filename: string, content: string) {
     filename = filename.replace('/', '_');
 
@@ -106,12 +111,6 @@ export class Github {
     files[filename] = {filename, content};
     const url = this.constructUrl(`gists/${id}`, 'random=' + Math.random());
     return this.patch(url, {files});
-  }
-
-  getContributors(repo: string): Observable<CombinedPagedResults<Contributor>> {
-    const url = this.constructUrl(`repos/${repo}/contributors`, `per_page=100`);
-    return this.getPagedResults<GithubContributor, Contributor>(
-        url, githubContributorToContributor);
   }
 
   createDashboardGist(): Observable<Gist> {
@@ -122,31 +121,32 @@ export class Github {
       public: false,
     };
 
-    return this.post<Gist>(url, body);
+    return this.post<Gist>(url, body, true);
   }
 
-  private getPagedResults<T, R>(url: string, transform: (values: T) => R):
-      Observable<CombinedPagedResults<R>> {
+  private getPagedResults<T, R>(
+      url: string, transform: (values: T) => R,
+      requiresAuthorization = false): Observable<CombinedPagedResults<R>> {
     let completed = 0;
     let total = 0;
     let accumulated = [];
 
-    return this.get<T>(url).pipe(
-        expand(result => result.next ? this.get(result.next) : empty()), map(result => {
-          completed++;
-          const transformedResponse = result.response.map(transform);
-          const current = transformedResponse;
-          accumulated = current.concat(transformedResponse);
+    return this.getPaged<T>(url, requiresAuthorization)
+        .pipe(expand(result => result.next ? this.getPaged(result.next) : empty()), map(result => {
+                completed++;
+                const transformedResponse = result.response.map(transform);
+                const current = transformedResponse;
+                accumulated = current.concat(transformedResponse);
 
-          // Determine this on the first pass but not subsequent ones. The
-          // last page will have result.numPages equal to 1 since it is
-          // missing.
-          if (!total) {
-            total = result.numPages;
-          }
+                // Determine this on the first pass but not subsequent ones. The
+                // last page will have result.numPages equal to 1 since it is
+                // missing.
+                if (!total) {
+                  total = result.numPages;
+                }
 
-          return {completed, total, current, accumulated};
-        }));
+                return {completed, total, current, accumulated};
+              }));
   }
 
   private constructUrl(path: string, query = '', avoidCache = true) {
@@ -154,42 +154,9 @@ export class Github {
     return `${domain}/${path}?${query}${avoidCache ? '&' + new Date().toISOString() : ''}`;
   }
 
-  query<T>(url: string) {
-    const accept = [];
-
-    // Label descriptions
-    accept.push('application/vnd.github.symmetra-preview+json');
-
-    // Issue reactions
-    accept.push('application/vnd.github.squirrel-girl-preview');
-
-    return this.http.get<T>(url, {
-      observe: 'response',
-      headers: new HttpHeaders({
-        'Authorization': getAuthorization(),
-        'Accept': accept,
-      })
-    });
-  }
-
-  post<T>(url: string, body: any): Observable<T> {
-    return this.http.post<T>(url, body, {
-      headers: new HttpHeaders({
-        'Authorization': getAuthorization(),
-      })
-    });
-  }
-
-  patch<T>(url: string, body: any): Observable<T> {
-    return this.http.patch<T>(url, body, {
-      headers: new HttpHeaders({
-        'Authorization': getAuthorization(),
-      })
-    });
-  }
-
-  get<T>(url: string): Observable<{response: T[], next: string|null, numPages: number}> {
-    return this.query<T[]>(url).pipe(map(result => {
+  private getPaged<T>(url: string, requiresAuthorization = false):
+      Observable<{response: T[], next: string|null, numPages: number}> {
+    return this.get<T[]>(url, requiresAuthorization).pipe(map(result => {
       const response = result.body;
       const linkMap = getLinkMap(result.headers);
       const next = linkMap.get('next');
@@ -200,6 +167,53 @@ export class Github {
       }
       return {response, next, numPages};
     }));
+  }
+
+  private post<T>(url: string, body: any, requiresAuthorization = true): Observable<T> {
+    if (requiresAuthorization && !getAuthorization()) {
+      return of();
+    }
+
+    return this.http.post<T>(url, body, {
+      headers: new HttpHeaders({
+        'Authorization': getAuthorization(),
+      })
+    });
+  }
+
+  private patch<T>(url: string, body: any, requiresAuthorization = true): Observable<T> {
+    if (requiresAuthorization && !getAuthorization()) {
+      return of();
+    }
+
+    return this.http.patch<T>(url, body, {
+      headers: new HttpHeaders({
+        'Authorization': getAuthorization(),
+      })
+    });
+  }
+
+  private get<T>(url: string, requiresAuthorization = false): Observable<HttpResponse<T>> {
+    if (requiresAuthorization && !getAuthorization()) {
+      return of();
+    }
+
+    const accept = [];
+
+    // Label descriptions
+    accept.push('application/vnd.github.symmetra-preview+json');
+
+    // Issue reactions
+    accept.push('application/vnd.github.squirrel-girl-preview');
+
+
+    return this.http.get<T>(url, {
+      observe: 'response',
+      headers: new HttpHeaders({
+        'Authorization': getAuthorization(),
+        'Accept': accept,
+      })
+    });
   }
 }
 
@@ -254,4 +268,17 @@ function githubTimelineEventtoTimelineEvent(o: GithubTimelineEvent): TimelineEve
     requestedReviewers: o.requested_reviewers,
     reviewRequester: o.review_requester,
   };
+}
+
+interface GithubRateLimit {
+  limit: number;
+  remaining: number;
+  reset: number;
+}
+
+interface GithubRateLimitResponse {
+  core: GithubRateLimit;
+  search: GithubRateLimit;
+  graphql: GithubRateLimit;
+  integration_manifest: GithubRateLimit;
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Config} from 'app/service/config';
-import {combineLatest, Subject} from 'rxjs';
+import {combineLatest, of, Subject} from 'rxjs';
 import {filter, mergeMap, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
 import {DashboardsDao} from './dao/dashboards-dao';
@@ -36,6 +36,10 @@ export class RepoGist {
               filter(repository => !!repository),
               mergeMap(repository => this.config.getRepoConfig(repository)),
               mergeMap(repoConfig => {
+                if (!repoConfig) {
+                  return of(null);
+                }
+
                 return Promise.all([
                   this.dashboardsDao.sync(repoConfig.dashboards),
                   this.queriesDao.sync(repoConfig.queries),

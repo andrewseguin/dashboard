@@ -3,7 +3,7 @@ import {Dashboard} from 'app/repository/services/dao/dashboards-dao';
 import {Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {Observable, of} from 'rxjs';
-import {filter, map, mergeMap, take} from 'rxjs/operators';
+import {map, mergeMap, take} from 'rxjs/operators';
 import {Github} from './github';
 
 
@@ -55,10 +55,13 @@ export class Config {
     });
   }
 
-  private syncFromGist<T>(filename: string): Observable<T> {
-    return this.github.getDashboardGist().pipe(filter(gist => !!gist), map(gist => {
-                                                 const file = gist.files[filename];
-                                                 return file ? JSON.parse(file.content) : {};
-                                               }));
+  private syncFromGist<T>(filename: string): Observable<T|null> {
+    return this.github.getDashboardGist().pipe(map(gist => {
+      if (gist && gist.files[filename]) {
+        return JSON.parse(gist.files[filename].content);
+      } else {
+        return null;
+      }
+    }));
   }
 }
