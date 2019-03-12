@@ -16,7 +16,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
 
   get map(): BehaviorSubject<Map<string, T>|null> {
     if (!this._map) {
-      this._map = new BehaviorSubject<Map<string, T>>(new Map());
+      this._map = new BehaviorSubject<Map<string, T>|null>(new Map<string, T>());
       this.list.subscribe(list => {
         if (list) {
           const map = new Map<string, T>();

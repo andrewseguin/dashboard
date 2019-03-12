@@ -3,7 +3,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 export function getValuesFromList(listDao: ListDao<any>, property: string): Observable<string[]> {
-  return listDao.list.pipe(map((list: any[]) => {
+  return listDao.list.pipe(map(list => {
     if (!list) {
       return [];
     }

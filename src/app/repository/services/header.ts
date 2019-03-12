@@ -21,8 +21,8 @@ export class Header {
   constructor(private windowTitle: WindowTitle, private router: Router) {
     this.title.pipe(takeUntil(this.destroyed)).subscribe(title => this.windowTitle.setTitle(title));
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntil(this.destroyed))
-        .subscribe((e: NavigationEnd) => {
-          const sections = e.urlAfterRedirects.split('/');
+        .subscribe(e => {
+          const sections = (e as NavigationEnd).urlAfterRedirects.split('/');
           const section = sections[3];
           const subSection = sections[4];
 

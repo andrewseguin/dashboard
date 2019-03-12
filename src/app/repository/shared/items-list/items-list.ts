@@ -16,7 +16,7 @@ import {ItemRecommendations} from 'app/repository/services/item-recommendations'
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
-import {fromEvent, Observable, Observer, Subject} from 'rxjs';
+import {fromEvent, Observable, Subject} from 'rxjs';
 import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
 
 @Component({
@@ -29,7 +29,7 @@ import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
 export class ItemsList {
   destroyed = new Subject();
   private elementScrolled: Observable<Event> = Observable.create(
-      (observer: Observer<Event>) => this.ngZone.runOutsideAngular(
+      observer => this.ngZone.runOutsideAngular(
           () => fromEvent(this.elementRef.nativeElement, 'scroll')
                     .pipe(takeUntil(this.destroyed))
                     .subscribe(observer)));

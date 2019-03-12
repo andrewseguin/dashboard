@@ -3,6 +3,7 @@ import {
   DateQuery,
   InputQuery,
   NumberQuery,
+  Query,
   StateQuery
 } from 'app/package/items-renderer/search-utility/query';
 import {
@@ -35,8 +36,8 @@ export const ItemsFilterMetadata =
         'title', {
           displayName: 'Title',
           queryType: 'input',
-          matcher: (c: MatcherContext, q: InputQuery) => {
-            return stringContainsQuery(c.item.title, q);
+          matcher: (c: MatcherContext, q: Query) => {
+            return stringContainsQuery(c.item.title, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
             return c.itemsDao.list.pipe(filter(list => !!list), map(items => {
@@ -50,8 +51,8 @@ export const ItemsFilterMetadata =
         'assignees', {
           displayName: 'Assignee',
           queryType: 'input',
-          matcher: (c: MatcherContext, q: InputQuery) => {
-            return arrayContainsQuery(c.item.assignees, q);
+          matcher: (c: MatcherContext, q: Query) => {
+            return arrayContainsQuery(c.item.assignees, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
             return c.itemsDao.list.pipe(
@@ -71,8 +72,8 @@ export const ItemsFilterMetadata =
         'body', {
           displayName: 'Body',
           queryType: 'input',
-          matcher: (c: MatcherContext, q: InputQuery) => {
-            return stringContainsQuery(c.item.body, q);
+          matcher: (c: MatcherContext, q: Query) => {
+            return stringContainsQuery(c.item.body, q as InputQuery);
           },
         }
       ],
@@ -81,7 +82,7 @@ export const ItemsFilterMetadata =
         'labels', {
           displayName: 'Labels',
           queryType: 'input',
-          matcher: (c: MatcherContext, q: InputQuery) => {
+          matcher: (c: MatcherContext, q: Query) => {
             return arrayContainsQuery(
                 c.item.labels.map(l => {
                   const label = c.labelsMap.get(l);
@@ -92,7 +93,7 @@ export const ItemsFilterMetadata =
 
                   return label.name;
                 }),
-                q);
+                q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
             return c.labelsDao.list.pipe(
@@ -107,8 +108,8 @@ export const ItemsFilterMetadata =
         'commentCount', {
           displayName: 'Comment Count',
           queryType: 'number',
-          matcher: (c: MatcherContext, q: NumberQuery) => {
-            return numberMatchesEquality(c.item.comments, q);
+          matcher: (c: MatcherContext, q: Query) => {
+            return numberMatchesEquality(c.item.comments, q as NumberQuery);
           }
         }
       ],
@@ -119,8 +120,8 @@ export const ItemsFilterMetadata =
         'created', {
           displayName: 'Date Created',
           queryType: 'date',
-          matcher: (c: MatcherContext, q: DateQuery) => {
-            return dateMatchesEquality(c.item.created, q);
+          matcher: (c: MatcherContext, q: Query) => {
+            return dateMatchesEquality(c.item.created, q as DateQuery);
           }
         }
       ],
@@ -132,12 +133,13 @@ export const ItemsFilterMetadata =
           displayName: 'State',
           queryType: 'state',
           queryTypeData: {states: ['open', 'closed']},
-          matcher: (c: MatcherContext, q: StateQuery) => {
+          matcher: (c: MatcherContext, q: Query) => {
             const values = new Map<string, boolean>([
               ['open', c.item.state === 'open'],
               ['closed', c.item.state === 'closed'],
             ]);
-            return stateMatchesEquality(values.get(q.state)!, q);
+            const stateQuery = q as StateQuery;
+            return stateMatchesEquality(values.get(stateQuery.state)!, stateQuery);
           },
         }
       ],
@@ -147,13 +149,14 @@ export const ItemsFilterMetadata =
           displayName: 'Recommendation',
           queryType: 'state',
           queryTypeData: {states: ['empty', 'at least one warning', 'at least one suggestion']},
-          matcher: (c: MatcherContext, q: StateQuery) => {
+          matcher: (c: MatcherContext, q: Query) => {
             const values = new Map<string, boolean>([
               ['empty', !c.recommendations.length],
               ['at least one warning', c.recommendations.some(r => r.type === 'warning')],
               ['at least one suggestion', c.recommendations.some(r => r.type === 'suggestion')],
             ]);
-            return stateMatchesEquality(values.get(q.state)!, q);
+            const stateQuery = q as StateQuery;
+            return stateMatchesEquality(values.get(stateQuery.state)!, stateQuery);
           },
         }
       ],

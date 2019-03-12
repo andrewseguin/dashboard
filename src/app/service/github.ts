@@ -135,21 +135,22 @@ export class Github {
     let accumulated: R[] = [];
 
     return this.getPaged<T>(url, requiresAuthorization)
-        .pipe(expand(result => result.next ? this.getPaged(result.next) : empty()), map(result => {
-                completed++;
-                const transformedResponse = result.response.map(transform);
-                const current = transformedResponse;
-                accumulated = current.concat(transformedResponse);
+        .pipe(
+            expand(result => result.next ? this.getPaged<T>(result.next) : empty()), map(result => {
+              completed++;
+              const transformedResponse = result.response.map(transform);
+              const current = transformedResponse;
+              accumulated = current.concat(transformedResponse);
 
-                // Determine this on the first pass but not subsequent ones. The
-                // last page will have result.numPages equal to 1 since it is
-                // missing.
-                if (!total) {
-                  total = result.numPages;
-                }
+              // Determine this on the first pass but not subsequent ones. The
+              // last page will have result.numPages equal to 1 since it is
+              // missing.
+              if (!total) {
+                total = result.numPages;
+              }
 
-                return {completed, total, current, accumulated};
-              }));
+              return {completed, total, current, accumulated};
+            }));
   }
 
   private constructUrl(path: string, query = '', avoidCache = true) {
