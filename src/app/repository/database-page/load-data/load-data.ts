@@ -13,7 +13,7 @@ import {
 import {DaoState} from 'app/repository/services/dao/dao-state';
 import {Github} from 'app/service/github';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
+import {filter, map, mergeMap, startWith, takeUntil, tap} from 'rxjs/operators';
 
 
 interface StorageState {
@@ -47,10 +47,11 @@ export class LoadData {
       })));
 
   totalItemCount =
-      combineLatest(this.activatedRepository.repository, this.formGroup.valueChanges)
-          .pipe(startWith([null, null]), filter(result => !!result[0]), mergeMap(() => {
+      combineLatest(
+          this.activatedRepository.repository, this.formGroup.valueChanges.pipe(startWith(null)))
+          .pipe(filter(result => !!result[0]), mergeMap(result => {
+                  const repository = result[0]!;
                   const since = this.getIssuesDateSince();
-                  const repository = this.activatedRepository.repository.value;
                   return this.github.getItemsCount(repository!, since);
                 }));
 
@@ -72,52 +73,54 @@ export class LoadData {
     this.isLoading.next(false);
   }
 
-  async store() {
-    const repository = this.activatedRepository.repository.value;
+  store() {
     this.isLoading.next(true);
 
-    await this.getValues(
-        'labels', () => this.github.getLabels(repository),
+    const getLabels = this.getValues(
+        'labels', repository => this.github.getLabels(repository),
         (values: Label[]) => this.labelsDao.update(values));
-    this.completedTypes.add('labels');
 
-    await this.getValues(
-        'issues', () => this.github.getIssues(repository, this.getIssuesDateSince()),
+    const getIssues = this.getValues(
+        'issues', repository => this.github.getIssues(repository, this.getIssuesDateSince()),
         (values: Item[]) => this.itemsDao.update(values));
-    this.completedTypes.add('issues');
 
-    await this.getValues(
-        'contributors', () => this.github.getContributors(repository),
+    const getContributors = this.getValues(
+        'contributor', repository => this.github.getContributors(repository),
         (values: Contributor[]) => this.contributorsDao.update(values));
-    this.completedTypes.add('contributors');
 
-    this.state = null;
-    this.snackbar.open(`Successfully loaded data for ${repository}`, '', {duration: 2000});
-    this.isLoading.next(false);
-    this.cd.markForCheck();
+    this.activatedRepository.repository
+        .pipe(
+            mergeMap(() => getLabels), mergeMap(() => getIssues), mergeMap(() => getContributors),
+            takeUntil(this.destroyed))
+        .subscribe(() => {
+          this.state = null;
+          this.snackbar.open(`Successfully loaded data`, '', {duration: 2000});
+          this.isLoading.next(false);
+          this.cd.markForCheck();
+        });
   }
 
-  async getValues(type: string, loadFn: () => Observable<any>, saver: (values: any) => void) {
-    return new Promise<void>(resolve => {
-      this.state = {
-        id: 'loading',
-        label: `Loading ${type}`,
-        progress: {
-          type: 'determinate',
-          value: 0,
-        }
-      };
-
-      loadFn().pipe(takeUntil(this.destroyed)).subscribe(result => {
-        this.state!.progress!.value = result.completed / result.total * 100;
-        this.cd.markForCheck();
-        saver(result.current);
-
-        if (result.completed === result.total) {
-          resolve();
-        }
-      });
-    });
+  getValues(
+      type: string, loadFn: (repository: string) => Observable<any>,
+      saver: (values: any) => void): Observable<void> {
+    return this.activatedRepository.repository.pipe(
+        filter(v => !!v), tap(() => {
+          this.state = {
+            id: 'loading',
+            label: `Loading ${type}`,
+            progress: {
+              type: 'determinate',
+              value: 0,
+            }
+          };
+          this.cd.markForCheck();
+        }),
+        mergeMap(repository => loadFn(repository!)), tap(result => {
+          this.state!.progress!.value = result.completed / result.total * 100;
+          this.cd.markForCheck();
+          saver(result.current);
+        }),
+        filter(result => result.completed === result.total));
   }
 
   private getIssuesDateSince() {
