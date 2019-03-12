@@ -4,7 +4,6 @@ import {FormControl} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Auth} from 'app/service/auth';
 import {sendEvent} from 'app/utility/analytics';
-import {auth} from 'firebase/app';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -55,16 +54,7 @@ export class Login implements OnDestroy {
   }
 
   loginWithGithub() {
-    this.checkingAuth.next(true);
-    const googleAuthProvider = new auth.GoogleAuthProvider();
-    googleAuthProvider.setCustomParameters({prompt: 'select_account'});
-    this.afAuth.auth.signInWithPopup(googleAuthProvider).catch(err => {
-      switch (err.code) {
-        case 'auth/popup-closed-by-user':
-          this.ngZone.run(() => this.checkingAuth.next(false));
-          break;
-      }
-    });
+    this.auth.signIn();
   }
 
   loginManually() {

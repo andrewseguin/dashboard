@@ -1,4 +1,6 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {auth} from 'firebase/app';
 import {Subject} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
@@ -13,7 +15,7 @@ export class Auth {
 
   tokenChanged = new Subject();
 
-  constructor() {
+  constructor(private afAuth: AngularFireAuth, private ngZone: NgZone) {
     // Check if the URL location has the access token embedded
     const search = window.location.search;
     if (search) {
@@ -26,5 +28,14 @@ export class Auth {
         }
       });
     }
+  }
+
+  signIn() {
+    const githubAuthProvider = new auth.GithubAuthProvider();
+    return this.afAuth.auth.signInWithPopup(githubAuthProvider).then(result => {
+      if (result) {
+        this.ngZone.run(() => this.token = (result!.credential! as any).accessToken as string);
+      }
+    });
   }
 }

@@ -7,7 +7,6 @@ import {DaoState} from 'app/repository/services/dao/dao-state';
 import {Theme} from 'app/repository/services/theme';
 import {Updater} from 'app/repository/services/updater';
 import {Auth} from 'app/service/auth';
-import {auth} from 'firebase/app';
 import {Subject} from 'rxjs';
 
 export interface NavLink {
@@ -54,8 +53,6 @@ export class Nav {
   }
 
   loginWithGithub() {
-    const googleAuthProvider = new auth.GoogleAuthProvider();
-    googleAuthProvider.setCustomParameters({prompt: 'select_account'});
-    this.afAuth.auth.signInWithPopup(googleAuthProvider);
+    this.auth.signIn();
   }
 }

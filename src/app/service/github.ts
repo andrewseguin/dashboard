@@ -1,5 +1,6 @@
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {MatSnackBar} from '@angular/material';
 import {
   Contributor,
   githubContributorToContributor,
@@ -8,7 +9,7 @@ import {
 } from 'app/repository/services/dao';
 import {githubLabelToLabel, Label} from 'app/repository/services/dao/labels-dao';
 import {getLinkMap} from 'app/utility/link-map';
-import {BehaviorSubject, empty, Observable, of} from 'rxjs';
+import {BehaviorSubject, empty, merge, Observable, of, timer} from 'rxjs';
 import {expand, filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Auth} from './auth';
 import {GithubComment} from './github-types/comment';
@@ -16,8 +17,9 @@ import {GithubContributor} from './github-types/contributor';
 import {Gist} from './github-types/gist';
 import {GithubIssue} from './github-types/issue';
 import {GithubLabel} from './github-types/label';
-import {GithubRateLimitResources, GithubRateLimitResponse} from './github-types/rate-limit';
+import {GithubRateLimit, GithubRateLimitResponse} from './github-types/rate-limit';
 import {GithubTimelineEvent} from './github-types/timeline';
+import {RateLimitReached} from './rate-limit-reached/rate-limit.reached';
 
 export interface CombinedPagedResults<T> {
   total: number;
@@ -30,12 +32,19 @@ type RateLimitType = 'core'|'search';
 
 const GIST_DESCRIPTION = 'Dashboard Config';
 
+interface RateLimits {
+  core: GithubRateLimit;
+  search: GithubRateLimit;
+}
+
 @Injectable({providedIn: 'root'})
 export class Github {
-  rateLimit = new BehaviorSubject<GithubRateLimitResources|null>(null);
+  rateLimits = new BehaviorSubject<RateLimits|null>(null);
 
-  constructor(private http: HttpClient, private auth: Auth) {
-    this.getRateLimit().pipe(take(1)).subscribe(v => this.rateLimit.next(v));
+  rateLimitMessageOpen = false;
+
+  constructor(private http: HttpClient, private auth: Auth, private snackbar: MatSnackBar) {
+    this.getRateLimits().pipe(take(1)).subscribe(v => this.rateLimits.next(v));
   }
 
   getItemsCount(repo: string, since?: string): Observable<number> {
@@ -81,10 +90,17 @@ export class Github {
     return this.getPagedResults<Gist, Gist>(url, g => g, true);
   }
 
-  getRateLimit(): Observable<GithubRateLimitResources|null> {
+  getRateLimits(): Observable<RateLimits|null> {
     const url = this.constructUrl(`rate_limit`);
-    return this.get<GithubRateLimitResponse>(url).pipe(
-        filter(v => !!v && !!v.body), map(result => result!.body!.resources));
+    return this.http.get<GithubRateLimitResponse>(url).pipe(filter(v => !!v), map(result => {
+                                                              const resources = result!.resources;
+                                                              const ratelimit = {
+                                                                core: resources.core,
+                                                                search: resources.search,
+                                                              };
+
+                                                              return ratelimit;
+                                                            }));
   }
 
   getGist(id: string): Observable<Gist|null> {
@@ -198,14 +214,15 @@ export class Github {
       return of(null);
     }
 
-    return this.http
-        .post<T>(url, body, {
-          observe: 'response',
-          headers: new HttpHeaders({
-            'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
-          })
-        })
-        .pipe(tap(response => this.updateRateLimit(rateLimitType, response)));
+    return this.waitForRateLimit(rateLimitType)
+        .pipe(
+            mergeMap(() => this.http.post<T>(url, body, {
+              observe: 'response',
+              headers: new HttpHeaders({
+                'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
+              })
+            })),
+            tap(response => this.updateRateLimit(rateLimitType, response)));
   }
 
   private patch<T>(url: string, body: any, needsAuth = true, rateLimitType: RateLimitType = 'core'):
@@ -214,14 +231,15 @@ export class Github {
       return of(null);
     }
 
-    return this.http
-        .patch<T>(url, body, {
-          observe: 'response',
-          headers: new HttpHeaders({
-            'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
-          })
-        })
-        .pipe(tap(response => this.updateRateLimit(rateLimitType, response)));
+    return this.waitForRateLimit(rateLimitType)
+        .pipe(
+            mergeMap(() => this.http.patch<T>(url, body, {
+              observe: 'response',
+              headers: new HttpHeaders({
+                'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
+              })
+            })),
+            tap(response => this.updateRateLimit(rateLimitType, response)));
   }
 
   private get<T>(url: string, needsAuth = false, rateLimitType: RateLimitType = 'core'):
@@ -239,18 +257,45 @@ export class Github {
     accept.push('application/vnd.github.squirrel-girl-preview');
 
 
-    return this.http
-        .get<T>(url, {
-          observe: 'response',
-          headers: new HttpHeaders({
-            'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
-            'Accept': accept,
-          })
-        })
-        .pipe(tap(response => this.updateRateLimit(rateLimitType, response)));
+    return this.waitForRateLimit(rateLimitType)
+        .pipe(
+            mergeMap(() => this.http.get<T>(url, {
+              observe: 'response',
+              headers: new HttpHeaders({
+                'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
+                'Accept': accept,
+              })
+            })),
+            tap(response => this.updateRateLimit(rateLimitType, response)));
   }
 
-  updateRateLimit(type: RateLimitType, response: HttpResponse<any>|null) {
+  private waitForRateLimit(rateLimitType: RateLimitType): Observable<any> {
+    return this.rateLimits.pipe(
+        filter(v => !!v), take(1), mergeMap(rateLimits => {
+          const rateLimit = rateLimits![rateLimitType];
+          if (!rateLimit.remaining) {
+            const secondsDelay = 5;
+            const refreshedDate = new Date((rateLimit.reset * 1000) + secondsDelay);
+
+            if (!this.rateLimitMessageOpen) {
+              this.snackbar
+                  .openFromComponent(
+                      RateLimitReached,
+                      {panelClass: 'theme-background-warn', data: {reset: rateLimit.reset}})
+                  .afterDismissed()
+                  .pipe(take(1))
+                  .subscribe(() => this.rateLimitMessageOpen = false);
+              this.rateLimitMessageOpen = true;
+            }
+
+            return merge(this.auth.tokenChanged.pipe(filter(v => !v)), timer(refreshedDate));
+          } else {
+            return of(null);
+          }
+        }));
+  }
+
+  private updateRateLimit(type: RateLimitType, response: HttpResponse<any>|null) {
     if (!response) {
       return;
     }
@@ -258,10 +303,9 @@ export class Github {
     const reset = +(response.headers.get('x-ratelimit-reset') || '0');
     const limit = +(response.headers.get('x-ratelimit-limit') || '0');
     const remaining = +(response.headers.get('x-ratelimit-remaining') || '0');
-
-    this.rateLimit.pipe(filter(v => !!v), take(1)).subscribe(rateLimit => {
+    this.rateLimits.pipe(filter(v => !!v), take(1)).subscribe(rateLimit => {
       rateLimit![type] = {reset, limit, remaining};
-      this.rateLimit.next(rateLimit);
+      this.rateLimits.next(rateLimit);
     });
   }
 }

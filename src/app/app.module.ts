@@ -14,6 +14,7 @@ import {TimeAgoPipe} from 'time-ago-pipe';
 
 import {App} from './app';
 import {FIREBASE_CONFIG} from './firebase.config';
+import {RateLimitReachedModule} from './service/rate-limit-reached/rate-limit-reached.module';
 
 
 @NgModule({
@@ -26,7 +27,7 @@ export class TimeAgoPipeModule {
 @NgModule({
   declarations: [App],
   imports: [
-    AngularFireModule.initializeApp(FIREBASE_CONFIG), AngularFireAuthModule,
+    AngularFireModule.initializeApp(FIREBASE_CONFIG), AngularFireAuthModule, RateLimitReachedModule,
     BrowserAnimationsModule, LoginModule, HttpClientModule, RouterModule.forRoot([
       {path: 'login', component: Login},
       {path: ':org/:name', loadChildren: 'app/repository/repository.module#RepositoryModule'},

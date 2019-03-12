@@ -1,0 +1,30 @@
+:host {
+  color: white;
+}
+
+.sign-in {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.details {
+  text-align: center;
+  padding: 16px 0 32px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  justify-content: center;
+}
+
+.title mat-icon {
+  margin-right: 8px;
+}
+
+.close {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
