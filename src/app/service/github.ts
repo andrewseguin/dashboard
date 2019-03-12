@@ -166,7 +166,7 @@ export class Github {
     return this.http.get<T>(url, {
       observe: 'response',
       headers: new HttpHeaders({
-        'Authorization': `token ${localStorage.getItem('accessToken')}`,
+        'Authorization': getAuthorization(),
         'Accept': accept,
       })
     });
@@ -175,7 +175,7 @@ export class Github {
   post<T>(url: string, body: any): Observable<T> {
     return this.http.post<T>(url, body, {
       headers: new HttpHeaders({
-        'Authorization': `token ${localStorage.getItem('accessToken')}`,
+        'Authorization': getAuthorization(),
       })
     });
   }
@@ -183,7 +183,7 @@ export class Github {
   patch<T>(url: string, body: any): Observable<T> {
     return this.http.patch<T>(url, body, {
       headers: new HttpHeaders({
-        'Authorization': `token ${localStorage.getItem('accessToken')}`,
+        'Authorization': getAuthorization(),
       })
     });
   }
@@ -201,6 +201,11 @@ export class Github {
       return {response, next, numPages};
     }));
   }
+}
+
+function getAuthorization(): string {
+  const accessToken = localStorage.getItem('accessToken');
+  return accessToken ? `token ${accessToken}` : '';
 }
 
 export interface UserComment {
