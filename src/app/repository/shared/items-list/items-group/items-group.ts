@@ -18,7 +18,7 @@ export class ItemsGroup {
 
   @Input() title: string;
 
-  trackByItemNumber = (_i, item: Item) => item.number;
+  trackByItemNumber = (_i: number, item: Item) => item.number;
 
   activeItem = this.activatedRoute.queryParamMap.pipe(map(queryParamMap => {
     const item = queryParamMap.get('item');

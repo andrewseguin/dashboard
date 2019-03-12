@@ -42,7 +42,7 @@ export class EditableChipList {
 
   @Output() listChange = new EventEmitter<string[]>();
 
-  @Input() transform = v => v;
+  @Input() transform = (v: string) => v;
 
   @Input() placeholder = '';
 

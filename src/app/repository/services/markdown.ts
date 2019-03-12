@@ -9,7 +9,7 @@ import {ItemsDao} from './dao';
 @Injectable()
 export class Markdown {
   highlightFn =
-      (str, lang) => {
+      (str: string, lang: string) => {
         if (lang && hljs.getLanguage(lang)) {
           try {
             return hljs.highlight(lang, str).value;

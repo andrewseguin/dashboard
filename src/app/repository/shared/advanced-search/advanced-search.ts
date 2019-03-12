@@ -55,7 +55,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   displayedFilterTypes: string[];
 
-  trackByIndex = i => i;
+  trackByIndex = (i: number) => i;
 
   @Input() metadata: Map<string, IFilterMetadata<any, AutocompleteContext>>;
 

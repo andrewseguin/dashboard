@@ -44,7 +44,7 @@ export class WidgetView {
 
   items: Item[];
 
-  trackByNumber = (_i, item: Item) => item.number;
+  trackByNumber = (_i: number, item: Item) => item.number;
 
   private destroyed = new Subject();
 

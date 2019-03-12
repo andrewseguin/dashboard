@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {Observable} from 'rxjs/Observable';
 import {take} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 export interface PromptDialogResult {
   value: string|number;

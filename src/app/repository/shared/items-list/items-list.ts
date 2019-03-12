@@ -28,8 +28,9 @@ import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
 })
 export class ItemsList {
   destroyed = new Subject();
-  private elementScrolled: Observable<Event> = Observable.create(
-      observer => this.ngZone.runOutsideAngular(
+
+  private elementScrolled: Observable<Event> = new Observable(
+      (observer: any) => this.ngZone.runOutsideAngular(
           () => fromEvent(this.elementRef.nativeElement, 'scroll')
                     .pipe(takeUntil(this.destroyed))
                     .subscribe(observer)));

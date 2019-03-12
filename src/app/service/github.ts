@@ -82,7 +82,7 @@ export class Github {
       }
 
       // Transform keys so that understores in keys become slashes to match repo string
-      const transformedFiles = {};
+      const transformedFiles: {[key in string]: any} = {};
       Object.keys(gist.files).forEach(key => {
         transformedFiles[key.replace('_', '/')] = gist.files[key];
       });
@@ -110,7 +110,7 @@ export class Github {
   editGist(id: string, filename: string, content: string) {
     filename = filename.replace('/', '_');
 
-    const files = {};
+    const files: {[key in string]: {filename: string, content: string}} = {};
     files[filename] = {filename, content};
     const url = this.constructUrl(`gists/${id}`, 'random=' + Math.random());
     return this.patch(url, {files});

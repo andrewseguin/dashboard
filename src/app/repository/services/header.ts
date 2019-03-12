@@ -2,8 +2,7 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {Injectable} from '@angular/core';
 import {Title as WindowTitle} from '@angular/platform-browser';
 import {NavigationEnd, Router} from '@angular/router';
-import {Subject} from 'rxjs';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 
 const TOP_LEVEL_SECTIONS = new Set<string>(['queries', 'config', 'dashboards', 'database']);

@@ -17,10 +17,6 @@ export interface RepoConfig {
   recommendations: Recommendation[];
 }
 
-export interface ConfigValues {
-  [key: string]: DashboardConfig|RepoConfig;
-}
-
 const DASHBOARD_CONFIG_FILENAME = 'dashboardConfig';
 
 @Injectable({providedIn: 'root'})

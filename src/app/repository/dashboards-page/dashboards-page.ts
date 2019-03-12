@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Router} from '@angular/router';
-
 import {ActivatedRepository} from '../services/activated-repository';
 import {Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
 import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
+
 
 @Component({
   selector: 'dashboards-page',
@@ -12,7 +12,7 @@ import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardsPage {
-  trackById = (_i, dashboard: Dashboard) => dashboard.id;
+  trackById = (_i: number, dashboard: Dashboard) => dashboard.id;
 
   constructor(
       public dashboardsDao: DashboardsDao, private router: Router,

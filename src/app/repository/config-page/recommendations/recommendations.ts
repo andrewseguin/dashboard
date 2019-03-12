@@ -13,7 +13,7 @@ export class Recommendations {
       filter(list => !!list), map(list => {
         return list!.sort((a, b) => a.dbAdded! > b.dbAdded!? -1 : 1);
       }));
-  trackById = (_i, r: Recommendation) => r.id;
+  trackById = (_i: number, r: Recommendation) => r.id;
   constructor(public recommendationsDao: RecommendationsDao) {}
 
   add() {

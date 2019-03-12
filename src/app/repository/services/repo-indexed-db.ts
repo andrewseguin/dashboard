@@ -46,7 +46,7 @@ export class RepoIndexedDb {
         .then(() => this.openDb());
   }
 
-  updateValues(values: any[], collectionId) {
+  updateValues(values: any[], collectionId: string) {
     return this.db.then(db => {
       const transaction = db.transaction(collectionId, 'readwrite');
       const store = transaction.objectStore(collectionId);

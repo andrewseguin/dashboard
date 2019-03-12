@@ -30,7 +30,7 @@ export class ItemGrouping<T> {
 export function getGroupByProperty<T>(items: T[], property: string): ItemGroup<T>[] {
   const groups: Map<string, T[]> = new Map();
 
-  items.forEach(item => {
+  items.forEach((item: any) => {
     const value = item[property];
     if (!groups.has(value)) {
       groups.set(value, []);

@@ -67,7 +67,7 @@ export class QueriesPage {
                   return map;
                 }));
 
-  queryKeyTrackBy = (_i, itemQuery: Query) => itemQuery.id;
+  queryKeyTrackBy = (_i: number, itemQuery: Query) => itemQuery.id;
 
   constructor(
       private itemsDao: ItemsDao, public queriesDao: QueriesDao, private router: Router,
