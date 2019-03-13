@@ -8,6 +8,7 @@ import {
   EditableRecommendationModule
 } from './editable-recommendation/editable-recommendation.module';
 import {RecommendationsPage} from './recommendations-page';
+import { NewFabModule } from 'app/shared/new-fab/new-fab.module';
 
 const routes: Routes = [{path: '', component: RecommendationsPage}];
 
@@ -21,6 +22,7 @@ export class RecommendationsPageRoutingModule {
     MaterialModule,
     LoadingModule,
     ReactiveFormsModule,
+    NewFabModule,
     EditableRecommendationModule,
     RecommendationsPageRoutingModule,
   ],

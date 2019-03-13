@@ -1,5 +1,6 @@
 <div class="heading" *ngIf="(recommendationsDao.list | async)?.length > 3">
-  <input [formControl]="filter" class="theme-border" placeholder="Filter recommendations">
+  <input [formControl]="filter" class="theme-border"
+         placeholder="Filter recommendations">
   <button mat-button (click)="expandAll()"> Expand All </button>
 </div>
 
@@ -14,8 +15,7 @@
   <loading label="recommendations"></loading>
 </ng-template>
 
-
-<button mat-fab (click)="add()" matTooltip="New recommendation"
-        [matTooltipPosition]="'before'">
-  <mat-icon>add</mat-icon>
-</button>
+<ng-container *ngIf="sortedRecommendations | async; let sortedRecommendations">
+  <new-fab type="recommendation" [breathing]="!sortedRecommendations.length" (click)="add()">
+  </new-fab>
+</ng-container>
