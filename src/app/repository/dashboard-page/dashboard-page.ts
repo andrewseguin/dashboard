@@ -137,6 +137,11 @@ export class DashboardPage {
     });
   }
 
+  duplicateWidget(column: Column, widget: Widget, index: number) {
+    const newWidget = {...widget};
+    column.widgets.splice(index, 0, newWidget);
+  }
+
   editWidget(column: Column, index: number) {
     const config:
         MatDialogConfig<EditWidgetData> = {width: '650px', data: {widget: column.widgets[index]}};

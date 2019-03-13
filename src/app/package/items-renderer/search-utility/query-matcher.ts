@@ -1,5 +1,8 @@
 import {DateQuery, InputQuery, NumberQuery, StateQuery} from './query';
 
+const OR = ' OR ';
+const AND = ' AND ';
+
 export function stringContainsQuery(str: string, query: InputQuery): boolean {
   if (!str) {
     return false;
@@ -14,9 +17,16 @@ export function stringContainsQuery(str: string, query: InputQuery): boolean {
     input = '';
   }
 
-  // If it contains OR, split it up and try again for each piece
+  // If it contains OR, split it up and try again for each piece (one has to be true)
   if (query.input.indexOf(OR) !== -1) {
     return query.input.split(OR).some(inputToken => {
+      return stringContainsQuery(str, {input: inputToken, equality: query.equality});
+    });
+  }
+
+  // If it contains AND, split it up and try again for each piece (every one has to be true)
+  if (query.input.indexOf(AND) !== -1) {
+    return query.input.split(AND).every(inputToken => {
       return stringContainsQuery(str, {input: inputToken, equality: query.equality});
     });
   }
@@ -94,9 +104,16 @@ export function stateMatchesEquality(state: boolean, query: StateQuery): boolean
 }
 
 export function arrayContainsQuery(arr: string[], query: InputQuery): boolean {
-  // If it contains OR, split it up and try again for each piece
+  // If it contains OR, split it up and try again for each piece (one has to be true)
   if (query.input.indexOf(OR) !== -1) {
     return query.input.split(OR).some(inputToken => {
+      return arrayContainsQuery(arr, {input: inputToken, equality: query.equality});
+    });
+  }
+
+  // If it contains AND, split it up and try again for each piece (every one has to be true)
+  if (query.input.indexOf(AND) !== -1) {
+    return query.input.split(AND).every(inputToken => {
       return arrayContainsQuery(arr, {input: inputToken, equality: query.equality});
     });
   }
@@ -106,5 +123,3 @@ export function arrayContainsQuery(arr: string[], query: InputQuery): boolean {
 
   return stringContainsQuery(str, {input, equality: query.equality});
 }
-
-const OR = ' OR ';

@@ -40,6 +40,8 @@ export class WidgetView {
 
   @Output() edit = new EventEmitter<void>();
 
+  @Output() duplicate = new EventEmitter<void>();
+
   @Output() remove = new EventEmitter<void>();
 
   items: Item[];
@@ -86,8 +88,8 @@ export class WidgetView {
     }
   }
 
-  openItemModal(itemId: string) {
-    this.dialog.open(ItemDetailDialog, {data: {itemId}});
+  openItemModal(itemId: number) {
+    this.dialog.open(ItemDetailDialog, {data: {itemId: `${itemId}`}});
   }
 
   openQuery() {
