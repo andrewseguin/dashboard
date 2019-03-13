@@ -1,17 +1,19 @@
-<div class="close">
-  <button mat-icon-button (click)="snackBarRef.dismiss()">
-    <mat-icon> close </mat-icon>
-  </button>
-</div>
-
 <div class="message">
-  <div class="title">
-    <mat-icon>warning</mat-icon> Github rate limit reached.
+  <div class="heading">
+    <div class="title">
+      <mat-icon>warning</mat-icon>
+      Github rate limit reached.
+    </div>
+    <div class="close">
+      <button mat-icon-button (click)="snackBarRef.dismiss()">
+        <mat-icon> close </mat-icon>
+      </button>
+    </div>
   </div>
 
   <div class="details">
     <div>
-      Retrying in {{secondsLeft | async}} seconds
+      Retrying in {{secondsLeftMessage | async}}
     </div>
 
     <div> or </div>

@@ -1,6 +1,9 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {filter, map, tap} from 'rxjs/operators';
+import {ChangeDetectionStrategy, Component, QueryList, ViewChildren} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {combineLatest} from 'rxjs';
+import {filter, map, startWith, tap} from 'rxjs/operators';
 import {Recommendation, RecommendationsDao} from '../services/dao';
+import {EditableRecommendation} from './editable-recommendation/editable-recommendation';
 
 @Component({
   selector: 'recommendations-page',
@@ -9,11 +12,18 @@ import {Recommendation, RecommendationsDao} from '../services/dao';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecommendationsPage {
-  sortedRecommendations = this.recommendationsDao.list.pipe(
-      filter(list => !!list), map(list => {
-        return list!.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
-      }),
-      tap(console.log));
+  filter = new FormControl('');
+
+  @ViewChildren(EditableRecommendation) editableRecommendations: QueryList<EditableRecommendation>;
+
+  sortedRecommendations =
+      combineLatest(this.recommendationsDao.list, this.filter.valueChanges.pipe(startWith('')))
+          .pipe(
+              filter(results => !!results[0]), map(result => {
+                const filtered = result[0]!.filter(r => this.matchesFilter(r));
+                return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
+              }),
+              tap(console.log));
   trackById = (_i: number, r: Recommendation) => r.id;
   constructor(public recommendationsDao: RecommendationsDao) {}
 
@@ -26,5 +36,16 @@ export class RecommendationsPage {
       filters: [],
       search: '',
     });
+  }
+
+  expandAll() {
+    this.editableRecommendations.forEach(v => v.expand());
+  }
+
+  matchesFilter(recommendation: Recommendation) {
+    const values: any[] = [];
+    Object.keys(recommendation)
+        .forEach(key => values.push(JSON.stringify((recommendation as any)[key] as any)));
+    return values.join(';').toLowerCase().indexOf(this.filter.value.toLowerCase()) != -1;
   }
 }

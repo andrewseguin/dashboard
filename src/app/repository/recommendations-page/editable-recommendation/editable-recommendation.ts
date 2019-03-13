@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
@@ -75,8 +75,8 @@ export class EditableRecommendation {
   private _destroyed = new Subject();
 
   constructor(
-      private recommendationsDao: RecommendationsDao, private labelsDao: LabelsDao,
-      private snackbar: MatSnackBar, private dialog: MatDialog) {}
+      private cd: ChangeDetectorRef, private recommendationsDao: RecommendationsDao,
+      private labelsDao: LabelsDao, private snackbar: MatSnackBar, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -127,5 +127,10 @@ export class EditableRecommendation {
 
   setAddLabelAction(labelNames: number[]) {
     this.form.get('action')!.setValue({labels: labelNames});
+  }
+
+  expand() {
+    this.expanded = true;
+    this.cd.markForCheck();
   }
 }

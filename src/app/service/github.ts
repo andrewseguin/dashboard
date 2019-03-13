@@ -92,15 +92,18 @@ export class Github {
 
   getRateLimits(): Observable<RateLimits|null> {
     const url = this.constructUrl(`rate_limit`);
-    return this.http.get<GithubRateLimitResponse>(url).pipe(filter(v => !!v), map(result => {
-                                                              const resources = result!.resources;
-                                                              const ratelimit = {
-                                                                core: resources.core,
-                                                                search: resources.search,
-                                                              };
+    const token = this.auth.token ? `token ${this.auth.token}` : '';
+    return this.http
+        .get<GithubRateLimitResponse>(url, {headers: new HttpHeaders({'Authorization': token})})
+        .pipe(filter(v => !!v), map(result => {
+                const resources = result!.resources;
+                const ratelimit = {
+                  core: resources.core,
+                  search: resources.search,
+                };
 
-                                                              return ratelimit;
-                                                            }));
+                return ratelimit;
+              }));
   }
 
   getGist(id: string): Observable<Gist|null> {
@@ -288,7 +291,7 @@ export class Github {
               this.rateLimitMessageOpen = true;
             }
 
-            return merge(this.auth.token$.pipe(filter(v => !v)), timer(refreshedDate));
+            return merge(this.auth.token$.pipe(filter(v => !!v)), timer(refreshedDate));
           } else {
             return of(null);
           }

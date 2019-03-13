@@ -10,10 +10,6 @@
   justify-content: center;
 }
 
-button {
-  margin: 32px;
-}
-
 loading {
   margin: 32px;
 }
@@ -24,4 +20,20 @@ button[mat-fab] {
   bottom: 0;
   margin: 32px;
   z-index: 1;
+}
+
+.heading {
+  display: flex;
+  margin: 16px 16px 48px 16px;
+}
+
+input {
+  flex: 1;
+  outline: none;
+  background: inherit;
+  color: inherit;
+  border-style: solid;
+  border-width: 1px;
+  padding: 16px;
+  font-size: inherit;
 }

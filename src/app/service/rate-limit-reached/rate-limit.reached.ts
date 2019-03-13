@@ -5,12 +5,15 @@ import {map, take, tap} from 'rxjs/operators';
 
 import {Auth} from '../auth';
 
+
 @Component({
   templateUrl: 'rate-limit-reached.html',
   styleUrls: ['rate-limit-reached.scss'],
 })
 export class RateLimitReached {
   secondsLeft: Observable<number>;
+
+  secondsLeftMessage: Observable<string>;
 
   constructor(
       public auth: Auth,
@@ -24,6 +27,11 @@ export class RateLimitReached {
             this.snackBarRef.dismiss();
           }
         }));
+
+    this.secondsLeftMessage = this.secondsLeft.pipe(map(secondsLeft => {
+      return secondsLeft > 60 ? Math.floor(secondsLeft / 60) + ' minutes' :
+                                secondsLeft + ' seconds';
+    }));
   }
 
   signIn() {
