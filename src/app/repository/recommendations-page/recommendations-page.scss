@@ -1,0 +1,27 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 32px auto;
+}
+
+.action {
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  margin: 32px;
+}
+
+loading {
+  margin: 32px;
+}
+
+button[mat-fab] {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin: 32px;
+  z-index: 1;
+}

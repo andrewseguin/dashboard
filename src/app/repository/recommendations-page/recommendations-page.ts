@@ -1,18 +1,19 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
-import {filter, map} from 'rxjs/operators';
+import {filter, map, tap} from 'rxjs/operators';
+import {Recommendation, RecommendationsDao} from '../services/dao';
 
 @Component({
-  selector: 'recommendations',
-  styleUrls: ['recommendations.scss'],
-  templateUrl: 'recommendations.html',
+  selector: 'recommendations-page',
+  styleUrls: ['recommendations-page.scss'],
+  templateUrl: 'recommendations-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Recommendations {
+export class RecommendationsPage {
   sortedRecommendations = this.recommendationsDao.list.pipe(
       filter(list => !!list), map(list => {
         return list!.sort((a, b) => a.dbAdded! > b.dbAdded!? -1 : 1);
-      }));
+      }),
+      tap(console.log));
   trackById = (_i: number, r: Recommendation) => r.id;
   constructor(public recommendationsDao: RecommendationsDao) {}
 

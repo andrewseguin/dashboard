@@ -52,8 +52,9 @@ const routes: Routes = [{
       loadChildren: 'app/repository/query-page/query-page.module#QueryPageModule'
     },
     {
-      path: 'config',
-      loadChildren: 'app/repository/config-page/config-page.module#ConfigPageModule'
+      path: 'recommendations',
+      loadChildren: 'app/repository/recommendations-page/' +
+          'recommendations-page.module#RecommendationsPageModule'
     },
 
     {path: '', redirectTo: 'queries/issue', pathMatch: 'full'},

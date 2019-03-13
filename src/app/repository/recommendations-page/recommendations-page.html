@@ -1,9 +1,3 @@
-<div class="action">
-  <button mat-raised-button color="primary" (click)="add()">
-    Add New Recommendation
-  </button>
-</div>
-
 <ng-container *ngIf="sortedRecommendations | async; let list; else loading">
   <div *ngFor="let recommendation of list; trackBy: trackById">
     <editable-recommendation [recommendation]="recommendation">
@@ -14,3 +8,9 @@
 <ng-template #loading>
   <loading label="recommendations"></loading>
 </ng-template>
+
+
+<button mat-fab (click)="add()" matTooltip="New recommendation"
+        [matTooltipPosition]="'before'">
+  <mat-icon>add</mat-icon>
+</button>

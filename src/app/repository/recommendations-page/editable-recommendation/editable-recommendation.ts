@@ -19,7 +19,10 @@ import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
   templateUrl: 'editable-recommendation.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'class': 'theme-background-card theme-border',
+    '[class.theme-background-card]': 'expanded',
+    '[class.theme-border]': 'expanded',
+    '[style.margin-bottom.px]': 'expanded ? 8 : 0',
+    '[style.padding]': `expanded ? '16px' : '4px 16px'`
   },
   animations: EXPANSION_ANIMATION
 })
@@ -92,7 +95,7 @@ export class EditableRecommendation {
         .pipe(debounceTime(2000), takeUntil(this._destroyed))
         .subscribe(() => {
           this.recommendationsDao.update({
-            id: this.recommendation.id,
+            ...this.recommendation,
             message: this.form.value.message,
             type: this.form.value.type,
             actionType: this.form.value.actionType,

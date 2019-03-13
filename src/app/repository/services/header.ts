@@ -5,7 +5,8 @@ import {NavigationEnd, Router} from '@angular/router';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 
-const TOP_LEVEL_SECTIONS = new Set<string>(['queries', 'config', 'dashboards', 'database']);
+const TOP_LEVEL_SECTIONS =
+    new Set<string>(['queries', 'recommendations', 'dashboards', 'database']);
 
 @Injectable()
 export class Header {
@@ -26,8 +27,8 @@ export class Header {
           const subSection = sections[4];
 
           switch (section) {
-            case 'config':
-              this.title.next('Config');
+            case 'recommendations':
+              this.title.next('Recommendations');
               break;
             case 'dashboards':
               this.title.next('Dashboards');

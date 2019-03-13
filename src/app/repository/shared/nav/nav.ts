@@ -29,7 +29,7 @@ export class Nav {
     {route: 'dashboards', label: 'Dashboards', icon: 'dashboard', requiresData: true},
     {route: 'queries/issue', label: 'Issues', icon: 'find_in_page', requiresData: true},
     {route: 'queries/pr', label: 'Pull Requests', icon: 'call_merge', requiresData: true},
-    {route: 'config', label: 'Config', icon: 'settings', requiresData: true},
+    {route: 'recommendations', label: 'Recommendations', icon: 'label', requiresData: true},
   ];
 
   @Input() sidenav: MatSidenav;
