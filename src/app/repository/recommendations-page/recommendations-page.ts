@@ -31,7 +31,7 @@ export class RecommendationsPage {
       type: 'warning',
       actionType: 'none',
       action: {labels: []},
-      filters: [],
+      filters: [{query: {equality: 'is', state: 'open'}, type: 'state'}],
       search: '',
     });
   }

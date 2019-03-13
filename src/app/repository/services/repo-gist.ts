@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Config} from 'app/service/config';
 import {combineLatest, of, Subject} from 'rxjs';
-import {filter, mergeMap, takeUntil} from 'rxjs/operators';
+import {debounceTime, filter, mergeMap, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
 import {DashboardsDao} from './dao/dashboards-dao';
 import {QueriesDao} from './dao/queries-dao';
@@ -20,7 +20,8 @@ export class RepoGist {
     combineLatest(
         this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list,
         this.activatedRepository.repository)
-        .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
+        .pipe(
+            filter(result => result.every(r => !!r)), debounceTime(2000), takeUntil(this.destroyed))
         .subscribe(result => {
           const dashboards = result[0]!;
           const queries = result[1]!;
