@@ -11,7 +11,7 @@ import {Recommendation, RecommendationsDao} from '../services/dao';
 export class RecommendationsPage {
   sortedRecommendations = this.recommendationsDao.list.pipe(
       filter(list => !!list), map(list => {
-        return list!.sort((a, b) => a.dbAdded! > b.dbAdded!? -1 : 1);
+        return list!.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
       }),
       tap(console.log));
   trackById = (_i: number, r: Recommendation) => r.id;
