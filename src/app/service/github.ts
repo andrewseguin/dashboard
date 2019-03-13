@@ -176,7 +176,7 @@ export class Github {
               completed++;
               const transformedResponse = result.response.map(transform);
               const current = transformedResponse;
-              accumulated = current.concat(transformedResponse);
+              accumulated = accumulated.concat(transformedResponse);
 
               // Determine this on the first pass but not subsequent ones. The
               // last page will have result.numPages equal to 1 since it is
