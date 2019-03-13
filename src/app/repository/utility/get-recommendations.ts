@@ -14,6 +14,9 @@ export function getRecommendations(
 
   return recommendations.filter(recommendation => {
     const contextProvider = (item: Item) => {
+      // Add name to labels map for filtering
+      labelsMap.forEach(label => labelsMap.set(label.name, label));
+
       return {
         item,
         labelsMap,

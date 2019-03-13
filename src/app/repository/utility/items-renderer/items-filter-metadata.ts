@@ -14,6 +14,7 @@ import {
   stringContainsQuery
 } from 'app/package/items-renderer/search-utility/query-matcher';
 import {Item, ItemsDao, Label, LabelsDao, Recommendation} from 'app/repository/services/dao';
+import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {filter, map} from 'rxjs/operators';
 
 export interface MatcherContext {
@@ -55,15 +56,7 @@ export const ItemsFilterMetadata =
             return arrayContainsQuery(c.item.assignees, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.itemsDao.list.pipe(
-                filter(list => !!list), map(items => {
-                  const assigneesSet = new Set<string>();
-                  items!.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
-
-                  const assignees: string[] = [];
-                  assigneesSet.forEach(a => assignees.push(a));
-                  return assignees;
-                }));
+            return c.itemsDao.list.pipe(filter(list => !!list), map(items => getAssignees(items!)));
           }
         }
       ],
@@ -83,8 +76,9 @@ export const ItemsFilterMetadata =
           displayName: 'Labels',
           queryType: 'input',
           matcher: (c: MatcherContext, q: Query) => {
+            const labelIds = c.item.labels.map(labelId => `${labelId}`);
             return arrayContainsQuery(
-                c.item.labels.map(l => {
+                labelIds.map(l => {
                   const label = c.labelsMap.get(l);
 
                   if (!label) {

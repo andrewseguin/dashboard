@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
+import {GithubIssue} from 'app/service/github-types/issue';
 import {Reactions} from 'app/service/github-types/reactions';
 import {RepoIndexedDb} from '../repo-indexed-db';
 import {ListDao} from './list-dao';
-import { GithubIssue } from 'app/service/github-types/issue';
 
 export type ItemType = 'issue'|'pr';
 
@@ -12,7 +12,7 @@ export interface Item {
   body: string;
   title: string;
   comments: number;
-  labels: string[];
+  labels: number[];
   number: number;
   state: string;
   reporter: string;

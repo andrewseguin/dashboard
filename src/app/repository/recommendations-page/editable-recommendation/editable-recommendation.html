@@ -40,13 +40,16 @@
 
         <div [ngSwitch]="form.value.actionType" class="action-list">
           <div *ngSwitchCase="'add-label'">
-            <editable-chip-list [values]="recommendation.action?.labels"
+            <editable-chip-list [values]="form.value.action?.labels"
                                 [autocomplete]="(addLabelsAutocomplete | async) || []"
                                 (listChange)="setAddLabelAction($event)">
             </editable-chip-list>
           </div>
           <div *ngSwitchCase="'add-assignee'">
-            Add assignee
+            <editable-chip-list [values]="form.value.action?.assignees"
+                                [autocomplete]="(addAssigneesAutocomplete | async) || []"
+                                (listChange)="setAddAssigneeAction($event)">
+            </editable-chip-list>
           </div>
         </div>
       </div>

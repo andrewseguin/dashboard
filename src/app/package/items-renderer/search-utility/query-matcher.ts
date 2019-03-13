@@ -1,6 +1,6 @@
 import {DateQuery, InputQuery, NumberQuery, StateQuery} from './query';
 
-export function stringContainsQuery(str: string, query: InputQuery) {
+export function stringContainsQuery(str: string, query: InputQuery): boolean {
   if (!str) {
     return false;
   }
@@ -12,6 +12,13 @@ export function stringContainsQuery(str: string, query: InputQuery) {
 
   if (input === '""') {
     input = '';
+  }
+
+  // If it contains OR, split it up and try again for each piece
+  if (query.input.indexOf(OR) !== -1) {
+    return query.input.split(OR).some(inputToken => {
+      return stringContainsQuery(str, {input: inputToken, equality: query.equality});
+    });
   }
 
   switch (query.equality) {
@@ -28,7 +35,7 @@ export function stringContainsQuery(str: string, query: InputQuery) {
   }
 }
 
-export function numberMatchesEquality(num: number, query: NumberQuery) {
+export function numberMatchesEquality(num: number, query: NumberQuery): boolean {
   if (!query.value && query.value !== 0) {
     return true;
   }
@@ -46,7 +53,7 @@ export function numberMatchesEquality(num: number, query: NumberQuery) {
   }
 }
 
-export function dateMatchesEquality(dateStr: string, query: DateQuery) {
+export function dateMatchesEquality(dateStr: string, query: DateQuery): boolean {
   if (!query.date) {
     return true;
   }
@@ -71,7 +78,7 @@ export function dateMatchesEquality(dateStr: string, query: DateQuery) {
 }
 
 
-export function stateMatchesEquality(state: boolean, query: StateQuery) {
+export function stateMatchesEquality(state: boolean, query: StateQuery): boolean {
   if (!query.state) {
     return true;
   }
@@ -86,9 +93,18 @@ export function stateMatchesEquality(state: boolean, query: StateQuery) {
   }
 }
 
-export function arrayContainsQuery(arr: string[], query: InputQuery) {
+export function arrayContainsQuery(arr: string[], query: InputQuery): boolean {
+  // If it contains OR, split it up and try again for each piece
+  if (query.input.indexOf(OR) !== -1) {
+    return query.input.split(OR).some(inputToken => {
+      return arrayContainsQuery(arr, {input: inputToken, equality: query.equality});
+    });
+  }
+
   const str = arr.map(v => `"${v}"`).sort().toString() || '[]';
   const input = query.input ? query.input.split(',').map(v => `"${v}"`).sort().toString() : '[]';
 
   return stringContainsQuery(str, {input, equality: query.equality});
 }
+
+const OR = ' OR ';

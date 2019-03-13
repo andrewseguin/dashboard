@@ -30,7 +30,7 @@ export class LoginDialog {
       scopes.push('gist');
     }
     if (this.enableRepo.value) {
-      // scopes.push('repo');
+      scopes.push('repo');
     }
 
     const provider = new auth.GithubAuthProvider();

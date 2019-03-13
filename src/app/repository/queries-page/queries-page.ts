@@ -50,6 +50,9 @@ export class QueriesPage {
                   const map = new Map<string, number>();
                   groups.forEach(group => group.queries.forEach(query => {
                     const contextProvider = (item: Item) => {
+                      // Add name to labels map for filtering
+                      labelsMap.forEach(label => labelsMap.set(label.name, label));
+
                       return {
                         item,
                         labelsMap,

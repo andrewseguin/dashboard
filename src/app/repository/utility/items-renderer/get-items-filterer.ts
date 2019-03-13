@@ -12,6 +12,10 @@ export function getItemsFilterer(itemRecommendations: ItemRecommendations, label
       .pipe(filter(result => result.every(r => !!r)), map(result => {
               const recommendationsByItem = result[0]!;
               const labelsMap = result[1]!;
+
+              // Add name to labels map for filtering
+              labelsMap.forEach(label => labelsMap.set(label.name, label));
+
               const contextProvider = (item: Item) => {
                 return {
                   item,

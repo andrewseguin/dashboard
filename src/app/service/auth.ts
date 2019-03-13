@@ -5,7 +5,7 @@ import {BehaviorSubject} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {LoginDialog, LoginDialogResult} from './login-dialog/login-dialog';
 
-export type GithubAuthScope = 'gist';
+export type GithubAuthScope = 'gist'|'repo';
 
 @Injectable({providedIn: 'root'})
 export class Auth {
@@ -77,6 +77,6 @@ export class Auth {
       return false;
     }
 
-    return new Set(this.scopes).has(scope);
+    return new Set(this.scopes.split(',').map(v => v.trim())).has(scope);
   }
 }

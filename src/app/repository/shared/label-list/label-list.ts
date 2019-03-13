@@ -28,7 +28,7 @@ export class LabelList {
   /** Whether the labels are a selection list */
   @Input() selectable: boolean;
 
-  @Output() selected = new EventEmitter<number>();
+  @Output() selected = new EventEmitter<Label>();
 
   labels = combineLatest(this._labelIds, this.labelsDao.list)
                .pipe(filter(result => result.every(r => !!r)), map(result => {
@@ -53,9 +53,9 @@ export class LabelList {
 
   constructor(private labelsDao: LabelsDao) {}
 
-  select(labelId: number) {
+  select(label: Label) {
     if (this.selectable) {
-      this.selected.emit(labelId);
+      this.selected.emit(label);
     }
   }
 }

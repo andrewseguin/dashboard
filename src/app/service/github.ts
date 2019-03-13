@@ -184,6 +184,16 @@ export class Github {
     return this.post<Gist>(url, body, true).pipe(filter(v => !!v), map(response => response!.body));
   }
 
+  addLabel(repo: string, issue: string, label: string): Observable<HttpResponse<any>|null> {
+    const url = this.constructUrl(`repos/${repo}/issues/${issue}/labels`);
+    return this.post(url, {labels: [label]});
+  }
+
+  addAssignee(repo: string, issue: string, assignee: string): Observable<HttpResponse<any>|null> {
+    const url = this.constructUrl(`repos/${repo}/issues/${issue}/assignees`);
+    return this.post(url, {assignees: [assignee]});
+  }
+
   private getPagedResults<T, R>(
       url: string, transform: (values: T) => R, needsAuth = false,
       rateLimitType: RateLimitType = 'core'): Observable<CombinedPagedResults<R>> {

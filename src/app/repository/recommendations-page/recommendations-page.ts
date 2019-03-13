@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, QueryList, ViewChildren} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {combineLatest} from 'rxjs';
-import {filter, map, startWith, tap} from 'rxjs/operators';
+import {filter, map, startWith} from 'rxjs/operators';
 import {Recommendation, RecommendationsDao} from '../services/dao';
 import {EditableRecommendation} from './editable-recommendation/editable-recommendation';
 
@@ -18,12 +18,10 @@ export class RecommendationsPage {
 
   sortedRecommendations =
       combineLatest(this.recommendationsDao.list, this.filter.valueChanges.pipe(startWith('')))
-          .pipe(
-              filter(results => !!results[0]), map(result => {
-                const filtered = result[0]!.filter(r => this.matchesFilter(r));
-                return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
-              }),
-              tap(console.log));
+          .pipe(filter(results => !!results[0]), map(result => {
+                  const filtered = result[0]!.filter(r => this.matchesFilter(r));
+                  return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
+                }));
   trackById = (_i: number, r: Recommendation) => r.id;
   constructor(public recommendationsDao: RecommendationsDao) {}
 

@@ -2,13 +2,14 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@ang
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
-import {LabelsDao} from 'app/repository/services/dao';
+import {ItemsDao, LabelsDao} from 'app/repository/services/dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
+import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {merge, of, Subject} from 'rxjs';
 import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
 
@@ -72,11 +73,15 @@ export class EditableRecommendation {
   addLabelsAutocomplete = this.labelsDao.list.pipe(
       filter(list => !!list), map(labels => labels!.map(l => l.name).sort()));
 
+  addAssigneesAutocomplete =
+      this.itemsDao.list.pipe(filter(list => !!list), map(items => getAssignees(items!)));
+
   private _destroyed = new Subject();
 
   constructor(
       private cd: ChangeDetectorRef, private recommendationsDao: RecommendationsDao,
-      private labelsDao: LabelsDao, private snackbar: MatSnackBar, private dialog: MatDialog) {}
+      private itemsDao: ItemsDao, private labelsDao: LabelsDao, private snackbar: MatSnackBar,
+      private dialog: MatDialog) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -88,6 +93,10 @@ export class EditableRecommendation {
 
     this._search = this.recommendation.search || '';
     this._filters = this.recommendation.filters || [];
+
+    this.form.get('actionType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(() => {
+      this.form.get('action')!.setValue(null);
+    });
   }
 
   ngAfterViewInit() {
@@ -125,8 +134,12 @@ export class EditableRecommendation {
         });
   }
 
-  setAddLabelAction(labelNames: number[]) {
-    this.form.get('action')!.setValue({labels: labelNames});
+  setAddLabelAction(name: string[]) {
+    this.form.get('action')!.setValue({labels: name});
+  }
+
+  setAddAssigneeAction(name: string[]) {
+    this.form.get('action')!.setValue({assignees: name});
   }
 
   expand() {

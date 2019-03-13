@@ -11,5 +11,11 @@
       <label-list [labelIds]="recommendation.action.labels" [selectable]="true"
                   (selected)="addLabel($event)"></label-list>
     </div>
+    <div *ngSwitchCase="'add-assignee'">
+      <div class="assignee theme-hover theme-border" mat-ripple (click)="addAssignee(assignee)"
+           *ngFor="let assignee of recommendation.action.assignees">
+        {{assignee}}
+      </div>
+    </div>
   </ng-container>
 </div>
