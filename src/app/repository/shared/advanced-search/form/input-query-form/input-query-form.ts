@@ -28,7 +28,7 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
     {id: 'notIs', label: 'is not'},
   ];
   form = new FormGroup({
-    equality: new FormControl('is'),
+    equality: new FormControl('contains'),
     input: new FormControl(''),
   });
   destroyed = new Subject();
