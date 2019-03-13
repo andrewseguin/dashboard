@@ -9,7 +9,7 @@
   </div>
 
   <div class="context">
-    <div class="created">
+    <div class="detail">
       Reported by {{item.reporter}} on {{item.created | date}}
       <ng-container *ngIf="item.created != item.updated">
         - last updated {{item.updated | timeAgo}}
@@ -18,6 +18,9 @@
             [class.theme-background-warn]="item.state === 'closed'"
             [class.theme-background-positive]="item.state === 'open'">
         {{item.state}} </span>
+    </div>
+    <div class="detail" *ngIf="item.assignees.length > 0">
+      Assigned to {{item.assignees}}
     </div>
   </div>
 

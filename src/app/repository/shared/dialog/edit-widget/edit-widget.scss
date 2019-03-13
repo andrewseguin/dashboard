@@ -17,3 +17,9 @@ form {
 .mat-dialog-title {
   margin-left: 16px;
 }
+
+mat-button-toggle-group {
+  ::ng-deep .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    line-height: 32px;
+  }
+}

@@ -24,7 +24,8 @@ export class DisplayOptionsHeader {
   sortIds = Array.from(this.sorts.keys());
 
   views = new Map<ViewKey, string>([
-    ['assignee', 'Assignee'],
+    ['reporter', 'Reporter'],
+    ['assignees', 'Assignees'],
     ['labels', 'Labels'],
     ['warnings', 'Warnings'],
     ['suggestions', 'Suggestions'],

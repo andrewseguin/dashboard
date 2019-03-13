@@ -10,9 +10,18 @@
     </div>
 
     <div class="details theme-secondary-text">
-      <ng-container *ngIf="itemsRenderer.options.view.assignee">
+      <ng-container *ngIf="itemsRenderer.options.view.reporter">
         <div class="section">
-          Assignee: {{item.reporter}}
+          Reporter: {{item.reporter}}
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="itemsRenderer.options.view.assignees">
+        <div class="section" *ngIf="item.assignees.length === 1">
+          Assignee: {{item.assignees}}
+        </div>
+        <div class="section" *ngIf="item.assignees.length > 1">
+          Assignees: {{item.assignees}}
         </div>
       </ng-container>
 

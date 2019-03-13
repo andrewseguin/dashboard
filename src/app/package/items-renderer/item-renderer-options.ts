@@ -14,10 +14,11 @@ export interface ItemRendererOptionsState {
   reverseSort: boolean;
 }
 
-export type ViewKey = 'assignee'|'labels'|'warnings'|'suggestions';
+export type ViewKey = 'reporter'|'assignees'|'labels'|'warnings'|'suggestions';
 
 export interface View {
-  assignee?: boolean;
+  reporter?: boolean;
+  assignees?: boolean;
   labels?: boolean;
   warnings?: boolean;
   suggestions?: boolean;
