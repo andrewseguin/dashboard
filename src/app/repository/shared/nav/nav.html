@@ -1,12 +1,14 @@
 <div class="header">
-  <div class="app-title">{{activatedRepository.repository | async}} </div>
+  <div class="app-title theme-secondary-text">
+    {{activatedRepository.repository | async}} </div>
 </div>
 
 <mat-divider></mat-divider>
 
 <div class="link-list">
   <ng-container *ngFor="let link of links">
-    <div mat-button class="link theme-text" (click)="sidenav.close()" *ngIf="link.requiresData ? !(daoState.isEmpty | async) : true"
+    <div mat-button class="link theme-text" (click)="sidenav.close()"
+         *ngIf="link.requiresData ? !(daoState.isEmpty | async) : true"
          routerLinkActive="active" [routerLink]="link.route">
       <div class="link-highlight"></div>
       <div class="link-text">
@@ -22,7 +24,8 @@
 <div class="settings">
   <ng-container *ngIf="auth.token$ | async; let token; else settingsLabel">
     <ng-container *ngIf="auth.user$ | async; let user">
-      <div class="pic" [style.backgroundImage]="'url(https://github.com/' + user + '.png)'">
+      <div class="pic"
+           [style.backgroundImage]="'url(https://github.com/' + user + '.png)'">
       </div>
       <div class="username"> {{user}} </div>
     </ng-container>

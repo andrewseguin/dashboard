@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component, NgZone, OnDestroy} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {FormControl} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Auth} from 'app/service/auth';
-import {sendEvent} from 'app/utility/analytics';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Auth } from 'app/service/auth';
+import { sendEvent } from 'app/utility/analytics';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'login',
@@ -25,7 +25,7 @@ export class Login implements OnDestroy {
 
   constructor(
       private afAuth: AngularFireAuth, private route: Router,
-      private activatedRoute: ActivatedRoute, private ngZone: NgZone, private auth: Auth) {
+      private activatedRoute: ActivatedRoute, private auth: Auth) {
     const queryParamAccessToken = this.activatedRoute.snapshot.queryParamMap.get('accessToken');
     if (queryParamAccessToken) {
       this.accessTokenInput.setValue(queryParamAccessToken);
