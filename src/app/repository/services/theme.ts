@@ -1,10 +1,20 @@
 import {Injectable} from '@angular/core';
+import {Config} from 'app/service/config';
+import {filter, take} from 'rxjs/operators';
 
 @Injectable()
 export class Theme {
   isLight: boolean;
 
-  constructor() {}
+  constructor(private config: Config) {
+    this.syncState();
+
+    this.config.getDashboardConfig().pipe(filter(v => !!v), take(1)).subscribe((dashboardConfig => {
+      if (dashboardConfig!.useDarkTheme && this.isLight) {
+        this.toggle();
+      }
+    }));
+  }
 
   toggle() {
     document.body.classList.toggle('light-theme');
@@ -12,7 +22,7 @@ export class Theme {
     this.syncState();
 
     localStorage.setItem('light', String(this.isLight));
-    // TODO: Update the user's setting
+    this.config.saveDashboardConfig({useDarkTheme: !this.isLight});
   }
 
   private syncState() {
