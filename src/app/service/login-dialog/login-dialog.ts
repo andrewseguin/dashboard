@@ -27,7 +27,7 @@ export class LoginDialog {
   signIn() {
     const scopes: GithubAuthScope[] = [];
     if (this.enableGist.value) {
-      scopes.push('gists');
+      scopes.push('gist');
     }
     if (this.enableRepo.value) {
       // scopes.push('repo');

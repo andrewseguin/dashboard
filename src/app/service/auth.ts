@@ -5,7 +5,7 @@ import {BehaviorSubject} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {LoginDialog, LoginDialogResult} from './login-dialog/login-dialog';
 
-export type GithubAuthScope = 'gists';
+export type GithubAuthScope = 'gist';
 
 @Injectable({providedIn: 'root'})
 export class Auth {
@@ -26,6 +26,15 @@ export class Auth {
     return window.localStorage.getItem('user');
   }
   user$ = new BehaviorSubject<string|null>(this.user);
+
+  set scopes(scopes: string|null) {
+    window.localStorage.setItem('scopes', scopes || '');
+    this.scopes$.next(scopes);
+  }
+  get scopes(): string|null {
+    return window.localStorage.getItem('scopes');
+  }
+  scopes$ = new BehaviorSubject<string|null>(this.scopes);
 
   constructor(private afAuth: AngularFireAuth, private dialog: MatDialog) {
     // Check if the URL location has the access token embedded
@@ -61,5 +70,13 @@ export class Auth {
   signOut() {
     this.token = '';
     this.afAuth.auth.signOut();
+  }
+
+  hasScope(scope: GithubAuthScope) {
+    if (!this.scopes) {
+      return false;
+    }
+
+    return new Set(this.scopes).has(scope);
   }
 }

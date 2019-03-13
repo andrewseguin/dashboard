@@ -44,7 +44,7 @@ export class Github {
   rateLimitMessageOpen = false;
 
   constructor(private http: HttpClient, private auth: Auth, private snackbar: MatSnackBar) {
-    this.getRateLimits().pipe(take(1)).subscribe(v => this.rateLimits.next(v));
+    this.getRateLimitsAndScopes();
   }
 
   getItemsCount(repo: string, since?: string): Observable<number> {
@@ -86,24 +86,33 @@ export class Github {
   }
 
   getGists(): Observable<CombinedPagedResults<Gist>> {
+    if (!this.auth.hasScope('gist')) {
+      return of({total: 0, completed: 0, current: [], accumulated: []});
+    }
+
     const url = this.constructUrl(`gists`, `per_page=100`);
     return this.getPagedResults<Gist, Gist>(url, g => g, true);
   }
 
-  getRateLimits(): Observable<RateLimits|null> {
+  getRateLimitsAndScopes(): void {
     const url = this.constructUrl(`rate_limit`);
     const token = this.auth.token ? `token ${this.auth.token}` : '';
-    return this.http
-        .get<GithubRateLimitResponse>(url, {headers: new HttpHeaders({'Authorization': token})})
-        .pipe(filter(v => !!v), map(result => {
-                const resources = result!.resources;
-                const ratelimit = {
-                  core: resources.core,
-                  search: resources.search,
-                };
+    this.http
+        .get<GithubRateLimitResponse>(
+            url, {observe: 'response', headers: new HttpHeaders({'Authorization': token})})
+        .pipe(
+            filter(v => !!v), tap(response => this.updateScopes(response)), filter(v => !!v.body),
+            map(result => {
+              const resources = result!.body!.resources;
+              const ratelimit = {
+                core: resources.core,
+                search: resources.search,
+              };
 
-                return ratelimit;
-              }));
+              return ratelimit;
+            }),
+            take(1))
+        .subscribe(v => this.rateLimits.next(v));
   }
 
   getGist(id: string): Observable<Gist|null> {
@@ -129,6 +138,10 @@ export class Github {
   }
 
   getDashboardGist(): Observable<Gist|null> {
+    if (!this.auth.hasScope('gist')) {
+      return of(null);
+    }
+
     return this.getGists().pipe(
         filter(result => result.completed === result.total), mergeMap(result => {
           const gists = result.accumulated;
@@ -144,6 +157,10 @@ export class Github {
   }
 
   editGist(id: string, filename: string, content: string) {
+    if (!this.auth.hasScope('gist')) {
+      return of(null);
+    }
+
     filename = filename.replace('/', '_');
 
     const files: {[key in string]: {filename: string, content: string}} = {};
@@ -153,6 +170,10 @@ export class Github {
   }
 
   createDashboardGist(): Observable<Gist|null> {
+    if (!this.auth.hasScope('gist')) {
+      return of(null);
+    }
+
     const url = 'https://api.github.com/gists';
     const body = {
       files: {dashboardConfig: {content: '{}'}},
@@ -225,7 +246,8 @@ export class Github {
                 'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
               })
             })),
-            tap(response => this.updateRateLimit(rateLimitType, response)));
+            tap(response => this.updateRateLimit(rateLimitType, response)),
+            tap(response => this.updateScopes(response)));
   }
 
   private patch<T>(url: string, body: any, needsAuth = true, rateLimitType: RateLimitType = 'core'):
@@ -242,7 +264,8 @@ export class Github {
                 'Authorization': this.auth.token ? `token ${this.auth.token}` : '',
               })
             })),
-            tap(response => this.updateRateLimit(rateLimitType, response)));
+            tap(response => this.updateRateLimit(rateLimitType, response)),
+            tap(response => this.updateScopes(response)));
   }
 
   private get<T>(url: string, needsAuth = false, rateLimitType: RateLimitType = 'core'):
@@ -269,7 +292,8 @@ export class Github {
                 'Accept': accept,
               })
             })),
-            tap(response => this.updateRateLimit(rateLimitType, response)));
+            tap(response => this.updateRateLimit(rateLimitType, response)),
+            tap(response => this.updateScopes(response)));
   }
 
   private waitForRateLimit(rateLimitType: RateLimitType): Observable<any> {
@@ -310,6 +334,10 @@ export class Github {
       rateLimit![type] = {reset, limit, remaining};
       this.rateLimits.next(rateLimit);
     });
+  }
+
+  private updateScopes(response: HttpResponse<any>|null) {
+    this.auth.scopes = response!.headers.get('X-OAuth-Scopes') || '';
   }
 }
 
