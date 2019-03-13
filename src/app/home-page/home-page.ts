@@ -1,22 +1,22 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Auth } from 'app/service/auth';
-import { sendEvent } from 'app/utility/analytics';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {FormControl} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Auth} from 'app/service/auth';
+import {sendEvent} from 'app/utility/analytics';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
-  selector: 'login',
-  templateUrl: 'login.html',
-  styleUrls: ['login.scss'],
+  selector: 'home-page',
+  templateUrl: 'home-page.html',
+  styleUrls: ['home-page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'theme-background',
   }
 })
-export class Login implements OnDestroy {
+export class HomePage implements OnDestroy {
   checkingAuth = new BehaviorSubject<boolean>(true);
 
   accessTokenInput = new FormControl('');

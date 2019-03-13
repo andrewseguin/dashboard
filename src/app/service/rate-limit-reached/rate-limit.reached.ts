@@ -5,7 +5,6 @@ import {map, take, tap} from 'rxjs/operators';
 
 import {Auth} from '../auth';
 
-
 @Component({
   templateUrl: 'rate-limit-reached.html',
   styleUrls: ['rate-limit-reached.scss'],

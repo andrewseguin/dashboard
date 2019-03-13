@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
 import {distinctUntilChanged} from 'rxjs/operators';
-import {Auth} from './service/auth';
 import {sendPageview} from './utility/analytics';
 
 
@@ -14,7 +13,7 @@ import {sendPageview} from './utility/analytics';
   }
 })
 export class App {
-  constructor(private router: Router, private auth: Auth) {
+  constructor(private router: Router) {
     this.router.events
         .pipe(distinctUntilChanged((prev: any, curr: any) => {
           if (curr instanceof NavigationEnd) {
@@ -23,21 +22,5 @@ export class App {
           return true;
         }))
         .subscribe(x => sendPageview(x.urlAfterRedirects));
-
-    this.auth.token$.subscribe(token => {
-      if (!token) {
-        this.navigateToLogin();
-      }
-    });
-  }
-
-  /**
-   * Send user to the login page and send current location for when they are
-   * logged in.
-   */
-  private navigateToLogin() {
-    if (location.pathname !== '/login') {
-      this.router.navigate(['login'], {fragment: location.pathname});
-    }
   }
 }
