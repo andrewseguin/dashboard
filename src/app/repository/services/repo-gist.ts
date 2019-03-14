@@ -21,7 +21,7 @@ export class RepoGist {
         this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list,
         this.activatedRepository.repository)
         .pipe(
-            filter(result => result.every(r => !!r)), debounceTime(2000), takeUntil(this.destroyed))
+            filter(result => result.every(r => !!r)), debounceTime(500), takeUntil(this.destroyed))
         .subscribe(result => {
           const dashboards = result[0]!;
           const queries = result[1]!;

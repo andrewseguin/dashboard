@@ -42,7 +42,8 @@
         <div class="type">
           <div class="label"> Group By </div>
           <mat-button-toggle-group formControlName="group">
-            <mat-button-toggle *ngFor="let groupId of groupIds" value="groupId">
+            <mat-button-toggle *ngFor="let groupId of groupIds"
+                               [value]="groupId">
               {{groups.get(groupId)}}
             </mat-button-toggle>
           </mat-button-toggle-group>

@@ -6,15 +6,16 @@ export class GithubItemGrouping extends ItemGrouping<Item> {
   constructor(labels: Map<string, Label>) {
     const autoGroups: AutoGroup<Group>[] = [
       {group: 'reporter', key: 'reporter', type: 'value'},
-      { group: 'label',
+      {
+        group: 'label',
         key: 'labels',
         type: 'list',
         transform: labelId => labelId ? labels.get(`${labelId}`)!.name : 'No Label'
       },
-      { group: 'assignee',
+      {
+        group: 'assignee',
         key: 'assignees',
         type: 'list',
-        transform: labelId => labelId ? labels.get(`${labelId}`)!.name : 'No Label'
       },
     ];
     super(autoGroups);

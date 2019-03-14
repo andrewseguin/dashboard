@@ -26,11 +26,12 @@ export class ItemGrouping<T> {
       const transform = autoGroup.transform || ((v: string) => v || 'None');
       switch (autoGroup.type) {
         case 'value':
-          this.groupingFunctions.set(key, (items: T[]) => getGroupByValue(items, key, transform));
+          this.groupingFunctions.set(
+              autoGroup.group, (items: T[]) => getGroupByValue(items, key, transform));
           break;
         case 'list':
           this.groupingFunctions.set(
-              key, (items: T[]) => getGroupByListValues(items, key, transform));
+              autoGroup.group, (items: T[]) => getGroupByListValues(items, key, transform));
           break;
       }
     });
