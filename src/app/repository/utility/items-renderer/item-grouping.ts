@@ -5,13 +5,13 @@ import {Item, Label} from 'app/repository/services/dao';
 export class GithubItemGrouping extends ItemGrouping<Item> {
   constructor(labels: Map<string, Label>) {
     const autoGroups: AutoGroup<Group>[] = [
-      {key: 'reporter', type: 'value'},
-      {
+      {group: 'reporter', key: 'reporter', type: 'value'},
+      { group: 'label',
         key: 'labels',
         type: 'list',
         transform: labelId => labelId ? labels.get(`${labelId}`)!.name : 'No Label'
       },
-      {
+      { group: 'assignee',
         key: 'assignees',
         type: 'list',
         transform: labelId => labelId ? labels.get(`${labelId}`)!.name : 'No Label'

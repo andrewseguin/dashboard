@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {Group, Sort, ViewKey} from 'app/package/items-renderer/item-renderer-options';
+import {GroupIds, Groups, Sort, ViewKey} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -11,13 +11,8 @@ import {takeUntil} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DisplayOptionsHeader {
-  groups = new Map<Group, string>([
-    ['all', 'None'],
-    ['reporter', 'Reporter'],
-    ['labels', 'Label'],
-    ['assignees', 'Assignee'],
-  ]);
-  groupIds = Array.from(this.groups.keys());
+  groups = Groups;
+  groupIds = GroupIds;
 
   sorts = new Map<Sort, string>([
     ['created', 'Date created'],

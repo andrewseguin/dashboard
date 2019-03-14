@@ -7,8 +7,9 @@ export class ItemGroup<T> {
 }
 
 export interface AutoGroup<G> {
+  group: G;
   type: 'value'|'list';
-  key: G;
+  key: string;
   transform?: (value: string) => string;
 }
 

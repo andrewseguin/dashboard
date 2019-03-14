@@ -1,7 +1,11 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {Group, ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
+import {
+  GroupIds,
+  Groups,
+  ItemRendererOptions
+} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
 import {
@@ -52,7 +56,8 @@ export class EditWidget {
   prQueries = this.queriesDao.list.pipe(
       filter(v => !!v), map(queries => queries!.filter(q => q.type === 'pr')));
 
-  pieChartGroups: Group[] = ['labels', 'reporter', 'assignees'];
+  groups = Groups;
+  groupIds = [...GroupIds];
 
   private _destroyed = new Subject();
 
@@ -62,6 +67,8 @@ export class EditWidget {
       private itemsDao: ItemsDao, private itemRecommendations: ItemRecommendations,
       private labelsDao: LabelsDao, public queriesDao: QueriesDao,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+    this.groupIds.splice(this.groupIds.indexOf('all'), 1);
+
     this.widget = {...data.widget};
 
     this.form.get('displayType')!.valueChanges.pipe(takeUntil(this._destroyed))
@@ -140,7 +147,7 @@ export class EditWidget {
       case 'pie':
         options = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
         this.displayTypeOptions = new FormGroup({
-          group: new FormControl(options.group || 'labels'),
+          group: new FormControl(options.group || 'label'),
           filteredGroups: new FormControl(options.filteredGroups || '')
         });
         break;
