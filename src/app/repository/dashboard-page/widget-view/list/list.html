@@ -1,0 +1,7 @@
+<ng-container
+              *ngFor="let item of items.slice(0, widget.listLength); trackBy: trackByNumber; let last = last">
+  <item-summary [item]="item" (select)="openItemModal($event)"
+                [style.pointer-events]="editMode ? 'none' : ''">
+  </item-summary>
+  <mat-divider *ngIf="!last"></mat-divider>
+</ng-container>

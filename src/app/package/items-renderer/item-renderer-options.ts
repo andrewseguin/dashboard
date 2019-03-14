@@ -1,7 +1,7 @@
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
 import {Subject} from 'rxjs';
 
-export type Group = 'all'|'reporter';
+export type Group = 'all'|'reporter'|'labels';
 
 export type Sort = 'created'|'title';
 

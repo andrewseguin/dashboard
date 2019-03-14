@@ -1,7 +1,7 @@
 <ng-container *ngIf="dashboard; else loading">
   <!-- Column Group-->
   <div
-       *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index">
+       *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index; trackBy: trackByIndex">
     <div class="column-group" cdkDropListGroup>
       <button mat-button *ngIf="edit.value && !first"
               (click)="removeColumnGroup(columnGroupIndex)">
@@ -11,7 +11,7 @@
       <div class="columns">
 
         <!-- Column -->
-        <div *ngFor="let column of columnGroup.columns; let columnIndex = index; let first = first"
+        <div *ngFor="let column of columnGroup.columns; let columnIndex = index; let first = first; trackBy: trackByIndex"
              class="column" [class.theme-border]="edit.value">
           <button mat-button *ngIf="edit.value"
                   [style.visibility]="first ? 'hidden' : ''"
@@ -23,7 +23,7 @@
                [cdkDropListData]="column.widgets"
                (cdkDropListDropped)="dropWidget($event)">
             <!-- Widget -->
-            <widget-view *ngFor="let widget of column.widgets; let widgetIndex = index"
+            <widget-view *ngFor="let widget of column.widgets; let widgetIndex = index; trackBy: trackByIndex"
                          cdkDrag [cdkDragDisabled]="!edit.value"
                          [widget]="widget" [dashboardId]="dashboard.id"
                          (duplicate)="duplicateWidget(column, widget, widgetIndex)"

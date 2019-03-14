@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ItemGrouping} from 'app/package/items-renderer/item-grouping';
-import {ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
+import {Group, ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
@@ -39,6 +39,8 @@ export class EditWidget {
   prQueries = this.queriesDao.list.pipe(
       filter(v => !!v), map(queries => queries!.filter(q => q.type === 'pr')));
 
+  pieChartGroups: Group[] = ['labels', 'reporter'];
+
   private _destroyed = new Subject();
 
   constructor(
@@ -59,6 +61,7 @@ export class EditWidget {
       itemType: new FormControl(this.widget.itemType),
       displayType: new FormControl(this.widget.displayType),
       listLength: new FormControl(this.widget.listLength || 3),
+      pieChartGroup: new FormControl(this.widget.groupBy)
     });
 
     this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
@@ -93,6 +96,10 @@ export class EditWidget {
 
     if (result.displayType === 'list') {
       result.listLength = this.form.value.listLength;
+    }
+
+    if (result.displayType === 'pie') {
+      result.listLength = this.form.value.pieChartGroup;
     }
 
     this.dialogRef.close(result);

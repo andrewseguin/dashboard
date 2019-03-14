@@ -18,8 +18,9 @@
     <div class="type">
       <div class="label"> Display Type </div>
       <mat-button-toggle-group formControlName="displayType">
-        <mat-button-toggle value="list">List</mat-button-toggle>
-        <mat-button-toggle value="count"> Count</mat-button-toggle>
+        <mat-button-toggle value="list"> List </mat-button-toggle>
+        <mat-button-toggle value="count"> Count </mat-button-toggle>
+        <mat-button-toggle value="pie"> Pie Chart </mat-button-toggle>
       </mat-button-toggle-group>
     </div>
 
@@ -28,6 +29,12 @@
         <mat-form-field class="list-length">
           <mat-label> Max List Length </mat-label>
           <input matInput formControlName="listLength">
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngSwitchCase="'pie'">
+        <mat-form-field class="list-length">
+          <mat-label> Groups </mat-label>
+          <input matInput formControlName="pieChartGroup">
         </mat-form-field>
       </ng-container>
     </ng-container>

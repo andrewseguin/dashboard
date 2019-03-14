@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
+import {Group, ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {RepoIndexedDb} from '../repo-indexed-db';
 import {ItemType} from './items-dao';
 import {ListDao} from './list-dao';
@@ -8,7 +8,7 @@ import {ListDao} from './list-dao';
 export interface BaseWidget {
   title?: string;
   itemType: ItemType;
-  displayType?: 'list'|'count';
+  displayType?: 'list'|'count'|'pie';
 }
 
 export interface IssueListWidget extends BaseWidget {
@@ -22,7 +22,12 @@ export interface ItemCountWidget extends BaseWidget {
   colors?: {color: 'yellow'|'red'|'green', condition: 'less than'|'greater than'|'equal to'}[];
 }
 
-export type Widget = IssueListWidget&ItemCountWidget;
+export interface PieChartWidget extends BaseWidget {
+  options?: ItemRendererOptionsState;
+  groupBy?: Group;
+}
+
+export type Widget = IssueListWidget&ItemCountWidget&PieChartWidget;
 
 export interface Column {
   widgets: Widget[];

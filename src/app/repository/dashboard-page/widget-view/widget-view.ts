@@ -4,8 +4,7 @@ import {
   Component,
   EventEmitter,
   Input,
-  Output,
-  SimpleChanges
+  Output
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {Router} from '@angular/router';
@@ -74,18 +73,6 @@ export class WidgetView {
           itemGroups!.forEach(itemGroup => this.items.push(...itemGroup.items));
           this.cd.markForCheck();
         });
-  }
-
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['widget'] && this.widget) {
-      const options = this.widget.options;
-
-      if (!options) {
-        throw Error('Missing options for widget ' + JSON.stringify(this.widget));
-      }
-
-      this.itemsRenderer.options.setState(options);
-    }
   }
 
   openItemModal(itemId: number) {

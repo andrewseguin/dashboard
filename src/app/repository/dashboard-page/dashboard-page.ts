@@ -52,6 +52,8 @@ export class DashboardPage {
 
   edit = new FormControl();
 
+  trackByIndex = (i: number) => i;
+
   private destroyed = new Subject();
 
   private getSubscription: Subscription;

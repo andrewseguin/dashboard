@@ -7,27 +7,14 @@
   </button>
 </div>
 
-<ng-container [ngSwitch]="widget.displayType">
-
-  <ng-container *ngSwitchCase="'list'">
-    <ng-container *ngIf="items; else loading">
-      <ng-container
-                    *ngFor="let item of items.slice(0, widget.listLength); trackBy: trackByNumber; let last = last">
-        <item-summary [item]="item" (select)="openItemModal($event)"
-                      [style.pointer-events]="editMode ? 'none' : ''">
-        </item-summary>
-        <mat-divider *ngIf="!last"></mat-divider>
-      </ng-container>
-    </ng-container>
-  </ng-container>
-
-
-  <ng-container *ngSwitchCase="'count'">
-    <ng-container *ngIf="items; else loading">
-      <div class="count">
-        {{itemsRenderer.itemCount | async}}
-      </div>
-    </ng-container>
+<ng-container *ngIf="items; else loading">
+  <ng-container [ngSwitch]="widget.displayType">
+    <list *ngSwitchCase="'list'" [widget]="widget"
+          [itemsRenderer]="itemsRenderer"></list>
+    <count *ngSwitchCase="'count'" [widget]="widget"
+           [itemsRenderer]="itemsRenderer"></count>
+    <pie-chart *ngSwitchCase="'pie'" [widget]="widget"
+               [itemsRenderer]="itemsRenderer"></pie-chart>
   </ng-container>
 </ng-container>
 
