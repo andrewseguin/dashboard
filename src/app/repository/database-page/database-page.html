@@ -8,9 +8,15 @@
     <div class="type-title">
       {{(count)}} Issues
 
-      <update-button *ngIf="!(loadData.isLoading | async)" [updateState]="issuesUpdateState | async"
-                     (update)="updateIssues()">
-      </update-button>
+      <div class="actions">
+        <update-button *ngIf="!(loadData.isLoading | async)"
+                       [updateState]="issuesUpdateState | async"
+                       (update)="updateIssues()">
+        </update-button>
+        <button mat-icon-button (click)="remover.removeData('items')">
+          <mat-icon> delete </mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -19,9 +25,15 @@
     <div class="type-title">
       {{(count)}} Labels
 
-      <update-button *ngIf="!(loadData.isLoading | async)" [updateState]="labelsUpdateState | async"
-                     (update)="updateLabels()">
-      </update-button>
+      <div class="actions">
+        <update-button *ngIf="!(loadData.isLoading | async)"
+                       [updateState]="labelsUpdateState | async"
+                       (update)="updateLabels()">
+        </update-button>
+        <button mat-icon-button (click)="remover.removeData('labels')">
+          <mat-icon> delete </mat-icon>
+        </button>
+      </div>
     </div>
 
     <label-list [labelIds]="repoLabels | async"> </label-list>
@@ -32,5 +44,6 @@
 <button mat-button class="remove"
         *ngIf="!(daoState.isEmpty | async) && !(loadData.isLoading | async)"
         color="warn" (click)="remover.removeAllData()">
-  Remove all locally stored data
+  Remove all locally stored data (includes dashboards, recommendations, and
+  queries)
 </button>

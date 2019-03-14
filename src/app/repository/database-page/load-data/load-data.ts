@@ -12,8 +12,9 @@ import {
 } from 'app/repository/services/dao';
 import {DaoState} from 'app/repository/services/dao/dao-state';
 import {Github} from 'app/service/github';
+import {LoadedRepos} from 'app/service/loaded-repos';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map, mergeMap, startWith, takeUntil, tap} from 'rxjs/operators';
+import {filter, map, mergeMap, startWith, takeUntil, tap, take} from 'rxjs/operators';
 
 
 interface StorageState {
@@ -58,10 +59,10 @@ export class LoadData {
   private destroyed = new Subject();
 
   constructor(
-      public daoState: DaoState, private activatedRepository: ActivatedRepository,
-      private itemsDao: ItemsDao, private contributorsDao: ContributorsDao,
-      private labelsDao: LabelsDao, private snackbar: MatSnackBar, private github: Github,
-      private cd: ChangeDetectorRef) {
+      private loadedRepos: LoadedRepos, public daoState: DaoState,
+      private activatedRepository: ActivatedRepository, private itemsDao: ItemsDao,
+      private contributorsDao: ContributorsDao, private labelsDao: LabelsDao,
+      private snackbar: MatSnackBar, private github: Github, private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
     this.formGroup.get('issueDate')!.setValue(lastMonth, {emitEvent: false});
@@ -75,6 +76,9 @@ export class LoadData {
 
   store() {
     this.isLoading.next(true);
+
+    this.activatedRepository.repository.pipe(filter(v => !!v), take(1))
+        .subscribe(repository => this.loadedRepos.addLoadedRepo(repository!));
 
     const getLabels = this.getValues(
         'labels', repository => this.github.getLabels(repository),

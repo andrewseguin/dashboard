@@ -1,6 +1,9 @@
-<div class="header">
-  <div class="app-title theme-secondary-text">
-    {{activatedRepository.repository | async}} </div>
+<div class="header theme-background-app-bar">
+  <mat-select [formControl]="repository">
+    <mat-option *ngFor="let repo of repositories | async" [value]="repo">
+      <div>{{repo}}</div>
+    </mat-option>
+  </mat-select>
 </div>
 
 <mat-divider></mat-divider>

@@ -34,7 +34,7 @@ export class Repository {
       if (isEmpty) {
         this.router.navigate([`${this.activatedRepository.repository.value}/database`]);
       } else {
-        this.initializAutoIssueUpdates();
+        this.initializeAutoIssueUpdates();
       }
     });
   }
@@ -44,7 +44,7 @@ export class Repository {
     this.destroyed.complete();
   }
 
-  private initializAutoIssueUpdates() {
+  private initializeAutoIssueUpdates() {
     interval(60 * 1000)
         .pipe(
             mergeMap(() => this.itemsDao.list.pipe(take(1))),
