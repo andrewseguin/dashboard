@@ -139,8 +139,10 @@ export class EditWidget {
 
       case 'pie':
         options = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
-        this.displayTypeOptions =
-            new FormGroup({group: new FormControl(options.group || 'labels')});
+        this.displayTypeOptions = new FormGroup({
+          group: new FormControl(options.group || 'labels'),
+          filteredGroups: new FormControl(options.filteredGroups || '')
+        });
         break;
     }
   }

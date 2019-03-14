@@ -71,7 +71,15 @@ export class PieChart {
   }
 
   render(groups: ItemGroup<Item>[]) {
+    const filteredGroups =
+        (this.widget.displayTypeOptions as PieChartDisplayTypeOptions).filteredGroups!;
+    if (filteredGroups) {
+      const filteredGroupsSet = new Set<string>(filteredGroups.split(',').map(v => v.trim()));
+      groups = groups.filter(g => filteredGroupsSet.has(g.title));
+    }
+
     const info = this.getInfo(groups);
+
     if (this.chart) {
       this.chart.data.datasets![0].data = info.data;
       this.chart.data.labels = info.labels;

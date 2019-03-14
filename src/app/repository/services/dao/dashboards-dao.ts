@@ -15,6 +15,7 @@ export interface ItemCountDisplayTypeOptions {
 
 export interface PieChartDisplayTypeOptions {
   group: Group;
+  filteredGroups: string;  // Comma deliminated
 }
 
 export type DisplayType = 'list'|'count'|'pie';
