@@ -7,6 +7,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
+import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Theme} from 'app/repository/services';
 import {Item, PieChartWidget} from 'app/repository/services/dao';
@@ -61,7 +62,8 @@ export class PieChart {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      const options = {...this.widget.options!, groupBy: this.widget.groupBy!};
+      const options:
+          ItemRendererOptionsState = {...this.widget.options!, grouping: this.widget.groupBy!};
       this.itemsRenderer.options.setState(options);
     }
   }

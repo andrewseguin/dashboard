@@ -3,11 +3,9 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
-
-import {EditWidgetModule} from '../shared/dialog/edit-widget/edit-widget.module';
 import {LoadingModule} from '../shared/loading/loading.module';
-
 import {DashboardPage} from './dashboard-page';
+import {EditWidgetModule} from './edit-widget/edit-widget.module';
 import {WidgetViewModule} from './widget-view/widget-view.module';
 
 

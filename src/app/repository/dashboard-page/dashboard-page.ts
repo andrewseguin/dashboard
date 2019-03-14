@@ -16,8 +16,7 @@ import {
   DashboardsDao,
   Widget
 } from '../services/dao/dashboards-dao';
-import {EditWidget, EditWidgetData} from '../shared/dialog/edit-widget/edit-widget';
-
+import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
 
 @Component({
   selector: 'dashboard-page',
