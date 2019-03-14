@@ -86,10 +86,11 @@ export class PieChart {
       this.chart.update();
     } else {
       const chartData: Chart.ChartData = {
-        datasets: [{data: info.data, backgroundColor: ['red', 'yellow', 'blue']}],
+        datasets: [{data: info.data, backgroundColor: MaterialColors, borderColor: 'transparent'}],
         labels: info.labels
       };
       const options: Chart.ChartOptions = {
+        cutoutPercentage: 50,
         legend: {labels: {fontColor: this.theme.isLight ? 'black' : 'white'}, position: 'bottom'}
       };
 
@@ -98,3 +99,10 @@ export class PieChart {
     }
   }
 }
+
+const MaterialColors = [
+  'rgba(33, 150, 243, 0.75)', 'rgba(244, 67, 54, 0.75)', 'rgba(76, 175, 80, 0.75)',
+  'rgba(255, 193, 7, 0.75)', 'rgba(156, 39, 176, 0.75)', 'rgba(121, 85, 72, 0.75)',
+  'rgba(255, 152, 0, 0.75)', 'rgba(0, 150, 136, 0.75)', 'rgba(156, 39, 176, 0.75)',
+  'rgba(121, 85, 72, 0.75)'
+];
