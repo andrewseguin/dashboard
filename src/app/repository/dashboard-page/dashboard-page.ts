@@ -126,7 +126,8 @@ export class DashboardPage {
       title: 'New Widget',
       options: new ItemRendererOptions().getState(),
       itemType: 'issue',
-      displayType: 'list'
+      displayType: 'list',
+      displayTypeOptions: {listLength: 3}
     };
     const config: MatDialogConfig<EditWidgetData> = {width: '650px', data: {widget}};
 

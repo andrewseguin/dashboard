@@ -4,7 +4,14 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Group, ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
-import {Widget} from 'app/repository/services/dao/dashboards-dao';
+import {
+  DisplayType,
+  IssueListDisplayTypeOptions,
+  ItemCountDisplayTypeOptions,
+  PieChartDisplayTypeOptions,
+  Widget,
+  WidgetDisplayTypeOptions
+} from 'app/repository/services/dao/dashboards-dao';
 import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
@@ -30,7 +37,13 @@ export class EditWidget {
 
   queryChanged = new Subject<void>();
 
-  form: FormGroup;
+  form = new FormGroup({
+    title: new FormControl(),
+    itemType: new FormControl(),
+    displayType: new FormControl(),
+  });
+
+  displayTypeOptions: FormGroup;
 
   metadata = ItemsFilterMetadata;
 
@@ -51,34 +64,22 @@ export class EditWidget {
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.widget = {...data.widget};
 
-    this.initializeItemsRenderer(this.widget.itemType);
-    if (data.widget.options) {
-      this.itemsRenderer.options.setState(data.widget.options);
-    }
+    this.form.get('displayType')!.valueChanges.pipe(takeUntil(this._destroyed))
+        .subscribe(displayType => {
+          this.updateDisplayTypeOptionsForm(displayType);
+        });
 
-    this.form = new FormGroup({
-      title: new FormControl(this.widget.title),
-      itemType: new FormControl(this.widget.itemType),
-      displayType: new FormControl(this.widget.displayType),
-      listLength: new FormControl(this.widget.listLength || 3),
-      pieChartGroupBy: new FormControl(this.widget.groupBy)
-    });
 
+    this.itemsRenderer.options.setState(this.widget.options);
     this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
-      this.initializeItemsRenderer(itemType);
+      this.changeItemsRendererItemType(itemType);
     });
-  }
 
-  private initializeItemsRenderer(itemType: ItemType) {
-    const items = this.itemsDao.list.pipe(filter(v => !!v), map(items => {
-                                            const issues = items!.filter(item => !item.pr);
-                                            const pullRequests = items!.filter(item => !!item.pr);
-                                            return itemType === 'issue' ? issues : pullRequests;
-                                          }));
-
-    this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.labelsDao),
-        getItemsGrouper(this.labelsDao), new MyItemSorter());
+    this.form.setValue({
+      title: this.widget.title,
+      itemType: this.widget.itemType,
+      displayType: this.widget.displayType,
+    });
   }
 
   ngOnDestroy() {
@@ -87,22 +88,13 @@ export class EditWidget {
   }
 
   edit() {
-    const result: Widget = {
+    this.dialogRef.close({
       title: this.form.value.title,
       options: this.itemsRenderer.options.getState(),
       itemType: this.form.value.itemType,
       displayType: this.form.value.displayType,
-    };
-
-    if (result.displayType === 'list') {
-      result.listLength = this.form.value.listLength;
-    }
-
-    if (result.displayType === 'pie') {
-      result.groupBy = this.form.value.pieChartGroupBy;
-    }
-
-    this.dialogRef.close(result);
+      displayTypeOptions: this.displayTypeOptions.value
+    } as Widget);
   }
 
   loadFromRecommendation(recommendation: Recommendation) {
@@ -115,6 +107,41 @@ export class EditWidget {
   loadFromQuery(query: Query) {
     if (query.options) {
       this.itemsRenderer.options.setState(query.options);
+    }
+  }
+
+  private changeItemsRendererItemType(itemType: ItemType) {
+    const items = this.itemsDao.list.pipe(filter(v => !!v), map(items => {
+                                            const issues = items!.filter(item => !item.pr);
+                                            const pullRequests = items!.filter(item => !!item.pr);
+                                            return itemType === 'issue' ? issues : pullRequests;
+                                          }));
+
+    this.itemsRenderer.initialize(
+        items, getItemsFilterer(this.itemRecommendations, this.labelsDao),
+        getItemsGrouper(this.labelsDao), new MyItemSorter());
+  }
+
+  private updateDisplayTypeOptionsForm(displayType: DisplayType) {
+    let options: WidgetDisplayTypeOptions;
+    switch (displayType) {
+      case 'count':
+        options = this.widget.displayTypeOptions as ItemCountDisplayTypeOptions;
+        this.displayTypeOptions =
+            new FormGroup({fontSize: new FormControl(options.fontSize || 'normal')});
+        break;
+
+      case 'list':
+        options = this.widget.displayTypeOptions as IssueListDisplayTypeOptions;
+        this.displayTypeOptions =
+            new FormGroup({listLength: new FormControl(options.listLength || 'normal')});
+        break;
+
+      case 'pie':
+        options = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
+        this.displayTypeOptions =
+            new FormGroup({group: new FormControl(options.group || 'labels')});
+        break;
     }
   }
 }

@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {IssueListWidget, Item} from 'app/repository/services/dao';
+import {Item, Widget} from 'app/repository/services/dao';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -21,7 +21,7 @@ import {filter, takeUntil} from 'rxjs/operators';
 export class List {
   trackById = (_i: number, item: Item) => item.id;
 
-  @Input() widget: IssueListWidget;
+  @Input() widget: Widget;
 
   @Input() itemsRenderer: ItemsRenderer<Item>;
 

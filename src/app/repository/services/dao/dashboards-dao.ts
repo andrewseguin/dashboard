@@ -4,30 +4,31 @@ import {RepoIndexedDb} from '../repo-indexed-db';
 import {ItemType} from './items-dao';
 import {ListDao} from './list-dao';
 
+export interface IssueListDisplayTypeOptions {
+  listLength: number;
+}
 
-export interface BaseWidget {
-  title?: string;
+export interface ItemCountDisplayTypeOptions {
+  fontSize: 'small'|'normal'|'large';
+  colors: {color: 'yellow'|'red'|'green', condition: 'less than'|'greater than'|'equal to'}[];
+}
+
+export interface PieChartDisplayTypeOptions {
+  group: Group;
+}
+
+export type DisplayType = 'list'|'count'|'pie';
+
+export type WidgetDisplayTypeOptions =
+    IssueListDisplayTypeOptions|ItemCountDisplayTypeOptions|PieChartDisplayTypeOptions;
+
+export interface Widget {
+  title: string;
   itemType: ItemType;
-  displayType?: 'list'|'count'|'pie';
+  options: ItemRendererOptionsState;
+  displayType: DisplayType;
+  displayTypeOptions: WidgetDisplayTypeOptions;
 }
-
-export interface IssueListWidget extends BaseWidget {
-  options?: ItemRendererOptionsState;
-  listLength?: number;
-}
-
-export interface ItemCountWidget extends BaseWidget {
-  options?: ItemRendererOptionsState;
-  fontSize?: number;
-  colors?: {color: 'yellow'|'red'|'green', condition: 'less than'|'greater than'|'equal to'}[];
-}
-
-export interface PieChartWidget extends BaseWidget {
-  options?: ItemRendererOptionsState;
-  groupBy?: Group;
-}
-
-export type Widget = IssueListWidget&ItemCountWidget&PieChartWidget;
 
 export interface Column {
   widgets: Widget[];

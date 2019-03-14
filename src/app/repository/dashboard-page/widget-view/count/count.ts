@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, ItemCountWidget} from 'app/repository/services/dao';
+import {Item, Widget} from 'app/repository/services/dao';
 
 @Component({
   selector: 'count',
@@ -9,7 +9,7 @@ import {Item, ItemCountWidget} from 'app/repository/services/dao';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Count {
-  @Input() widget: ItemCountWidget;
+  @Input() widget: Widget;
 
   @Input() itemsRenderer: ItemsRenderer<Item>;
 

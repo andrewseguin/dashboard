@@ -8,9 +8,14 @@ form {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
+  font-size: 14px;
 
   .label {
-    margin-right: 16px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    min-width: 140px;
+    width: 140px;
   }
 }
 
@@ -21,5 +26,28 @@ form {
 mat-button-toggle-group {
   ::ng-deep .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
     line-height: 32px;
+  }
+}
+
+input {
+  background: inherit;
+  color: inherit;
+  border: none;
+  outline: none;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  padding-bottom: 4px;
+  width: 100%;
+}
+
+.query {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+
+  button {
+    align-self: flex-end;
+    font-size: 12px;
+    margin-bottom: 8px;
   }
 }

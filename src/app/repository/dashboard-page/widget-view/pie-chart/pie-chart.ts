@@ -10,7 +10,7 @@ import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Theme} from 'app/repository/services';
-import {Item, PieChartWidget} from 'app/repository/services/dao';
+import {Item, PieChartDisplayTypeOptions, Widget} from 'app/repository/services/dao';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {filter} from 'rxjs/operators';
@@ -26,7 +26,7 @@ export class PieChart {
 
   @Input() itemsRenderer: ItemsRenderer<Item>;
 
-  @Input() widget: PieChartWidget;
+  @Input() widget: Widget;
 
   @ViewChild('canvas') canvas: ElementRef;
 
@@ -35,7 +35,8 @@ export class PieChart {
   constructor(private theme: Theme) {}
 
   ngOnInit() {
-    this.itemsRenderer.options.grouping = this.widget.groupBy!;
+    const displayTypeOptions = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
+    this.itemsRenderer.options.grouping = displayTypeOptions.group!;
     this.itemsRenderer.itemGroups.pipe(filter(v => !!v)).subscribe(groups => this.render(groups!));
   }
 
@@ -62,8 +63,9 @@ export class PieChart {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
+      const displayTypeOptions = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
       const options:
-          ItemRendererOptionsState = {...this.widget.options!, grouping: this.widget.groupBy!};
+          ItemRendererOptionsState = {...this.widget.options!, grouping: displayTypeOptions.group!};
       this.itemsRenderer.options.setState(options);
     }
   }
