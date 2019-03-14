@@ -8,12 +8,13 @@ import {
   NgZone,
   Output
 } from '@angular/core';
-import {ItemGroup, ItemGrouping} from 'app/package/items-renderer/item-grouping';
+import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
+import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {fromEvent, Observable, Subject} from 'rxjs';
@@ -67,8 +68,8 @@ export class ItemsList {
                                           }));
 
     this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping<Item>(),
-        new MyItemSorter());
+        items, getItemsFilterer(this.itemRecommendations, this.labelsDao),
+        getItemsGrouper(this.labelsDao), new MyItemSorter());
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.optionsStateChanged.next(options.getState());

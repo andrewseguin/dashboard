@@ -7,16 +7,11 @@
   </button>
 </div>
 
-<ng-container *ngIf="items; else loading">
-  <ng-container [ngSwitch]="widget.displayType">
-    <list *ngSwitchCase="'list'" [widget]="widget"
-          [itemsRenderer]="itemsRenderer"></list>
-    <count *ngSwitchCase="'count'" [widget]="widget"
-           [itemsRenderer]="itemsRenderer"></count>
-    <pie-chart *ngSwitchCase="'pie'" [widget]="widget"
-               [itemsRenderer]="itemsRenderer"></pie-chart>
-  </ng-container>
-</ng-container>
+<div [ngSwitch]="widget.displayType" [style.pointer-events]="editMode ? 'none' : ''">
+  <list *ngSwitchCase="'list'" [widget]="widget" [itemsRenderer]="itemsRenderer"></list>
+  <count *ngSwitchCase="'count'" [widget]="widget" [itemsRenderer]="itemsRenderer"></count>
+  <pie-chart *ngSwitchCase="'pie'" [widget]="widget" [itemsRenderer]="itemsRenderer"></pie-chart>
+</div>
 
 <mat-menu #settings="matMenu">
   <button mat-menu-item (click)="edit.emit()"> Edit </button>

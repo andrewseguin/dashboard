@@ -34,7 +34,7 @@
       <ng-container *ngSwitchCase="'pie'">
         <mat-form-field class="list-length">
           <mat-label> Groups </mat-label>
-          <input matInput formControlName="pieChartGroup">
+          <input matInput formControlName="pieChartGroupBy">
         </mat-form-field>
       </ng-container>
     </ng-container>
@@ -44,10 +44,8 @@
     Load Saved Search
   </button>
 
-  <advanced-search [search]="itemsRenderer.options.search"
-                   [filters]="itemsRenderer.options.filters"
-                   [metadata]="metadata"
-                   (searchChanged)="itemsRenderer.options.search = $event"
+  <advanced-search [search]="itemsRenderer.options.search" [filters]="itemsRenderer.options.filters"
+                   [metadata]="metadata" (searchChanged)="itemsRenderer.options.search = $event"
                    (filtersChanged)="itemsRenderer.options.filters = $event">
   </advanced-search>
   <display-options-header [hideGrouping]="true"></display-options-header>
@@ -62,34 +60,29 @@
   <button mat-menu-item *ngIf="(recommendationsDao.list | async)?.length > 0"
           [matMenuTriggerFor]="recommendationsMenu"> Recommendations
   </button>
-  <button mat-menu-item
-          *ngIf="(issueQueries | async)?.length > 0 && form.value.itemType === 'issue'"
+  <button mat-menu-item *ngIf="(issueQueries | async)?.length > 0 && form.value.itemType === 'issue'"
           [matMenuTriggerFor]="issueQueriesMenu"> Issue Queries
   </button>
-  <button mat-menu-item
-          *ngIf="(prQueries | async)?.length > 0 && form.value.itemType === 'pr'"
+  <button mat-menu-item *ngIf="(prQueries | async)?.length > 0 && form.value.itemType === 'pr'"
           [matMenuTriggerFor]="prQueriesMenu"> Pull Request Queries
   </button>
 </mat-menu>
 
 <mat-menu #recommendationsMenu="matMenu">
-  <button mat-menu-item
-          *ngFor="let recommendation of recommendationsDao.list | async"
+  <button mat-menu-item *ngFor="let recommendation of recommendationsDao.list | async"
           (click)="loadFromRecommendation(recommendation)">
     {{recommendation.message}}
   </button>
 </mat-menu>
 
 <mat-menu #issueQueriesMenu="matMenu">
-  <button mat-menu-item *ngFor="let query of issueQueries | async"
-          (click)="loadFromQuery(query)">
+  <button mat-menu-item *ngFor="let query of issueQueries | async" (click)="loadFromQuery(query)">
     {{query.name}}
   </button>
 </mat-menu>
 
 <mat-menu #prQueriesMenu="matMenu">
-  <button mat-menu-item *ngFor="let query of prQueries | async"
-          (click)="loadFromQuery(query)">
+  <button mat-menu-item *ngFor="let query of prQueries | async" (click)="loadFromQuery(query)">
     {{query.name}}
   </button>
 </mat-menu>

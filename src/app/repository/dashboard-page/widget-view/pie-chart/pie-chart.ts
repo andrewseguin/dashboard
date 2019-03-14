@@ -78,7 +78,7 @@ export class PieChart {
         labels: info.labels
       };
       const options: Chart.ChartOptions = {
-        legend: {labels: {fontColor: this.theme.isLight ? 'black' : 'white'}}
+        legend: {labels: {fontColor: this.theme.isLight ? 'black' : 'white'}, position: 'bottom'}
       };
 
       this.chart = new Chart(this.canvas.nativeElement, {type: 'pie', data: chartData, options});

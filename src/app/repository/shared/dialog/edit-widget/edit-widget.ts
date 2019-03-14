@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {ItemGrouping} from 'app/package/items-renderer/item-grouping';
 import {Group, ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
@@ -10,6 +9,7 @@ import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
 import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
+import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {Subject} from 'rxjs';
@@ -61,7 +61,7 @@ export class EditWidget {
       itemType: new FormControl(this.widget.itemType),
       displayType: new FormControl(this.widget.displayType),
       listLength: new FormControl(this.widget.listLength || 3),
-      pieChartGroup: new FormControl(this.widget.groupBy)
+      pieChartGroupBy: new FormControl(this.widget.groupBy)
     });
 
     this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
@@ -77,8 +77,8 @@ export class EditWidget {
                                           }));
 
     this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
-        new MyItemSorter());
+        items, getItemsFilterer(this.itemRecommendations, this.labelsDao),
+        getItemsGrouper(this.labelsDao), new MyItemSorter());
   }
 
   ngOnDestroy() {
@@ -99,7 +99,7 @@ export class EditWidget {
     }
 
     if (result.displayType === 'pie') {
-      result.listLength = this.form.value.pieChartGroup;
+      result.groupBy = this.form.value.pieChartGroupBy;
     }
 
     this.dialogRef.close(result);

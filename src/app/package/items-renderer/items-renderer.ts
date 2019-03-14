@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
-import { filter, startWith } from 'rxjs/operators';
-import { ItemFilterer } from './item-filterer';
-import { ItemGroup, ItemGrouping } from './item-grouping';
-import { ItemRendererOptions } from './item-renderer-options';
-import { ItemSorter } from './item-sorter';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable, Subscription} from 'rxjs';
+import {filter, startWith} from 'rxjs/operators';
+import {ItemFilterer} from './item-filterer';
+import {ItemGroup, ItemGrouping} from './item-grouping';
+import {ItemRendererOptions} from './item-renderer-options';
+import {ItemSorter} from './item-sorter';
 
 
 @Injectable()
@@ -29,7 +29,7 @@ export class ItemsRenderer<T> {
 
   initialize(
       items: Observable<T[]>, filterer: Observable<ItemFilterer<T, any>>,
-      grouper: ItemGrouping<T>, sorter: ItemSorter<T>) {
+      grouper: Observable<ItemGrouping<T>>, sorter: ItemSorter<T>) {
     if (this.initSubscription) {
       this.initSubscription.unsubscribe();
     }
@@ -38,12 +38,14 @@ export class ItemsRenderer<T> {
         combineLatest([
           filterer,
           items,
+          grouper,
           this.options.changed.pipe(startWith(null)),
         ])
-            .pipe(filter(result => !!result[0] && !!result[1]))
+            .pipe(filter(result => !!result[0] && !!result[1] && !!result[2]))
             .subscribe(result => {
               const filterer = result[0];
               const items = result[1];
+              const grouper = result[2];
 
               const filteredItems =
                   filterer.filter(items, this.options.filters, this.options.search);

@@ -1,24 +1,14 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output
-} from '@angular/core';
-import {MatDialog} from '@angular/material';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Router} from '@angular/router';
-import {ItemGrouping} from 'app/package/items-renderer/item-grouping';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Item, ItemsDao, LabelsDao} from 'app/repository/services/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
+import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
-import {Subject} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 
 @Component({
   selector: 'widget-view',
@@ -43,15 +33,8 @@ export class WidgetView {
 
   @Output() remove = new EventEmitter<void>();
 
-  items: Item[];
-
-  trackByNumber = (_i: number, item: Item) => item.number;
-
-  private destroyed = new Subject();
-
   constructor(
-      public itemsRenderer: ItemsRenderer<Item>, private dialog: MatDialog,
-      private cd: ChangeDetectorRef, private router: Router,
+      public itemsRenderer: ItemsRenderer<Item>, private router: Router,
       private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
       private itemsDao: ItemsDao, private activatedRepository: ActivatedRepository) {}
 
@@ -64,19 +47,8 @@ export class WidgetView {
                                 }));
 
     this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.labelsDao), new ItemGrouping(),
-        new MyItemSorter());
-    this.itemsRenderer.itemGroups
-        .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
-        .subscribe(itemGroups => {
-          this.items = [];
-          itemGroups!.forEach(itemGroup => this.items.push(...itemGroup.items));
-          this.cd.markForCheck();
-        });
-  }
-
-  openItemModal(itemId: number) {
-    this.dialog.open(ItemDetailDialog, {data: {itemId: `${itemId}`}});
+        items, getItemsFilterer(this.itemRecommendations, this.labelsDao),
+        getItemsGrouper(this.labelsDao), new MyItemSorter());
   }
 
   openQuery() {
