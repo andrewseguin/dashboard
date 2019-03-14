@@ -52,7 +52,7 @@ export class EditWidget {
   prQueries = this.queriesDao.list.pipe(
       filter(v => !!v), map(queries => queries!.filter(q => q.type === 'pr')));
 
-  pieChartGroups: Group[] = ['labels', 'reporter'];
+  pieChartGroups: Group[] = ['labels', 'reporter', 'assignees'];
 
   private _destroyed = new Subject();
 

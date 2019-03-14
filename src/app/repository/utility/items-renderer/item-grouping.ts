@@ -11,6 +11,11 @@ export class GithubItemGrouping extends ItemGrouping<Item> {
         type: 'list',
         transform: labelId => labelId ? labels.get(`${labelId}`)!.name : 'No Label'
       },
+      {
+        key: 'assignees',
+        type: 'list',
+        transform: labelId => labelId ? labels.get(`${labelId}`)!.name : 'No Label'
+      },
     ];
     super(autoGroups);
   }

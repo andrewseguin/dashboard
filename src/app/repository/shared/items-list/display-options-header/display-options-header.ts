@@ -14,6 +14,8 @@ export class DisplayOptionsHeader {
   groups = new Map<Group, string>([
     ['all', 'None'],
     ['reporter', 'Reporter'],
+    ['labels', 'Label'],
+    ['assignees', 'Assignee'],
   ]);
   groupIds = Array.from(this.groups.keys());
 
