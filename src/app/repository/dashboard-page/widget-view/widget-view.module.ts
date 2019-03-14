@@ -6,6 +6,7 @@ import {CountModule} from './count/count.module';
 import {ListModule} from './list/list.module';
 import {PieChartModule} from './pie-chart/pie-chart.module';
 import {WidgetView} from './widget-view';
+import { TimeSeriesModule } from '../time-series/time-series.module';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import {WidgetView} from './widget-view';
     PieChartModule,
     ListModule,
     CountModule,
+    TimeSeriesModule,
   ],
   declarations: [WidgetView],
   exports: [WidgetView],

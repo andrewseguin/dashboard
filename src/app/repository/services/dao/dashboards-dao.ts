@@ -18,10 +18,14 @@ export interface PieChartDisplayTypeOptions {
   filteredGroups: string;  // Comma deliminated
 }
 
-export type DisplayType = 'list'|'count'|'pie';
+export interface TimeSeriesDisplayTypeOptions {
+  something: string;
+}
 
-export type WidgetDisplayTypeOptions =
-    IssueListDisplayTypeOptions|ItemCountDisplayTypeOptions|PieChartDisplayTypeOptions;
+export type DisplayType = 'list'|'count'|'pie'|'time-series';
+
+export type WidgetDisplayTypeOptions = IssueListDisplayTypeOptions|TimeSeriesDisplayTypeOptions|
+    ItemCountDisplayTypeOptions|PieChartDisplayTypeOptions;
 
 export interface Widget {
   title: string;

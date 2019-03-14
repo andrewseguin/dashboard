@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Router} from '@angular/router';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
+import {Theme} from 'app/repository/services';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
 import {Item, ItemsDao, LabelsDao} from 'app/repository/services/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
@@ -8,6 +9,7 @@ import {ItemRecommendations} from 'app/repository/services/item-recommendations'
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
 import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
+import * as Chart from 'chart.js';
 import {filter, map} from 'rxjs/operators';
 
 @Component({
@@ -36,7 +38,10 @@ export class WidgetView {
   constructor(
       public itemsRenderer: ItemsRenderer<Item>, private router: Router,
       private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
-      private itemsDao: ItemsDao, private activatedRepository: ActivatedRepository) {}
+      private theme: Theme, private itemsDao: ItemsDao,
+      private activatedRepository: ActivatedRepository) {
+    Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
+  }
 
   ngOnInit() {
     const items =
