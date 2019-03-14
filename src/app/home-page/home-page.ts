@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {LoadedRepos} from 'app/service/loaded-repos';
 
 @Component({
   selector: 'home-page',
@@ -10,4 +11,5 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   }
 })
 export class HomePage {
+  constructor(public loadedRepos: LoadedRepos) {}
 }

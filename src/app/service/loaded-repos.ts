@@ -8,13 +8,17 @@ export class LoadedRepos {
   set repos(loadedRepos: string[]) {
     const loadedReposStr = loadedRepos.length ? loadedRepos.join(',') : '';
     window.localStorage.setItem('loadedRepos', loadedReposStr);
-    this.repo$.next(loadedRepos);
+    this.repos$.next(loadedRepos);
   }
   get repos(): string[] {
     const loadedReposStr = window.localStorage.getItem('loadedRepos') || '';
     return loadedReposStr ? loadedReposStr.split(',') : [];
   }
-  repo$ = new BehaviorSubject<string[]>(this.repos);
+  repos$ = new BehaviorSubject<string[]>(this.repos);
+
+  isLoaded(repo: string) {
+    return this.repos.indexOf(repo) !== -1;
+  }
 
   addLoadedRepo(repo: string) {
     this.repos = [...this.repos, repo];
@@ -22,6 +26,8 @@ export class LoadedRepos {
 
   removeLoadedRepo(repo: string) {
     const index = this.repos.indexOf(repo);
-    this.repos = [...this.repos].splice(index, 1);
+    const newRepos = [...this.repos];
+    newRepos.splice(index, 1);
+    this.repos = newRepos;
   }
 }

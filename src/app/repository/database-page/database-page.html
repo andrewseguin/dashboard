@@ -39,10 +39,27 @@
     <label-list [labelIds]="repoLabels | async"> </label-list>
 
   </div>
+
+  <div class="type issues theme-border theme-background-card"
+       *ngIf="(contributorsDao.list | async)?.length; let count">
+    <div class="type-title">
+      {{(count)}} Contributors
+
+      <div class="actions">
+        <update-button *ngIf="!(loadData.isLoading | async)"
+                       [updateState]="contributorsUpdateState | async"
+                       (update)="updateContributors()">
+        </update-button>
+        <button mat-icon-button (click)="remover.removeData('contributors')">
+          <mat-icon> delete </mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<button mat-button class="remove"
-        *ngIf="!(daoState.isEmpty | async) && !(loadData.isLoading | async)"
+<button mat-button class="remove" *ngIf="(isLoaded | async) && loadData"
         color="warn" (click)="remover.removeAllData()">
   Remove all locally stored data (includes dashboards, recommendations, and
   queries)

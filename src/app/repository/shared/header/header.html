@@ -1,5 +1,6 @@
 <mat-toolbar>
-  <button mat-button class="left-button" (click)="leftButtonClicked()">
+  <button mat-button class="left-button" (click)="leftButtonClicked()"
+          [style.visibility]="(isLoaded | async) ? 'visible' : 'hidden'">
     <ng-container *ngIf="header.goBack; else menu">
       <mat-icon> arrow_back </mat-icon>
     </ng-container>

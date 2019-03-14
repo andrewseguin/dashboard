@@ -14,7 +14,7 @@ import {DaoState} from 'app/repository/services/dao/dao-state';
 import {Github} from 'app/service/github';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map, mergeMap, startWith, takeUntil, tap, take} from 'rxjs/operators';
+import {filter, map, mergeMap, startWith, takeUntil, tap} from 'rxjs/operators';
 
 
 interface StorageState {
@@ -56,6 +56,14 @@ export class LoadData {
                   return this.github.getItemsCount(repository!, since);
                 }));
 
+  isEmpty = combineLatest(this.labelsDao.list, this.itemsDao.list, this.contributorsDao.list)
+                .pipe(filter(results => results.every(v => !!v)), map(results => {
+                        const labels = results[0]!;
+                        const items = results[1]!;
+                        const contributors = results[2]!;
+                        return !labels.length && !items.length && !contributors.length;
+                      }));
+
   private destroyed = new Subject();
 
   constructor(
@@ -77,9 +85,6 @@ export class LoadData {
   store() {
     this.isLoading.next(true);
 
-    this.activatedRepository.repository.pipe(filter(v => !!v), take(1))
-        .subscribe(repository => this.loadedRepos.addLoadedRepo(repository!));
-
     const getLabels = this.getValues(
         'labels', repository => this.github.getLabels(repository),
         (values: Label[]) => this.labelsDao.update(values));
@@ -92,13 +97,14 @@ export class LoadData {
         'contributor', repository => this.github.getContributors(repository),
         (values: Contributor[]) => this.contributorsDao.update(values));
 
-    this.activatedRepository.repository
+    getLabels
         .pipe(
-            mergeMap(() => getLabels), mergeMap(() => getIssues), mergeMap(() => getContributors),
-            takeUntil(this.destroyed))
-        .subscribe(() => {
+            mergeMap(() => getIssues), mergeMap(() => getContributors),
+            mergeMap(() => this.activatedRepository.repository), takeUntil(this.destroyed))
+        .subscribe(repository => {
           this.state = null;
           this.snackbar.open(`Successfully loaded data`, '', {duration: 2000});
+          this.loadedRepos.addLoadedRepo(repository!);
           this.isLoading.next(false);
           this.cd.markForCheck();
         });

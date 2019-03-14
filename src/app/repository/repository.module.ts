@@ -21,11 +21,13 @@ import {RepoGist} from './services/repo-gist';
 import {RepoIndexedDb} from './services/repo-indexed-db';
 import {Updater} from './services/updater';
 import {
+  ConfirmConfigUpdatesModule
+} from './shared/dialog/confirm-config-updates/confirm-config-updates.module';
+import {
   DeleteConfirmationModule
 } from './shared/dialog/delete-confirmation/delete-confirmation.module';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
-import { ConfirmConfigUpdatesModule } from './shared/dialog/confirm-config-updates/confirm-config-updates.module';
 
 
 const routes: Routes = [{
@@ -58,7 +60,7 @@ const routes: Routes = [{
           'recommendations-page.module#RecommendationsPageModule'
     },
 
-    {path: '', redirectTo: 'queries/issue', pathMatch: 'full'},
+    {path: '', redirectTo: 'database', pathMatch: 'full'},
   ]
 }];
 

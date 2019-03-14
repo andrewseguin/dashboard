@@ -27,6 +27,8 @@ export class Repository {
       this.activatedRepository.repository.next(`${org}/${name}`);
     });
 
+    // TODO: If a repository is not loaded but has data, clear it out.
+
     // Sync from Github Gist, then begin saving any changes to the IndexedDB
     this.repoGist.sync().then(() => this.repoGist.saveChanges());
 
