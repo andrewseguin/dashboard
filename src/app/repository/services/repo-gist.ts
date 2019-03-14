@@ -1,9 +1,12 @@
 import {Injectable} from '@angular/core';
+import {MatDialog} from '@angular/material';
 import {Config} from 'app/service/config';
 import {combineLatest, of, Subject} from 'rxjs';
-import {debounceTime, filter, mergeMap, takeUntil} from 'rxjs/operators';
+import {debounceTime, filter, mergeMap, take, takeUntil} from 'rxjs/operators';
+import {ConfirmConfigUpdates} from '../shared/dialog/confirm-config-updates/confirm-config-updates';
 import {ActivatedRepository} from './activated-repository';
 import {DashboardsDao} from './dao/dashboards-dao';
+import {SyncResponse} from './dao/list-dao';
 import {QueriesDao} from './dao/queries-dao';
 import {RecommendationsDao} from './dao/recommendations-dao';
 
@@ -14,7 +17,7 @@ export class RepoGist {
   constructor(
       private activatedRepository: ActivatedRepository, private dashboardsDao: DashboardsDao,
       private queriesDao: QueriesDao, private recommendationsDao: RecommendationsDao,
-      private config: Config) {}
+      private config: Config, private dialog: MatDialog) {}
 
   saveChanges() {
     combineLatest(
@@ -49,7 +52,34 @@ export class RepoGist {
                   this.recommendationsDao.sync(repoConfig.recommendations)
                 ]);
               }))
-          .subscribe(() => resolve());
+          .subscribe((syncResults) => {
+            if (syncResults && syncResults.some(hasSyncChanges)) {
+              const data = {
+                dashboards: syncResults[0],
+                queries: syncResults[1],
+                recommendations: syncResults[2],
+              };
+              this.dialog.open(ConfirmConfigUpdates, {width: '400px', data})
+                  .afterClosed()
+                  .pipe(take(1))
+                  .subscribe((confirm) => {
+                    if (confirm) {
+                      this.dashboardsDao.update(data.dashboards.toUpdate);
+                      this.dashboardsDao.remove(data.dashboards.toRemove.map(v => v.id!));
+
+                      this.queriesDao.update(data.queries.toUpdate);
+                      this.queriesDao.remove(data.queries.toRemove.map(v => v.id!));
+
+                      this.recommendationsDao.update(data.recommendations.toUpdate);
+                      this.recommendationsDao.remove(data.recommendations.toRemove.map(v => v.id!));
+                    } else {
+                      resolve();
+                    }
+                  });
+            } else {
+              resolve();
+            }
+          });
     });
   }
 
@@ -57,4 +87,8 @@ export class RepoGist {
     this.destroyed.next();
     this.destroyed.complete();
   }
+}
+
+function hasSyncChanges(syncResponse: SyncResponse<any>): boolean {
+  return syncResponse && (!!syncResponse.toRemove.length || !!syncResponse.toUpdate.length);
 }

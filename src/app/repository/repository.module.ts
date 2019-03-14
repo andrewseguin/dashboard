@@ -25,6 +25,7 @@ import {
 } from './shared/dialog/delete-confirmation/delete-confirmation.module';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
+import { ConfirmConfigUpdatesModule } from './shared/dialog/confirm-config-updates/confirm-config-updates.module';
 
 
 const routes: Routes = [{
@@ -84,6 +85,7 @@ const DaoList = [
     RouterModule,
     RepositoryRoutingModule,
     DeleteConfirmationModule,
+    ConfirmConfigUpdatesModule,
   ],
   declarations: [Repository],
   exports: [Repository],

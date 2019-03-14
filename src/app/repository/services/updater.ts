@@ -38,7 +38,9 @@ export class Updater {
               filter(v => !!v), take(1), mergeMap(repository => this.github.getLabels(repository!)),
               filter(result => result.completed === result.total), take(1))
           .subscribe((result) => {
-            this.labelsDao.sync(result.accumulated);
+            this.labelsDao.sync(result.accumulated).then(syncResponse => {
+              this.labelsDao.update(syncResponse.toUpdate);
+            });
             resolve();
           });
     });
@@ -52,7 +54,9 @@ export class Updater {
               mergeMap(repository => this.github.getContributors(repository!)),
               filter(result => result.completed === result.total), take(1))
           .subscribe((result) => {
-            this.contributorsDao.sync(result.accumulated);
+            this.contributorsDao.sync(result.accumulated).then(syncResponse => {
+              this.contributorsDao.update(syncResponse.toUpdate);
+            });
             resolve();
           });
     });

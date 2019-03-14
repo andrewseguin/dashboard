@@ -8,6 +8,11 @@ export interface IdentifiedObject {
   dbModified?: string;
 }
 
+export interface SyncResponse<T> {
+  toUpdate: T[];
+  toRemove: T[];
+}
+
 export abstract class ListDao<T extends IdentifiedObject> {
   get list(): BehaviorSubject<T[]|null> {
     return this._list;
@@ -83,35 +88,30 @@ export abstract class ListDao<T extends IdentifiedObject> {
    * Incoming items will be considered the source-of-truth - items already existing will be updated
    * to reflect this list, and stored items that do not appear will be removed.
    */
-  sync(items: T[]) {
+  sync(items: T[]): Promise<SyncResponse<T>> {
     return new Promise(resolve => {
       const syncMap = new Map<string, T>();
       items.forEach(item => {
-        decorateForDb(item);
         syncMap.set(item.id!, item);
       });
 
       this.map.pipe(filter(v => !!v), take(1)).subscribe(map => {
-        // Remove any values that are not in the gist
         const toRemove: T[] = [];
         map!.forEach((value, key) => {
           if (!syncMap.has(key)) {
             toRemove.push(value);
           }
         });
-        if (toRemove.length) {
-          this.repoIndexedDb.removeValues(toRemove.map(item => item.id!), this.collectionId);
-        }
 
-        // Update any values that are in the gist
         const toUpdate: T[] = [];
-        syncMap.forEach(item => toUpdate.push(item));
-        if (toUpdate.length) {
-          this.repoIndexedDb.updateValues(toUpdate, this.collectionId);
-        }
-
-        this.list.next(toUpdate);
-        resolve();
+        syncMap.forEach(item => {
+          const dbModifiedItemNew = item.dbModified || '';
+          const dbModifiedItemCurrent = (map!.get(item.id!) || {dbModified: 0}).dbModified!;
+          if (dbModifiedItemNew > dbModifiedItemCurrent) {
+            toUpdate.push(item);
+          }
+        });
+        resolve({toUpdate, toRemove});
       });
     });
   }
