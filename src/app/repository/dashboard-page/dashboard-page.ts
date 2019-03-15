@@ -123,7 +123,7 @@ export class DashboardPage {
 
   addWidget(column: Column) {
     const widget: Widget = {
-      title: 'New Widget',
+      title: '',
       options: new ItemRendererOptions().getState(),
       itemType: 'issue',
       displayType: 'list',
