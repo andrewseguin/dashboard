@@ -40,7 +40,7 @@ export class DatabasePage {
   }
 
   updateIssues() {
-    this.labelsUpdateState.next('updating');
+    this.issuesUpdateState.next('updating');
     this.updater.updateIssues().then(() => this.issuesUpdateState.next('updated'));
   }
 

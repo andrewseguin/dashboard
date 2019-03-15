@@ -97,9 +97,9 @@ export class LoadData {
         'contributor', repository => this.github.getContributors(repository),
         (values: Contributor[]) => this.contributorsDao.update(values));
 
-    getLabels
+    getContributors
         .pipe(
-            mergeMap(() => getContributors), mergeMap(() => getIssues),
+            mergeMap(() => getLabels), mergeMap(() => getIssues),
             mergeMap(() => this.activatedRepository.repository), takeUntil(this.destroyed))
         .subscribe(repository => {
           this.state = null;
