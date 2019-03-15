@@ -56,6 +56,6 @@ export class List {
   }
 
   openItemModal(itemId: number) {
-    this.dialog.open(ItemDetailDialog, {data: {itemId: `${itemId}`}});
+    this.dialog.open(ItemDetailDialog, {data: {itemId: `${itemId}`}, width: '80vw'});
   }
 }

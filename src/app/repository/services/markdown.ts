@@ -34,6 +34,6 @@ export class Markdown {
   }
 
   render(text: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(this.md.render(text));
+    return this.sanitizer.bypassSecurityTrustHtml(this.md.render(text || '[No item body]'));
   }
 }
