@@ -3,10 +3,11 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
+import {LoadingModule} from 'app/repository/shared/loading/loading.module';
 import {HomePage} from './home-page';
 
 @NgModule({
-  imports: [CommonModule, MaterialModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, MaterialModule, ReactiveFormsModule, RouterModule, LoadingModule],
   declarations: [HomePage],
   exports: [HomePage],
 })

@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {Github} from 'app/service/github';
 import {LoadedRepos} from 'app/service/loaded-repos';
 
 @Component({
@@ -11,5 +12,9 @@ import {LoadedRepos} from 'app/service/loaded-repos';
   }
 })
 export class HomePage {
-  constructor(public loadedRepos: LoadedRepos) {}
+  popularTypescriptRepos = this.github.getMostPopularRepos();
+
+  constructor(public loadedRepos: LoadedRepos, private github: Github) {
+    this.loadedRepos.repos$.subscribe(console.log);
+  }
 }

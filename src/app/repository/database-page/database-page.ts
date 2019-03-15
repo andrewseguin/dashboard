@@ -27,9 +27,7 @@ export class DatabasePage {
   constructor(
       public activatedRepository: ActivatedRepository, public contributorsDao: ContributorsDao,
       public labelsDao: LabelsDao, private repoLoadState: RepoLoadState, public itemsDao: ItemsDao,
-      private updater: Updater, public remover: Remover) {
-    this.contributorsDao.list.subscribe(console.log);
-  }
+      private updater: Updater, public remover: Remover) {}
 
   updateLabels() {
     this.labelsUpdateState.next('updating');

@@ -11,62 +11,27 @@
   overflow: auto;
 }
 
-.center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.mat-progress-spinner {
-  height: 75px;
-  width: 75px;
-}
-
 .app-title {
-  color: #a4a7aa;
   font-size: 26px;
-  margin-bottom: 80px;
+  margin-bottom: 64px;
   text-align: center;
   font-weight: bold;
 }
 
-button {
-  min-width: 120px;
-  height: 48px;
-  border-radius: 16px;
-}
-
-.divider {
-  margin: 32px;
-  display: flex;
-  align-items: center;
-  width: 400px;
-
-  mat-divider {
-    flex: 1;
-  }
-
-  span {
-    padding: 32px;
-  }
-}
-
-mat-form-field {
-  width: 400px;
-}
-
-input {
-  text-align: center;
-}
-
-.description {
+.repos-title {
+  font-size: 18px;
   text-align: center;
   margin-bottom: 16px;
 }
 
-.manual {
+a {
+  margin: 8px;
+  display: inline-block;
+}
+
+.repos {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 950px;
 }

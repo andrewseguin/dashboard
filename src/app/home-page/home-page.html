@@ -1,15 +1,25 @@
 <div class="center">
   <div class="app-title">GitHub Dashboard</div>
 
-  <div class="loaded-repos">
-    <a [routerLink]="loadedRepo" *ngFor="let loadedRepo of loadedRepos.repos">
-      {{loadedRepo}} </a>
+  <div class="list" *ngIf="loadedRepos.repos$ | async; let repos; else loading">
+    <div class="repos">
+      <a mat-stroked-button [routerLink]="repo" *ngFor="let repo of repos">
+        {{repo}} </a>
+    </div>
   </div>
 
-  <div class="suggestions">
-    <a [routerLink]="'angular/material2'"> angular/material2 </a>
-  </div>
-
-
-
+  <ng-template #suggestions>
+    <div class="list"
+         *ngIf="popularTypescriptRepos | async; let repos; else loading">
+      <div class="repos-title mat-secondary-text"> Suggestions </div>
+      <div class="repos">
+        <a mat-stroked-button [routerLink]="repo" *ngFor="let repo of repos">
+          {{repo}} </a>
+      </div>
+    </div>
+  </ng-template>
 </div>
+
+<ng-template #loading>
+  <loading label="repos"></loading>
+</ng-template>

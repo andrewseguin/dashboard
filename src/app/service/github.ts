@@ -94,6 +94,14 @@ export class Github {
     return this.getPagedResults<Gist, Gist>(url, g => g, true);
   }
 
+  getMostPopularRepos(): Observable<string|null> {
+    const url =
+        this.constructUrl('search/repositories', 'q=language:typescript&sort=stars&order=desc');
+    return this.get<any>(url).pipe(
+        filter(v => !!v && v.body && v.body.items),
+        map(response => response!.body.items.map((item: any) => item['full_name'])));
+  }
+
   getRateLimitsAndScopes(): void {
     const url = this.constructUrl(`rate_limit`);
     const token = this.auth.token ? `token ${this.auth.token}` : '';
