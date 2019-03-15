@@ -80,17 +80,17 @@ export class QueriesPage {
       private activeRepo: ActiveRepo) {}
 
   createQuery(type: ItemType) {
-    this.router.navigate([`${this.activeRepo.change.value}/query/new`], {queryParams: {type}});
+    this.router.navigate([`${this.activeRepo.repository}/query/new`], {queryParams: {type}});
   }
 
   createQueryFromRecommendation(recommendation: Recommendation) {
     this.router.navigate(
-        [`${this.activeRepo.change.value}/query/new`],
+        [`${this.activeRepo.repository}/query/new`],
         {queryParams: {'recommendationId': recommendation.id}});
   }
 
   navigateToQuery(id: string) {
-    this.router.navigate([`${this.activeRepo.change.value}/query/${id}`]);
+    this.router.navigate([`${this.activeRepo.repository}/query/${id}`]);
   }
 }
 

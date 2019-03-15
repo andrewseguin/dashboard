@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
+import {ActiveRepo} from '../active-repo';
 import {RepoIndexedDb} from '../repo-indexed-db';
 import {Contributor} from './contributors-dao';
 import {Dashboard} from './dashboards-dao';
@@ -24,7 +25,16 @@ export class Dao {
 
   private destroyed = new Subject();
 
-  constructor() {}
+  repoIndexedDb = new RepoIndexedDb(this.activateRepo.repository);
+
+  items = new ListDao<Item>('items', this.repoIndexedDb);
+  labels = new ListDao<Label>('labels', this.repoIndexedDb);
+  contributors = new ListDao<Contributor>('contributors', this.repoIndexedDb);
+  dashboards = new ListDao<Dashboard>('dashboards', this.repoIndexedDb);
+  queries = new ListDao<Query>('queries', this.repoIndexedDb);
+  recommendations = new ListDao<Recommendation>('recommendations', this.repoIndexedDb);
+
+  constructor(private activateRepo: ActiveRepo) {}
 
   get(repository: string): RepoStore {
     if (!this.store.has(repository)) {

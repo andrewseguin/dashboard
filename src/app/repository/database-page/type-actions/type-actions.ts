@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Remover} from 'app/repository/services/remover';
 import {RepoDaoType} from 'app/repository/services/repo-load-state';
 import {Updater} from 'app/repository/services/updater';
@@ -17,10 +18,11 @@ export class TypeActions {
 
   updateState = new BehaviorSubject<UpdateState>('not-updating');
 
-  constructor(private updater: Updater, public remover: Remover) {}
+  constructor(private updater: Updater, public remover: Remover, private activeRepo: ActiveRepo) {}
 
   update() {
     this.updateState.next('updating');
-    this.updater.update(this.type).then(() => this.updateState.next('updated'));
+    this.updater.update(this.activeRepo.repository, this.type)
+        .then(() => this.updateState.next('updated'));
   }
 }

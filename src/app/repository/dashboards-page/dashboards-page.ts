@@ -20,10 +20,10 @@ export class DashboardsPage {
       private activeRepo: ActiveRepo) {}
 
   createDashboard() {
-    this.router.navigate([`${this.activeRepo.change.value}/dashboard/new`]);
+    this.router.navigate([`${this.activeRepo.repository}/dashboard/new`]);
   }
 
   navigateToDashboard(id: string) {
-    this.router.navigate([`${this.activeRepo.change.value}/dashboard/${id}`]);
+    this.router.navigate([`${this.activeRepo.repository}/dashboard/${id}`]);
   }
 }

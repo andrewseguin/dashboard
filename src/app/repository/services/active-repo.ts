@@ -12,15 +12,14 @@ export class ActiveRepo {
     return this._repository.value;
   }
   _repository = new BehaviorSubject<string>(
-      this.getRepositoryFromParams(this.activatedRoute.snapshot.params));
+      this.getRepositoryFromParams(this.activatedRoute.firstChild!.snapshot.params));
 
-  change: Observable<string> =
-      this._repository.pipe(filter(v => !!v)) as Observable<string>;
+  change: Observable<string> = this._repository.pipe(filter(v => !!v)) as Observable<string>;
 
   private destroyed = new Subject();
 
   constructor(private activatedRoute: ActivatedRoute) {
-    this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
+    this.activatedRoute.firstChild!.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       this.repository = this.getRepositoryFromParams(params);
     });
   }

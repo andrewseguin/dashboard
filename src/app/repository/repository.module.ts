@@ -10,7 +10,6 @@ import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
 import {Remover} from './services/remover';
 import {RepoGist} from './services/repo-gist';
-import {RepoLoadState} from './services/repo-load-state';
 import {Updater} from './services/updater';
 import {
   ConfirmConfigUpdatesModule
@@ -74,10 +73,7 @@ export class RepositoryRoutingModule {
   ],
   declarations: [Repository],
   exports: [Repository],
-  providers: [
-    Dao, Header, Updater, Remover, ItemRecommendations, Markdown, ActiveRepo, RepoLoadState,
-    RepoGist
-  ]
+  providers: [Dao, Header, Updater, Remover, ItemRecommendations, Markdown, ActiveRepo, RepoGist]
 })
 export class RepositoryModule {
 }

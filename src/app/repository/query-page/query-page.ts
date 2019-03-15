@@ -106,7 +106,7 @@ export class QueryPage {
                   if (map!.get(id)) {
                     this.query = map!.get(id)!;
                   } else {
-                    this.router.navigate([`${this.activeRepo.change.value}/queries`]);
+                    this.router.navigate([`${this.activeRepo.repository}/queries`]);
                   }
                   this.cd.markForCheck();
                 });
@@ -141,10 +141,10 @@ export class QueryPage {
   setBack(fromDashboard?: string) {
     if (fromDashboard) {
       this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.change.value}/dashboard/${fromDashboard}`]);
+          this.router.navigate([`/${this.activeRepo.repository}/dashboard/${fromDashboard}`]);
     } else {
       this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.change.value}/queries/${this.query.type}`]);
+          this.router.navigate([`/${this.activeRepo.repository}/queries/${this.query.type}`]);
     }
   }
 

@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <ng-container *ngIf="repoLoadState.isEmpty | async">
+  <ng-container *ngIf="isEmpty | async">
     <div class="data-to-load theme-secondary-text">
       ({{(totalItemCount | async) || '...'}} issues and pull requests,
       {{(totalLabelsCount | async) || '...'}} labels)

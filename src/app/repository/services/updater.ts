@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
-import {ActiveRepo} from './active-repo';
 import {Item} from './dao';
 import {Dao} from './dao/dao';
 import {RepoDaoType} from './repo-load-state';
@@ -28,64 +27,62 @@ export class Updater {
                                  return lastUpdated;
                                }));
 
-  constructor(private activeRepo: ActiveRepo, private dao: Dao, private github: Github) {}
+  constructor(private dao: Dao, private github: Github) {}
 
-  update(type: RepoDaoType): Promise<void> {
+  update(repository: string, type: RepoDaoType): Promise<void> {
     switch (type) {
       case 'items':
-        return this.updateIssues();
+        return this.updateIssues(repository);
       case 'labels':
-        return this.updateLabels();
+        return this.updateLabels(repository);
       case 'contributors':
-        return this.updateContributors();
+        return this.updateContributors(repository);
     }
   }
 
-  private updateLabels(): Promise<void> {
-    const repository = this.activeRepo.repository;
-    this.githubLabels(repository).
+  private updateLabels(repository: string): Promise<void> {
+    const store = this.dao.get(repository);
+
     return new Promise(resolve => {
-      this.activeRepo.change
-          .pipe(
-              filter(v => !!v), take(1), mergeMap(repository => this.github.getLabels(repository!)),
-              filter(result => result.completed === result.total), take(1))
+      this.github.getLabels(repository)
+          .pipe(filter(result => result.completed === result.total), take(1))
           .subscribe((result) => {
-            this.dao.labels.sync(result.accumulated).then(syncResponse => {
-              this.dao.labels.update(syncResponse.toUpdate);
+            store.labels.sync(result.accumulated).then(syncResponse => {
+              store.labels.update(syncResponse.toUpdate);
             });
             resolve();
           });
     });
   }
 
-  private updateContributors(): Promise<void> {
+  private updateContributors(repository: string): Promise<void> {
+    const store = this.dao.get(repository);
+
     return new Promise(resolve => {
-      this.activeRepo.change
-          .pipe(
-              filter(v => !!v), take(1),
-              mergeMap(repository => this.github.getContributors(repository!)),
-              filter(result => result.completed === result.total), take(1))
+      this.github.getContributors(repository!)
+          .pipe(filter(result => result.completed === result.total), take(1))
           .subscribe((result) => {
-            this.dao.contributors.sync(result.accumulated).then(syncResponse => {
-              this.dao.contributors.update(syncResponse.toUpdate);
+            store.contributors.sync(result.accumulated).then(syncResponse => {
+              store.contributors.update(syncResponse.toUpdate);
             });
             resolve();
           });
     });
   }
 
-  private updateIssues(): Promise<void> {
+  private updateIssues(repository: string): Promise<void> {
+    const store = this.dao.get(repository);
+
     return new Promise(resolve => {
-      this.activeRepo.change
+      this.getStaleIssuesState(repository!)
           .pipe(
-              filter(v => !!v), take(1),
-              mergeMap(repository => this.getStaleIssuesState(repository!)), mergeMap(state => {
+              mergeMap(state => {
                 return state.count ? this.getAllStaleIssues(state.repository!, state.lastUpdated) :
                                      of([]);
               }),
               take(1))
           .subscribe((result) => {
-            this.dao.items.update(result);
+            store.items.update(result);
             resolve();
           });
     });
