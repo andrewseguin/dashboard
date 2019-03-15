@@ -106,7 +106,7 @@ export abstract class ListDao<T extends IdentifiedObject> {
         const toUpdate: T[] = [];
         syncMap.forEach(item => {
           const dbModifiedItemNew = item.dbModified || '';
-          const dbModifiedItemCurrent = (map!.get(item.id!) || {dbModified: 0}).dbModified!;
+          const dbModifiedItemCurrent = (map!.get(item.id!) || {dbModified: ''}).dbModified!;
           if (dbModifiedItemNew > dbModifiedItemCurrent) {
             toUpdate.push(item);
           }
