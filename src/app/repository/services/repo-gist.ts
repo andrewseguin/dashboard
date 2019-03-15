@@ -64,12 +64,15 @@ export class RepoGist {
                   .pipe(take(1))
                   .subscribe((confirm) => {
                     if (confirm) {
+                      this.dashboardsDao.add(data.dashboards.toAdd);
                       this.dashboardsDao.update(data.dashboards.toUpdate);
                       this.dashboardsDao.remove(data.dashboards.toRemove.map(v => v.id!));
 
+                      this.queriesDao.add(data.queries.toAdd);
                       this.queriesDao.update(data.queries.toUpdate);
                       this.queriesDao.remove(data.queries.toRemove.map(v => v.id!));
 
+                      this.recommendationsDao.add(data.recommendations.toAdd);
                       this.recommendationsDao.update(data.recommendations.toUpdate);
                       this.recommendationsDao.remove(data.recommendations.toRemove.map(v => v.id!));
                     } else {
@@ -90,5 +93,7 @@ export class RepoGist {
 }
 
 function hasSyncChanges(syncResponse: SyncResponse<any>): boolean {
-  return syncResponse && (!!syncResponse.toRemove.length || !!syncResponse.toUpdate.length);
+  return syncResponse &&
+      (!!syncResponse.toAdd.length || !!syncResponse.toRemove.length ||
+       !!syncResponse.toUpdate.length);
 }

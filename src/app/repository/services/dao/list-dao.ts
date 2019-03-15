@@ -9,6 +9,7 @@ export interface IdentifiedObject {
 }
 
 export interface SyncResponse<T> {
+  toAdd: T[];
   toUpdate: T[];
   toRemove: T[];
 }
@@ -103,15 +104,20 @@ export abstract class ListDao<T extends IdentifiedObject> {
           }
         });
 
+        const toAdd: T[] = [];
         const toUpdate: T[] = [];
         syncMap.forEach(item => {
-          const dbModifiedItemNew = item.dbModified || '';
-          const dbModifiedItemCurrent = (map!.get(item.id!) || {dbModified: ''}).dbModified!;
-          if (dbModifiedItemNew > dbModifiedItemCurrent) {
-            toUpdate.push(item);
+          if (!map!.get(item.id!)) {
+            toAdd.push(item);
+          } else {
+            const dbModifiedItemNew = item.dbModified || '';
+            const dbModifiedItemCurrent = map!.get(item.id!)!.dbModified!;
+            if (dbModifiedItemNew > dbModifiedItemCurrent) {
+              toUpdate.push(item);
+            }
           }
         });
-        resolve({toUpdate, toRemove});
+        resolve({toAdd, toUpdate, toRemove});
       });
     });
   }

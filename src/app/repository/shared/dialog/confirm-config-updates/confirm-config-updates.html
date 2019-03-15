@@ -5,12 +5,16 @@
 </div>
 
 <ng-container *ngFor="let confirmation of confirmations">
-  <li *ngIf="data[confirmation].toUpdate.length; let toUpdateCount">
-    {{toUpdateCount}} {{confirmation}} to update.
+  <li *ngIf="data[confirmation].toAdd.length; let count">
+    {{count}} {{confirmation}} to add.
   </li>
 
-  <li *ngIf="data[confirmation].toRemove.length; let toRemoveCount">
-    {{toRemoveCount}} {{confirmation}} to remove.
+  <li *ngIf="data[confirmation].toUpdate.length; let count">
+    {{count}} {{confirmation}} to update.
+  </li>
+
+  <li *ngIf="data[confirmation].toRemove.length; let count">
+    {{count}} {{confirmation}} to remove.
   </li>
 </ng-container>
 
