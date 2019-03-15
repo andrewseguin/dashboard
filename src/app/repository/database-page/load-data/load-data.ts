@@ -10,7 +10,7 @@ import {
   Label,
   LabelsDao
 } from 'app/repository/services/dao';
-import {DaoState} from 'app/repository/services/dao/dao-state';
+import {RepoLoadState} from 'app/repository/services/repo-load-state';
 import {Github} from 'app/service/github';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
@@ -56,20 +56,14 @@ export class LoadData {
                   return this.github.getItemsCount(repository!, since);
                 }));
 
-  isEmpty = combineLatest(this.labelsDao.list, this.itemsDao.list, this.contributorsDao.list)
-                .pipe(filter(results => results.every(v => !!v)), map(results => {
-                        const labels = results[0]!;
-                        const items = results[1]!;
-                        const contributors = results[2]!;
-                        return !labels.length && !items.length && !contributors.length;
-                      }));
+  isEmpty = this.repoLoadState.isEmpty;
 
   private destroyed = new Subject();
 
   constructor(
-      private loadedRepos: LoadedRepos, public daoState: DaoState,
-      private activatedRepository: ActivatedRepository, private itemsDao: ItemsDao,
-      private contributorsDao: ContributorsDao, private labelsDao: LabelsDao,
+      private loadedRepos: LoadedRepos, private activatedRepository: ActivatedRepository,
+      private itemsDao: ItemsDao, private contributorsDao: ContributorsDao,
+      private labelsDao: LabelsDao, private repoLoadState: RepoLoadState,
       private snackbar: MatSnackBar, private github: Github, private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);

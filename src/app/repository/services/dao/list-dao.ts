@@ -132,9 +132,11 @@ export abstract class ListDao<T extends IdentifiedObject> {
   }
 
   removeAll() {
-    this.repoIndexedDb.removeValues(
-        (this._list.value || []).map(item => item.id!), this.collectionId);
-    this.list.next([]);
+    this.repoIndexedDb
+        .removeValues((this._list.value || []).map(item => item.id!), this.collectionId)
+        .then(() => {
+          this.list.next([]);
+        });
   }
 }
 

@@ -13,12 +13,12 @@ import {
   QueriesDao,
   RecommendationsDao
 } from './services/dao';
-import {DaoState} from './services/dao/dao-state';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
 import {Remover} from './services/remover';
 import {RepoGist} from './services/repo-gist';
 import {RepoIndexedDb} from './services/repo-indexed-db';
+import {RepoLoadState} from './services/repo-load-state';
 import {Updater} from './services/updater';
 import {
   ConfirmConfigUpdatesModule
@@ -92,7 +92,7 @@ const DaoList = [
   declarations: [Repository],
   exports: [Repository],
   providers: [
-    Header, Updater, Remover, ItemRecommendations, Markdown, ActivatedRepository, DaoState,
+    Header, Updater, Remover, ItemRecommendations, Markdown, ActivatedRepository, RepoLoadState,
     RepoGist, ...DaoList
   ]
 })

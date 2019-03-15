@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {interval, Subject} from 'rxjs';
+import {combineLatest, interval, Subject} from 'rxjs';
 import {filter, mergeMap, take, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './services/activated-repository';
 import {ItemsDao} from './services/dao';
-import {DaoState} from './services/dao/dao-state';
+import {Remover} from './services/remover';
 import {RepoGist} from './services/repo-gist';
+import {RepoLoadState} from './services/repo-load-state';
 import {Updater} from './services/updater';
 
 
@@ -18,8 +19,8 @@ export class Repository {
   destroyed = new Subject();
 
   constructor(
-      private router: Router, private updater: Updater, private daoState: DaoState,
-      private repoGist: RepoGist, private activatedRoute: ActivatedRoute,
+      private router: Router, private updater: Updater, private repoLoadState: RepoLoadState,
+      private repoGist: RepoGist, private activatedRoute: ActivatedRoute, private remover: Remover,
       private itemsDao: ItemsDao, private activatedRepository: ActivatedRepository) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
@@ -27,12 +28,22 @@ export class Repository {
       this.activatedRepository.repository.next(`${org}/${name}`);
     });
 
-    // TODO: If a repository is not loaded but has data, clear it out.
+    // If a repository has data but not considered loaded, the load did not successfully complete
+    // and the data can be removed.
+    combineLatest(this.repoLoadState.isEmpty, this.repoLoadState.isLoaded)
+        .pipe(take(1))
+        .subscribe(results => {
+          const isEmpty = results[1];
+          const isLoaded = results[0];
+          if (!isEmpty && !isLoaded) {
+            this.remover.removeAllData(false);
+          }
+        });
 
     // Sync from Github Gist, then begin saving any changes to the IndexedDB
     this.repoGist.sync().then(() => this.repoGist.saveChanges());
 
-    this.daoState.isEmpty.pipe(take(1)).subscribe(isEmpty => {
+    this.repoLoadState.isEmpty.pipe(take(1)).subscribe(isEmpty => {
       if (isEmpty) {
         this.router.navigate([`${this.activatedRepository.repository.value}/database`]);
       } else {

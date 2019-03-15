@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {LoadedRepos} from 'app/service/loaded-repos';
-import {BehaviorSubject, combineLatest} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
 import {ContributorsDao, ItemsDao, LabelsDao} from '../services/dao';
-import {DaoState} from '../services/dao/dao-state';
 import {Remover} from '../services/remover';
+import {RepoLoadState} from '../services/repo-load-state';
 import {Updater} from '../services/updater';
 import {UpdateState} from './update-button/update-button';
 
@@ -23,16 +22,14 @@ export class DatabasePage {
   labelsUpdateState = new BehaviorSubject<UpdateState>('not-updating');
   contributorsUpdateState = new BehaviorSubject<UpdateState>('not-updating');
 
-  isLoaded = combineLatest(this.activatedRepository.repository, this.loadedRepos.repos$)
-                 .pipe(
-                     filter(results => !!results[0]),
-                     map(results => this.loadedRepos.isLoaded(results[0]!)));
+  isLoaded = this.repoLoadState.isLoaded;
 
   constructor(
-      public daoState: DaoState, public activatedRepository: ActivatedRepository,
-      public contributorsDao: ContributorsDao, private loadedRepos: LoadedRepos,
-      public labelsDao: LabelsDao, public itemsDao: ItemsDao, private updater: Updater,
-      public remover: Remover) {}
+      public activatedRepository: ActivatedRepository, public contributorsDao: ContributorsDao,
+      public labelsDao: LabelsDao, private repoLoadState: RepoLoadState, public itemsDao: ItemsDao,
+      private updater: Updater, public remover: Remover) {
+    this.contributorsDao.list.subscribe(console.log);
+  }
 
   updateLabels() {
     this.labelsUpdateState.next('updating');

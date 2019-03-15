@@ -51,31 +51,34 @@ export class Remover {
     });
   }
 
-
-  removeAllData(includeConfig = true) {
+  removeAllData(showConfirmationDialog = true, includeConfig = true) {
     this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+      if (!showConfirmationDialog) {
+        this.remove(repository!, includeConfig);
+        return;
+      }
+
       const name = `locally stored data for ${repository}`;
       const data = {name: of(name)};
-
       this.dialog.open(DeleteConfirmation, {data})
           .afterClosed()
           .pipe(take(1))
           .subscribe(confirmed => {
             if (confirmed) {
-              this.contributorsDao.removeAll();
-              this.itemsDao.removeAll();
-              this.labelsDao.removeAll();
-              this.loadedRepos.removeLoadedRepo(repository!);
-
-              if (includeConfig) {
-                this.dashboardsDao.removeAll();
-                this.queriesDao.removeAll();
-                this.recommendationsDao.removeAll();
-              }
-
+              this.remove(repository!, includeConfig);
               this.snackbar.open(`${name} deleted`, '', {duration: 2000});
             }
           });
     });
+  }
+
+  private remove(repository: string, includeConfig: boolean) {
+    [this.contributorsDao, this.itemsDao, this.labelsDao].forEach(dao => dao.removeAll());
+    this.loadedRepos.removeLoadedRepo(repository!);
+
+    if (includeConfig) {
+      [this.dashboardsDao, this.queriesDao, this.recommendationsDao].forEach(
+          dao => dao.removeAll());
+    }
   }
 }
