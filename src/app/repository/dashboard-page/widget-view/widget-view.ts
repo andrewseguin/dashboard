@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {Router} from '@angular/router';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Theme} from 'app/repository/services';
-import {ActivatedRepository} from 'app/repository/services/activated-repository';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
@@ -39,7 +39,7 @@ export class WidgetView {
   constructor(
       public itemsRenderer: ItemsRenderer<Item>, private router: Router,
       private itemRecommendations: ItemRecommendations, private theme: Theme, private dao: Dao,
-      private activatedRepository: ActivatedRepository) {
+      private activeRepo: ActiveRepo) {
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
   }
 
@@ -58,7 +58,7 @@ export class WidgetView {
 
   openQuery() {
     this.router.navigate(
-        [`${this.activatedRepository.repository.value}/query/new`],
+        [`${this.activeRepo.repository.value}/query/new`],
         {queryParams: {'widget': JSON.stringify(this.widget), dashboard: this.dashboardId}});
   }
 }

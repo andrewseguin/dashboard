@@ -4,7 +4,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 import {Repository} from './repository';
 import {Header} from './services';
-import {ActivatedRepository} from './services/activated-repository';
+import {ActiveRepo} from './services/active-repo';
 import {Dao} from './services/dao/dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
@@ -75,8 +75,8 @@ export class RepositoryRoutingModule {
   declarations: [Repository],
   exports: [Repository],
   providers: [
-    Dao, Header, Updater, Remover, ItemRecommendations, Markdown, ActivatedRepository,
-    RepoLoadState, RepoGist
+    Dao, Header, Updater, Remover, ItemRecommendations, Markdown, ActiveRepo, RepoLoadState,
+    RepoGist
   ]
 })
 export class RepositoryModule {

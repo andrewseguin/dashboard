@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {filter} from 'rxjs/operators';
-import {ActivatedRepository} from '../activated-repository';
+import {ActiveRepo} from '../active-repo';
 import {RepoIndexedDb} from '../repo-indexed-db';
 import {Contributor} from './contributors-dao';
 import {Dashboard} from './dashboards-dao';
@@ -24,8 +24,8 @@ export class Dao {
 
   private repoIndexedDb: RepoIndexedDb;
 
-  constructor(activatedRepository: ActivatedRepository) {
-    activatedRepository.repository.pipe(filter(v => !!v)).subscribe(repository => {
+  constructor(activeRepo: ActiveRepo) {
+    activeRepo.repository.pipe(filter(v => !!v)).subscribe(repository => {
       if (this.repoIndexedDb && this.repoIndexedDb.repository === repository) {
         return;
       }

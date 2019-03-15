@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
-import {ActivatedRepository} from 'app/repository/services/activated-repository';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Dao} from 'app/repository/services/dao/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
@@ -34,8 +34,8 @@ export class ItemDetail {
   private destroyed = new Subject();
 
   constructor(
-      private markdown: Markdown, public activatedRepository: ActivatedRepository,
-      public github: Github, private itemRecommendations: ItemRecommendations, public dao: Dao) {}
+      private markdown: Markdown, public activeRepo: ActiveRepo, public github: Github,
+      private itemRecommendations: ItemRecommendations, public dao: Dao) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
@@ -43,7 +43,7 @@ export class ItemDetail {
       this.recommendations = this.itemRecommendations.allRecommendations.pipe(
           filter(v => !!v), map(recommendations => recommendations!.get(this.itemId) || []));
 
-      this.activities = this.activatedRepository.repository.pipe(
+      this.activities = this.activeRepo.repository.pipe(
           filter(v => !!v), mergeMap(repository => {
             return combineLatest(
                 this.github.getComments(repository!, this.itemId),

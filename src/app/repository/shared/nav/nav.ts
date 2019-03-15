@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {MatSidenav} from '@angular/material';
 import {Router} from '@angular/router';
-import {ActivatedRepository} from 'app/repository/services/activated-repository';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Theme} from 'app/repository/services/theme';
 import {Updater} from 'app/repository/services/updater';
 import {Auth} from 'app/service/auth';
@@ -35,7 +35,7 @@ export class Nav {
 
   repository = new FormControl();
 
-  repositories = this.activatedRepository.repository.pipe(map(repository => {
+  repositories = this.activeRepo.repository.pipe(map(repository => {
     if (repository && this.loadedRepos.repos.indexOf(repository) === -1) {
       return [repository, ...this.loadedRepos.repos];
     } else {
@@ -48,9 +48,9 @@ export class Nav {
   private destroyed = new Subject();
 
   constructor(
-      public activatedRepository: ActivatedRepository, public loadedRepos: LoadedRepos,
-      public theme: Theme, public router: Router, public auth: Auth, public updater: Updater) {
-    this.activatedRepository.repository.pipe(filter(v => !!v), takeUntil(this.destroyed))
+      public activeRepo: ActiveRepo, public loadedRepos: LoadedRepos, public theme: Theme,
+      public router: Router, public auth: Auth, public updater: Updater) {
+    this.activeRepo.repository.pipe(filter(v => !!v), takeUntil(this.destroyed))
         .subscribe(repository => this.repository.setValue(repository));
 
     this.repository.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(repository => {

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Router} from '@angular/router';
-import {ActivatedRepository} from '../services/activated-repository';
+import {ActiveRepo} from '../services/active-repo';
 import {Dao} from '../services/dao/dao';
 import {Dashboard} from '../services/dao/dashboards-dao';
 import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
@@ -17,13 +17,13 @@ export class DashboardsPage {
 
   constructor(
       public dao: Dao, private router: Router, public dashboardDialog: DashboardDialog,
-      private activatedRepository: ActivatedRepository) {}
+      private activeRepo: ActiveRepo) {}
 
   createDashboard() {
-    this.router.navigate([`${this.activatedRepository.repository.value}/dashboard/new`]);
+    this.router.navigate([`${this.activeRepo.repository.value}/dashboard/new`]);
   }
 
   navigateToDashboard(id: string) {
-    this.router.navigate([`${this.activatedRepository.repository.value}/dashboard/${id}`]);
+    this.router.navigate([`${this.activeRepo.repository.value}/dashboard/${id}`]);
   }
 }

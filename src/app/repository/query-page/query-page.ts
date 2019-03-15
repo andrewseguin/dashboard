@@ -10,7 +10,7 @@ import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
-import {ActivatedRepository} from '../services/activated-repository';
+import {ActiveRepo} from '../services/active-repo';
 import {ItemType} from '../services/dao';
 import {Dao} from '../services/dao/dao';
 import {Widget} from '../services/dao/dashboards-dao';
@@ -68,8 +68,8 @@ export class QueryPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute, private dao: Dao,
-      private activatedRepository: ActivatedRepository, private header: Header,
-      private queryDialog: QueryDialog, private cd: ChangeDetectorRef) {
+      private activeRepo: ActiveRepo, private header: Header, private queryDialog: QueryDialog,
+      private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
       this.canSave = false;
@@ -106,7 +106,7 @@ export class QueryPage {
                   if (map!.get(id)) {
                     this.query = map!.get(id)!;
                   } else {
-                    this.router.navigate([`${this.activatedRepository.repository.value}/queries`]);
+                    this.router.navigate([`${this.activeRepo.repository.value}/queries`]);
                   }
                   this.cd.markForCheck();
                 });
@@ -125,7 +125,7 @@ export class QueryPage {
   }
 
   saveAs() {
-    this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       const queryType = this.query.type;
       if (!queryType) {
         throw Error('Missing query type');
@@ -140,11 +140,11 @@ export class QueryPage {
 
   setBack(fromDashboard?: string) {
     if (fromDashboard) {
-      this.header.goBack = () => this.router.navigate(
-          [`/${this.activatedRepository.repository.value}/dashboard/${fromDashboard}`]);
+      this.header.goBack = () =>
+          this.router.navigate([`/${this.activeRepo.repository.value}/dashboard/${fromDashboard}`]);
     } else {
-      this.header.goBack = () => this.router.navigate(
-          [`/${this.activatedRepository.repository.value}/queries/${this.query.type}`]);
+      this.header.goBack = () =>
+          this.router.navigate([`/${this.activeRepo.repository.value}/queries/${this.query.type}`]);
     }
   }
 

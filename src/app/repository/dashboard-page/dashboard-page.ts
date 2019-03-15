@@ -8,10 +8,10 @@ import {ItemRendererOptions} from 'app/package/items-renderer/item-renderer-opti
 import {Subject, Subscription} from 'rxjs';
 import {delay, filter, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
-import {ActivatedRepository} from '../services/activated-repository';
+import {ActiveRepo} from '../services/active-repo';
+import {Dao} from '../services/dao/dao';
 import {Column, ColumnGroup, Dashboard, Widget} from '../services/dao/dashboards-dao';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
-import { Dao } from '../services/dao/dao';
 
 @Component({
   selector: 'dashboard-page',
@@ -36,7 +36,7 @@ export class DashboardPage {
       this.edit.setValue(true);
     }
 
-    const repository = this.activatedRepository.repository.value;
+    const repository = this.activeRepo.repository.value;
     this.header.goBack = () => this.router.navigate([`/${repository}/dashboards`]);
   }
   get dashboard(): Dashboard {
@@ -56,8 +56,8 @@ export class DashboardPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute, private dao: Dao,
-      private activatedRepository: ActivatedRepository, private header: Header,
-      private cd: ChangeDetectorRef, private dialog: MatDialog) {
+      private activeRepo: ActiveRepo, private header: Header, private cd: ChangeDetectorRef,
+      private dialog: MatDialog) {
     this.edit.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.cd.markForCheck());
 
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
@@ -73,7 +73,7 @@ export class DashboardPage {
         this.dashboard = newDashboard;
         const newDashboardId = this.dao.dashboards.add(newDashboard);
         this.router.navigate(
-            [`${this.activatedRepository.repository.value}/dashboard/${newDashboardId}`],
+            [`${this.activeRepo.repository.value}/dashboard/${newDashboardId}`],
             {replaceUrl: true, queryParamsHandling: 'merge'});
         return;
       }
@@ -85,7 +85,7 @@ export class DashboardPage {
                 if (map!.get(id)) {
                   this.dashboard = map!.get(id)!;
                 } else {
-                  this.router.navigate([`${this.activatedRepository.repository.value}/dashboards`]);
+                  this.router.navigate([`${this.activeRepo.repository.value}/dashboards`]);
                 }
                 this.cd.markForCheck();
               });

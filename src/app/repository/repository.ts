@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Auth} from 'app/service/auth';
 import {combineLatest, interval, Subject} from 'rxjs';
 import {filter, mergeMap, take, takeUntil} from 'rxjs/operators';
-import {ActivatedRepository} from './services/activated-repository';
+import {ActiveRepo} from './services/active-repo';
 import {Dao} from './services/dao/dao';
 import {Remover} from './services/remover';
 import {RepoGist} from './services/repo-gist';
@@ -22,12 +22,11 @@ export class Repository {
   constructor(
       private router: Router, private updater: Updater, private repoLoadState: RepoLoadState,
       private dao: Dao, private repoGist: RepoGist, private activatedRoute: ActivatedRoute,
-      private remover: Remover, private activatedRepository: ActivatedRepository,
-      private auth: Auth) {
+      private remover: Remover, private activeRepo: ActiveRepo, private auth: Auth) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
       const name = params['name'];
-      this.activatedRepository.repository.next(`${org}/${name}`);
+      this.activeRepo.repository.next(`${org}/${name}`);
     });
 
     // If a repository has data but not considered loaded, the load did not successfully complete
@@ -47,7 +46,7 @@ export class Repository {
 
     this.repoLoadState.isEmpty.pipe(take(1)).subscribe(isEmpty => {
       if (isEmpty) {
-        this.router.navigate([`${this.activatedRepository.repository.value}/database`]);
+        this.router.navigate([`${this.activeRepo.repository.value}/database`]);
       } else if (this.auth.token) {
         this.initializeAutoIssueUpdates();
       }

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
-import {ActivatedRepository} from 'app/repository/services/activated-repository';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Contributor, Item, Label} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
 import {RepoLoadState} from 'app/repository/services/repo-load-state';
@@ -33,17 +33,16 @@ export class LoadData {
   formGroup = new FormGroup(
       {issueDateType: new FormControl('last updated since'), issueDate: new FormControl('')});
 
-  totalLabelsCount = this.activatedRepository.repository.pipe(
-      filter(v => !!v), mergeMap((repository => {
-        return this.github.getLabels(repository!)
-            .pipe(
-                filter(result => result.completed === result.total),
-                map(result => result.accumulated.length));
-      })));
+  totalLabelsCount =
+      this.activeRepo.repository.pipe(filter(v => !!v), mergeMap((repository => {
+                                        return this.github.getLabels(repository!)
+                                            .pipe(
+                                                filter(result => result.completed === result.total),
+                                                map(result => result.accumulated.length));
+                                      })));
 
   totalItemCount =
-      combineLatest(
-          this.activatedRepository.repository, this.formGroup.valueChanges.pipe(startWith(null)))
+      combineLatest(this.activeRepo.repository, this.formGroup.valueChanges.pipe(startWith(null)))
           .pipe(filter(result => !!result[0]), mergeMap(result => {
                   const repository = result[0]!;
                   const since = this.getIssuesDateSince();
@@ -55,9 +54,9 @@ export class LoadData {
   private destroyed = new Subject();
 
   constructor(
-      private loadedRepos: LoadedRepos, private activatedRepository: ActivatedRepository,
-      private dao: Dao, public repoLoadState: RepoLoadState, private snackbar: MatSnackBar,
-      private github: Github, private cd: ChangeDetectorRef) {
+      private loadedRepos: LoadedRepos, private activeRepo: ActiveRepo, private dao: Dao,
+      public repoLoadState: RepoLoadState, private snackbar: MatSnackBar, private github: Github,
+      private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
     this.formGroup.get('issueDate')!.setValue(lastMonth, {emitEvent: false});
@@ -91,7 +90,7 @@ export class LoadData {
     getContributors
         .pipe(
             mergeMap(() => getLabels), mergeMap(() => getIssues),
-            mergeMap(() => this.activatedRepository.repository), takeUntil(this.destroyed))
+            mergeMap(() => this.activeRepo.repository), takeUntil(this.destroyed))
         .subscribe(repository => {
           this.state = null;
           this.snackbar.open(`Successfully loaded data`, '', {duration: 2000});
@@ -104,7 +103,7 @@ export class LoadData {
   getValues(
       type: string, loadFn: (repository: string) => Observable<any>,
       saver: (values: any) => void): Observable<void> {
-    return this.activatedRepository.repository.pipe(
+    return this.activeRepo.repository.pipe(
         filter(v => !!v), tap(() => {
           this.state = {
             id: 'loading',

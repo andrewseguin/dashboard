@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {ActivatedRepository} from 'app/repository/services/activated-repository';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item, Label} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
@@ -17,15 +17,14 @@ export class RecommendationAction {
 
   @Input() recommendation: Recommendation;
 
-  constructor(
-      private dao: Dao, private github: Github, private activatedRepository: ActivatedRepository) {}
+  constructor(private dao: Dao, private github: Github, private activeRepo: ActiveRepo) {}
 
   addLabel(label: Label) {
     const newItem: Item = {...this.item};
     newItem.labels = [...this.item.labels, +label.id];
     this.dao.items.update(newItem);
 
-    this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       this.github.addLabel(repository!, this.item.id, label.name).subscribe(result => {
         console.log(result);
       });
@@ -37,7 +36,7 @@ export class RecommendationAction {
     newItem.assignees = [...this.item.assignees, assignee];
     this.dao.items.update(newItem);
 
-    this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       this.github.addAssignee(repository!, this.item.id, assignee).subscribe(result => {
         console.log(result);
       });

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
-import {ActivatedRepository} from './activated-repository';
+import {ActiveRepo} from './active-repo';
 import {Item} from './dao';
 import {Dao} from './dao/dao';
 import {RepoDaoType} from './repo-load-state';
@@ -28,8 +28,7 @@ export class Updater {
                                  return lastUpdated;
                                }));
 
-  constructor(
-      private activatedRepository: ActivatedRepository, private dao: Dao, private github: Github) {}
+  constructor(private activeRepo: ActiveRepo, private dao: Dao, private github: Github) {}
 
   update(type: RepoDaoType): Promise<void> {
     switch (type) {
@@ -44,7 +43,7 @@ export class Updater {
 
   private updateLabels(): Promise<void> {
     return new Promise(resolve => {
-      this.activatedRepository.repository
+      this.activeRepo.repository
           .pipe(
               filter(v => !!v), take(1), mergeMap(repository => this.github.getLabels(repository!)),
               filter(result => result.completed === result.total), take(1))
@@ -59,7 +58,7 @@ export class Updater {
 
   private updateContributors(): Promise<void> {
     return new Promise(resolve => {
-      this.activatedRepository.repository
+      this.activeRepo.repository
           .pipe(
               filter(v => !!v), take(1),
               mergeMap(repository => this.github.getContributors(repository!)),
@@ -75,7 +74,7 @@ export class Updater {
 
   private updateIssues(): Promise<void> {
     return new Promise(resolve => {
-      this.activatedRepository.repository
+      this.activeRepo.repository
           .pipe(
               filter(v => !!v), take(1),
               mergeMap(repository => this.getStaleIssuesState(repository!)), mergeMap(state => {

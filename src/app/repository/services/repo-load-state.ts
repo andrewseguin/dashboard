@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {ActivatedRepository} from './activated-repository';
+import {ActiveRepo} from './active-repo';
 import {Dao} from './dao/dao';
 
 export type RepoDaoType = 'items'|'labels'|'contributors';
@@ -17,12 +17,10 @@ export class RepoLoadState {
                         return !labels.length && !items.length && !contributors.length;
                       }));
 
-  isLoaded = combineLatest(this.activatedRepository.repository, this.loadedRepos.repos$)
+  isLoaded = combineLatest(this.activeRepo.repository, this.loadedRepos.repos$)
                  .pipe(
                      filter(results => !!results[0]),
                      map(results => this.loadedRepos.isLoaded(results[0]!)));
 
-  constructor(
-      private activatedRepository: ActivatedRepository, private loadedRepos: LoadedRepos,
-      private dao: Dao) {}
+  constructor(private activeRepo: ActiveRepo, private loadedRepos: LoadedRepos, private dao: Dao) {}
 }

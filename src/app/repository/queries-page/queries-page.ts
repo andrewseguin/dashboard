@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
-import {ActivatedRepository} from '../services/activated-repository';
+import {ActiveRepo} from '../services/active-repo';
 import {Item, ItemType} from '../services/dao';
 import {Dao} from '../services/dao/dao';
 import {Query} from '../services/dao/queries-dao';
@@ -77,21 +77,20 @@ export class QueriesPage {
       private dao: Dao, private router: Router, private activatedRoute: ActivatedRoute,
       private issueRecommendations: ItemRecommendations,
 
-      private activatedRepository: ActivatedRepository) {}
+      private activeRepo: ActiveRepo) {}
 
   createQuery(type: ItemType) {
-    this.router.navigate(
-        [`${this.activatedRepository.repository.value}/query/new`], {queryParams: {type}});
+    this.router.navigate([`${this.activeRepo.repository.value}/query/new`], {queryParams: {type}});
   }
 
   createQueryFromRecommendation(recommendation: Recommendation) {
     this.router.navigate(
-        [`${this.activatedRepository.repository.value}/query/new`],
+        [`${this.activeRepo.repository.value}/query/new`],
         {queryParams: {'recommendationId': recommendation.id}});
   }
 
   navigateToQuery(id: string) {
-    this.router.navigate([`${this.activatedRepository.repository.value}/query/${id}`]);
+    this.router.navigate([`${this.activeRepo.repository.value}/query/${id}`]);
   }
 }
 

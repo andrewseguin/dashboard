@@ -6,19 +6,18 @@ import {
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {of} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {ActivatedRepository} from './activated-repository';
+import {ActiveRepo} from './active-repo';
 import {Dao} from './dao/dao';
 import {RepoDaoType} from './repo-load-state';
 
 @Injectable()
 export class Remover {
   constructor(
-      private loadedRepos: LoadedRepos, private dialog: MatDialog,
-      private activatedRepository: ActivatedRepository, private snackbar: MatSnackBar,
-      private dao: Dao) {}
+      private loadedRepos: LoadedRepos, private dialog: MatDialog, private activeRepo: ActiveRepo,
+      private snackbar: MatSnackBar, private dao: Dao) {}
 
   removeData(type: RepoDaoType) {
-    this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       const name = `${type} data for ${repository}`;
       const data = {name: of(name)};
 
@@ -46,7 +45,7 @@ export class Remover {
   }
 
   removeAllData(showConfirmationDialog = true, includeConfig = true) {
-    this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       if (!showConfirmationDialog) {
         this.remove(repository!, includeConfig);
         return;

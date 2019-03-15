@@ -4,7 +4,7 @@ import {Config} from 'app/service/config';
 import {combineLatest, of, Subject} from 'rxjs';
 import {debounceTime, filter, mergeMap, take, takeUntil} from 'rxjs/operators';
 import {ConfirmConfigUpdates} from '../shared/dialog/confirm-config-updates/confirm-config-updates';
-import {ActivatedRepository} from './activated-repository';
+import {ActiveRepo} from './active-repo';
 import {Dao} from './dao/dao';
 import {SyncResponse} from './dao/list-dao';
 
@@ -13,13 +13,13 @@ export class RepoGist {
   private destroyed = new Subject();
 
   constructor(
-      private activatedRepository: ActivatedRepository, private dao: Dao, private config: Config,
+      private activeRepo: ActiveRepo, private dao: Dao, private config: Config,
       private dialog: MatDialog) {}
 
   saveChanges() {
     combineLatest(
         this.dao.dashboards.list, this.dao.queries.list, this.dao.recommendations.list,
-        this.activatedRepository.repository)
+        this.activeRepo.repository)
         .pipe(
             filter(result => result.every(r => !!r)), debounceTime(500), takeUntil(this.destroyed))
         .subscribe(result => {
@@ -34,7 +34,7 @@ export class RepoGist {
 
   sync(): Promise<void> {
     return new Promise(resolve => {
-      return this.activatedRepository.repository
+      return this.activeRepo.repository
           .pipe(
               filter(repository => !!repository),
               mergeMap(repository => this.config.getRepoConfig(repository!)),
