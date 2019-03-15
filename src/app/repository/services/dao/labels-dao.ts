@@ -1,7 +1,4 @@
-import {Injectable} from '@angular/core';
-import {RepoIndexedDb} from '../repo-indexed-db';
-import {ListDao} from './list-dao';
-import { GithubLabel } from 'app/service/github-types/label';
+import {GithubLabel} from 'app/service/github-types/label';
 
 export interface Label {
   id: string;
@@ -10,13 +7,6 @@ export interface Label {
   color: string;
   dbAdded?: string;
   dbModified?: string;
-}
-
-@Injectable()
-export class LabelsDao extends ListDao<Label> {
-  constructor(repoIndexedDB: RepoIndexedDb) {
-    super(repoIndexedDB, 'labels');
-  }
 }
 
 export function githubLabelToLabel(o: GithubLabel): Label {

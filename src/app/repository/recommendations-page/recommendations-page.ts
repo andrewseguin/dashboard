@@ -2,8 +2,9 @@ import {ChangeDetectionStrategy, Component, QueryList, ViewChildren} from '@angu
 import {FormControl} from '@angular/forms';
 import {combineLatest} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
-import {Recommendation, RecommendationsDao} from '../services/dao';
+import {Recommendation} from '../services/dao';
 import {EditableRecommendation} from './editable-recommendation/editable-recommendation';
+import { Dao } from '../services/dao/dao';
 
 @Component({
   selector: 'recommendations-page',
@@ -17,16 +18,16 @@ export class RecommendationsPage {
   @ViewChildren(EditableRecommendation) editableRecommendations: QueryList<EditableRecommendation>;
 
   sortedRecommendations =
-      combineLatest(this.recommendationsDao.list, this.filter.valueChanges.pipe(startWith('')))
+      combineLatest(this.dao.recommendations.list, this.filter.valueChanges.pipe(startWith('')))
           .pipe(filter(results => !!results[0]), map(result => {
                   const filtered = result[0]!.filter(r => this.matchesFilter(r));
                   return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
                 }));
   trackById = (_i: number, r: Recommendation) => r.id;
-  constructor(public recommendationsDao: RecommendationsDao) {}
+  constructor(public dao: Dao) {}
 
   add() {
-    this.recommendationsDao.add({
+    this.dao.recommendations.add({
       message: 'New recommendation',
       type: 'warning',
       actionType: 'none',

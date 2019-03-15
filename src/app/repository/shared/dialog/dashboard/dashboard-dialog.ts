@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {Dashboard, DashboardsDao} from 'app/repository/services/dao/dashboards-dao';
+import {Dao} from 'app/repository/services/dao/dao';
+import {Dashboard} from 'app/repository/services/dao/dashboards-dao';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
@@ -9,9 +10,7 @@ import {DashboardEdit} from './dashboard-edit/dashboard-edit';
 
 @Injectable()
 export class DashboardDialog {
-  constructor(
-      private dialog: MatDialog, private snackbar: MatSnackBar,
-      private dashboardsDao: DashboardsDao) {}
+  constructor(private dialog: MatDialog, private snackbar: MatSnackBar, private dao: Dao) {}
 
   editDashboard(dashboard: Dashboard) {
     const data = {
@@ -21,7 +20,7 @@ export class DashboardDialog {
 
     this.dialog.open(DashboardEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
       if (result) {
-        this.dashboardsDao.update(
+        this.dao.dashboards.update(
             {id: dashboard.id, name: result['name'], description: result['description']});
       }
     });
@@ -39,7 +38,7 @@ export class DashboardDialog {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.dashboardsDao.remove(dashboard.id!);
+            this.dao.dashboards.remove(dashboard.id!);
             this.snackbar.open(`Dashboard "${dashboard.name}" deleted`, '', {duration: 2000});
           }
         });

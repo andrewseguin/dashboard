@@ -1,8 +1,5 @@
-import {Injectable} from '@angular/core';
 import {DB, deleteDb, openDb} from 'idb';
 import {Subject} from 'rxjs';
-import {filter, takeUntil} from 'rxjs/operators';
-import {ActivatedRepository} from './activated-repository';
 
 const DB_VERSION = 1;
 
@@ -11,25 +8,23 @@ export type StoreId = 'items'|'labels'|'contributors'|'dashboards'|'queries'|'re
 export const StoreIds: StoreId[] =
     ['items', 'labels', 'contributors', 'dashboards', 'queries', 'recommendations'];
 
-@Injectable()
 export class RepoIndexedDb {
   initialValues: {[key in StoreId]?: Subject<any[]>} = {};
 
-  private repository: string;
+  repository: string;
 
   private db: Promise<DB>;
 
   private destroyed = new Subject();
 
-  constructor(activatedRepository: ActivatedRepository) {
+  constructor(repository: string) {
     StoreIds.forEach(id => this.initialValues[id] = new Subject<any[]>());
+    this.repository = repository!;
+    this.openDb();
+  }
 
-    activatedRepository.repository
-        .pipe(filter(repository => !!repository), takeUntil(this.destroyed))
-        .subscribe(repository => {
-          this.repository = repository!;
-          this.openDb();
-        });
+  close() {
+    return this.db.then(db => db.close());
   }
 
   ngOnDestroy() {

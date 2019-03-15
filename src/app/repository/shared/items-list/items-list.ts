@@ -11,7 +11,8 @@ import {
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
+import {Item, ItemType} from 'app/repository/services/dao';
+import {Dao} from 'app/repository/services/dao/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
 import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
@@ -56,20 +57,20 @@ export class ItemsList {
   @Output() optionsStateChanged = new EventEmitter<ItemRendererOptionsState>();
 
   constructor(
-      private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
-      public itemsRenderer: ItemsRenderer<any>, private itemsDao: ItemsDao,
-      public cd: ChangeDetectorRef, public ngZone: NgZone, public elementRef: ElementRef) {}
+      private itemRecommendations: ItemRecommendations, private dao: Dao,
+      public itemsRenderer: ItemsRenderer<any>, public cd: ChangeDetectorRef, public ngZone: NgZone,
+      public elementRef: ElementRef) {}
 
   ngOnInit() {
-    const items = this.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                            const issues = items!.filter(item => !item.pr);
-                                            const pullRequests = items!.filter(item => !!item.pr);
-                                            return this.type === 'issue' ? issues : pullRequests;
-                                          }));
+    const items = this.dao.items.list.pipe(filter(list => !!list), map(items => {
+                                             const issues = items!.filter(item => !item.pr);
+                                             const pullRequests = items!.filter(item => !!item.pr);
+                                             return this.type === 'issue' ? issues : pullRequests;
+                                           }));
 
     this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.labelsDao),
-        getItemsGrouper(this.labelsDao), new MyItemSorter());
+        items, getItemsFilterer(this.itemRecommendations, this.dao.labels),
+        getItemsGrouper(this.dao.labels), new MyItemSorter());
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.optionsStateChanged.next(options.getState());

@@ -9,14 +9,9 @@ import {Subject, Subscription} from 'rxjs';
 import {delay, filter, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
-import {
-  Column,
-  ColumnGroup,
-  Dashboard,
-  DashboardsDao,
-  Widget
-} from '../services/dao/dashboards-dao';
+import {Column, ColumnGroup, Dashboard, Widget} from '../services/dao/dashboards-dao';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
+import { Dao } from '../services/dao/dao';
 
 @Component({
   selector: 'dashboard-page',
@@ -60,9 +55,9 @@ export class DashboardPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private router: Router, private activatedRoute: ActivatedRoute,
-      private dashboardsDao: DashboardsDao, private activatedRepository: ActivatedRepository,
-      private header: Header, private cd: ChangeDetectorRef, private dialog: MatDialog) {
+      private router: Router, private activatedRoute: ActivatedRoute, private dao: Dao,
+      private activatedRepository: ActivatedRepository, private header: Header,
+      private cd: ChangeDetectorRef, private dialog: MatDialog) {
     this.edit.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.cd.markForCheck());
 
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
@@ -76,7 +71,7 @@ export class DashboardPage {
         const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
         const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
         this.dashboard = newDashboard;
-        const newDashboardId = this.dashboardsDao.add(newDashboard);
+        const newDashboardId = this.dao.dashboards.add(newDashboard);
         this.router.navigate(
             [`${this.activatedRepository.repository.value}/dashboard/${newDashboardId}`],
             {replaceUrl: true, queryParamsHandling: 'merge'});
@@ -85,7 +80,7 @@ export class DashboardPage {
 
       // Delay added to improve page responsiveness on first load
       this.getSubscription =
-          this.dashboardsDao.map.pipe(delay(0), takeUntil(this.destroyed), filter(map => !!map))
+          this.dao.dashboards.map.pipe(delay(0), takeUntil(this.destroyed), filter(map => !!map))
               .subscribe(map => {
                 if (map!.get(id)) {
                   this.dashboard = map!.get(id)!;
@@ -174,7 +169,7 @@ export class DashboardPage {
   }
 
   private save() {
-    this.dashboardsDao.update(this.dashboard);
+    this.dao.dashboards.update(this.dashboard);
     this.cd.markForCheck();
   }
 

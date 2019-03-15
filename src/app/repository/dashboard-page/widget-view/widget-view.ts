@@ -3,7 +3,8 @@ import {Router} from '@angular/router';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Theme} from 'app/repository/services';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
-import {Item, ItemsDao, LabelsDao} from 'app/repository/services/dao';
+import {Item} from 'app/repository/services/dao';
+import {Dao} from 'app/repository/services/dao/dao';
 import {Widget} from 'app/repository/services/dao/dashboards-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
@@ -37,23 +38,22 @@ export class WidgetView {
 
   constructor(
       public itemsRenderer: ItemsRenderer<Item>, private router: Router,
-      private itemRecommendations: ItemRecommendations, private labelsDao: LabelsDao,
-      private theme: Theme, private itemsDao: ItemsDao,
+      private itemRecommendations: ItemRecommendations, private theme: Theme, private dao: Dao,
       private activatedRepository: ActivatedRepository) {
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
   }
 
   ngOnInit() {
     const items =
-        this.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                  const issues = items!.filter(item => !item.pr);
-                                  const pullRequests = items!.filter(item => !!item.pr);
-                                  return this.widget.itemType === 'issue' ? issues : pullRequests;
-                                }));
+        this.dao.items.list.pipe(filter(list => !!list), map(items => {
+                                   const issues = items!.filter(item => !item.pr);
+                                   const pullRequests = items!.filter(item => !!item.pr);
+                                   return this.widget.itemType === 'issue' ? issues : pullRequests;
+                                 }));
 
     this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.labelsDao),
-        getItemsGrouper(this.labelsDao), new MyItemSorter());
+        items, getItemsFilterer(this.itemRecommendations, this.dao.labels),
+        getItemsGrouper(this.dao.labels), new MyItemSorter());
   }
 
   openQuery() {

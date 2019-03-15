@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {QueriesDao} from 'app/repository/services/dao/queries-dao';
+import {Dao} from 'app/repository/services/dao/dao';
 import {combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
@@ -21,7 +21,7 @@ export class QueryEdit {
       new FormGroup({name: new FormControl('', Validators.required), group: new FormControl('')});
 
   filteredGroupOptions =
-      combineLatest(this.queriesDao.list, this.formGroup.valueChanges)
+      combineLatest(this.dao.queries.list, this.formGroup.valueChanges)
           .pipe(filter(result => result.every(r => !!r)), map(result => {
                   const queries = result[0]!;
                   const groupOptionsSet = new Set<string>();
@@ -37,7 +37,7 @@ export class QueryEdit {
                 }));
 
   constructor(
-      public dialogRef: MatDialogRef<QueryEdit>, public queriesDao: QueriesDao,
+      public dialogRef: MatDialogRef<QueryEdit>, public dao: Dao,
       @Inject(MAT_DIALOG_DATA) public data: QueryEditData) {
     if (data && data.name) {
       this.formGroup.get('name')!.setValue(data.name);

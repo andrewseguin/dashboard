@@ -1,8 +1,5 @@
-import {Injectable} from '@angular/core';
 import {Group, ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
-import {RepoIndexedDb} from '../repo-indexed-db';
 import {ItemType} from './items-dao';
-import {ListDao} from './list-dao';
 
 export interface ItemListDisplayTypeOptions {
   listLength: number;
@@ -53,11 +50,4 @@ export interface Dashboard {
   columnGroups?: ColumnGroup[];
   dbAdded?: string;
   dbModified?: string;
-}
-
-@Injectable()
-export class DashboardsDao extends ListDao<Dashboard> {
-  constructor(repoIndexedDB: RepoIndexedDb) {
-    super(repoIndexedDB, 'dashboards');
-  }
 }

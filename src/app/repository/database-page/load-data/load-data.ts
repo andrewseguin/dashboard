@@ -2,14 +2,8 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/co
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
-import {
-  Contributor,
-  ContributorsDao,
-  Item,
-  ItemsDao,
-  Label,
-  LabelsDao
-} from 'app/repository/services/dao';
+import {Contributor, Item, Label} from 'app/repository/services/dao';
+import {Dao} from 'app/repository/services/dao/dao';
 import {RepoLoadState} from 'app/repository/services/repo-load-state';
 import {Github} from 'app/service/github';
 import {LoadedRepos} from 'app/service/loaded-repos';
@@ -62,9 +56,8 @@ export class LoadData {
 
   constructor(
       private loadedRepos: LoadedRepos, private activatedRepository: ActivatedRepository,
-      private itemsDao: ItemsDao, private contributorsDao: ContributorsDao,
-      private labelsDao: LabelsDao, public repoLoadState: RepoLoadState,
-      private snackbar: MatSnackBar, private github: Github, private cd: ChangeDetectorRef) {
+      private dao: Dao, public repoLoadState: RepoLoadState, private snackbar: MatSnackBar,
+      private github: Github, private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
     this.formGroup.get('issueDate')!.setValue(lastMonth, {emitEvent: false});
@@ -85,15 +78,15 @@ export class LoadData {
 
     const getLabels = this.getValues(
         'labels', repository => this.github.getLabels(repository),
-        (values: Label[]) => this.labelsDao.update(values));
+        (values: Label[]) => this.dao.labels.update(values));
 
     const getIssues = this.getValues(
         'issues', repository => this.github.getIssues(repository, this.getIssuesDateSince()),
-        (values: Item[]) => this.itemsDao.update(values));
+        (values: Item[]) => this.dao.items.update(values));
 
     const getContributors = this.getValues(
         'contributor', repository => this.github.getContributors(repository),
-        (values: Contributor[]) => this.contributorsDao.update(values));
+        (values: Contributor[]) => this.dao.contributors.update(values));
 
     getContributors
         .pipe(

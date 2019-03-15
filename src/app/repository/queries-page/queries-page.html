@@ -1,7 +1,7 @@
 <div class="new-buttons" [class.menu-open]="recommendationsMenu.menuOpen"
      *ngIf="type | async; let type">
   <button mat-fab color="primary" class="secondary"
-          [style.visibility]="(recommendationsDao.list | async)?.length > 0 ? 'visible' : 'hidden'"
+          [style.visibility]="(dao.recommendations.list | async)?.length > 0 ? 'visible' : 'hidden'"
           #recommendationsMenu="matMenuTrigger"
           [matMenuTriggerFor]="recommendations"
           matTooltip="New query from recommendation"
@@ -48,7 +48,7 @@
 
 <mat-menu #recommendations="matMenu" class="recommendations-menu">
   <button mat-menu-item
-          *ngFor="let recommendation of recommendationsDao.list | async"
+          *ngFor="let recommendation of dao.recommendations.list | async"
           (click)="createQueryFromRecommendation(recommendation)">
     {{recommendation.message}}
   </button>

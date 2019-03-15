@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
 import {ActivatedRepository} from 'app/repository/services/activated-repository';
-import {ItemsDao} from 'app/repository/services/dao';
+import {Dao} from 'app/repository/services/dao/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
@@ -35,8 +35,7 @@ export class ItemDetail {
 
   constructor(
       private markdown: Markdown, public activatedRepository: ActivatedRepository,
-      public github: Github, public itemsDao: ItemsDao,
-      private itemRecommendations: ItemRecommendations) {}
+      public github: Github, private itemRecommendations: ItemRecommendations, public dao: Dao) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {

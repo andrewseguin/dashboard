@@ -7,12 +7,7 @@ import {LoadedRepos} from 'app/service/loaded-repos';
 import {of} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
-import {ContributorsDao} from './dao/contributors-dao';
-import {DashboardsDao} from './dao/dashboards-dao';
-import {ItemsDao} from './dao/items-dao';
-import {LabelsDao} from './dao/labels-dao';
-import {QueriesDao} from './dao/queries-dao';
-import {RecommendationsDao} from './dao/recommendations-dao';
+import {Dao} from './dao/dao';
 import {RepoDaoType} from './repo-load-state';
 
 @Injectable()
@@ -20,9 +15,7 @@ export class Remover {
   constructor(
       private loadedRepos: LoadedRepos, private dialog: MatDialog,
       private activatedRepository: ActivatedRepository, private snackbar: MatSnackBar,
-      private contributorsDao: ContributorsDao, private dashboardsDao: DashboardsDao,
-      private itemsDao: ItemsDao, private labelsDao: LabelsDao, private queriesDao: QueriesDao,
-      private recommendationsDao: RecommendationsDao) {}
+      private dao: Dao) {}
 
   removeData(type: RepoDaoType) {
     this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
@@ -36,13 +29,13 @@ export class Remover {
             if (confirmed) {
               switch (type) {
                 case 'labels':
-                  this.labelsDao.removeAll();
+                  this.dao.labels.removeAll();
                   break;
                 case 'items':
-                  this.itemsDao.removeAll();
+                  this.dao.items.removeAll();
                   break;
                 case 'contributors':
-                  this.contributorsDao.removeAll();
+                  this.dao.contributors.removeAll();
                   break;
               }
 
@@ -74,11 +67,11 @@ export class Remover {
   }
 
   private remove(repository: string, includeConfig: boolean) {
-    [this.contributorsDao, this.itemsDao, this.labelsDao].forEach(dao => dao.removeAll());
+    [this.dao.contributors, this.dao.items, this.dao.labels].forEach(dao => dao.removeAll());
     this.loadedRepos.removeLoadedRepo(repository!);
 
     if (includeConfig) {
-      [this.dashboardsDao, this.queriesDao, this.recommendationsDao].forEach(
+      [this.dao.dashboards, this.dao.queries, this.dao.recommendations].forEach(
           dao => dao.removeAll());
     }
   }

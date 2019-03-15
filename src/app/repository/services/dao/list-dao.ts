@@ -14,7 +14,7 @@ export interface SyncResponse<T> {
   toRemove: T[];
 }
 
-export abstract class ListDao<T extends IdentifiedObject> {
+export class ListDao<T extends IdentifiedObject> {
   get list(): BehaviorSubject<T[]|null> {
     return this._list;
   }
@@ -38,10 +38,15 @@ export abstract class ListDao<T extends IdentifiedObject> {
   }
   _map: BehaviorSubject<Map<string, T>|null>;
 
-  protected constructor(protected repoIndexedDb: RepoIndexedDb, protected collectionId: StoreId) {
-    const initialValues = this.repoIndexedDb.initialValues[collectionId];
+  private repoIndexedDb: RepoIndexedDb;
+
+  constructor(protected collectionId: StoreId) {}
+
+  initialize(repoIndexedDb: RepoIndexedDb) {
+    this.repoIndexedDb = repoIndexedDb;
+    const initialValues = this.repoIndexedDb.initialValues[this.collectionId];
     if (!initialValues) {
-      throw Error('Object store not initialized: ' + collectionId);
+      throw Error('Object store not initialized: ' + this.collectionId);
     }
 
     initialValues.pipe(take(1)).subscribe(values => this._list.next(values));

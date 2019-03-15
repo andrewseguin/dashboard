@@ -3,7 +3,8 @@ import {MatDialog, MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemType} from 'app/repository/services/dao';
-import {QueriesDao, Query} from 'app/repository/services/dao/queries-dao';
+import {Dao} from 'app/repository/services/dao/dao';
+import {Query} from 'app/repository/services/dao/queries-dao';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
@@ -14,7 +15,7 @@ import {QueryEdit} from './query-edit/query-edit';
 export class QueryDialog {
   constructor(
       private dialog: MatDialog, private snackbar: MatSnackBar, private router: Router,
-      private queriesDao: QueriesDao) {}
+      private dao: Dao) {}
 
   /** Shows the edit query dialog to change the name/group.*/
   editQuery(query: Query) {
@@ -25,7 +26,7 @@ export class QueryDialog {
 
     this.dialog.open(QueryEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
       if (result) {
-        this.queriesDao.update({id: query.id, name: result['name'], group: result['group']});
+        this.dao.queries.update({id: query.id, name: result['name'], group: result['group']});
       }
     });
   }
@@ -42,7 +43,7 @@ export class QueryDialog {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.queriesDao.remove(query.id!);
+            this.dao.queries.remove(query.id!);
             this.snackbar.open(`Query "${query.name}" deleted`, '', {duration: 2000});
           }
         });
@@ -62,7 +63,7 @@ export class QueryDialog {
       const query:
           Query = {name: result['name'], group: result['group'], options: currentOptions, type};
 
-      const newQueryId = this.queriesDao.add(query);
+      const newQueryId = this.dao.queries.add(query);
       this.router.navigate(
           [`${repository}/query/${newQueryId}`], {replaceUrl: true, queryParamsHandling: 'merge'});
     });

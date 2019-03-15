@@ -2,8 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@ang
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
-import {ItemsDao, LabelsDao} from 'app/repository/services/dao';
-import {Recommendation, RecommendationsDao} from 'app/repository/services/dao/recommendations-dao';
+import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
@@ -12,6 +11,7 @@ import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {merge, of, Subject} from 'rxjs';
 import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
+import { Dao } from 'app/repository/services/dao/dao';
 
 
 @Component({
@@ -70,17 +70,16 @@ export class EditableRecommendation {
   actionLabels = [];
   actionAssignees = [];
 
-  addLabelsAutocomplete = this.labelsDao.list.pipe(
+  addLabelsAutocomplete = this.dao.labels.list.pipe(
       filter(list => !!list), map(labels => labels!.map(l => l.name).sort()));
 
   addAssigneesAutocomplete =
-      this.itemsDao.list.pipe(filter(list => !!list), map(items => getAssignees(items!)));
+      this.dao.items.list.pipe(filter(list => !!list), map(items => getAssignees(items!)));
 
   private _destroyed = new Subject();
 
   constructor(
-      private cd: ChangeDetectorRef, private recommendationsDao: RecommendationsDao,
-      private itemsDao: ItemsDao, private labelsDao: LabelsDao, private snackbar: MatSnackBar,
+      private cd: ChangeDetectorRef, private dao: Dao, private snackbar: MatSnackBar,
       private dialog: MatDialog) {}
 
   ngOnInit() {
@@ -103,7 +102,7 @@ export class EditableRecommendation {
     merge(this.form.valueChanges, this.queryChanged)
         .pipe(debounceTime(2000), takeUntil(this._destroyed))
         .subscribe(() => {
-          this.recommendationsDao.update({
+          this.dao.recommendations.update({
             ...this.recommendation,
             message: this.form.value.message,
             type: this.form.value.type,
@@ -128,7 +127,7 @@ export class EditableRecommendation {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.recommendationsDao.remove(this.recommendation.id!);
+            this.dao.recommendations.remove(this.recommendation.id!);
             this.snackbar.open(`Recommendation deleted`, undefined, {duration: 2000});
           }
         });

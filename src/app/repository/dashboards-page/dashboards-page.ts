@@ -1,7 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {ActivatedRepository} from '../services/activated-repository';
-import {Dashboard, DashboardsDao} from '../services/dao/dashboards-dao';
+import {Dao} from '../services/dao/dao';
+import {Dashboard} from '../services/dao/dashboards-dao';
 import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
 
 
@@ -15,8 +16,8 @@ export class DashboardsPage {
   trackById = (_i: number, dashboard: Dashboard) => dashboard.id;
 
   constructor(
-      public dashboardsDao: DashboardsDao, private router: Router,
-      public dashboardDialog: DashboardDialog, private activatedRepository: ActivatedRepository) {}
+      public dao: Dao, private router: Router, public dashboardDialog: DashboardDialog,
+      private activatedRepository: ActivatedRepository) {}
 
   createDashboard() {
     this.router.navigate([`${this.activatedRepository.repository.value}/dashboard/new`]);

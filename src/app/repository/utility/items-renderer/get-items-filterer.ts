@@ -1,13 +1,15 @@
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
+import {ListDao} from 'app/repository/services/dao/list-dao';
 import {combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {Item, LabelsDao} from '../../services/dao';
+import {Item, Label} from '../../services/dao';
 import {ItemRecommendations} from '../../services/item-recommendations';
 import {tokenizeItem} from '../tokenize-item';
 import {ItemsFilterMetadata, MatcherContext} from './items-filter-metadata';
 
 
-export function getItemsFilterer(itemRecommendations: ItemRecommendations, labelsDao: LabelsDao) {
+export function getItemsFilterer(
+    itemRecommendations: ItemRecommendations, labelsDao: ListDao<Label>) {
   return combineLatest(itemRecommendations.allRecommendations, labelsDao.map)
       .pipe(filter(result => result.every(r => !!r)), map(result => {
               const recommendationsByItem = result[0]!;

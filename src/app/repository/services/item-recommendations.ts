@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {getRecommendations} from '../utility/get-recommendations';
-import {ItemsDao, LabelsDao} from './dao';
-import {Recommendation, RecommendationsDao} from './dao/recommendations-dao';
+import {Recommendation} from './dao/recommendations-dao';
+import { Dao } from './dao/dao';
 
 
 @Injectable()
@@ -29,10 +29,8 @@ export class ItemRecommendations {
 
   private destroyed = new Subject();
 
-  constructor(
-      private recommendationsDao: RecommendationsDao, private itemsDao: ItemsDao,
-      private labelsDao: LabelsDao) {
-    combineLatest(this.itemsDao.map, this.recommendationsDao.list, this.labelsDao.map)
+  constructor(private dao: Dao) {
+    combineLatest(this.dao.items.map, this.dao.recommendations.list, this.dao.labels.map)
         .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
         .subscribe(result => {
           const items = result[0]!;

@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {QueriesDao} from 'app/repository/services/dao/queries-dao';
 
 export interface QueryEditData {
   name: string;
@@ -19,7 +18,7 @@ export class DashboardEdit {
       {name: new FormControl('', Validators.required), description: new FormControl('')});
 
   constructor(
-      public dialogRef: MatDialogRef<DashboardEdit>, public queriesDao: QueriesDao,
+      public dialogRef: MatDialogRef<DashboardEdit>,
       @Inject(MAT_DIALOG_DATA) public data: QueryEditData) {
     if (data && data.name) {
       this.formGroup.get('name')!.setValue(data.name);

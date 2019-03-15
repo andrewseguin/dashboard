@@ -4,7 +4,7 @@ import {Auth} from 'app/service/auth';
 import {combineLatest, interval, Subject} from 'rxjs';
 import {filter, mergeMap, take, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './services/activated-repository';
-import {ItemsDao} from './services/dao';
+import {Dao} from './services/dao/dao';
 import {Remover} from './services/remover';
 import {RepoGist} from './services/repo-gist';
 import {RepoLoadState} from './services/repo-load-state';
@@ -15,14 +15,15 @@ import {Updater} from './services/updater';
   templateUrl: 'repository.html',
   styleUrls: ['repository.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [RepoGist]
 })
 export class Repository {
   destroyed = new Subject();
 
   constructor(
       private router: Router, private updater: Updater, private repoLoadState: RepoLoadState,
-      private repoGist: RepoGist, private activatedRoute: ActivatedRoute, private remover: Remover,
-      private itemsDao: ItemsDao, private activatedRepository: ActivatedRepository,
+      private dao: Dao, private repoGist: RepoGist, private activatedRoute: ActivatedRoute,
+      private remover: Remover, private activatedRepository: ActivatedRepository,
       private auth: Auth) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
@@ -62,7 +63,7 @@ export class Repository {
   private initializeAutoIssueUpdates() {
     interval(60 * 1000)
         .pipe(
-            mergeMap(() => this.itemsDao.list.pipe(take(1))),
+            mergeMap(() => this.dao.items.list.pipe(take(1))),
             filter(items => !!items && items.length > 0))
         .subscribe(() => {
           this.updater.update('items');

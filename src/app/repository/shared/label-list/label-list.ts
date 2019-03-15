@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {Label, LabelsDao} from 'app/repository/services/dao';
+import {Label} from 'app/repository/services/dao';
+import {Dao} from 'app/repository/services/dao/dao';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
@@ -30,7 +31,7 @@ export class LabelList {
 
   @Output() selected = new EventEmitter<Label>();
 
-  labels = combineLatest(this._labelIds, this.labelsDao.list)
+  labels = combineLatest(this._labelIds, this.dao.labels.list)
                .pipe(filter(result => result.every(r => !!r)), map(result => {
                        const labelIds = result[0];
 
@@ -51,7 +52,7 @@ export class LabelList {
                        return labels;
                      }));
 
-  constructor(private labelsDao: LabelsDao) {}
+  constructor(private dao: Dao) {}
 
   select(label: Label) {
     if (this.selectable) {

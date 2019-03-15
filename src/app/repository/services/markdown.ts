@@ -4,7 +4,7 @@ import * as hljs from 'highlight.js';
 import * as Remarkable from 'remarkable';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {ItemsDao} from './dao';
+import {Dao} from './dao/dao';
 
 @Injectable()
 export class Markdown {
@@ -27,10 +27,10 @@ export class Markdown {
 
   md = new Remarkable({html: true, breaks: true, linkify: true, highlight: this.highlightFn});
 
-  constructor(private sanitizer: DomSanitizer, private itemsDao: ItemsDao) {}
+  constructor(private sanitizer: DomSanitizer, private dao: Dao) {}
 
   getItemBodyMarkdown(id: string): Observable<SafeHtml> {
-    return this.itemsDao.get(id).pipe(filter(v => !!v), map(item => this.render(item!.body)));
+    return this.dao.items.get(id).pipe(filter(v => !!v), map(item => this.render(item!.body)));
   }
 
   render(text: string): SafeHtml {

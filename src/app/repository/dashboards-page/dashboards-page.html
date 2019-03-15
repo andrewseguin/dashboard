@@ -1,11 +1,13 @@
-<ng-container *ngIf="dashboardsDao.list | async; let dashboards; else loading">
-  <div class="dashboard theme-border theme-background-card theme-hover" *ngFor="let dashboard of dashboards; trackBy: trackById"
+<ng-container *ngIf="dao.dashboards.list | async; let dashboards; else loading">
+  <div class="dashboard theme-border theme-background-card theme-hover"
+       *ngFor="let dashboard of dashboards; trackBy: trackById"
        (click)="navigateToDashboard(dashboard.id)">
 
     <div class="heading">
       <div class="name">{{dashboard.name}}</div>
 
-      <button mat-icon-button (click)="$event.stopPropagation()" class="theme-hover theme-secondary-text settings"
+      <button mat-icon-button (click)="$event.stopPropagation()"
+              class="theme-hover theme-secondary-text settings"
               [matMenuTriggerFor]="settings">
         <mat-icon>settings</mat-icon>
       </button>
@@ -18,7 +20,8 @@
     <mat-menu #settings="matMenu">
       <button mat-menu-item (click)="dashboardDialog.editDashboard(dashboard)">
         Edit Name/Description </button>
-      <button mat-menu-item (click)="dashboardDialog.removeDashboard(dashboard)">
+      <button mat-menu-item
+              (click)="dashboardDialog.removeDashboard(dashboard)">
         Remove </button>
     </mat-menu>
   </div>

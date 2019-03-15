@@ -5,23 +5,20 @@ import {combineLatest, of, Subject} from 'rxjs';
 import {debounceTime, filter, mergeMap, take, takeUntil} from 'rxjs/operators';
 import {ConfirmConfigUpdates} from '../shared/dialog/confirm-config-updates/confirm-config-updates';
 import {ActivatedRepository} from './activated-repository';
-import {DashboardsDao} from './dao/dashboards-dao';
+import {Dao} from './dao/dao';
 import {SyncResponse} from './dao/list-dao';
-import {QueriesDao} from './dao/queries-dao';
-import {RecommendationsDao} from './dao/recommendations-dao';
 
 @Injectable()
 export class RepoGist {
   private destroyed = new Subject();
 
   constructor(
-      private activatedRepository: ActivatedRepository, private dashboardsDao: DashboardsDao,
-      private queriesDao: QueriesDao, private recommendationsDao: RecommendationsDao,
-      private config: Config, private dialog: MatDialog) {}
+      private activatedRepository: ActivatedRepository, private dao: Dao, private config: Config,
+      private dialog: MatDialog) {}
 
   saveChanges() {
     combineLatest(
-        this.dashboardsDao.list, this.queriesDao.list, this.recommendationsDao.list,
+        this.dao.dashboards.list, this.dao.queries.list, this.dao.recommendations.list,
         this.activatedRepository.repository)
         .pipe(
             filter(result => result.every(r => !!r)), debounceTime(500), takeUntil(this.destroyed))
@@ -47,9 +44,9 @@ export class RepoGist {
                 }
 
                 return Promise.all([
-                  this.dashboardsDao.sync(repoConfig.dashboards),
-                  this.queriesDao.sync(repoConfig.queries),
-                  this.recommendationsDao.sync(repoConfig.recommendations)
+                  this.dao.dashboards.sync(repoConfig.dashboards),
+                  this.dao.queries.sync(repoConfig.queries),
+                  this.dao.recommendations.sync(repoConfig.recommendations)
                 ]);
               }))
           .subscribe((syncResults) => {
@@ -64,17 +61,18 @@ export class RepoGist {
                   .pipe(take(1))
                   .subscribe((confirm) => {
                     if (confirm) {
-                      this.dashboardsDao.add(data.dashboards.toAdd);
-                      this.dashboardsDao.update(data.dashboards.toUpdate);
-                      this.dashboardsDao.remove(data.dashboards.toRemove.map(v => v.id!));
+                      this.dao.dashboards.add(data.dashboards.toAdd);
+                      this.dao.dashboards.update(data.dashboards.toUpdate);
+                      this.dao.dashboards.remove(data.dashboards.toRemove.map(v => v.id!));
 
-                      this.queriesDao.add(data.queries.toAdd);
-                      this.queriesDao.update(data.queries.toUpdate);
-                      this.queriesDao.remove(data.queries.toRemove.map(v => v.id!));
+                      this.dao.queries.add(data.queries.toAdd);
+                      this.dao.queries.update(data.queries.toUpdate);
+                      this.dao.queries.remove(data.queries.toRemove.map(v => v.id!));
 
-                      this.recommendationsDao.add(data.recommendations.toAdd);
-                      this.recommendationsDao.update(data.recommendations.toUpdate);
-                      this.recommendationsDao.remove(data.recommendations.toRemove.map(v => v.id!));
+                      this.dao.recommendations.add(data.recommendations.toAdd);
+                      this.dao.recommendations.update(data.recommendations.toUpdate);
+                      this.dao.recommendations.remove(
+                          data.recommendations.toRemove.map(v => v.id!));
                     }
 
                     resolve();

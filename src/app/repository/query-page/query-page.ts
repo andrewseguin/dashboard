@@ -12,9 +12,9 @@ import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActivatedRepository} from '../services/activated-repository';
 import {ItemType} from '../services/dao';
+import {Dao} from '../services/dao/dao';
 import {Widget} from '../services/dao/dashboards-dao';
-import {QueriesDao, Query} from '../services/dao/queries-dao';
-import {RecommendationsDao} from '../services/dao/recommendations-dao';
+import {Query} from '../services/dao/queries-dao';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
 
 
@@ -67,11 +67,9 @@ export class QueryPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private router: Router, private activatedRoute: ActivatedRoute,
-      private recommendationsDao: RecommendationsDao,
+      private router: Router, private activatedRoute: ActivatedRoute, private dao: Dao,
       private activatedRepository: ActivatedRepository, private header: Header,
-      private queriesDao: QueriesDao, private queryDialog: QueryDialog,
-      private cd: ChangeDetectorRef) {
+      private queryDialog: QueryDialog, private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
       this.canSave = false;
@@ -103,7 +101,7 @@ export class QueryPage {
         this.cd.markForCheck();
       } else {
         this.getSubscription =
-            this.queriesDao.map.pipe(takeUntil(this.destroyed), filter(map => !!map))
+            this.dao.queries.map.pipe(takeUntil(this.destroyed), filter(map => !!map))
                 .subscribe(map => {
                   if (map!.get(id)) {
                     this.query = map!.get(id)!;
@@ -137,7 +135,7 @@ export class QueryPage {
   }
 
   save() {
-    this.queriesDao.update({id: this.query.id, options: this.currentOptions});
+    this.dao.queries.update({id: this.query.id, options: this.currentOptions});
   }
 
   setBack(fromDashboard?: string) {
@@ -151,7 +149,7 @@ export class QueryPage {
   }
 
   private createNewQueryFromRecommendation(id: string) {
-    this.recommendationsDao.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
+    this.dao.recommendations.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
       list!.forEach(r => {
         if (r.id === id) {
           const options = new ItemRendererOptions();

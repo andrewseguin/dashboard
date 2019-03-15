@@ -4,9 +4,10 @@ import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
-import {Item, ItemsDao, ItemType, LabelsDao} from '../services/dao';
-import {QueriesDao, Query} from '../services/dao/queries-dao';
-import {Recommendation, RecommendationsDao} from '../services/dao/recommendations-dao';
+import {Item, ItemType} from '../services/dao';
+import {Dao} from '../services/dao/dao';
+import {Query} from '../services/dao/queries-dao';
+import {Recommendation} from '../services/dao/recommendations-dao';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemsFilterMetadata, MatcherContext} from '../utility/items-renderer/items-filter-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
@@ -25,7 +26,7 @@ interface QueryGroup {
 export class QueriesPage {
   type: Observable<ItemType> = this.activatedRoute.params.pipe(map(params => params.type));
 
-  queryGroups = combineLatest(this.queriesDao.list, this.type)
+  queryGroups = combineLatest(this.dao.queries.list, this.type)
                     .pipe(
                         filter(result => result.every(r => !!r)),
                         map(result => result[0]!.filter(item => item.type === result[1])),
@@ -33,8 +34,8 @@ export class QueriesPage {
 
   queryResultsCount =
       combineLatest(
-          this.itemsDao.list, this.queryGroups, this.issueRecommendations.allRecommendations,
-          this.type, this.labelsDao.map)
+          this.dao.items.list, this.queryGroups, this.issueRecommendations.allRecommendations,
+          this.type, this.dao.labels.map)
           .pipe(filter(result => result.every(r => !!r)), delay(1000), map(result => {
                   const items = result[0]!;
                   const groups = result[1]!;
@@ -73,10 +74,9 @@ export class QueriesPage {
   queryKeyTrackBy = (_i: number, itemQuery: Query) => itemQuery.id;
 
   constructor(
-      private itemsDao: ItemsDao, public queriesDao: QueriesDao, private router: Router,
-      private labelsDao: LabelsDao, private activatedRoute: ActivatedRoute,
+      private dao: Dao, private router: Router, private activatedRoute: ActivatedRoute,
       private issueRecommendations: ItemRecommendations,
-      public recommendationsDao: RecommendationsDao,
+
       private activatedRepository: ActivatedRepository) {}
 
   createQuery(type: ItemType) {
@@ -110,7 +110,7 @@ function getSortedGroups(queries: Query[]) {
   const sortedGroups: QueryGroup[] = [];
   Array.from(groups.keys()).sort().forEach(group => {
     const queries = groups.get(group)!;
-    queries.sort((a, b) => a.name! < b.name!? -1 : 1);
+    queries.sort((a, b) => (a.name! < b.name!) ? -1 : 1);
     sortedGroups.push({name: group, queries});
   });
 

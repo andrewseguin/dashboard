@@ -1,8 +1,5 @@
-import {Injectable} from '@angular/core';
 import {GithubIssue} from 'app/service/github-types/issue';
 import {Reactions} from 'app/service/github-types/reactions';
-import {RepoIndexedDb} from '../repo-indexed-db';
-import {ListDao} from './list-dao';
 
 export type ItemType = 'issue'|'pr';
 
@@ -28,13 +25,6 @@ export interface Item {
 
 export interface PullRequest extends Item {}
 export interface Issue extends Item {}
-
-@Injectable()
-export class ItemsDao extends ListDao<Item> {
-  constructor(repoIndexedDB: RepoIndexedDb) {
-    super(repoIndexedDB, 'items');
-  }
-}
 
 export function githubIssueToIssue(o: GithubIssue): Item {
   return {

@@ -1,7 +1,4 @@
-import {Injectable} from '@angular/core';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
-import {RepoIndexedDb} from '../repo-indexed-db';
-import {ListDao} from './list-dao';
 
 
 export interface Query {
@@ -15,11 +12,4 @@ export interface Query {
   options?: ItemRendererOptionsState;
   dbAdded?: string;
   dbModified?: string;
-}
-
-@Injectable()
-export class QueriesDao extends ListDao<Query> {
-  constructor(repoIndexedDB: RepoIndexedDb) {
-    super(repoIndexedDB, 'queries');
-  }
 }

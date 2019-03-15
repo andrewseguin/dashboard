@@ -12,7 +12,7 @@ import {
 import {FormControl} from '@angular/forms';
 import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
 import {Query} from 'app/package/items-renderer/search-utility/query';
-import {ItemsDao, LabelsDao} from 'app/repository/services/dao';
+import {Dao} from 'app/repository/services/dao/dao';
 import {AutocompleteContext} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {ANIMATION_DURATION} from 'app/utility/animations';
 import {Observable, Subject} from 'rxjs';
@@ -73,13 +73,13 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   @Output() filtersChanged = new EventEmitter<Filter[]>();
 
-  constructor(private itemsDao: ItemsDao, private labelsDao: LabelsDao) {}
+  constructor(private dao: Dao) {}
 
   ngOnInit() {
     this.metadata.forEach((value, key) => {
       if (value.autocomplete) {
         this.autocomplete.set(
-            key, value.autocomplete({itemsDao: this.itemsDao, labelsDao: this.labelsDao}));
+            key, value.autocomplete({items: this.dao.items, labels: this.dao.labels}));
       }
     });
 

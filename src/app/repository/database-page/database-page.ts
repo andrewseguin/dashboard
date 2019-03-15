@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from '../services/activated-repository';
-import {ContributorsDao, ItemsDao, LabelsDao} from '../services/dao';
 import {Remover} from '../services/remover';
 import {RepoLoadState} from '../services/repo-load-state';
+import { Dao } from '../services/dao/dao';
 
 
 @Component({
@@ -13,10 +13,9 @@ import {RepoLoadState} from '../services/repo-load-state';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatabasePage {
-  repoLabels = this.labelsDao.list.pipe(filter(v => !!v), map(labels => labels!.map(l => l.id)));
+  repoLabels = this.dao.labels.list.pipe(filter(v => !!v), map(labels => labels!.map(l => l.id)));
 
   constructor(
-      public activatedRepository: ActivatedRepository, public contributorsDao: ContributorsDao,
-      public labelsDao: LabelsDao, public repoLoadState: RepoLoadState, public itemsDao: ItemsDao,
-      public remover: Remover) {}
+      public activatedRepository: ActivatedRepository, public dao: Dao,
+      public repoLoadState: RepoLoadState, public remover: Remover) {}
 }

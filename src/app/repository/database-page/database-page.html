@@ -5,7 +5,7 @@
 <div class="description" *ngIf="!(repoLoadState.isEmpty | async)">
   <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{((itemsDao.list | async)?.length)}} Issues and Pull Requests
+      {{((dao.items.list | async)?.length)}} Issues and Pull Requests
 
       <type-actions *ngIf="!(loadData.isLoading | async)" type="items">
       </type-actions>
@@ -14,7 +14,7 @@
 
   <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{((labelsDao.list | async)?.length)}} Labels
+      {{((dao.labels.list | async)?.length)}} Labels
       <type-actions *ngIf="!(loadData.isLoading | async)" type="labels">
       </type-actions>
     </div>
@@ -25,7 +25,7 @@
 
   <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{((contributorsDao.list | async)?.length)}} Contributors
+      {{((dao.contributors.list | async)?.length)}} Contributors
       <type-actions *ngIf="!(loadData.isLoading | async)" type="contributors">
       </type-actions>
     </div>

@@ -5,19 +5,11 @@ import {MaterialModule} from 'app/material.module';
 import {Repository} from './repository';
 import {Header} from './services';
 import {ActivatedRepository} from './services/activated-repository';
-import {
-  ContributorsDao,
-  DashboardsDao,
-  ItemsDao,
-  LabelsDao,
-  QueriesDao,
-  RecommendationsDao
-} from './services/dao';
+import {Dao} from './services/dao/dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
 import {Remover} from './services/remover';
 import {RepoGist} from './services/repo-gist';
-import {RepoIndexedDb} from './services/repo-indexed-db';
 import {RepoLoadState} from './services/repo-load-state';
 import {Updater} from './services/updater';
 import {
@@ -64,19 +56,10 @@ const routes: Routes = [{
   ]
 }];
 
+
 @NgModule({imports: [RouterModule.forChild(routes)], exports: [RouterModule]})
 export class RepositoryRoutingModule {
 }
-
-const DaoList = [
-  ItemsDao,
-  LabelsDao,
-  ContributorsDao,
-  QueriesDao,
-  RecommendationsDao,
-  DashboardsDao,
-  RepoIndexedDb,
-];
 
 @NgModule({
   imports: [
@@ -92,8 +75,8 @@ const DaoList = [
   declarations: [Repository],
   exports: [Repository],
   providers: [
-    Header, Updater, Remover, ItemRecommendations, Markdown, ActivatedRepository, RepoLoadState,
-    RepoGist, ...DaoList
+    Dao, Header, Updater, Remover, ItemRecommendations, Markdown, ActivatedRepository,
+    RepoLoadState, RepoGist
   ]
 })
 export class RepositoryModule {

@@ -3,13 +3,13 @@ import {LoadedRepos} from 'app/service/loaded-repos';
 import {combineLatest} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
-import {ContributorsDao, ItemsDao, LabelsDao} from './dao';
+import {Dao} from './dao/dao';
 
 export type RepoDaoType = 'items'|'labels'|'contributors';
 
 @Injectable()
 export class RepoLoadState {
-  isEmpty = combineLatest(this.labelsDao.list, this.itemsDao.list, this.contributorsDao.list)
+  isEmpty = combineLatest(this.dao.labels.list, this.dao.items.list, this.dao.contributors.list)
                 .pipe(filter(results => results.every(v => !!v)), map(results => {
                         const labels = results[0]!;
                         const items = results[1]!;
@@ -24,6 +24,5 @@ export class RepoLoadState {
 
   constructor(
       private activatedRepository: ActivatedRepository, private loadedRepos: LoadedRepos,
-      private labelsDao: LabelsDao, private itemsDao: ItemsDao,
-      private contributorsDao: ContributorsDao) {}
+      private dao: Dao) {}
 }

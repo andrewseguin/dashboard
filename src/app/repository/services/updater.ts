@@ -3,7 +3,8 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
-import {ContributorsDao, Item, ItemsDao, LabelsDao} from './dao';
+import {Item} from './dao';
+import {Dao} from './dao/dao';
 import {RepoDaoType} from './repo-load-state';
 
 
@@ -16,21 +17,19 @@ export interface StaleIssuesState {
 @Injectable()
 export class Updater {
   lastUpdatedIssueDate =
-      this.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                let lastUpdated = '';
-                                items!.forEach(item => {
-                                  if (!lastUpdated || lastUpdated < item.updated) {
-                                    lastUpdated = item.updated;
-                                  }
-                                });
+      this.dao.items.list.pipe(filter(list => !!list), map(items => {
+                                 let lastUpdated = '';
+                                 items!.forEach(item => {
+                                   if (!lastUpdated || lastUpdated < item.updated) {
+                                     lastUpdated = item.updated;
+                                   }
+                                 });
 
-                                return lastUpdated;
-                              }));
+                                 return lastUpdated;
+                               }));
 
   constructor(
-      private activatedRepository: ActivatedRepository, private itemsDao: ItemsDao,
-      private labelsDao: LabelsDao, private contributorsDao: ContributorsDao,
-      private github: Github) {}
+      private activatedRepository: ActivatedRepository, private dao: Dao, private github: Github) {}
 
   update(type: RepoDaoType): Promise<void> {
     switch (type) {
@@ -50,8 +49,8 @@ export class Updater {
               filter(v => !!v), take(1), mergeMap(repository => this.github.getLabels(repository!)),
               filter(result => result.completed === result.total), take(1))
           .subscribe((result) => {
-            this.labelsDao.sync(result.accumulated).then(syncResponse => {
-              this.labelsDao.update(syncResponse.toUpdate);
+            this.dao.labels.sync(result.accumulated).then(syncResponse => {
+              this.dao.labels.update(syncResponse.toUpdate);
             });
             resolve();
           });
@@ -66,8 +65,8 @@ export class Updater {
               mergeMap(repository => this.github.getContributors(repository!)),
               filter(result => result.completed === result.total), take(1))
           .subscribe((result) => {
-            this.contributorsDao.sync(result.accumulated).then(syncResponse => {
-              this.contributorsDao.update(syncResponse.toUpdate);
+            this.dao.contributors.sync(result.accumulated).then(syncResponse => {
+              this.dao.contributors.update(syncResponse.toUpdate);
             });
             resolve();
           });
@@ -85,7 +84,7 @@ export class Updater {
               }),
               take(1))
           .subscribe((result) => {
-            this.itemsDao.update(result);
+            this.dao.items.update(result);
             resolve();
           });
     });

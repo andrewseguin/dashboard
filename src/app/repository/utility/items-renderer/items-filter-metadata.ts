@@ -1,9 +1,22 @@
-import { IFilterMetadata } from 'app/package/items-renderer/search-utility/filter';
-import { DateQuery, InputQuery, NumberQuery, Query, StateQuery } from 'app/package/items-renderer/search-utility/query';
-import { arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery } from 'app/package/items-renderer/search-utility/query-matcher';
-import { Item, ItemsDao, Label, LabelsDao, Recommendation } from 'app/repository/services/dao';
-import { getAssignees } from 'app/utility/assignees-autocomplete';
-import { filter, map } from 'rxjs/operators';
+import {IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
+import {
+  DateQuery,
+  InputQuery,
+  NumberQuery,
+  Query,
+  StateQuery
+} from 'app/package/items-renderer/search-utility/query';
+import {
+  arrayContainsQuery,
+  dateMatchesEquality,
+  numberMatchesEquality,
+  stateMatchesEquality,
+  stringContainsQuery
+} from 'app/package/items-renderer/search-utility/query-matcher';
+import {Item, Label, Recommendation} from 'app/repository/services/dao';
+import {ListDao} from 'app/repository/services/dao/list-dao';
+import {getAssignees} from 'app/utility/assignees-autocomplete';
+import {filter, map} from 'rxjs/operators';
 
 export interface MatcherContext {
   item: Item;
@@ -12,8 +25,8 @@ export interface MatcherContext {
 }
 
 export interface AutocompleteContext {
-  itemsDao: ItemsDao;
-  labelsDao: LabelsDao;
+  items: ListDao<Item>;
+  labels: ListDao<Label>;
 }
 
 export const ItemsFilterMetadata =
@@ -29,9 +42,9 @@ export const ItemsFilterMetadata =
             return stringContainsQuery(c.item.title, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.itemsDao.list.pipe(filter(list => !!list), map(items => {
-                                          return items!.map(issue => issue.title);
-                                        }));
+            return c.items.list.pipe(filter(list => !!list), map(items => {
+                                       return items!.map(issue => issue.title);
+                                     }));
           }
         }
       ],
@@ -44,7 +57,7 @@ export const ItemsFilterMetadata =
             return arrayContainsQuery(c.item.assignees, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.itemsDao.list.pipe(filter(list => !!list), map(items => getAssignees(items!)));
+            return c.items.list.pipe(filter(list => !!list), map(items => getAssignees(items!)));
           }
         }
       ],
@@ -78,7 +91,7 @@ export const ItemsFilterMetadata =
                 q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.labelsDao.list.pipe(
+            return c.labels.list.pipe(
                 filter(list => !!list), map(labels => labels!.map(issue => issue.name).sort()));
           }
         }
