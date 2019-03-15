@@ -1,21 +1,9 @@
-import {IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
-import {
-  DateQuery,
-  InputQuery,
-  NumberQuery,
-  Query,
-  StateQuery
-} from 'app/package/items-renderer/search-utility/query';
-import {
-  arrayContainsQuery,
-  dateMatchesEquality,
-  numberMatchesEquality,
-  stateMatchesEquality,
-  stringContainsQuery
-} from 'app/package/items-renderer/search-utility/query-matcher';
-import {Item, ItemsDao, Label, LabelsDao, Recommendation} from 'app/repository/services/dao';
-import {getAssignees} from 'app/utility/assignees-autocomplete';
-import {filter, map} from 'rxjs/operators';
+import { IFilterMetadata } from 'app/package/items-renderer/search-utility/filter';
+import { DateQuery, InputQuery, NumberQuery, Query, StateQuery } from 'app/package/items-renderer/search-utility/query';
+import { arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery } from 'app/package/items-renderer/search-utility/query-matcher';
+import { Item, ItemsDao, Label, LabelsDao, Recommendation } from 'app/repository/services/dao';
+import { getAssignees } from 'app/utility/assignees-autocomplete';
+import { filter, map } from 'rxjs/operators';
 
 export interface MatcherContext {
   item: Item;
@@ -104,6 +92,36 @@ export const ItemsFilterMetadata =
           queryType: 'number',
           matcher: (c: MatcherContext, q: Query) => {
             return numberMatchesEquality(c.item.comments, q as NumberQuery);
+          }
+        }
+      ],
+
+      [
+        'days-since-created', {
+          displayName: 'Days Since Created',
+          queryType: 'number',
+          matcher: (c: MatcherContext, q: Query) => {
+            const dayInMs = 1000 * 60 * 60 * 24;
+            const nowMs = new Date().getTime();
+            const createdDateMs = new Date(c.item.created).getTime();
+            const days = Math.round(Math.abs(nowMs - createdDateMs) / dayInMs);
+
+            return numberMatchesEquality(days, q as NumberQuery);
+          }
+        }
+      ],
+
+      [
+        'days-since-updated', {
+          displayName: 'Days Since Updated',
+          queryType: 'number',
+          matcher: (c: MatcherContext, q: Query) => {
+            const dayInMs = 1000 * 60 * 60 * 24;
+            const nowMs = new Date().getTime();
+            const createdDateMs = new Date(c.item.updated).getTime();
+            const days = Math.round(Math.abs(nowMs - createdDateMs) / dayInMs);
+
+            return numberMatchesEquality(days, q as NumberQuery);
           }
         }
       ],

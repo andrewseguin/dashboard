@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, Widget} from 'app/repository/services/dao';
+import {Item, TimeSeriesDisplayTypeOptions, Widget} from 'app/repository/services/dao';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {filter} from 'rxjs/operators';
@@ -36,7 +36,6 @@ export class TimeSeries {
   private destroyed = new Subject();
 
   ngOnInit() {
-    //  const displayTypeOptions = this.widget.displayTypeOptions as TimeSeriesDisplayTypeOptions;
     this.itemsRenderer.itemGroups.pipe(filter(v => !!v)).subscribe(groups => this.render(groups!));
   }
 
@@ -52,25 +51,25 @@ export class TimeSeries {
   }
 
   getDateDifferences(dates: CreatedAndClosedDate[]): {date: string, difference: number}[] {
-    const count = new Map<string, number>();
+    const difference = new Map<string, number>();
 
     dates.forEach(date => {
       if (date.created) {
-        if (!count.has(date.created)) {
-          count.set(date.created, 0);
+        if (!difference.has(date.created)) {
+          difference.set(date.created, 0);
         }
-        count.set(date.created, count.get(date.created)! + 1);
+        difference.set(date.created, difference.get(date.created)! + 1);
       }
       if (date.closed) {
-        if (!count.has(date.closed)) {
-          count.set(date.closed, 0);
+        if (!difference.has(date.closed)) {
+          difference.set(date.closed, 0);
         }
-        count.set(date.closed, count.get(date.closed)! - 1);
+        difference.set(date.closed, difference.get(date.closed)! - 1);
       }
     });
 
     const dateDifferences: {date: string, difference: number}[] = [];
-    count.forEach((difference, date) => dateDifferences.push({date, difference}));
+    difference.forEach((difference, date) => dateDifferences.push({date, difference}));
     dateDifferences.sort((a, b) => a.date < b.date ? -1 : 1);
     return dateDifferences;
   }
@@ -84,11 +83,15 @@ export class TimeSeries {
     const dateDifferences = this.getDateDifferences(dates);
 
     let accumulatedCount = 0;
-    const data: {x: string, y: number}[] = [];
+    let data: {x: string, y: number}[] = [];
     dateDifferences.forEach((dateDifference => {
       accumulatedCount += dateDifference.difference;
       data.push({x: dateDifference.date, y: accumulatedCount});
     }));
+
+    const displayTypeOptions = this.widget.displayTypeOptions as TimeSeriesDisplayTypeOptions;
+    data = data.filter(d => new Date(d.x) > new Date(displayTypeOptions.start));
+    data = data.filter(d => new Date(d.x) < new Date(displayTypeOptions.end));
 
     return data;
   }
@@ -106,12 +109,13 @@ export class TimeSeries {
         type: 'line',
         data: {
           datasets: [
-            {label: 'Issues Opened', data, fill: false, borderColor: 'blue'},
+            {label: 'Issues Opened', data, fill: false, borderColor: 'rgba(33, 150, 243, 0.75)'},
           ]
         },
         options: {
           responsive: true,
           legend: {display: false},
+          elements: {point: {radius: 2}, line: {tension: 0}},
           scales: {
             xAxes: [{
               type: 'time',

@@ -13,6 +13,7 @@ import {
   IssueListDisplayTypeOptions,
   ItemCountDisplayTypeOptions,
   PieChartDisplayTypeOptions,
+  TimeSeriesDisplayTypeOptions,
   Widget,
   WidgetDisplayTypeOptions
 } from 'app/repository/services/dao/dashboards-dao';
@@ -149,6 +150,16 @@ export class EditWidget {
         this.displayTypeOptions = new FormGroup({
           group: new FormControl(options.group || 'label'),
           filteredGroups: new FormControl(options.filteredGroups || '')
+        });
+        break;
+
+      case 'time-series':
+        options = this.widget.displayTypeOptions as TimeSeriesDisplayTypeOptions;
+        const lastMonth = new Date();
+        lastMonth.setDate(new Date().getDate() - 30);
+        this.displayTypeOptions = new FormGroup({
+          start: new FormControl(options.start || lastMonth),
+          end: new FormControl(options.end || new Date())
         });
         break;
     }

@@ -41,6 +41,10 @@ input {
   font-size: 15px;
 }
 
+input.date {
+  width: 140px;
+}
+
 .query {
   display: flex;
   flex-direction: column;

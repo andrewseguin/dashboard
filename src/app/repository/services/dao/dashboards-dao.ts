@@ -19,7 +19,8 @@ export interface PieChartDisplayTypeOptions {
 }
 
 export interface TimeSeriesDisplayTypeOptions {
-  something: string;
+  start: string;
+  end: string;
 }
 
 export type DisplayType = 'list'|'count'|'pie'|'time-series';
