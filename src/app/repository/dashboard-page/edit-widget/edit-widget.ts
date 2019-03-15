@@ -158,8 +158,10 @@ export class EditWidget {
         const lastMonth = new Date();
         lastMonth.setDate(new Date().getDate() - 30);
         this.displayTypeOptions = new FormGroup({
-          start: new FormControl(options.start || lastMonth),
-          end: new FormControl(options.end || new Date())
+          start: new FormControl(options.start),
+          end: new FormControl(options.end),
+          group: new FormControl(options.group || 'week'),
+          datasets: new FormControl(options.datasets || 'open')
         });
         break;
     }

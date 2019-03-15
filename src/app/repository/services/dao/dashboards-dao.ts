@@ -21,6 +21,8 @@ export interface PieChartDisplayTypeOptions {
 export interface TimeSeriesDisplayTypeOptions {
   start: string;
   end: string;
+  group: 'day'|'week'|'month';
+  datasets: string|string[];
 }
 
 export type DisplayType = 'list'|'count'|'pie'|'time-series';

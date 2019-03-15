@@ -70,6 +70,25 @@
                  (click)="endPicker.open()">
           <mat-datepicker #endPicker></mat-datepicker>
         </div>
+
+        <div class="type">
+          <div class="label"> Datasets </div>
+          <mat-button-toggle-group formControlName="datasets" multiple>
+            <mat-button-toggle value="open"> Open </mat-button-toggle>
+            <mat-button-toggle value="closed"> Closed </mat-button-toggle>
+            <mat-button-toggle value="created"> Created </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <div class="type">
+          <div class="label"> Group </div>
+          <mat-button-toggle-group formControlName="group">
+            <mat-button-toggle value="day"> Day </mat-button-toggle>
+            <mat-button-toggle value="week"> Week </mat-button-toggle>
+            <mat-button-toggle value="month"> Month </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
       </ng-container>
 
     </ng-container>
