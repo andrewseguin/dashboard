@@ -63,7 +63,7 @@ export class LoadData {
   constructor(
       private loadedRepos: LoadedRepos, private activatedRepository: ActivatedRepository,
       private itemsDao: ItemsDao, private contributorsDao: ContributorsDao,
-      private labelsDao: LabelsDao, private repoLoadState: RepoLoadState,
+      private labelsDao: LabelsDao, public repoLoadState: RepoLoadState,
       private snackbar: MatSnackBar, private github: Github, private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);

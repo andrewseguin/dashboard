@@ -4,7 +4,7 @@ import {RepoIndexedDb} from '../repo-indexed-db';
 import {ItemType} from './items-dao';
 import {ListDao} from './list-dao';
 
-export interface IssueListDisplayTypeOptions {
+export interface ItemListDisplayTypeOptions {
   listLength: number;
 }
 
@@ -27,7 +27,7 @@ export interface TimeSeriesDisplayTypeOptions {
 
 export type DisplayType = 'list'|'count'|'pie'|'time-series';
 
-export type WidgetDisplayTypeOptions = IssueListDisplayTypeOptions|TimeSeriesDisplayTypeOptions|
+export type WidgetDisplayTypeOptions = ItemListDisplayTypeOptions|TimeSeriesDisplayTypeOptions|
     ItemCountDisplayTypeOptions|PieChartDisplayTypeOptions;
 
 export interface Widget {

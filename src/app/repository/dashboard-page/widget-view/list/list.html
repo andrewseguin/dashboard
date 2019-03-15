@@ -1,5 +1,5 @@
 <ng-container
-              *ngFor="let item of items?.slice(0, widget.displayTypeOptions.listLength); trackBy: trackById; let last = last">
+              *ngFor="let item of items?.slice(0, listLength); trackBy: trackById; let last = last">
   <item-summary [item]="item" (select)="openItemModal($event)">
   </item-summary>
   <mat-divider *ngIf="!last"></mat-divider>

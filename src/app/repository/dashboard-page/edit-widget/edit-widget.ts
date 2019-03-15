@@ -10,7 +10,7 @@ import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
 import {
   DisplayType,
-  IssueListDisplayTypeOptions,
+  ItemListDisplayTypeOptions,
   ItemCountDisplayTypeOptions,
   PieChartDisplayTypeOptions,
   TimeSeriesDisplayTypeOptions,
@@ -140,7 +140,7 @@ export class EditWidget {
         break;
 
       case 'list':
-        options = this.widget.displayTypeOptions as IssueListDisplayTypeOptions;
+        options = this.widget.displayTypeOptions as ItemListDisplayTypeOptions;
         this.displayTypeOptions =
             new FormGroup({listLength: new FormControl(options.listLength || 'normal')});
         break;

@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, Widget} from 'app/repository/services/dao';
+import {Item, ItemListDisplayTypeOptions, Widget} from 'app/repository/services/dao';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -27,6 +27,8 @@ export class List {
 
   items: Item[];
 
+  listLength = 0;
+
   private destroyed = new Subject();
 
   constructor(private dialog: MatDialog, private cd: ChangeDetectorRef) {}
@@ -44,6 +46,7 @@ export class List {
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
       this.itemsRenderer.options.setState(this.widget.options!);
+      this.listLength = (this.widget.displayTypeOptions as ItemListDisplayTypeOptions).listLength;
     }
   }
 
