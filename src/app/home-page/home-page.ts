@@ -14,7 +14,5 @@ import {LoadedRepos} from 'app/service/loaded-repos';
 export class HomePage {
   popularTypescriptRepos = this.github.getMostPopularRepos();
 
-  constructor(public loadedRepos: LoadedRepos, private github: Github) {
-    this.loadedRepos.repos$.subscribe(console.log);
-  }
+  constructor(public loadedRepos: LoadedRepos, private github: Github) {}
 }

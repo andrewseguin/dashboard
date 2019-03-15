@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Auth} from 'app/service/auth';
 import {combineLatest, interval, Subject} from 'rxjs';
 import {filter, mergeMap, take, takeUntil} from 'rxjs/operators';
 import {ActivatedRepository} from './services/activated-repository';
@@ -21,7 +22,8 @@ export class Repository {
   constructor(
       private router: Router, private updater: Updater, private repoLoadState: RepoLoadState,
       private repoGist: RepoGist, private activatedRoute: ActivatedRoute, private remover: Remover,
-      private itemsDao: ItemsDao, private activatedRepository: ActivatedRepository) {
+      private itemsDao: ItemsDao, private activatedRepository: ActivatedRepository,
+      private auth: Auth) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const org = params['org'];
       const name = params['name'];
@@ -46,7 +48,7 @@ export class Repository {
     this.repoLoadState.isEmpty.pipe(take(1)).subscribe(isEmpty => {
       if (isEmpty) {
         this.router.navigate([`${this.activatedRepository.repository.value}/database`]);
-      } else {
+      } else if (this.auth.token) {
         this.initializeAutoIssueUpdates();
       }
     });
@@ -63,9 +65,9 @@ export class Repository {
             mergeMap(() => this.itemsDao.list.pipe(take(1))),
             filter(items => !!items && items.length > 0))
         .subscribe(() => {
-          this.updater.updateIssues();
+          this.updater.update('items');
         });
-    this.updater.updateContributors();
-    this.updater.updateLabels();
+    this.updater.update('contributors');
+    this.updater.update('labels');
   }
 }

@@ -1,5 +1,6 @@
 :host {
   width: 100%;
+  margin-bottom: 32px;
 }
 
 .load {
@@ -54,5 +55,5 @@ mat-select {
 
 .loading {
   text-align: center;
-  margin: 16px;
+  margin: 32px 0 16px;
 }

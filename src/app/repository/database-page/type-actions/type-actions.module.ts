@@ -2,13 +2,13 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from 'app/material.module';
-import {UpdateButton} from './update-button';
+import {TypeActions} from './type-actions';
 
 
 @NgModule({
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
-  declarations: [UpdateButton],
-  exports: [UpdateButton],
+  declarations: [TypeActions],
+  exports: [TypeActions],
 })
-export class UpdateButtonModule {
+export class TypeActionsModule {
 }

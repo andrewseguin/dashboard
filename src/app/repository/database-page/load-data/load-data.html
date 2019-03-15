@@ -1,8 +1,8 @@
-<div class="load" *ngIf="!state && (isEmpty | async)">
+<div class="load">
 
   <div class="action">
     <button mat-raised-button color="primary" class="load-data"
-            (click)="store()">
+            [disabled]="state" (click)="store()">
       Load Data
     </button>
 
@@ -24,12 +24,11 @@
     </div>
   </div>
 
-  <ng-container *ngIf="totalItemCount | async; let itemCount">
-    <ng-container *ngIf="totalLabelsCount | async; let labelCount">
-      <div class="data-to-load theme-secondary-text">
-        ({{itemCount}} items, {{labelCount}} labels)
-      </div>
-    </ng-container>
+  <ng-container *ngIf="repoLoadState.isEmpty | async">
+    <div class="data-to-load theme-secondary-text">
+      ({{(totalItemCount | async) || '...'}} issues and pull requests,
+      {{(totalLabelsCount | async) || '...'}} labels)
+    </div>
   </ng-container>
 </div>
 

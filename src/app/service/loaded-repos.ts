@@ -21,7 +21,9 @@ export class LoadedRepos {
   }
 
   addLoadedRepo(repo: string) {
-    this.repos = [...this.repos, repo];
+    if (!this.isLoaded(repo)) {
+      this.repos = [...this.repos, repo];
+    }
   }
 
   removeLoadedRepo(repo: string) {

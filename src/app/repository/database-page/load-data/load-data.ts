@@ -68,6 +68,10 @@ export class LoadData {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
     this.formGroup.get('issueDate')!.setValue(lastMonth, {emitEvent: false});
+
+    this.isLoading.pipe(takeUntil(this.destroyed)).subscribe(isLoading => {
+      isLoading ? this.formGroup.disable() : this.formGroup.enable();
+    });
   }
 
   ngOnDestroy() {

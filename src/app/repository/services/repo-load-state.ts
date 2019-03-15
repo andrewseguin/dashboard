@@ -5,6 +5,8 @@ import {filter, map} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
 import {ContributorsDao, ItemsDao, LabelsDao} from './dao';
 
+export type RepoDaoType = 'items'|'labels'|'contributors';
+
 @Injectable()
 export class RepoLoadState {
   isEmpty = combineLatest(this.labelsDao.list, this.itemsDao.list, this.contributorsDao.list)

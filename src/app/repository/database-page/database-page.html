@@ -2,65 +2,39 @@
 
 <load-data #loadData></load-data>
 
-<div class="description">
-  <div class="type issues theme-border theme-background-card"
-       *ngIf="(itemsDao.list | async)?.length; let count">
+<div class="description" *ngIf="!(repoLoadState.isEmpty | async)">
+  <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{(count)}} Issues
+      {{((itemsDao.list | async)?.length)}} Issues and Pull Requests
 
-      <div class="actions">
-        <update-button *ngIf="!(loadData.isLoading | async)"
-                       [updateState]="issuesUpdateState | async"
-                       (update)="updateIssues()">
-        </update-button>
-        <button mat-icon-button (click)="remover.removeData('items')">
-          <mat-icon> delete </mat-icon>
-        </button>
-      </div>
+      <type-actions *ngIf="!(loadData.isLoading | async)" type="items">
+      </type-actions>
     </div>
   </div>
 
-  <div class="type issues theme-border theme-background-card"
-       *ngIf="(labelsDao.list | async)?.length; let count">
+  <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{(count)}} Labels
-
-      <div class="actions">
-        <update-button *ngIf="!(loadData.isLoading | async)"
-                       [updateState]="labelsUpdateState | async"
-                       (update)="updateLabels()">
-        </update-button>
-        <button mat-icon-button (click)="remover.removeData('labels')">
-          <mat-icon> delete </mat-icon>
-        </button>
-      </div>
+      {{((labelsDao.list | async)?.length)}} Labels
+      <type-actions *ngIf="!(loadData.isLoading | async)" type="labels">
+      </type-actions>
     </div>
 
     <label-list [labelIds]="repoLabels | async"> </label-list>
 
   </div>
 
-  <div class="type issues theme-border theme-background-card"
-       *ngIf="(contributorsDao.list | async)?.length; let count">
+  <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{(count)}} Contributors
-
-      <div class="actions">
-        <update-button *ngIf="!(loadData.isLoading | async)"
-                       [updateState]="contributorsUpdateState | async"
-                       (update)="updateContributors()">
-        </update-button>
-        <button mat-icon-button (click)="remover.removeData('contributors')">
-          <mat-icon> delete </mat-icon>
-        </button>
-      </div>
+      {{((contributorsDao.list | async)?.length)}} Contributors
+      <type-actions *ngIf="!(loadData.isLoading | async)" type="contributors">
+      </type-actions>
     </div>
   </div>
 
+  <button mat-button class="remove"
+          *ngIf="(repoLoadState.isLoaded | async) && loadData" color="warn"
+          (click)="remover.removeAllData()">
+    Remove all locally stored data (includes dashboards, recommendations, and
+    queries)
+  </button>
 </div>
-
-<button mat-button class="remove" *ngIf="(isLoaded | async) && loadData"
-        color="warn" (click)="remover.removeAllData()">
-  Remove all locally stored data (includes dashboards, recommendations, and
-  queries)
-</button>

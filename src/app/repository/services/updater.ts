@@ -3,7 +3,8 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {ActivatedRepository} from './activated-repository';
-import {ContributorsDao, ItemsDao, LabelsDao} from './dao';
+import {ContributorsDao, Item, ItemsDao, LabelsDao} from './dao';
+import {RepoDaoType} from './repo-load-state';
 
 
 export interface StaleIssuesState {
@@ -31,7 +32,18 @@ export class Updater {
       private labelsDao: LabelsDao, private contributorsDao: ContributorsDao,
       private github: Github) {}
 
-  updateLabels() {
+  update(type: RepoDaoType): Promise<void> {
+    switch (type) {
+      case 'items':
+        return this.updateIssues();
+      case 'labels':
+        return this.updateLabels();
+      case 'contributors':
+        return this.updateContributors();
+    }
+  }
+
+  private updateLabels(): Promise<void> {
     return new Promise(resolve => {
       this.activatedRepository.repository
           .pipe(
@@ -46,7 +58,7 @@ export class Updater {
     });
   }
 
-  updateContributors() {
+  private updateContributors(): Promise<void> {
     return new Promise(resolve => {
       this.activatedRepository.repository
           .pipe(
@@ -62,21 +74,28 @@ export class Updater {
     });
   }
 
-  updateIssues() {
+  private updateIssues(): Promise<void> {
     return new Promise(resolve => {
       this.activatedRepository.repository
           .pipe(
               filter(v => !!v), take(1),
               mergeMap(repository => this.getStaleIssuesState(repository!)), mergeMap(state => {
-                return state.count ? this.github.getIssues(state.repository, state.lastUpdated) :
-                                     of(null);
+                return state.count ? this.getAllStaleIssues(state.repository!, state.lastUpdated) :
+                                     of([]);
               }),
-              take(1), filter(v => !!v))
+              take(1))
           .subscribe((result) => {
-            this.itemsDao.update(result!.accumulated);
+            this.itemsDao.update(result);
             resolve();
           });
     });
+  }
+
+  getAllStaleIssues(repository: string, lastUpdated: string): Observable<Item[]> {
+    return this.github.getIssues(repository, lastUpdated)
+        .pipe(filter(result => !result || result.total === result.completed), map(result => {
+                return result ? result.accumulated : [];
+              }));
   }
 
   getStaleIssuesState(repository: string): Observable<StaleIssuesState> {

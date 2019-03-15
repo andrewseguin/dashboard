@@ -13,6 +13,7 @@ import {ItemsDao} from './dao/items-dao';
 import {LabelsDao} from './dao/labels-dao';
 import {QueriesDao} from './dao/queries-dao';
 import {RecommendationsDao} from './dao/recommendations-dao';
+import {RepoDaoType} from './repo-load-state';
 
 @Injectable()
 export class Remover {
@@ -23,7 +24,7 @@ export class Remover {
       private itemsDao: ItemsDao, private labelsDao: LabelsDao, private queriesDao: QueriesDao,
       private recommendationsDao: RecommendationsDao) {}
 
-  removeData(type: 'labels'|'items'|'contributors') {
+  removeData(type: RepoDaoType) {
     this.activatedRepository.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       const name = `${type} data for ${repository}`;
       const data = {name: of(name)};
