@@ -8,7 +8,7 @@
 
     <div class="items-form" [formGroup]="formGroup">
       <mat-select formControlName="issueDateType">
-        <mat-option *ngFor="let option of ['all data', 'since']"
+        <mat-option *ngFor="let option of ['all data', 'since last updated']"
                     [value]="option">
           {{option}}
         </mat-option>

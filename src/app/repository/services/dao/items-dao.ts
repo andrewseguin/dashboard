@@ -17,6 +17,7 @@ export interface Item {
   state: string;
   reporter: string;
   created: string;
+  closed: string;
   updated: string;
   reactions: Reactions;
   pr: boolean;
@@ -47,6 +48,7 @@ export function githubIssueToIssue(o: GithubIssue): Item {
     state: o.state,
     reporter: o.user.login,
     created: o.created_at,
+    closed: o.closed_at,
     updated: o.updated_at,
     reactions: o.reactions,
     pr: !!o.pull_request,

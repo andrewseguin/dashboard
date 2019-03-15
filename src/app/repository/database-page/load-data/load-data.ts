@@ -36,8 +36,8 @@ export class LoadData {
 
   completedTypes = new Set();
 
-  formGroup =
-      new FormGroup({issueDateType: new FormControl('since'), issueDate: new FormControl('')});
+  formGroup = new FormGroup(
+      {issueDateType: new FormControl('since last updated'), issueDate: new FormControl('')});
 
   totalLabelsCount = this.activatedRepository.repository.pipe(
       filter(v => !!v), mergeMap((repository => {
@@ -99,7 +99,7 @@ export class LoadData {
 
     getLabels
         .pipe(
-            mergeMap(() => getIssues), mergeMap(() => getContributors),
+            mergeMap(() => getContributors), mergeMap(() => getIssues),
             mergeMap(() => this.activatedRepository.repository), takeUntil(this.destroyed))
         .subscribe(repository => {
           this.state = null;

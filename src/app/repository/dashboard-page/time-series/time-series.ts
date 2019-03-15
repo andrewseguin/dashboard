@@ -13,6 +13,11 @@ import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
+interface CreatedAndClosedDate {
+  created: string;
+  closed: string;
+}
+
 @Component({
   selector: 'time-series',
   templateUrl: 'time-series.html',
@@ -46,28 +51,57 @@ export class TimeSeries {
     }
   }
 
+  getDateDifferences(dates: CreatedAndClosedDate[]): {date: string, difference: number}[] {
+    const count = new Map<string, number>();
+
+    dates.forEach(date => {
+      if (date.created) {
+        if (!count.has(date.created)) {
+          count.set(date.created, 0);
+        }
+        count.set(date.created, count.get(date.created)! + 1);
+      }
+      if (date.closed) {
+        if (!count.has(date.closed)) {
+          count.set(date.closed, 0);
+        }
+        count.set(date.closed, count.get(date.closed)! - 1);
+      }
+    });
+
+    const dateDifferences: {date: string, difference: number}[] = [];
+    count.forEach((difference, date) => dateDifferences.push({date, difference}));
+    dateDifferences.sort((a, b) => a.date < b.date ? -1 : 1);
+    return dateDifferences;
+  }
+
+  getData(items: Item[]): {x: string, y: number}[] {
+    const dates: CreatedAndClosedDate[] =
+        items.map(item => ({
+                    created: (item.created || '').substring(0, 10),
+                    closed: (item.closed || '').substring(0, 10)
+                  }));
+    const dateDifferences = this.getDateDifferences(dates);
+
+    let accumulatedCount = 0;
+    const data: {x: string, y: number}[] = [];
+    dateDifferences.forEach((dateDifference => {
+      accumulatedCount += dateDifference.difference;
+      data.push({x: dateDifference.date, y: accumulatedCount});
+    }));
+
+    return data;
+  }
+
   render(groups: ItemGroup<Item>[]) {
-    console.log(groups);
+    const items: Item[] = [];
+    groups.forEach(g => items.push(...g.items));
+    const data = this.getData(items);
+
     if (this.chart) {
-      // this.chart.data.datasets![0].data = info.data;
-      // this.chart.data.labels = info.labels;
+      this.chart.data.datasets![0].data = data;
       this.chart.update();
     } else {
-      const openedCount = new Map<string, number>();
-      groups.forEach(group => group.items.forEach(item => {
-        const opened = item.created.substring(0, 10);
-        if (!openedCount.has(opened)) {
-          openedCount.set(opened, 0);
-        }
-
-        openedCount.set(opened, openedCount.get(opened)! + 1);
-      }));
-
-      const data: {x: string, y: number}[] = [];
-      openedCount.forEach((y, x) => data.push({x, y}));
-
-      // I want to add a count to each day until it was closed.
-
       const config: Chart.ChartConfiguration = {
         type: 'line',
         data: {
@@ -90,6 +124,6 @@ export class TimeSeries {
       };
       this.chart = new Chart(this.canvas.nativeElement, config);
       this.chart.render();
-    };
+    }
   }
 }
