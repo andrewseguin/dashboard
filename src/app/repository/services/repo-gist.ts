@@ -75,9 +75,9 @@ export class RepoGist {
                       this.recommendationsDao.add(data.recommendations.toAdd);
                       this.recommendationsDao.update(data.recommendations.toUpdate);
                       this.recommendationsDao.remove(data.recommendations.toRemove.map(v => v.id!));
-                    } else {
-                      resolve();
                     }
+
+                    resolve();
                   });
             } else {
               resolve();
