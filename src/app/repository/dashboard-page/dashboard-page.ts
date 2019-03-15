@@ -36,7 +36,7 @@ export class DashboardPage {
       this.edit.setValue(true);
     }
 
-    const repository = this.activeRepo.repository.value;
+    const repository = this.activeRepo.change.value;
     this.header.goBack = () => this.router.navigate([`/${repository}/dashboards`]);
   }
   get dashboard(): Dashboard {
@@ -73,7 +73,7 @@ export class DashboardPage {
         this.dashboard = newDashboard;
         const newDashboardId = this.dao.dashboards.add(newDashboard);
         this.router.navigate(
-            [`${this.activeRepo.repository.value}/dashboard/${newDashboardId}`],
+            [`${this.activeRepo.change.value}/dashboard/${newDashboardId}`],
             {replaceUrl: true, queryParamsHandling: 'merge'});
         return;
       }
@@ -85,7 +85,7 @@ export class DashboardPage {
                 if (map!.get(id)) {
                   this.dashboard = map!.get(id)!;
                 } else {
-                  this.router.navigate([`${this.activeRepo.repository.value}/dashboards`]);
+                  this.router.navigate([`${this.activeRepo.change.value}/dashboards`]);
                 }
                 this.cd.markForCheck();
               });

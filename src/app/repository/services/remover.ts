@@ -17,35 +17,31 @@ export class Remover {
       private snackbar: MatSnackBar, private dao: Dao) {}
 
   removeData(type: RepoDaoType) {
-    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
-      const name = `${type} data for ${repository}`;
-      const data = {name: of(name)};
-
-      this.dialog.open(DeleteConfirmation, {data})
-          .afterClosed()
-          .pipe(take(1))
-          .subscribe(confirmed => {
-            if (confirmed) {
-              switch (type) {
-                case 'labels':
-                  this.dao.labels.removeAll();
-                  break;
-                case 'items':
-                  this.dao.items.removeAll();
-                  break;
-                case 'contributors':
-                  this.dao.contributors.removeAll();
-                  break;
-              }
-
-              this.snackbar.open(`Successfully deleted ${type}`, '', {duration: 2000});
+    const repository = this.activeRepo.repository;
+    this.dialog.open(DeleteConfirmation, {data: {name: of(`${type} data for ${repository}`)}})
+        .afterClosed()
+        .pipe(take(1))
+        .subscribe(confirmed => {
+          if (confirmed) {
+            switch (type) {
+              case 'labels':
+                this.dao.get(repository).labels.removeAll();
+                break;
+              case 'items':
+                this.dao.get(repository).items.removeAll();
+                break;
+              case 'contributors':
+                this.dao.get(repository).contributors.removeAll();
+                break;
             }
-          });
-    });
+
+            this.snackbar.open(`Successfully deleted ${type}`, '', {duration: 2000});
+          }
+        });
   }
 
   removeAllData(showConfirmationDialog = true, includeConfig = true) {
-    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.change.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       if (!showConfirmationDialog) {
         this.remove(repository!, includeConfig);
         return;
@@ -66,12 +62,12 @@ export class Remover {
   }
 
   private remove(repository: string, includeConfig: boolean) {
-    [this.dao.contributors, this.dao.items, this.dao.labels].forEach(dao => dao.removeAll());
+    const store = this.dao.get(repository);
+    [store.contributors, store.items, store.labels].forEach(dao => dao.removeAll());
     this.loadedRepos.removeLoadedRepo(repository!);
 
     if (includeConfig) {
-      [this.dao.dashboards, this.dao.queries, this.dao.recommendations].forEach(
-          dao => dao.removeAll());
+      [store.dashboards, store.queries, store.recommendations].forEach(dao => dao.removeAll());
     }
   }
 }

@@ -42,8 +42,10 @@ export class Updater {
   }
 
   private updateLabels(): Promise<void> {
+    const repository = this.activeRepo.repository;
+    this.githubLabels(repository).
     return new Promise(resolve => {
-      this.activeRepo.repository
+      this.activeRepo.change
           .pipe(
               filter(v => !!v), take(1), mergeMap(repository => this.github.getLabels(repository!)),
               filter(result => result.completed === result.total), take(1))
@@ -58,7 +60,7 @@ export class Updater {
 
   private updateContributors(): Promise<void> {
     return new Promise(resolve => {
-      this.activeRepo.repository
+      this.activeRepo.change
           .pipe(
               filter(v => !!v), take(1),
               mergeMap(repository => this.github.getContributors(repository!)),
@@ -74,7 +76,7 @@ export class Updater {
 
   private updateIssues(): Promise<void> {
     return new Promise(resolve => {
-      this.activeRepo.repository
+      this.activeRepo.change
           .pipe(
               filter(v => !!v), take(1),
               mergeMap(repository => this.getStaleIssuesState(repository!)), mergeMap(state => {

@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {Auth} from 'app/service/auth';
 import {combineLatest, interval, Subject} from 'rxjs';
-import {filter, mergeMap, take, takeUntil} from 'rxjs/operators';
+import {filter, mergeMap, take} from 'rxjs/operators';
 import {ActiveRepo} from './services/active-repo';
 import {Dao} from './services/dao/dao';
 import {Remover} from './services/remover';
@@ -21,14 +21,8 @@ export class Repository {
 
   constructor(
       private router: Router, private updater: Updater, private repoLoadState: RepoLoadState,
-      private dao: Dao, private repoGist: RepoGist, private activatedRoute: ActivatedRoute,
-      private remover: Remover, private activeRepo: ActiveRepo, private auth: Auth) {
-    this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
-      const org = params['org'];
-      const name = params['name'];
-      this.activeRepo.repository.next(`${org}/${name}`);
-    });
-
+      private dao: Dao, private repoGist: RepoGist, private remover: Remover,
+      private activeRepo: ActiveRepo, private auth: Auth) {
     // If a repository has data but not considered loaded, the load did not successfully complete
     // and the data can be removed.
     combineLatest(this.repoLoadState.isEmpty, this.repoLoadState.isLoaded)
@@ -46,7 +40,7 @@ export class Repository {
 
     this.repoLoadState.isEmpty.pipe(take(1)).subscribe(isEmpty => {
       if (isEmpty) {
-        this.router.navigate([`${this.activeRepo.repository.value}/database`]);
+        this.router.navigate([`${this.activeRepo.change.value}/database`]);
       } else if (this.auth.token) {
         this.initializeAutoIssueUpdates();
       }

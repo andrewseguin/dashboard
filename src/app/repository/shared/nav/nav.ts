@@ -35,7 +35,7 @@ export class Nav {
 
   repository = new FormControl();
 
-  repositories = this.activeRepo.repository.pipe(map(repository => {
+  repositories = this.activeRepo.change.pipe(map(repository => {
     if (repository && this.loadedRepos.repos.indexOf(repository) === -1) {
       return [repository, ...this.loadedRepos.repos];
     } else {
@@ -50,7 +50,7 @@ export class Nav {
   constructor(
       public activeRepo: ActiveRepo, public loadedRepos: LoadedRepos, public theme: Theme,
       public router: Router, public auth: Auth, public updater: Updater) {
-    this.activeRepo.repository.pipe(filter(v => !!v), takeUntil(this.destroyed))
+    this.activeRepo.change.pipe(filter(v => !!v), takeUntil(this.destroyed))
         .subscribe(repository => this.repository.setValue(repository));
 
     this.repository.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(repository => {

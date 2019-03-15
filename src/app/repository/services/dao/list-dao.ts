@@ -40,9 +40,7 @@ export class ListDao<T extends IdentifiedObject> {
 
   private repoIndexedDb: RepoIndexedDb;
 
-  constructor(protected collectionId: StoreId) {}
-
-  initialize(repoIndexedDb: RepoIndexedDb) {
+  constructor(protected collectionId: StoreId, repoIndexedDb: RepoIndexedDb) {
     this.repoIndexedDb = repoIndexedDb;
     const initialValues = this.repoIndexedDb.initialValues[this.collectionId];
     if (!initialValues) {

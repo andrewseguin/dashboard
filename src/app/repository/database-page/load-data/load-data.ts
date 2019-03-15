@@ -33,16 +33,17 @@ export class LoadData {
   formGroup = new FormGroup(
       {issueDateType: new FormControl('last updated since'), issueDate: new FormControl('')});
 
-  totalLabelsCount =
-      this.activeRepo.repository.pipe(filter(v => !!v), mergeMap((repository => {
-                                        return this.github.getLabels(repository!)
-                                            .pipe(
-                                                filter(result => result.completed === result.total),
-                                                map(result => result.accumulated.length));
-                                      })));
+  totalLabelsCount = this.activeRepo.change.pipe(
+      filter(v => !!v), mergeMap((repository => {
+        return this.github.getLabels(repository!)
+            .pipe(
+                filter(result => result.completed === result.total),
+                map(result => result.accumulated.length));
+      })));
 
   totalItemCount =
-      combineLatest(this.activeRepo.repository, this.formGroup.valueChanges.pipe(startWith(null)))
+      combineLatest(
+          this.activeRepo.change, this.formGroup.valueChanges.pipe(startWith(null)))
           .pipe(filter(result => !!result[0]), mergeMap(result => {
                   const repository = result[0]!;
                   const since = this.getIssuesDateSince();
@@ -73,25 +74,28 @@ export class LoadData {
   }
 
   store() {
+    const repository = this.activeRepo.repository;
+    const store = this.dao.get(this.activeRepo.repository);
+
     this.isLoading.next(true);
 
     const getLabels = this.getValues(
         'labels', repository => this.github.getLabels(repository),
-        (values: Label[]) => this.dao.labels.update(values));
+        (values: Label[]) => store.labels.update(values));
 
     const getIssues = this.getValues(
         'issues', repository => this.github.getIssues(repository, this.getIssuesDateSince()),
-        (values: Item[]) => this.dao.items.update(values));
+        (values: Item[]) => store.items.update(values));
 
     const getContributors = this.getValues(
         'contributor', repository => this.github.getContributors(repository),
-        (values: Contributor[]) => this.dao.contributors.update(values));
+        (values: Contributor[]) => store.contributors.update(values));
 
     getContributors
         .pipe(
             mergeMap(() => getLabels), mergeMap(() => getIssues),
-            mergeMap(() => this.activeRepo.repository), takeUntil(this.destroyed))
-        .subscribe(repository => {
+            takeUntil(this.activeRepo.change))
+        .subscribe(() => {
           this.state = null;
           this.snackbar.open(`Successfully loaded data`, '', {duration: 2000});
           this.loadedRepos.addLoadedRepo(repository!);
@@ -103,7 +107,7 @@ export class LoadData {
   getValues(
       type: string, loadFn: (repository: string) => Observable<any>,
       saver: (values: any) => void): Observable<void> {
-    return this.activeRepo.repository.pipe(
+    return this.activeRepo.change.pipe(
         filter(v => !!v), tap(() => {
           this.state = {
             id: 'loading',

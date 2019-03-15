@@ -19,7 +19,7 @@ export class RepoGist {
   saveChanges() {
     combineLatest(
         this.dao.dashboards.list, this.dao.queries.list, this.dao.recommendations.list,
-        this.activeRepo.repository)
+        this.activeRepo.change)
         .pipe(
             filter(result => result.every(r => !!r)), debounceTime(500), takeUntil(this.destroyed))
         .subscribe(result => {
@@ -34,7 +34,7 @@ export class RepoGist {
 
   sync(): Promise<void> {
     return new Promise(resolve => {
-      return this.activeRepo.repository
+      return this.activeRepo.change
           .pipe(
               filter(repository => !!repository),
               mergeMap(repository => this.config.getRepoConfig(repository!)),

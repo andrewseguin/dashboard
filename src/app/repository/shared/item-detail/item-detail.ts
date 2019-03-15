@@ -43,7 +43,7 @@ export class ItemDetail {
       this.recommendations = this.itemRecommendations.allRecommendations.pipe(
           filter(v => !!v), map(recommendations => recommendations!.get(this.itemId) || []));
 
-      this.activities = this.activeRepo.repository.pipe(
+      this.activities = this.activeRepo.change.pipe(
           filter(v => !!v), mergeMap(repository => {
             return combineLatest(
                 this.github.getComments(repository!, this.itemId),

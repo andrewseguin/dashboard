@@ -1,7 +1,5 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
-import {filter} from 'rxjs/operators';
-import {ActiveRepo} from '../active-repo';
 import {RepoIndexedDb} from '../repo-indexed-db';
 import {Contributor} from './contributors-dao';
 import {Dashboard} from './dashboards-dao';
@@ -11,44 +9,37 @@ import {ListDao} from './list-dao';
 import {Query} from './queries-dao';
 import {Recommendation} from './recommendations-dao';
 
+export interface RepoStore {
+  items: ListDao<Item>;
+  labels: ListDao<Label>;
+  contributors: ListDao<Contributor>;
+  dashboards: ListDao<Dashboard>;
+  queries: ListDao<Query>;
+  recommendations: ListDao<Recommendation>;
+}
+
 @Injectable()
 export class Dao {
-  items = new ListDao<Item>('items');
-  labels = new ListDao<Label>('labels');
-  contributors = new ListDao<Contributor>('contributors');
-  dashboards = new ListDao<Dashboard>('dashboards');
-  queries = new ListDao<Query>('queries');
-  recommendations = new ListDao<Recommendation>('recommendations');
+  store: Map<string, RepoStore> = new Map();
 
   private destroyed = new Subject();
 
-  private repoIndexedDb: RepoIndexedDb;
+  constructor() {}
 
-  constructor(activeRepo: ActiveRepo) {
-    activeRepo.repository.pipe(filter(v => !!v)).subscribe(repository => {
-      if (this.repoIndexedDb && this.repoIndexedDb.repository === repository) {
-        return;
-      }
-
-      if (this.repoIndexedDb) {
-        this.repoIndexedDb.close();
-      }
-
-      this.items = new ListDao<Item>('items');
-      this.labels = new ListDao<Label>('labels');
-      this.contributors = new ListDao<Contributor>('contributors');
-      this.dashboards = new ListDao<Dashboard>('dashboards');
-      this.queries = new ListDao<Query>('queries');
-      this.recommendations = new ListDao<Recommendation>('recommendations');
-
+  get(repository: string): RepoStore {
+    if (!this.store.has(repository)) {
       const repoIndexedDb = new RepoIndexedDb(repository!);
-      this.items.initialize(repoIndexedDb);
-      this.labels.initialize(repoIndexedDb);
-      this.contributors.initialize(repoIndexedDb);
-      this.dashboards.initialize(repoIndexedDb);
-      this.queries.initialize(repoIndexedDb);
-      this.recommendations.initialize(repoIndexedDb);
-    });
+      this.store.set(repository, {
+        items: new ListDao<Item>('items', repoIndexedDb),
+        labels: new ListDao<Label>('labels', repoIndexedDb),
+        contributors: new ListDao<Contributor>('contributors', repoIndexedDb),
+        dashboards: new ListDao<Dashboard>('dashboards', repoIndexedDb),
+        queries: new ListDao<Query>('queries', repoIndexedDb),
+        recommendations: new ListDao<Recommendation>('recommendations', repoIndexedDb),
+      });
+    }
+
+    return this.store.get(repository)!;
   }
 
   ngOnDestroy() {

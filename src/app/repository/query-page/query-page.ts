@@ -106,7 +106,7 @@ export class QueryPage {
                   if (map!.get(id)) {
                     this.query = map!.get(id)!;
                   } else {
-                    this.router.navigate([`${this.activeRepo.repository.value}/queries`]);
+                    this.router.navigate([`${this.activeRepo.change.value}/queries`]);
                   }
                   this.cd.markForCheck();
                 });
@@ -125,7 +125,7 @@ export class QueryPage {
   }
 
   saveAs() {
-    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.change.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       const queryType = this.query.type;
       if (!queryType) {
         throw Error('Missing query type');
@@ -141,10 +141,10 @@ export class QueryPage {
   setBack(fromDashboard?: string) {
     if (fromDashboard) {
       this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.repository.value}/dashboard/${fromDashboard}`]);
+          this.router.navigate([`/${this.activeRepo.change.value}/dashboard/${fromDashboard}`]);
     } else {
       this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.repository.value}/queries/${this.query.type}`]);
+          this.router.navigate([`/${this.activeRepo.change.value}/queries/${this.query.type}`]);
     }
   }
 
