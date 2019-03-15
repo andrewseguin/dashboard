@@ -52,6 +52,10 @@ export class Nav {
       public theme: Theme, public router: Router, public auth: Auth, public updater: Updater) {
     this.activatedRepository.repository.pipe(filter(v => !!v), takeUntil(this.destroyed))
         .subscribe(repository => this.repository.setValue(repository));
+
+    this.repository.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(repository => {
+      this.router.navigate([repository]);
+    });
   }
 
   ngOnDestroy() {
