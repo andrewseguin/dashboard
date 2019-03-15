@@ -10,9 +10,10 @@
 
       <div class="actions">
         <update-button *ngIf="!(loadData.isLoading | async)"
-                       [updateState]="issuesUpdateState | async"
-                       (update)="updateIssues()">
+                       [updateState]="labelsUpdateState | async"
+                       (update)="updateLabels()">
         </update-button>
+
         <button mat-icon-button (click)="remover.removeData('items')">
           <mat-icon> delete </mat-icon>
         </button>
@@ -27,8 +28,8 @@
 
       <div class="actions">
         <update-button *ngIf="!(loadData.isLoading | async)"
-                       [updateState]="labelsUpdateState | async"
-                       (update)="updateLabels()">
+                       [updateState]="issuesUpdateState | async"
+                       (update)="updateIssues()">
         </update-button>
         <button mat-icon-button (click)="remover.removeData('labels')">
           <mat-icon> delete </mat-icon>

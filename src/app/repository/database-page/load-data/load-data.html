@@ -8,13 +8,14 @@
 
     <div class="items-form" [formGroup]="formGroup">
       <mat-select formControlName="issueDateType">
-        <mat-option *ngFor="let option of ['all data', 'since last updated']"
+        <mat-option *ngFor="let option of ['all data', 'last updated since']"
                     [value]="option">
           {{option}}
         </mat-option>
       </mat-select>
 
-      <div class="datepicker" *ngIf="formGroup.value.issueDateType === 'since'">
+      <div class="datepicker"
+           *ngIf="formGroup.value.issueDateType === 'last updated since'">
         <input formControlName="issueDate" [matDatepicker]="picker"
                class="theme-border" (click)="picker.open()"
                placeholder="Choose a date">

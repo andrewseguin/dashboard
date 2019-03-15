@@ -37,7 +37,7 @@ export class LoadData {
   completedTypes = new Set();
 
   formGroup = new FormGroup(
-      {issueDateType: new FormControl('since last updated'), issueDate: new FormControl('')});
+      {issueDateType: new FormControl('last updated since'), issueDate: new FormControl('')});
 
   totalLabelsCount = this.activatedRepository.repository.pipe(
       filter(v => !!v), mergeMap((repository => {
@@ -137,7 +137,7 @@ export class LoadData {
     const issueDateType = this.formGroup.value.issueDateType;
     const issueDate = this.formGroup.value.issueDate;
     let since = '';
-    if (issueDateType === 'since') {
+    if (issueDateType === 'last updated since') {
       since = new Date(issueDate).toISOString().substring(0, 10);
     }
 

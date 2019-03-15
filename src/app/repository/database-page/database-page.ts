@@ -25,7 +25,7 @@ export class DatabasePage {
 
   isLoaded = combineLatest(this.activatedRepository.repository, this.loadedRepos.repos$)
                  .pipe(
-                     filter(results => results.every(v => !!v)),
+                     filter(results => !!results[0]),
                      map(results => this.loadedRepos.isLoaded(results[0]!)));
 
   constructor(
