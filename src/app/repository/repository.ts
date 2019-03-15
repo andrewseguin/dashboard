@@ -15,7 +15,6 @@ import {Updater} from './services/updater';
   templateUrl: 'repository.html',
   styleUrls: ['repository.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [RepoGist]
 })
 export class Repository {
   destroyed = new Subject();
