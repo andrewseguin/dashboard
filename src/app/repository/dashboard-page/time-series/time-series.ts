@@ -80,7 +80,7 @@ export class TimeSeries {
           dateCountsMap.set(date.closed, {created: 0, closed: 0, open: 0});
         }
         const count = dateCountsMap.get(date.closed)!;
-        dateCountsMap.set(date.created, {...count, closed: count.closed + 1, open: count.open - 1});
+        dateCountsMap.set(date.closed, {...count, closed: count.closed + 1, open: count.open - 1});
       }
     });
 

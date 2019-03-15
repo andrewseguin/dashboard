@@ -10,8 +10,8 @@ import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemsDao, ItemType, LabelsDao} from 'app/repository/services/dao';
 import {
   DisplayType,
-  ItemListDisplayTypeOptions,
   ItemCountDisplayTypeOptions,
+  ItemListDisplayTypeOptions,
   PieChartDisplayTypeOptions,
   TimeSeriesDisplayTypeOptions,
   Widget,
@@ -155,8 +155,6 @@ export class EditWidget {
 
       case 'time-series':
         options = this.widget.displayTypeOptions as TimeSeriesDisplayTypeOptions;
-        const lastMonth = new Date();
-        lastMonth.setDate(new Date().getDate() - 30);
         this.displayTypeOptions = new FormGroup({
           start: new FormControl(options.start),
           end: new FormControl(options.end),
