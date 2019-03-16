@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Dao} from 'app/repository/services/dao/dao';
-import {Dashboard} from 'app/repository/services/dao/dashboards-dao';
+import {Dashboard} from 'app/repository/services/dao/dashboard';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';

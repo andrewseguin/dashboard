@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
-import {Query} from 'app/repository/services/dao/queries-dao';
+import {Query} from 'app/repository/services/dao/query';
 import {QueryDialog} from '../dialog/query/query-dialog';
 
 @Component({

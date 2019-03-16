@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Remover} from 'app/repository/services/remover';
-import {RepoDaoType} from 'app/repository/services/repo-load-state';
 import {Updater} from 'app/repository/services/updater';
 import {BehaviorSubject} from 'rxjs';
+import { RepoDaoType } from 'app/repository/services/dao/dao';
 
 export type UpdateState = 'not-updating'|'updating'|'updated';
 

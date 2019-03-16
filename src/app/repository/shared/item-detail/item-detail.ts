@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular
 import {SafeHtml} from '@angular/platform-browser';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Dao} from 'app/repository/services/dao/dao';
-import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
+import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item, Label} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
-import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
+import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {Github} from 'app/service/github';
 import {filter, take} from 'rxjs/operators';
 

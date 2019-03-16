@@ -2,13 +2,13 @@ import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 import {ActiveRepo} from '../active-repo';
 import {RepoIndexedDb} from '../repo-indexed-db';
-import {Contributor} from './contributors-dao';
-import {Dashboard} from './dashboards-dao';
-import {Item} from './items-dao';
-import {Label} from './labels-dao';
+import {Contributor} from './contributor';
+import {Dashboard} from './dashboard';
+import {Item} from './item';
+import {Label} from './label';
 import {ListDao} from './list-dao';
-import {Query} from './queries-dao';
-import {Recommendation} from './recommendations-dao';
+import {Query} from './query';
+import {Recommendation} from './recommendation';
 
 export interface RepoStore {
   items: ListDao<Item>;
@@ -18,6 +18,9 @@ export interface RepoStore {
   queries: ListDao<Query>;
   recommendations: ListDao<Recommendation>;
 }
+
+export type RepoDaoType = 'items'|'labels'|'contributors';
+
 
 @Injectable()
 export class Dao {

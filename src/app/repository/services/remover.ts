@@ -7,8 +7,7 @@ import {LoadedRepos} from 'app/service/loaded-repos';
 import {of} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {ActiveRepo} from './active-repo';
-import {Dao} from './dao/dao';
-import {RepoDaoType} from './repo-load-state';
+import {Dao, RepoDaoType} from './dao/dao';
 
 @Injectable()
 export class Remover {

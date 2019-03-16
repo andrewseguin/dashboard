@@ -3,9 +3,7 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Item} from './dao';
-import {Dao} from './dao/dao';
-import {RepoDaoType} from './repo-load-state';
-
+import {Dao, RepoDaoType} from './dao/dao';
 
 export interface StaleIssuesState {
   repository: string;

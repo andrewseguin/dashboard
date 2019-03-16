@@ -10,7 +10,7 @@ import {delay, filter, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveRepo} from '../services/active-repo';
 import {Dao} from '../services/dao/dao';
-import {Column, ColumnGroup, Dashboard, Widget} from '../services/dao/dashboards-dao';
+import {Column, ColumnGroup, Dashboard, Widget} from '../services/dao/dashboard';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
 
 @Component({

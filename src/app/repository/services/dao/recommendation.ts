@@ -1,5 +1,4 @@
-import {Filter} from 'app/package/items-renderer/search-utility/filter';
-
+import { Filter } from 'app/package/items-renderer/search-utility/filter';
 
 export interface AddLabelAction {
   labels: string[];
@@ -8,7 +7,7 @@ export interface AddAssigneeAction {
   assignee: string[];
 }
 
-export type Action = AddLabelAction;
+export type Action = AddLabelAction|AddAssigneeAction;
 
 export type RecommendationType = 'warning'|'suggestion';
 

@@ -7,7 +7,7 @@ import {
   githubIssueToIssue,
   Item
 } from 'app/repository/services/dao';
-import {githubLabelToLabel, Label} from 'app/repository/services/dao/labels-dao';
+import {githubLabelToLabel, Label} from 'app/repository/services/dao/label';
 import {getLinkMap} from 'app/utility/link-map';
 import {BehaviorSubject, empty, merge, Observable, of, timer} from 'rxjs';
 import {expand, filter, map, mergeMap, take, tap} from 'rxjs/operators';

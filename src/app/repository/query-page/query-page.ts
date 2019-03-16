@@ -13,8 +13,8 @@ import {Header} from '../services';
 import {ActiveRepo} from '../services/active-repo';
 import {ItemType} from '../services/dao';
 import {Dao} from '../services/dao/dao';
-import {Widget} from '../services/dao/dashboards-dao';
-import {Query} from '../services/dao/queries-dao';
+import {Widget} from '../services/dao/dashboard';
+import {Query} from '../services/dao/query';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
 
 

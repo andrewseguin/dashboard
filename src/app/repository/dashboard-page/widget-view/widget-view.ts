@@ -5,7 +5,7 @@ import {Theme} from 'app/repository/services';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
-import {Widget} from 'app/repository/services/dao/dashboards-dao';
+import {Widget} from 'app/repository/services/dao/dashboard';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
 import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';

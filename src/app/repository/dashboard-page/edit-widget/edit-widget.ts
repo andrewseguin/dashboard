@@ -16,9 +16,9 @@ import {
   TimeSeriesDisplayTypeOptions,
   Widget,
   WidgetDisplayTypeOptions
-} from 'app/repository/services/dao/dashboards-dao';
-import {Query} from 'app/repository/services/dao/queries-dao';
-import {Recommendation} from 'app/repository/services/dao/recommendations-dao';
+} from 'app/repository/services/dao/dashboard';
+import {Query} from 'app/repository/services/dao/query';
+import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
 import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';

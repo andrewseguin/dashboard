@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {ActiveRepo} from '../services/active-repo';
 import {Dao} from '../services/dao/dao';
-import {Dashboard} from '../services/dao/dashboards-dao';
+import {Dashboard} from '../services/dao/dashboard';
 import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
 
 

@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemType} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
-import {Query} from 'app/repository/services/dao/queries-dao';
+import {Query} from 'app/repository/services/dao/query';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {getRecommendations} from '../utility/get-recommendations';
-import {Recommendation} from './dao/recommendations-dao';
+import {Recommendation} from './dao/recommendation';
 import { Dao } from './dao/dao';
 
 

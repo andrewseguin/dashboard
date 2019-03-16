@@ -1,5 +1,5 @@
 import {Group, ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
-import {ItemType} from './items-dao';
+import {ItemType} from './item';
 
 export interface ItemListDisplayTypeOptions {
   listLength: number;
