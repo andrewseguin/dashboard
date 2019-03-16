@@ -4,7 +4,7 @@ import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Contributor, Item, Label} from './dao';
 import {Dao, RepoDaoType} from './dao/dao';
-import {ListDao} from './dao/list-dao';
+import {compareLocalToRemote, ListDao} from './dao/list-dao';
 
 export interface StaleIssuesState {
   repository: string;
@@ -14,17 +14,16 @@ export interface StaleIssuesState {
 
 @Injectable()
 export class Updater {
-  lastUpdatedIssueDate =
-      this.dao.items.list.pipe(filter(list => !!list), map(items => {
-                                 let lastUpdated = '';
-                                 items!.forEach(item => {
-                                   if (!lastUpdated || lastUpdated < item.updated) {
-                                     lastUpdated = item.updated;
-                                   }
-                                 });
+  lastUpdatedIssueDate = this.dao.items.list.pipe(map(items => {
+    let lastUpdated = '';
+    items.forEach(item => {
+      if (!lastUpdated || lastUpdated < item.updated) {
+        lastUpdated = item.updated;
+      }
+    });
 
-                                 return lastUpdated;
-                               }));
+    return lastUpdated;
+  }));
 
   constructor(private dao: Dao, private github: Github) {}
 
@@ -42,13 +41,15 @@ export class Updater {
   }
 
   private updateLabels(repository: string, labelsDao: ListDao<Label>): Promise<void> {
+    let remoteList: Label[] = [];
     return new Promise(resolve => {
       this.github.getLabels(repository)
-          .pipe(filter(result => result.completed === result.total), take(1))
-          .subscribe((result) => {
-            labelsDao.compare(result.accumulated).then(syncResponse => {
-              labelsDao.update(syncResponse.toUpdate);
-            });
+          .pipe(
+              filter(result => result.completed === result.total), take(1),
+              tap(result => remoteList = result.accumulated), mergeMap(() => labelsDao.list))
+          .subscribe(localList => {
+            const comparison = compareLocalToRemote(localList, remoteList);
+            labelsDao.update(comparison.toUpdate);
             resolve();
           });
     });
@@ -56,13 +57,16 @@ export class Updater {
 
   private updateContributors(repository: string, contributorsDao: ListDao<Contributor>):
       Promise<void> {
+    let remoteList: Contributor[] = [];
+
     return new Promise(resolve => {
       this.github.getContributors(repository!)
-          .pipe(filter(result => result.completed === result.total), take(1))
-          .subscribe((result) => {
-            contributorsDao.compare(result.accumulated).then(syncResponse => {
-              contributorsDao.update(syncResponse.toUpdate);
-            });
+          .pipe(
+              filter(result => result.completed === result.total), take(1),
+              tap(result => remoteList = result.accumulated), mergeMap(() => contributorsDao.list))
+          .subscribe(localList => {
+            const comparison = compareLocalToRemote(localList, remoteList);
+            contributorsDao.update(comparison.toUpdate);
             resolve();
           });
     });

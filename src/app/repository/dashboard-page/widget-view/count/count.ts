@@ -15,8 +15,8 @@ export class Count {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemsRenderer.options.filters = this.widget.options!.filters;
-      this.itemsRenderer.options.search = this.widget.options!.search;
+      this.itemsRenderer.options.filters = this.widget.options.filters;
+      this.itemsRenderer.options.search = this.widget.options.search;
     }
   }
 }

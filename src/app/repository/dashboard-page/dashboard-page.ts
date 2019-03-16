@@ -81,8 +81,8 @@ export class DashboardPage {
       this.getSubscription =
           this.dao.dashboards.map.pipe(delay(0), takeUntil(this.destroyed), filter(map => !!map))
               .subscribe(map => {
-                if (map!.get(id)) {
-                  this.dashboard = map!.get(id)!;
+                if (map.get(id)) {
+                  this.dashboard = map.get(id)!;
                 } else {
                   this.router.navigate([`${this.activeRepo.repository}/dashboards`]);
                 }

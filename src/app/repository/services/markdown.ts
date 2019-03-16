@@ -3,8 +3,8 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import * as hljs from 'highlight.js';
 import * as Remarkable from 'remarkable';
 import {Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
-import {Dao} from './dao/dao';
+import {map} from 'rxjs/operators';
+import {RepoStore} from './dao/dao';
 
 @Injectable()
 export class Markdown {
@@ -27,10 +27,10 @@ export class Markdown {
 
   md = new Remarkable({html: true, breaks: true, linkify: true, highlight: this.highlightFn});
 
-  constructor(private sanitizer: DomSanitizer, private dao: Dao) {}
+  constructor(private sanitizer: DomSanitizer) {}
 
-  getItemBodyMarkdown(id: string): Observable<SafeHtml> {
-    return this.dao.items.get(id).pipe(filter(v => !!v), map(item => this.render(item!.body)));
+  getItemBodyMarkdown(store: RepoStore, itemId: string): Observable<SafeHtml> {
+    return store.items.get(itemId).pipe(map(item => this.render(item ? item.body : '')));
   }
 
   render(text: string): SafeHtml {

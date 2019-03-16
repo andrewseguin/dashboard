@@ -50,7 +50,7 @@ export class Repository {
     interval(60 * 1000)
         .pipe(
             mergeMap(() => store.items.list.pipe(take(1))),
-            filter(items => !!items && items.length > 0))
+            filter(items => items.length > 0))
         .subscribe(() => {
           this.updater.update(repository, 'items');
         });

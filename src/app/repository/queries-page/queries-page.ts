@@ -28,8 +28,7 @@ export class QueriesPage {
 
   queryGroups = combineLatest(this.dao.queries.list, this.type)
                     .pipe(
-                        filter(result => result.every(r => !!r)),
-                        map(result => result[0]!.filter(item => item.type === result[1])),
+                        map(result => result[0].filter(item => item.type === result[1])),
                         map(getSortedGroups));
 
   queryResultsCount =
@@ -37,11 +36,11 @@ export class QueriesPage {
           this.dao.items.list, this.queryGroups, this.issueRecommendations.allRecommendations,
           this.type, this.dao.labels.map)
           .pipe(filter(result => result.every(r => !!r)), delay(1000), map(result => {
-                  const items = result[0]!;
-                  const groups = result[1]!;
-                  const recommendationsByItem = result[2]!;
-                  const type = result[3]!;
-                  const labelsMap = result[4]!;
+                  const items = result[0];
+                  const groups = result[1];
+                  const recommendationsByItem = result[2];
+                  const type = result[3];
+                  const labelsMap = result[4];
 
                   const issues = items.filter(item => !item.pr);
                   const pullRequests = items.filter(item => !!item.pr);

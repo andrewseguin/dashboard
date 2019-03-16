@@ -15,28 +15,22 @@ export interface LocalToRemoteComparison<T> {
 }
 
 export class ListDao<T extends IdentifiedObject> {
-  get list(): BehaviorSubject<T[]|null> {
-    return this._list;
-  }
-  _list = new BehaviorSubject<T[]|null>(null);
+  rawList = new BehaviorSubject<T[]|null>(null);
+  list = this.rawList.pipe(filter(v => !!v)) as Observable<T[]>;
 
-  get map(): BehaviorSubject<Map<string, T>|null> {
+  get map(): BehaviorSubject<Map<string, T>> {
     if (!this._map) {
-      this._map = new BehaviorSubject<Map<string, T>|null>(new Map<string, T>());
+      this._map = new BehaviorSubject<Map<string, T>>(new Map<string, T>());
       this.list.subscribe(list => {
-        if (list) {
-          const map = new Map<string, T>();
-          list.forEach(obj => map.set(obj.id!, obj));
-          this._map.next(map);
-        } else {
-          this._map.next(null);
-        }
+        const map = new Map<string, T>();
+        list.forEach(obj => map.set(obj.id!, obj));
+        this._map.next(map);
       });
     }
 
     return this._map;
   }
-  _map: BehaviorSubject<Map<string, T>|null>;
+  _map: BehaviorSubject<Map<string, T>>;
 
   private repoIndexedDb: RepoIndexedDb;
 
@@ -47,7 +41,7 @@ export class ListDao<T extends IdentifiedObject> {
       throw Error('Object store not initialized: ' + this.collectionId);
     }
 
-    initialValues.pipe(take(1)).subscribe(values => this._list.next(values));
+    initialValues.pipe(take(1)).subscribe(values => this.rawList.next(values));
   }
 
   add(item: T): string;
@@ -56,7 +50,7 @@ export class ListDao<T extends IdentifiedObject> {
     const items = (itemOrItems instanceof Array) ? itemOrItems : [itemOrItems];
     items.forEach(decorateForDb);
     this.repoIndexedDb.updateValues(items, this.collectionId);
-    this.list.next([...(this._list.value || []), ...items]);
+    this.rawList.next([...(this.rawList.value || []), ...items]);
     return items.map(obj => obj.id!);
   }
 
@@ -79,49 +73,12 @@ export class ListDao<T extends IdentifiedObject> {
 
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
       items.forEach(obj => {
-        map!.set(obj.id!, {...(map!.get(obj.id!) as object), ...(obj as object)} as T);
+        map.set(obj.id!, {...(map.get(obj.id!) as object), ...(obj as object)} as T);
       });
 
       const values: T[] = [];
-      map!.forEach(value => values.push(value));
-      this.list.next(values);
-    });
-  }
-
-  /**
-   * Incoming items will be considered the source-of-truth - items already existing will be updated
-   * to reflect this list, and stored items that do not appear will be removed.
-   */
-  compare(items: T[]): Promise<LocalToRemoteComparison<T>> {
-    return new Promise(resolve => {
-      const syncMap = new Map<string, T>();
-      items.forEach(item => {
-        syncMap.set(item.id!, item);
-      });
-
-      this.map.pipe(filter(v => !!v), take(1)).subscribe(map => {
-        const toRemove: T[] = [];
-        map!.forEach((value, key) => {
-          if (!syncMap.has(key)) {
-            toRemove.push(value);
-          }
-        });
-
-        const toAdd: T[] = [];
-        const toUpdate: T[] = [];
-        syncMap.forEach(item => {
-          if (!map!.get(item.id!)) {
-            toAdd.push(item);
-          } else {
-            const dbModifiedItemNew = item.dbModified || '';
-            const dbModifiedItemCurrent = map!.get(item.id!)!.dbModified!;
-            if (dbModifiedItemNew > dbModifiedItemCurrent) {
-              toUpdate.push(item);
-            }
-          }
-        });
-        resolve({toAdd, toUpdate, toRemove});
-      });
+      map.forEach(value => values.push(value));
+      this.rawList.next(values);
     });
   }
 
@@ -132,19 +89,19 @@ export class ListDao<T extends IdentifiedObject> {
     this.repoIndexedDb.removeValues(ids, this.collectionId);
 
     this.map.pipe(filter(map => !!map), take(1)).subscribe(map => {
-      ids.forEach(id => map!.delete(id));
+      ids.forEach(id => map.delete(id));
 
       const values: T[] = [];
-      map!.forEach(value => values.push(value));
-      this.list.next(values);
+      map.forEach(value => values.push(value));
+      this.rawList.next(values);
     });
   }
 
   removeAll() {
     this.repoIndexedDb
-        .removeValues((this._list.value || []).map(item => item.id!), this.collectionId)
+        .removeValues((this.rawList.value || []).map(item => item.id!), this.collectionId)
         .then(() => {
-          this.list.next([]);
+          this.rawList.next([]);
         });
   }
 }

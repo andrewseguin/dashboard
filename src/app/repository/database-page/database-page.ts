@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {LoadedRepos} from 'app/service/loaded-repos';
-import {filter, map, mergeMap} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 import {ActiveRepo} from '../services/active-repo';
 import {Dao} from '../services/dao/dao';
 import {Remover} from '../services/remover';
@@ -21,10 +21,9 @@ export class DatabasePage {
 
   repoLabels = this.activeRepo.change.pipe(
       mergeMap(repository => {
-        const store = this.dao.get(repository);
-        return store.labels.list.pipe(filter(v => !!v));
+        return this.dao.get(repository).labels.list;
       }),
-      map(labels => labels!.map(l => l.id)));
+      map(labels => labels.map(l => l.id)));
 
   store = this.activeRepo.change.pipe(map(activeRepo => this.dao.get(activeRepo)));
 

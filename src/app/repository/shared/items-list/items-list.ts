@@ -62,11 +62,11 @@ export class ItemsList {
       public elementRef: ElementRef) {}
 
   ngOnInit() {
-    const items = this.dao.items.list.pipe(filter(list => !!list), map(items => {
-                                             const issues = items!.filter(item => !item.pr);
-                                             const pullRequests = items!.filter(item => !!item.pr);
-                                             return this.type === 'issue' ? issues : pullRequests;
-                                           }));
+    const items = this.dao.items.list.pipe(map(items => {
+      const issues = items.filter(item => !item.pr);
+      const pullRequests = items.filter(item => !!item.pr);
+      return this.type === 'issue' ? issues : pullRequests;
+    }));
 
     this.itemsRenderer.initialize(
         items, getItemsFilterer(this.itemRecommendations, this.dao.labels),

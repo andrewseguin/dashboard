@@ -11,8 +11,8 @@ import {ItemSorter} from './item-sorter';
 export class ItemsRenderer<T> {
   options: ItemRendererOptions = new ItemRendererOptions();
 
-  // Starts as null as a signal that no items have been processed.
-  itemGroups = new BehaviorSubject<ItemGroup<T>[]|null>(null);
+  _itemGroups = new BehaviorSubject<ItemGroup<T>[]|null>(null);
+  itemGroups = this._itemGroups.pipe(filter(v => !!v)) as Observable<ItemGroup<T>[]>;
 
   // Number of items in the item groups.
   itemCount = new BehaviorSubject<number|null>(null);
@@ -64,7 +64,7 @@ export class ItemsRenderer<T> {
                 }
               });
 
-              this.itemGroups.next(itemGroups);
+              this._itemGroups.next(itemGroups);
               this.itemCount.next(filteredItems.length);
             });
   }

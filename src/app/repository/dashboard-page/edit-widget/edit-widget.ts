@@ -8,6 +8,7 @@ import {
 } from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemType} from 'app/repository/services/dao';
+import {Dao} from 'app/repository/services/dao/dao';
 import {
   DisplayType,
   ItemCountDisplayTypeOptions,
@@ -25,8 +26,7 @@ import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-g
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {Subject} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
-import { Dao } from 'app/repository/services/dao/dao';
+import {map, takeUntil} from 'rxjs/operators';
 
 export interface EditWidgetData {
   widget: Widget;
@@ -53,10 +53,9 @@ export class EditWidget {
 
   metadata = ItemsFilterMetadata;
 
-  issueQueries = this.dao.queries.list.pipe(
-      filter(v => !!v), map(queries => queries!.filter(q => q.type === 'issue')));
-  prQueries = this.dao.queries.list.pipe(
-      filter(v => !!v), map(queries => queries!.filter(q => q.type === 'pr')));
+  issueQueries =
+      this.dao.queries.list.pipe(map(queries => queries.filter(q => q.type === 'issue')));
+  prQueries = this.dao.queries.list.pipe(map(queries => queries.filter(q => q.type === 'pr')));
 
   groups = Groups;
   groupIds = [...GroupIds];
@@ -120,11 +119,11 @@ export class EditWidget {
   }
 
   private changeItemsRendererItemType(itemType: ItemType) {
-    const items = this.dao.items.list.pipe(filter(v => !!v), map(items => {
-                                             const issues = items!.filter(item => !item.pr);
-                                             const pullRequests = items!.filter(item => !!item.pr);
-                                             return itemType === 'issue' ? issues : pullRequests;
-                                           }));
+    const items = this.dao.items.list.pipe(map(items => {
+      const issues = items.filter(item => !item.pr);
+      const pullRequests = items.filter(item => !!item.pr);
+      return itemType === 'issue' ? issues : pullRequests;
+    }));
 
     this.itemsRenderer.initialize(
         items, getItemsFilterer(this.itemRecommendations, this.dao.labels),

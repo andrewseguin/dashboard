@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Config} from 'app/service/config';
-import {filter, take} from 'rxjs/operators';
+import {take} from 'rxjs/operators';
 
 @Injectable()
 export class Theme {
@@ -9,8 +9,8 @@ export class Theme {
   constructor(private config: Config) {
     this.syncState();
 
-    this.config.getDashboardConfig().pipe(filter(v => !!v), take(1)).subscribe((dashboardConfig => {
-      if (dashboardConfig!.useDarkTheme && this.isLight) {
+    this.config.getDashboardConfig().pipe(take(1)).subscribe((dashboardConfig => {
+      if (dashboardConfig && dashboardConfig.useDarkTheme && this.isLight) {
         this.toggle();
       }
     }));

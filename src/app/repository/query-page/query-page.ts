@@ -101,15 +101,14 @@ export class QueryPage {
         this.cd.markForCheck();
       } else {
         this.getSubscription =
-            this.dao.queries.map.pipe(takeUntil(this.destroyed), filter(map => !!map))
-                .subscribe(map => {
-                  if (map!.get(id)) {
-                    this.query = map!.get(id)!;
-                  } else {
-                    this.router.navigate([`${this.activeRepo.repository}/queries`]);
-                  }
-                  this.cd.markForCheck();
-                });
+            this.dao.queries.map.pipe(takeUntil(this.destroyed)).subscribe(map => {
+              if (map.get(id)) {
+                this.query = map.get(id)!;
+              } else {
+                this.router.navigate([`${this.activeRepo.repository}/queries`]);
+              }
+              this.cd.markForCheck();
+            });
       }
     });
   }
@@ -149,8 +148,8 @@ export class QueryPage {
   }
 
   private createNewQueryFromRecommendation(id: string) {
-    this.dao.recommendations.list.pipe(filter(list => !!list), take(1)).subscribe(list => {
-      list!.forEach(r => {
+    this.dao.recommendations.list.pipe(take(1)).subscribe(list => {
+      list.forEach(r => {
         if (r.id === id) {
           const options = new ItemRendererOptions();
           options.filters = r.filters || [];

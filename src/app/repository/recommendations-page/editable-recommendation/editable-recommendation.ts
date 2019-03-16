@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@ang
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
+import {Dao} from 'app/repository/services/dao/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {
   DeleteConfirmation
@@ -10,8 +11,7 @@ import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-f
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {merge, of, Subject} from 'rxjs';
-import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
-import { Dao } from 'app/repository/services/dao/dao';
+import {debounceTime, map, take, takeUntil} from 'rxjs/operators';
 
 
 @Component({
@@ -70,11 +70,9 @@ export class EditableRecommendation {
   actionLabels = [];
   actionAssignees = [];
 
-  addLabelsAutocomplete = this.dao.labels.list.pipe(
-      filter(list => !!list), map(labels => labels!.map(l => l.name).sort()));
+  addLabelsAutocomplete = this.dao.labels.list.pipe(map(labels => labels.map(l => l.name).sort()));
 
-  addAssigneesAutocomplete =
-      this.dao.items.list.pipe(filter(list => !!list), map(items => getAssignees(items!)));
+  addAssigneesAutocomplete = this.dao.items.list.pipe(map(items => getAssignees(items)));
 
   private _destroyed = new Subject();
 

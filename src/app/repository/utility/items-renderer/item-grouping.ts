@@ -10,7 +10,10 @@ export class GithubItemGrouping extends ItemGrouping<Item> {
         group: 'label',
         key: 'labels',
         type: 'list',
-        transform: labelId => labelId ? labels.get(`${labelId}`)!.name : 'No Label'
+        transform: labelId => {
+          const label = labels.get(`${labelId}`);
+          return label ? label.name : 'No Label';
+        }
       },
       {
         group: 'assignee',

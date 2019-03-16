@@ -265,7 +265,7 @@ export class Github {
               })
             })),
             tap(response => this.updateRateLimit(rateLimitType, response)),
-            tap(response => this.updateScopes(response)));
+            tap(response => this.updateScopes(response!)));
   }
 
   private patch<T>(url: string, body: any, needsAuth = true, rateLimitType: RateLimitType = 'core'):
@@ -283,7 +283,7 @@ export class Github {
               })
             })),
             tap(response => this.updateRateLimit(rateLimitType, response)),
-            tap(response => this.updateScopes(response)));
+            tap(response => this.updateScopes(response!)));
   }
 
   private get<T>(url: string, needsAuth = false, rateLimitType: RateLimitType = 'core'):
@@ -311,7 +311,7 @@ export class Github {
               })
             })),
             tap(response => this.updateRateLimit(rateLimitType, response)),
-            tap(response => this.updateScopes(response)));
+            tap(response => this.updateScopes(response!)));
   }
 
   private waitForRateLimit(rateLimitType: RateLimitType): Observable<any> {
@@ -354,7 +354,7 @@ export class Github {
     });
   }
 
-  private updateScopes(response: HttpResponse<any>|null) {
+  private updateScopes(response: HttpResponse<any>) {
     this.auth.scopes = response!.headers.get('X-OAuth-Scopes') || '';
   }
 }

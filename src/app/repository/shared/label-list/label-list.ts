@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {Label} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
 import {BehaviorSubject, combineLatest} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 interface DisplayedLabel {
   id: string;
@@ -31,26 +31,25 @@ export class LabelList {
 
   @Output() selected = new EventEmitter<Label>();
 
-  labels = combineLatest(this._labelIds, this.dao.labels.list)
-               .pipe(filter(result => result.every(r => !!r)), map(result => {
-                       const labelIds = result[0];
+  labels = combineLatest(this._labelIds, this.dao.labels.list).pipe(map(result => {
+    const labelIds = result[0];
 
-                       const labelsMap = new Map<string, Label>();
-                       result[1]!.forEach(label => {
-                         labelsMap.set(label.id, label);
-                         labelsMap.set(label.name, label);
-                       });
+    const labelsMap = new Map<string, Label>();
+    result[1].forEach(label => {
+      labelsMap.set(label.id, label);
+      labelsMap.set(label.name, label);
+    });
 
-                       const labels: DisplayedLabel[] = [];
-                       labelIds.forEach(labelId => {
-                         const label = labelsMap.get(`${labelId}`);
-                         if (label) {  // labels may be applied but no longer exist
-                           labels.push(convertLabelToDisplayedLabel(label));
-                         }
-                       });
-                       labels.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
-                       return labels;
-                     }));
+    const labels: DisplayedLabel[] = [];
+    labelIds.forEach(labelId => {
+      const label = labelsMap.get(`${labelId}`);
+      if (label) {  // labels may be applied but no longer exist
+        labels.push(convertLabelToDisplayedLabel(label));
+      }
+    });
+    labels.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
+    return labels;
+  }));
 
   constructor(private dao: Dao) {}
 

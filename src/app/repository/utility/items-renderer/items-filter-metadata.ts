@@ -16,7 +16,7 @@ import {
 import {Item, Label, Recommendation} from 'app/repository/services/dao';
 import {ListDao} from 'app/repository/services/dao/list-dao';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
-import {filter, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 export interface MatcherContext {
   item: Item;
@@ -42,9 +42,7 @@ export const ItemsFilterMetadata =
             return stringContainsQuery(c.item.title, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.items.list.pipe(filter(list => !!list), map(items => {
-                                       return items!.map(issue => issue.title);
-                                     }));
+            return c.items.list.pipe(map(items => items.map(issue => issue.title)));
           }
         }
       ],
@@ -57,7 +55,7 @@ export const ItemsFilterMetadata =
             return arrayContainsQuery(c.item.assignees, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.items.list.pipe(filter(list => !!list), map(items => getAssignees(items!)));
+            return c.items.list.pipe(map(items => getAssignees(items!)));
           }
         }
       ],
@@ -91,8 +89,7 @@ export const ItemsFilterMetadata =
                 q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.labels.list.pipe(
-                filter(list => !!list), map(labels => labels!.map(issue => issue.name).sort()));
+            return c.labels.list.pipe(map(labels => labels.map(issue => issue.name).sort()));
           }
         }
       ],

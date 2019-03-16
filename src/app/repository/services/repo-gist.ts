@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {Config, RepoConfig} from 'app/service/config';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
-import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
+import {map, mergeMap, take, tap} from 'rxjs/operators';
 import {ConfirmConfigUpdates} from '../shared/dialog/confirm-config-updates/confirm-config-updates';
 import {Dashboard, Query, Recommendation} from './dao';
 import {RepoStore} from './dao/dao';
@@ -82,12 +82,9 @@ function getSyncResults(store: RepoStore, remoteConfig: RepoConfig|null):
 
   return combineLatest(store.dashboards.list, store.queries.list, store.recommendations.list)
       .pipe(
-          filter(r => r.every(v => !!v)), map(results => {
-            return [
-              compareLocalToRemote(results[0]!, remoteConfig.dashboards),
-              compareLocalToRemote(results[1]!, remoteConfig.queries),
-              compareLocalToRemote(results[2]!, remoteConfig.recommendations),
-            ];
-          }),
+          map(results =>
+                  [compareLocalToRemote(results[0]!, remoteConfig.dashboards),
+                   compareLocalToRemote(results[1]!, remoteConfig.queries),
+                   compareLocalToRemote(results[2]!, remoteConfig.recommendations)]),
           take(1));
 }

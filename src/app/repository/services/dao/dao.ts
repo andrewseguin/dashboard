@@ -1,17 +1,17 @@
-import {Injectable} from '@angular/core';
-import {Config} from 'app/service/config';
-import {combineLatest, Subject} from 'rxjs';
-import {debounceTime, filter, take, takeUntil} from 'rxjs/operators';
-import {RepoIndexedDb} from '../../utility/repo-indexed-db';
-import {ActiveRepo} from '../active-repo';
-import {RepoGist} from '../repo-gist';
-import {Contributor} from './contributor';
-import {Dashboard} from './dashboard';
-import {Item} from './item';
-import {Label} from './label';
-import {ListDao} from './list-dao';
-import {Query} from './query';
-import {Recommendation} from './recommendation';
+import { Injectable } from '@angular/core';
+import { Config } from 'app/service/config';
+import { combineLatest, Subject } from 'rxjs';
+import { debounceTime, take, takeUntil } from 'rxjs/operators';
+import { RepoIndexedDb } from '../../utility/repo-indexed-db';
+import { ActiveRepo } from '../active-repo';
+import { RepoGist } from '../repo-gist';
+import { Contributor } from './contributor';
+import { Dashboard } from './dashboard';
+import { Item } from './item';
+import { Label } from './label';
+import { ListDao } from './list-dao';
+import { Query } from './query';
+import { Recommendation } from './recommendation';
 
 export interface RepoStore {
   items: ListDao<Item>;
@@ -74,7 +74,7 @@ export class Dao {
   saveConfigChangesToGist(repository: string, store: RepoStore) {
     const configDaoLists = [store.dashboards.list, store.queries.list, store.recommendations.list];
     combineLatest(...configDaoLists)
-        .pipe(filter(r => r.every(v => !!v)), debounceTime(500), takeUntil(this.destroyed))
+        .pipe(debounceTime(500), takeUntil(this.destroyed))
         .subscribe(result => {
           const dashboards = result[0]!;
           const queries = result[1]!;

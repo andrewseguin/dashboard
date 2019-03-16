@@ -10,7 +10,7 @@ import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, ItemListDisplayTypeOptions, Widget} from 'app/repository/services/dao';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {Subject} from 'rxjs';
-import {filter, takeUntil} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'list',
@@ -34,13 +34,11 @@ export class List {
   constructor(private dialog: MatDialog, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.itemsRenderer.itemGroups
-        .pipe(filter(itemGroups => !!itemGroups), takeUntil(this.destroyed))
-        .subscribe(itemGroups => {
-          this.items = [];
-          itemGroups!.forEach(itemGroup => this.items.push(...itemGroup.items));
-          this.cd.markForCheck();
-        });
+    this.itemsRenderer.itemGroups.pipe(takeUntil(this.destroyed)).subscribe(itemGroups => {
+      this.items = [];
+      itemGroups.forEach(itemGroup => this.items.push(...itemGroup.items));
+      this.cd.markForCheck();
+    });
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {

@@ -11,7 +11,7 @@ import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-
 import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
 import * as Chart from 'chart.js';
-import {filter, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'widget-view',
@@ -44,12 +44,11 @@ export class WidgetView {
   }
 
   ngOnInit() {
-    const items =
-        this.dao.items.list.pipe(filter(list => !!list), map(items => {
-                                   const issues = items!.filter(item => !item.pr);
-                                   const pullRequests = items!.filter(item => !!item.pr);
-                                   return this.widget.itemType === 'issue' ? issues : pullRequests;
-                                 }));
+    const items = this.dao.items.list.pipe(map(items => {
+      const issues = items.filter(item => !item.pr);
+      const pullRequests = items.filter(item => !!item.pr);
+      return this.widget.itemType === 'issue' ? issues : pullRequests;
+    }));
 
     this.itemsRenderer.initialize(
         items, getItemsFilterer(this.itemRecommendations, this.dao.labels),

@@ -1,27 +1,28 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
-import {getRecommendations} from '../utility/get-recommendations';
-import {Recommendation} from './dao/recommendation';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+import { getRecommendations } from '../utility/get-recommendations';
 import { Dao } from './dao/dao';
+import { Recommendation } from './dao/recommendation';
 
 
 @Injectable()
 export class ItemRecommendations {
-  allRecommendations = new BehaviorSubject<Map<string, Recommendation[]>|null>(null);
+  allRecommendations =
+      new BehaviorSubject<Map<string, Recommendation[]>>(new Map<string, Recommendation[]>());
 
-  warnings = this.allRecommendations.pipe(filter(map => !!map), map(allRecommendations => {
+  warnings = this.allRecommendations.pipe(map(allRecommendations => {
                                             const map = new Map<string, Recommendation[]>();
-                                            allRecommendations!.forEach((value, key) => {
+                                            allRecommendations.forEach((value, key) => {
                                               map.set(key, value.filter(v => v.type === 'warning'));
                                             });
                                             return map;
                                           }));
 
   suggestions =
-      this.allRecommendations.pipe(filter(map => !!map), map(allRecommendations => {
+      this.allRecommendations.pipe(map(allRecommendations => {
                                      const map = new Map<string, Recommendation[]>();
-                                     allRecommendations!.forEach((value, key) => {
+                                     allRecommendations.forEach((value, key) => {
                                        map.set(key, value.filter(v => v.type === 'suggestion'));
                                      });
                                      return map;
@@ -31,11 +32,11 @@ export class ItemRecommendations {
 
   constructor(private dao: Dao) {
     combineLatest(this.dao.items.map, this.dao.recommendations.list, this.dao.labels.map)
-        .pipe(filter(result => result.every(r => !!r)), takeUntil(this.destroyed))
+        .pipe(takeUntil(this.destroyed))
         .subscribe(result => {
-          const items = result[0]!;
-          const recommendations = result[1]!;
-          const labelsMap = result[2]!;
+          const items = result[0];
+          const recommendations = result[1];
+          const labelsMap = result[2];
 
           const map = new Map<string, Recommendation[]>();
           items.forEach(item => {
