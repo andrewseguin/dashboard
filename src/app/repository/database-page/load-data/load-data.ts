@@ -49,9 +49,9 @@ export class LoadData {
                   return this.github.getItemsCount(repository!, since);
                 }));
 
-  isEmpty =
-      this.activeRepo.change.pipe(map(activeRepo => isRepoStoreEmpty(this.dao.get(activeRepo))));
-
+  isEmpty = this.activeRepo.change.pipe(
+      mergeMap(repository => isRepoStoreEmpty(this.dao.get(repository))));
+      
   private destroyed = new Subject();
 
   constructor(

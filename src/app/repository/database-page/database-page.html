@@ -5,7 +5,8 @@
 <div class="description" *ngIf="!(isEmpty | async)">
   <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{((store.items.list | async)?.length)}} Issues and Pull Requests
+      {{(((store | async)?.items.list | async)?.length)}} Issues and Pull
+      Requests
 
       <type-actions *ngIf="!(loadData.isLoading | async)" type="items">
       </type-actions>
@@ -14,7 +15,7 @@
 
   <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{((store.labels.list | async)?.length)}} Labels
+      {{(((store | async)?.labels.list | async)?.length)}} Labels
       <type-actions *ngIf="!(loadData.isLoading | async)" type="labels">
       </type-actions>
     </div>
@@ -25,7 +26,7 @@
 
   <div class="type issues theme-border theme-background-card">
     <div class="type-title">
-      {{((store.contributors.list | async)?.length)}} Contributors
+      {{(((store | async)?.contributors.list | async)?.length)}} Contributors
       <type-actions *ngIf="!(loadData.isLoading | async)" type="contributors">
       </type-actions>
     </div>

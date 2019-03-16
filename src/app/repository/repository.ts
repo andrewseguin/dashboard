@@ -27,20 +27,21 @@ export class Repository {
     // Sync from Github Gist, then begin saving any changes to the IndexedDB
     this.repoGist.sync().then(() => this.repoGist.saveChanges());
 
-    this.activeRepo.change.subscribe(activeRepo => {
-      const isEmpty = isRepoStoreEmpty(this.dao.get(activeRepo));
-      const isLoaded = this.loadedRepos.isLoaded(activeRepo);
+    this.activeRepo.change
+        .pipe(mergeMap(activeRepo => isRepoStoreEmpty(this.dao.get(activeRepo)).pipe(take(1))))
+        .subscribe(isEmpty => {
+          const isLoaded = this.loadedRepos.isLoaded(this.activeRepo.repository);
 
-      if (!isEmpty && !isLoaded) {
-        this.remover.removeAllData(false);
-      }
+          if (!isEmpty && !isLoaded) {
+            this.remover.removeAllData(false);
+          }
 
-      if (isEmpty) {
-        this.router.navigate([`${activeRepo}/database`]);
-      } else if (this.auth.token) {
-        this.initializeAutoIssueUpdates(activeRepo);
-      }
-    });
+          if (isEmpty) {
+            this.router.navigate([`${this.activeRepo.repository}/database`]);
+          } else if (this.auth.token) {
+            this.initializeAutoIssueUpdates(this.activeRepo.repository);
+          }
+        });
   }
 
   ngOnDestroy() {

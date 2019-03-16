@@ -14,10 +14,8 @@ import {isRepoStoreEmpty} from '../services/repo-load-state';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatabasePage {
-  isEmpty = this.activeRepo.change.pipe(map(repository => {
-    const store = this.dao.get(repository);
-    return isRepoStoreEmpty(store);
-  }));
+  isEmpty = this.activeRepo.change.pipe(
+      mergeMap(activeRepo => isRepoStoreEmpty(this.dao.get(activeRepo))));
 
   isLoaded = this.activeRepo.change.pipe(map(activeRepo => this.loadedRepos.isLoaded(activeRepo)));
 
