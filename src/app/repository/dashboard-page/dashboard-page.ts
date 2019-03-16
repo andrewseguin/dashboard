@@ -1,17 +1,17 @@
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {CdkPortal} from '@angular/cdk/portal';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
-import {FormControl} from '@angular/forms';
-import {MatDialog, MatDialogConfig} from '@angular/material';
-import {ActivatedRoute, Router} from '@angular/router';
-import {ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
-import {Subject, Subscription} from 'rxjs';
-import {delay, filter, take, takeUntil} from 'rxjs/operators';
-import {Header} from '../services';
-import {ActiveRepo} from '../services/active-repo';
-import {Dao} from '../services/dao/dao';
-import {Column, ColumnGroup, Dashboard, Widget} from '../services/dao/dashboard';
-import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkPortal } from '@angular/cdk/portal';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatDialog, MatDialogConfig } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ItemRendererOptions } from 'app/package/items-renderer/item-renderer-options';
+import { Subject, Subscription } from 'rxjs';
+import { delay, take, takeUntil } from 'rxjs/operators';
+import { Header } from '../services';
+import { ActiveRepo } from '../services/active-repo';
+import { Dao } from '../services/dao/dao';
+import { Column, ColumnGroup, Dashboard, Widget } from '../services/dao/dashboard';
+import { EditWidget, EditWidgetData } from './edit-widget/edit-widget';
 
 @Component({
   selector: 'dashboard-page',
@@ -67,28 +67,34 @@ export class DashboardPage {
       }
 
       if (id === 'new') {
-        const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
-        const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
-        this.dashboard = newDashboard;
-        const newDashboardId = this.dao.dashboards.add(newDashboard);
-        this.router.navigate(
-            [`${this.activeRepo.repository}/dashboard/${newDashboardId}`],
-            {replaceUrl: true, queryParamsHandling: 'merge'});
+        this.createNewDashboard();
         return;
       }
 
+      const dashboardsDao = this.dao.get(this.activeRepo.repository).dashboards;
+
       // Delay added to improve page responsiveness on first load
       this.getSubscription =
-          this.dao.dashboards.map.pipe(delay(0), takeUntil(this.destroyed), filter(map => !!map))
-              .subscribe(map => {
-                if (map.get(id)) {
-                  this.dashboard = map.get(id)!;
-                } else {
-                  this.router.navigate([`${this.activeRepo.repository}/dashboards`]);
-                }
-                this.cd.markForCheck();
-              });
+          dashboardsDao.map.pipe(delay(0), takeUntil(this.destroyed)).subscribe(map => {
+            if (map.has(id)) {
+              this.dashboard = map.get(id)!;
+            } else {
+              this.router.navigate([`${this.activeRepo.repository}/dashboards`]);
+            }
+            this.cd.markForCheck();
+          });
     });
+  }
+
+  private createNewDashboard() {
+    const dashboardsDao = this.dao.get(this.activeRepo.repository).dashboards;
+    const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
+    const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
+    this.dashboard = newDashboard;
+    const newDashboardId = dashboardsDao.add(newDashboard);
+    this.router.navigate(
+        [`${this.activeRepo.repository}/dashboard/${newDashboardId}`],
+        {replaceUrl: true, queryParamsHandling: 'merge'});
   }
 
   ngOnInit() {
@@ -168,7 +174,7 @@ export class DashboardPage {
   }
 
   private save() {
-    this.dao.dashboards.update(this.dashboard);
+    this.dao.get(this.activeRepo.repository).dashboards.update(this.dashboard);
     this.cd.markForCheck();
   }
 

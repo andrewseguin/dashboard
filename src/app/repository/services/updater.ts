@@ -46,7 +46,8 @@ export class Updater {
       this.github.getLabels(repository)
           .pipe(
               filter(result => result.completed === result.total), take(1),
-              tap(result => remoteList = result.accumulated), mergeMap(() => labelsDao.list))
+              tap(result => remoteList = result.accumulated), mergeMap(() => labelsDao.list),
+              take(1))
           .subscribe(localList => {
             const comparison = compareLocalToRemote(localList, remoteList);
             labelsDao.update(comparison.toUpdate);
@@ -63,7 +64,8 @@ export class Updater {
       this.github.getContributors(repository!)
           .pipe(
               filter(result => result.completed === result.total), take(1),
-              tap(result => remoteList = result.accumulated), mergeMap(() => contributorsDao.list))
+              tap(result => remoteList = result.accumulated), mergeMap(() => contributorsDao.list),
+              take(1))
           .subscribe(localList => {
             const comparison = compareLocalToRemote(localList, remoteList);
             contributorsDao.update(comparison.toUpdate);

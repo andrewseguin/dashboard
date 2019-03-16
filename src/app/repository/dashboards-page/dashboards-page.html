@@ -1,4 +1,4 @@
-<ng-container *ngIf="dao.dashboards.list | async; let dashboards; else loading">
+<ng-container *ngIf="list | async; let dashboards; else loading">
   <div class="dashboard theme-border theme-background-card theme-hover"
        *ngFor="let dashboard of dashboards; trackBy: trackById"
        (click)="navigateToDashboard(dashboard.id)">
