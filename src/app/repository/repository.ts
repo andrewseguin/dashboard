@@ -7,9 +7,8 @@ import {filter, mergeMap, take} from 'rxjs/operators';
 import {ActiveRepo} from './services/active-repo';
 import {Dao} from './services/dao/dao';
 import {Remover} from './services/remover';
-import {RepoGist} from './services/repo-gist';
-import {isRepoStoreEmpty} from './services/repo-load-state';
 import {Updater} from './services/updater';
+import {isRepoStoreEmpty} from './utility/is-repo-store-empty';
 
 
 @Component({
@@ -22,11 +21,8 @@ export class Repository {
 
   constructor(
       private router: Router, private updater: Updater, private loadedRepos: LoadedRepos,
-      private dao: Dao, private repoGist: RepoGist, private remover: Remover,
-      private activeRepo: ActiveRepo, private auth: Auth) {
-    // Sync from Github Gist, then begin saving any changes to the IndexedDB
-    this.repoGist.sync().then(() => this.repoGist.saveChanges());
-
+      private dao: Dao, private remover: Remover, private activeRepo: ActiveRepo,
+      private auth: Auth) {
     this.activeRepo.change
         .pipe(mergeMap(activeRepo => isRepoStoreEmpty(this.dao.get(activeRepo)).pipe(take(1))))
         .subscribe(isEmpty => {

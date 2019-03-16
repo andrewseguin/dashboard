@@ -4,7 +4,7 @@ import {filter, map, mergeMap} from 'rxjs/operators';
 import {ActiveRepo} from '../services/active-repo';
 import {Dao} from '../services/dao/dao';
 import {Remover} from '../services/remover';
-import {isRepoStoreEmpty} from '../services/repo-load-state';
+import {isRepoStoreEmpty} from '../utility/is-repo-store-empty';
 
 
 @Component({

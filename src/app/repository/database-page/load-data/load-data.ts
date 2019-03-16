@@ -4,7 +4,7 @@ import {MatSnackBar} from '@angular/material';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Contributor, Item, Label} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
-import {isRepoStoreEmpty} from 'app/repository/services/repo-load-state';
+import {isRepoStoreEmpty} from 'app/repository/utility/is-repo-store-empty';
 import {Github} from 'app/service/github';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
@@ -51,7 +51,7 @@ export class LoadData {
 
   isEmpty = this.activeRepo.change.pipe(
       mergeMap(repository => isRepoStoreEmpty(this.dao.get(repository))));
-      
+
   private destroyed = new Subject();
 
   constructor(

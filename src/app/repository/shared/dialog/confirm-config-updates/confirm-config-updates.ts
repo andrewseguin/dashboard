@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material';
 import {Dashboard, Query, Recommendation} from 'app/repository/services/dao';
-import {SyncResponse} from 'app/repository/services/dao/list-dao';
+import {LocalToRemoteComparison} from 'app/repository/services/dao/list-dao';
 
 export interface ConfirmConfigUpdatesData {
-  dashboards: SyncResponse<Dashboard>;
-  recommendations: SyncResponse<Recommendation>;
-  queries: SyncResponse<Query>;
+  dashboards: LocalToRemoteComparison<Dashboard>;
+  recommendations: LocalToRemoteComparison<Recommendation>;
+  queries: LocalToRemoteComparison<Query>;
 }
 
 @Component({

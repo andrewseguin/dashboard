@@ -3,7 +3,7 @@ import {MatSidenav} from '@angular/material';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Dao} from 'app/repository/services/dao/dao';
 import {Header} from 'app/repository/services/header';
-import {isRepoStoreEmpty} from 'app/repository/services/repo-load-state';
+import {isRepoStoreEmpty} from 'app/repository/utility/is-repo-store-empty';
 import {mergeMap} from 'rxjs/operators';
 
 @Component({

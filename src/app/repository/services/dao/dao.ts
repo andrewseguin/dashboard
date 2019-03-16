@@ -1,7 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {Config} from 'app/service/config';
+import {combineLatest, Subject} from 'rxjs';
+import {debounceTime, filter, take, takeUntil} from 'rxjs/operators';
+import {RepoIndexedDb} from '../../utility/repo-indexed-db';
 import {ActiveRepo} from '../active-repo';
-import {RepoIndexedDb} from '../repo-indexed-db';
+import {RepoGist} from '../repo-gist';
 import {Contributor} from './contributor';
 import {Dashboard} from './dashboard';
 import {Item} from './item';
@@ -24,11 +27,11 @@ export type RepoDaoType = 'items'|'labels'|'contributors';
 
 @Injectable()
 export class Dao {
-  store: Map<string, RepoStore> = new Map();
+  private stores: Map<string, RepoStore> = new Map();
 
   private destroyed = new Subject();
 
-  repoIndexedDb = new RepoIndexedDb(this.activateRepo.repository);
+  private repoIndexedDb = new RepoIndexedDb(this.activateRepo.repository);
 
   items = new ListDao<Item>('items', this.repoIndexedDb);
   labels = new ListDao<Label>('labels', this.repoIndexedDb);
@@ -37,26 +40,47 @@ export class Dao {
   queries = new ListDao<Query>('queries', this.repoIndexedDb);
   recommendations = new ListDao<Recommendation>('recommendations', this.repoIndexedDb);
 
-  constructor(private activateRepo: ActiveRepo) {}
+  constructor(
+      private activateRepo: ActiveRepo, private config: Config, private repoGist: RepoGist) {}
 
   get(repository: string): RepoStore {
-    if (!this.store.has(repository)) {
+    if (!this.stores.has(repository)) {
       const repoIndexedDb = new RepoIndexedDb(repository!);
-      this.store.set(repository, {
+      const newStore = {
         items: new ListDao<Item>('items', repoIndexedDb),
         labels: new ListDao<Label>('labels', repoIndexedDb),
         contributors: new ListDao<Contributor>('contributors', repoIndexedDb),
         dashboards: new ListDao<Dashboard>('dashboards', repoIndexedDb),
         queries: new ListDao<Query>('queries', repoIndexedDb),
         recommendations: new ListDao<Recommendation>('recommendations', repoIndexedDb),
+      };
+      this.stores.set(repository, newStore);
+
+      // Sync and then start saving
+      this.repoGist.sync(repository, newStore).pipe(take(1)).subscribe(() => {
+        this.saveConfigChangesToGist(repository, newStore);
       });
     }
 
-    return this.store.get(repository)!;
+    return this.stores.get(repository)!;
   }
 
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
+  }
+
+  /** Persist changes to config lists to gist */
+  saveConfigChangesToGist(repository: string, store: RepoStore) {
+    const configDaoLists = [store.dashboards.list, store.queries.list, store.recommendations.list];
+    combineLatest(...configDaoLists)
+        .pipe(filter(r => r.every(v => !!v)), debounceTime(500), takeUntil(this.destroyed))
+        .subscribe(result => {
+          const dashboards = result[0]!;
+          const queries = result[1]!;
+          const recommendations = result[2]!;
+
+          this.config.saveRepoConfigToGist(repository, {dashboards, queries, recommendations});
+        });
   }
 }
