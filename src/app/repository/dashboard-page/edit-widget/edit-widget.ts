@@ -7,8 +7,9 @@ import {
   ItemRendererOptions
 } from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item, ItemType} from 'app/repository/services/dao';
-import {Dao} from 'app/repository/services/dao/dao';
+import {RepoStore} from 'app/repository/services/dao/dao';
 import {
   DisplayType,
   ItemCountDisplayTypeOptions,
@@ -26,7 +27,7 @@ import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-g
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {Subject} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
+import {map, mergeMap, takeUntil} from 'rxjs/operators';
 
 export interface EditWidgetData {
   widget: Widget;
@@ -53,9 +54,13 @@ export class EditWidget {
 
   metadata = ItemsFilterMetadata;
 
-  issueQueries =
-      this.dao.queries.list.pipe(map(queries => queries.filter(q => q.type === 'issue')));
-  prQueries = this.dao.queries.list.pipe(map(queries => queries.filter(q => q.type === 'pr')));
+  recommendations = this.activeRepo.store.pipe(mergeMap(store => store.recommendations.list));
+
+  issueQueries = this.activeRepo.store.pipe(
+      mergeMap(store => store.queries.list),
+      map(queries => queries.filter(q => q.type === 'issue')));
+  prQueries = this.activeRepo.store.pipe(
+      mergeMap(store => store.queries.list), map(queries => queries.filter(q => q.type === 'pr')));
 
   groups = Groups;
   groupIds = [...GroupIds];
@@ -63,9 +68,8 @@ export class EditWidget {
   private _destroyed = new Subject();
 
   constructor(
-      private dialogRef: MatDialogRef<EditWidget, Widget>,
-      public itemsRenderer: ItemsRenderer<Item>, private dao: Dao,
-      private itemRecommendations: ItemRecommendations,
+      private activeRepo: ActiveRepo, private dialogRef: MatDialogRef<EditWidget, Widget>,
+      public itemsRenderer: ItemsRenderer<Item>, private itemRecommendations: ItemRecommendations,
 
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.groupIds.splice(this.groupIds.indexOf('all'), 1);
@@ -80,7 +84,7 @@ export class EditWidget {
 
     this.itemsRenderer.options.setState(this.widget.options);
     this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
-      this.changeItemsRendererItemType(itemType);
+      this.changeItemsRendererItemType(this.activeRepo.activeStore, itemType);
     });
 
     this.form.setValue({
@@ -118,16 +122,16 @@ export class EditWidget {
     }
   }
 
-  private changeItemsRendererItemType(itemType: ItemType) {
-    const items = this.dao.items.list.pipe(map(items => {
+  private changeItemsRendererItemType(store: RepoStore, itemType: ItemType) {
+    const items = store.items.list.pipe(map(items => {
       const issues = items.filter(item => !item.pr);
       const pullRequests = items.filter(item => !!item.pr);
       return itemType === 'issue' ? issues : pullRequests;
     }));
 
     this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.dao.labels),
-        getItemsGrouper(this.dao.labels), new MyItemSorter());
+        items, getItemsFilterer(this.itemRecommendations, store.labels),
+        getItemsGrouper(store.labels), new MyItemSorter());
   }
 
   private updateDisplayTypeOptionsForm(displayType: DisplayType) {
