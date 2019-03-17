@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ActiveRepo} from 'app/repository/services/active-repo';
+import {RepoDaoType} from 'app/repository/services/dao/dao';
 import {Remover} from 'app/repository/services/remover';
 import {Updater} from 'app/repository/services/updater';
 import {BehaviorSubject} from 'rxjs';
-import { RepoDaoType } from 'app/repository/services/dao/dao';
 
 export type UpdateState = 'not-updating'|'updating'|'updated';
 
@@ -22,7 +22,11 @@ export class TypeActions {
 
   update() {
     this.updateState.next('updating');
-    this.updater.update(this.activeRepo.activeRepository, this.type)
+    this.updater.update(this.activeRepo.activeStore, this.type)
         .then(() => this.updateState.next('updated'));
+  }
+
+  remove() {
+    this.remover.removeData(this.activeRepo.activeStore, this.type);
   }
 }

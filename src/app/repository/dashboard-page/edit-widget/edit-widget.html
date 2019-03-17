@@ -124,7 +124,7 @@
 </div>
 
 <mat-menu #loadSearch="matMenu">
-  <button mat-menu-item *ngIf="(dao.recommendations.list | async)?.length > 0"
+  <button mat-menu-item *ngIf="(recommendationsList | async)?.length > 0"
           [matMenuTriggerFor]="recommendationsMenu"> Recommendations
   </button>
   <button mat-menu-item
@@ -139,7 +139,7 @@
 
 <mat-menu #recommendationsMenu="matMenu">
   <button mat-menu-item
-          *ngFor="let recommendation of dao.recommendations.list | async"
+          *ngFor="let recommendation of recommendationsList | async"
           (click)="loadFromRecommendation(recommendation)">
     {{recommendation.message}}
   </button>

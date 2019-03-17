@@ -1,17 +1,16 @@
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { CdkPortal } from '@angular/cdk/portal';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatDialog, MatDialogConfig } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ItemRendererOptions } from 'app/package/items-renderer/item-renderer-options';
-import { Subject, Subscription } from 'rxjs';
-import { delay, take, takeUntil } from 'rxjs/operators';
-import { Header } from '../services';
-import { ActiveRepo } from '../services/active-repo';
-import { Dao } from '../services/dao/dao';
-import { Column, ColumnGroup, Dashboard, Widget } from '../services/dao/dashboard';
-import { EditWidget, EditWidgetData } from './edit-widget/edit-widget';
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {CdkPortal} from '@angular/cdk/portal';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {MatDialog, MatDialogConfig} from '@angular/material';
+import {ActivatedRoute, Router} from '@angular/router';
+import {ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
+import {Subject, Subscription} from 'rxjs';
+import {delay, take, takeUntil} from 'rxjs/operators';
+import {Header} from '../services';
+import {ActiveRepo} from '../services/active-repo';
+import {Column, ColumnGroup, Dashboard, Widget} from '../services/dao/dashboard';
+import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
 
 @Component({
   selector: 'dashboard-page',
@@ -36,7 +35,8 @@ export class DashboardPage {
       this.edit.setValue(true);
     }
 
-    this.header.goBack = () => this.router.navigate([`/${this.activeRepo.activeRepository}/dashboards`]);
+    this.header.goBack = () =>
+        this.router.navigate([`/${this.activeRepo.activeRepository}/dashboards`]);
   }
   get dashboard(): Dashboard {
     return this._dashboard;
@@ -54,7 +54,7 @@ export class DashboardPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private router: Router, private activatedRoute: ActivatedRoute, private dao: Dao,
+      private router: Router, private activatedRoute: ActivatedRoute,
       private activeRepo: ActiveRepo, private header: Header, private cd: ChangeDetectorRef,
       private dialog: MatDialog) {
     this.edit.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.cd.markForCheck());
@@ -71,27 +71,25 @@ export class DashboardPage {
         return;
       }
 
-      const dashboardsDao = this.dao.get(this.activeRepo.activeRepository).dashboards;
-
       // Delay added to improve page responsiveness on first load
       this.getSubscription =
-          dashboardsDao.map.pipe(delay(0), takeUntil(this.destroyed)).subscribe(map => {
-            if (map.has(id)) {
-              this.dashboard = map.get(id)!;
-            } else {
-              this.router.navigate([`${this.activeRepo.activeRepository}/dashboards`]);
-            }
-            this.cd.markForCheck();
-          });
+          this.activeRepo.activeStore.dashboards.map.pipe(delay(0), takeUntil(this.destroyed))
+              .subscribe(map => {
+                if (map.has(id)) {
+                  this.dashboard = map.get(id)!;
+                } else {
+                  this.router.navigate([`${this.activeRepo.activeRepository}/dashboards`]);
+                }
+                this.cd.markForCheck();
+              });
     });
   }
 
   private createNewDashboard() {
-    const dashboardsDao = this.dao.get(this.activeRepo.activeRepository).dashboards;
     const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
     const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
     this.dashboard = newDashboard;
-    const newDashboardId = dashboardsDao.add(newDashboard);
+    const newDashboardId = this.activeRepo.activeStore.dashboards.add(newDashboard);
     this.router.navigate(
         [`${this.activeRepo.activeRepository}/dashboard/${newDashboardId}`],
         {replaceUrl: true, queryParamsHandling: 'merge'});
@@ -174,7 +172,7 @@ export class DashboardPage {
   }
 
   private save() {
-    this.dao.get(this.activeRepo.activeRepository).dashboards.update(this.dashboard);
+    this.activeRepo.activeStore.dashboards.update(this.dashboard);
     this.cd.markForCheck();
   }
 

@@ -5,7 +5,7 @@ import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval, Subject} from 'rxjs';
 import {filter, mergeMap, take} from 'rxjs/operators';
 import {ActiveRepo} from './services/active-repo';
-import {Dao} from './services/dao/dao';
+import {RepoStore} from './services/dao/dao';
 import {Remover} from './services/remover';
 import {Updater} from './services/updater';
 import {isRepoStoreEmpty} from './utility/is-repo-store-empty';
@@ -21,21 +21,20 @@ export class Repository {
 
   constructor(
       private router: Router, private updater: Updater, private loadedRepos: LoadedRepos,
-      private dao: Dao, private remover: Remover, private activeRepo: ActiveRepo,
-      private auth: Auth) {
-    this.activeRepo.repository
-        .pipe(mergeMap(activeRepo => isRepoStoreEmpty(this.dao.get(activeRepo)).pipe(take(1))))
+      private remover: Remover, private activeRepo: ActiveRepo, private auth: Auth) {
+    this.activeRepo.store.pipe(mergeMap(store => isRepoStoreEmpty(store).pipe(take(1))))
         .subscribe(isEmpty => {
-          const isLoaded = this.loadedRepos.isLoaded(this.activeRepo.activeRepository);
+          const store = this.activeRepo.activeStore;
+          const isLoaded = this.loadedRepos.isLoaded(store.repository);
 
           if (!isEmpty && !isLoaded) {
-            this.remover.removeAllData(false);
+            this.remover.removeAllData(store, false);
           }
 
           if (isEmpty) {
-            this.router.navigate([`${this.activeRepo.activeRepository}/database`]);
+            this.router.navigate([`${store.repository}/database`]);
           } else if (this.auth.token) {
-            this.initializeAutoIssueUpdates(this.activeRepo.activeRepository);
+            this.initializeAutoIssueUpdates(this.activeRepo.activeStore);
           }
         });
   }
@@ -45,16 +44,13 @@ export class Repository {
     this.destroyed.complete();
   }
 
-  private initializeAutoIssueUpdates(repository: string) {
-    const store = this.dao.get(repository);
+  private initializeAutoIssueUpdates(store: RepoStore) {
     interval(60 * 1000)
-        .pipe(
-            mergeMap(() => store.items.list.pipe(take(1))),
-            filter(items => items.length > 0))
+        .pipe(mergeMap(() => store.items.list.pipe(take(1))), filter(items => items.length > 0))
         .subscribe(() => {
-          this.updater.update(repository, 'items');
+          this.updater.update(store, 'items');
         });
-    this.updater.update(repository, 'contributors');
-    this.updater.update(repository, 'labels');
+    this.updater.update(store, 'contributors');
+    this.updater.update(store, 'labels');
   }
 }

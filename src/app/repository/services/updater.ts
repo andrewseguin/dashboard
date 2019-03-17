@@ -3,7 +3,7 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Contributor, Item, Label} from './dao';
-import {Dao, RepoDaoType} from './dao/dao';
+import {RepoDaoType, RepoStore} from './dao/dao';
 import {compareLocalToRemote, ListDao} from './dao/list-dao';
 
 export interface StaleIssuesState {
@@ -14,29 +14,16 @@ export interface StaleIssuesState {
 
 @Injectable()
 export class Updater {
-  lastUpdatedIssueDate = this.dao.items.list.pipe(map(items => {
-    let lastUpdated = '';
-    items.forEach(item => {
-      if (!lastUpdated || lastUpdated < item.updated) {
-        lastUpdated = item.updated;
-      }
-    });
+  constructor(private github: Github) {}
 
-    return lastUpdated;
-  }));
-
-  constructor(private dao: Dao, private github: Github) {}
-
-  update(repository: string, type: RepoDaoType): Promise<void> {
-    const store = this.dao.get(repository);
-
+  update(store: RepoStore, type: RepoDaoType): Promise<void> {
     switch (type) {
       case 'items':
-        return this.updateIssues(repository, store.items);
+        return this.updateIssues(store);
       case 'labels':
-        return this.updateLabels(repository, store.labels);
+        return this.updateLabels(store.repository, store.labels);
       case 'contributors':
-        return this.updateContributors(repository, store.contributors);
+        return this.updateContributors(store.repository, store.contributors);
     }
   }
 
@@ -74,9 +61,9 @@ export class Updater {
     });
   }
 
-  private updateIssues(repository: string, itemsDao: ListDao<Item>): Promise<void> {
+  private updateIssues(store: RepoStore): Promise<void> {
     return new Promise(resolve => {
-      this.getStaleIssuesState(repository!)
+      this.getStaleIssuesState(store)
           .pipe(
               mergeMap(state => {
                 return state.count ? this.getAllStaleIssues(state.repository!, state.lastUpdated) :
@@ -84,7 +71,7 @@ export class Updater {
               }),
               take(1))
           .subscribe((result) => {
-            itemsDao.update(result);
+            store.items.update(result);
             resolve();
           });
     });
@@ -97,12 +84,20 @@ export class Updater {
               }));
   }
 
-  getStaleIssuesState(repository: string): Observable<StaleIssuesState> {
+  getStaleIssuesState(store: RepoStore): Observable<StaleIssuesState> {
     let lastUpdated = '';
 
-    return this.lastUpdatedIssueDate.pipe(
-        tap(date => lastUpdated = date),
-        mergeMap(() => this.github.getItemsCount(repository, lastUpdated)),
-        map(count => ({lastUpdated, count, repository})));
+    return store.items.list.pipe(
+        map(items => {
+          items.forEach(item => {
+            if (!lastUpdated || lastUpdated < item.updated) {
+              lastUpdated = item.updated;
+            }
+          });
+
+          return lastUpdated;
+        }),
+        mergeMap(() => this.github.getItemsCount(store.repository, lastUpdated)),
+        map(count => ({lastUpdated, count, repository: store.repository})));
   }
 }

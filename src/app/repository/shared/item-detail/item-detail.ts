@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
 import {ActiveRepo} from 'app/repository/services/active-repo';
+import {Item} from 'app/repository/services/dao';
 import {Dao} from 'app/repository/services/dao/dao';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
@@ -31,6 +32,8 @@ export class ItemDetail {
 
   @Input() itemId: string;
 
+  item: Observable<Item|null>;
+
   private destroyed = new Subject();
 
   constructor(
@@ -40,6 +43,7 @@ export class ItemDetail {
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
       const store = this.dao.get(this.activeRepo.activeRepository);
+      this.item = store.items.get(this.itemId);
       this.bodyMarkdown = this.markdown.getItemBodyMarkdown(store, this.itemId);
       this.recommendations = this.itemRecommendations.allRecommendations.pipe(
           map(recommendations => recommendations.get(this.itemId) || []));

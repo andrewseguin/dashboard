@@ -3,7 +3,6 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Contributor, Item, Label} from 'app/repository/services/dao';
-import {Dao} from 'app/repository/services/dao/dao';
 import {isRepoStoreEmpty} from 'app/repository/utility/is-repo-store-empty';
 import {Github} from 'app/service/github';
 import {LoadedRepos} from 'app/service/loaded-repos';
@@ -35,11 +34,11 @@ export class LoadData {
 
   totalLabelsCount =
       this.activeRepo.repository.pipe(filter(v => !!v), mergeMap((repository => {
-                                    return this.github.getLabels(repository!)
-                                        .pipe(
-                                            filter(result => result.completed === result.total),
-                                            map(result => result.accumulated.length));
-                                  })));
+                                        return this.github.getLabels(repository!)
+                                            .pipe(
+                                                filter(result => result.completed === result.total),
+                                                map(result => result.accumulated.length));
+                                      })));
 
   totalItemCount =
       combineLatest(this.activeRepo.repository, this.formGroup.valueChanges.pipe(startWith(null)))
@@ -49,13 +48,12 @@ export class LoadData {
                   return this.github.getItemsCount(repository!, since);
                 }));
 
-  isEmpty = this.activeRepo.repository.pipe(
-      mergeMap(repository => isRepoStoreEmpty(this.dao.get(repository))));
+  isEmpty = this.activeRepo.store.pipe(mergeMap(store => isRepoStoreEmpty(store)));
 
   private destroyed = new Subject();
 
   constructor(
-      private loadedRepos: LoadedRepos, private activeRepo: ActiveRepo, private dao: Dao,
+      private loadedRepos: LoadedRepos, private activeRepo: ActiveRepo,
       private snackbar: MatSnackBar, private github: Github, private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
@@ -74,7 +72,7 @@ export class LoadData {
 
   store() {
     const repository = this.activeRepo.activeRepository;
-    const store = this.dao.get(this.activeRepo.activeRepository);
+    const store = this.activeRepo.activeStore;
 
     this.isLoading.next(true);
 

@@ -53,6 +53,8 @@ export class EditWidget {
     displayType: new FormControl(),
   });
 
+  recommendationsList = this.activeRepo.store.pipe(mergeMap(store => store.recommendations.list));
+
   displayTypeOptions: FormGroup;
 
   autocompleteContext: Observable<AutocompleteContext> =

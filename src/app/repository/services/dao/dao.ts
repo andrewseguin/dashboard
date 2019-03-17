@@ -31,10 +31,6 @@ export class Dao {
 
   private destroyed = new Subject();
 
-  private repoIndexedDb = new RepoIndexedDb('angular/material2');
-
-  items = new ListDao<Item>('items', this.repoIndexedDb);
-
   constructor(private config: Config, private repoGist: RepoGist) {}
 
   get(repository: string): RepoStore {
