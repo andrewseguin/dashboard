@@ -103,10 +103,9 @@ export class QueryPage {
         this.getSubscription =
             this.activeRepo.activeStore.queries.map.pipe(takeUntil(this.destroyed))
                 .subscribe(map => {
-                  if (map.get(id)) {
-                    this.query = map.get(id)!;
-                  } else {
-                    this.router.navigate([`${this.activeRepo.activeRepository}/queries`]);
+                  const query = map.get(id);
+                  if (query) {
+                    this.query = query;
                   }
                   this.cd.markForCheck();
                 });
