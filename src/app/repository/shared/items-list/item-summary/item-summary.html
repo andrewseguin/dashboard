@@ -32,7 +32,7 @@
       </ng-container>
 
       <ng-container
-                    *ngIf="(warnings | async).length && itemsRenderer.options.view.warnings">
+                    *ngIf="(warnings | async)?.length && itemsRenderer.options.view.warnings">
         <div class="section theme-warn">
           <div *ngFor="let warning of warnings | async" class="recommendation">
             <mat-icon> warning </mat-icon>
@@ -42,7 +42,7 @@
       </ng-container>
 
       <ng-container
-                    *ngIf="(suggestions | async).length && itemsRenderer.options.view.suggestions">
+                    *ngIf="(suggestions | async)?.length && itemsRenderer.options.view.suggestions">
         <div class="section">
           <div *ngFor="let suggestion of suggestions | async"
                class="recommendation">

@@ -34,7 +34,6 @@ export class Dao {
   private repoIndexedDb = new RepoIndexedDb('angular/material2');
 
   items = new ListDao<Item>('items', this.repoIndexedDb);
-  queries = new ListDao<Query>('queries', this.repoIndexedDb);
 
   constructor(private config: Config, private repoGist: RepoGist) {}
 

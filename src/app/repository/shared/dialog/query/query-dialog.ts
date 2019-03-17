@@ -3,7 +3,7 @@ import {MatDialog, MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemType} from 'app/repository/services/dao';
-import {Dao} from 'app/repository/services/dao/dao';
+import {RepoStore} from 'app/repository/services/dao/dao';
 import {Query} from 'app/repository/services/dao/query';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
@@ -13,12 +13,10 @@ import {QueryEdit} from './query-edit/query-edit';
 
 @Injectable()
 export class QueryDialog {
-  constructor(
-      private dialog: MatDialog, private snackbar: MatSnackBar, private router: Router,
-      private dao: Dao) {}
+  constructor(private dialog: MatDialog, private snackbar: MatSnackBar, private router: Router) {}
 
   /** Shows the edit query dialog to change the name/group.*/
-  editQuery(query: Query) {
+  editQuery(query: Query, store: RepoStore) {
     const data = {
       name: query.name,
       group: query.group,
@@ -26,7 +24,7 @@ export class QueryDialog {
 
     this.dialog.open(QueryEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
       if (result) {
-        this.dao.queries.update({id: query.id, name: result['name'], group: result['group']});
+        store.queries.update({id: query.id, name: result['name'], group: result['group']});
       }
     });
   }
@@ -35,7 +33,7 @@ export class QueryDialog {
    * Shows delete query dialog. If user confirms deletion, remove the
    * query and navigate to the queries page.
    */
-  deleteQuery(query: Query) {
+  deleteQuery(query: Query, store: RepoStore) {
     const data = {name: of(query.name)};
 
     this.dialog.open(DeleteConfirmation, {data})
@@ -43,7 +41,7 @@ export class QueryDialog {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.dao.queries.remove(query.id!);
+            store.queries.remove(query.id!);
             this.snackbar.open(`Query "${query.name}" deleted`, '', {duration: 2000});
           }
         });
@@ -54,7 +52,7 @@ export class QueryDialog {
    * name, save the query and automatically navigate to the query
    * page with $key, replacing the current URL.
    */
-  saveAsQuery(currentOptions: ItemRendererOptionsState, repository: string, type: ItemType) {
+  saveAsQuery(currentOptions: ItemRendererOptionsState, type: ItemType, store: RepoStore) {
     this.dialog.open(QueryEdit).afterClosed().pipe(take(1)).subscribe(result => {
       if (!result) {
         return;
@@ -63,9 +61,10 @@ export class QueryDialog {
       const query:
           Query = {name: result['name'], group: result['group'], options: currentOptions, type};
 
-      const newQueryId = this.dao.queries.add(query);
+      const newQueryId = store.queries.add(query);
       this.router.navigate(
-          [`${repository}/query/${newQueryId}`], {replaceUrl: true, queryParamsHandling: 'merge'});
+          [`${store.repository}/query/${newQueryId}`],
+          {replaceUrl: true, queryParamsHandling: 'merge'});
     });
   }
 }

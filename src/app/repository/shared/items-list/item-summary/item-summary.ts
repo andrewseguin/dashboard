@@ -10,7 +10,7 @@ import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Subject} from 'rxjs';
-import {filter, map, takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'item-summary',
@@ -20,10 +20,8 @@ import {filter, map, takeUntil} from 'rxjs/operators';
   host: {'(click)': 'select.emit(this.item.number)'}
 })
 export class ItemSummary {
-  warnings = this.itemRecommendations.warnings.pipe(
-      filter(map => !!map), map(map => map.get(this.item.id)));
-  suggestions = this.itemRecommendations.suggestions.pipe(
-      filter(map => !!map), map(map => map.get(this.item.id)));
+  warnings = this.itemRecommendations.warnings.pipe(map(map => map.get(this.item.id)));
+  suggestions = this.itemRecommendations.suggestions.pipe(map(map => map.get(this.item.id)));
 
   private destroyed = new Subject();
 

@@ -129,7 +129,7 @@ export class QueryPage {
     if (!queryType) {
       throw Error('Missing query type');
     }
-    this.queryDialog.saveAsQuery(this.currentOptions, this.activeRepo.activeRepository, queryType);
+    this.queryDialog.saveAsQuery(this.currentOptions, queryType, this.activeRepo.activeStore);
   }
 
   save() {

@@ -1,13 +1,15 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {Dao} from 'app/repository/services/dao/dao';
+import {ActiveRepo} from 'app/repository/services/active-repo';
+import {RepoStore} from 'app/repository/services/dao/dao';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 export interface QueryEditData {
   name: string;
   group: string;
+  store: RepoStore;
 }
 
 @Component({
@@ -21,22 +23,23 @@ export class QueryEdit {
       new FormGroup({name: new FormControl('', Validators.required), group: new FormControl('')});
 
   filteredGroupOptions =
-      combineLatest(this.dao.queries.list, this.formGroup.valueChanges).pipe(map(result => {
-        const queries = result[0];
-        const groupOptionsSet = new Set<string>();
-        queries.forEach(query => {
-          if (query.group) {
-            groupOptionsSet.add(query.group);
-          }
-        });
+      combineLatest(this.activeRepo.activeStore.queries.list, this.formGroup.valueChanges)
+          .pipe(map(result => {
+            const queries = result[0];
+            const groupOptionsSet = new Set<string>();
+            queries.forEach(query => {
+              if (query.group) {
+                groupOptionsSet.add(query.group);
+              }
+            });
 
-        const groupOptions: string[] = [];
-        groupOptionsSet.forEach(groupOption => groupOptions.push(groupOption));
-        return this._filter(this.formGroup.value.group, groupOptions);
-      }));
+            const groupOptions: string[] = [];
+            groupOptionsSet.forEach(groupOption => groupOptions.push(groupOption));
+            return this._filter(this.formGroup.value.group, groupOptions);
+          }));
 
   constructor(
-      public dialogRef: MatDialogRef<QueryEdit>, public dao: Dao,
+      public dialogRef: MatDialogRef<QueryEdit>, private activeRepo: ActiveRepo,
       @Inject(MAT_DIALOG_DATA) public data: QueryEditData) {
     if (data && data.name) {
       this.formGroup.get('name')!.setValue(data.name);
