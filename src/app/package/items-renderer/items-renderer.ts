@@ -39,7 +39,7 @@ export class ItemsRenderer<T> {
           filterer,
           items,
           grouper,
-          this.options.changed.pipe(startWith(null)),
+          this.options.state.pipe(startWith(null)),
         ])
             .pipe(filter(result => !!result[0] && !!result[1] && !!result[2]))
             .subscribe(result => {

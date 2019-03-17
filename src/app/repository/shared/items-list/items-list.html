@@ -6,7 +6,10 @@
                    (searchChanged)="itemsRenderer.options.search = $event"
                    (filtersChanged)="itemsRenderer.options.filters = $event">
   </advanced-search>
-  <display-options-header></display-options-header>
+  <display-options-header [options]="itemsRenderer.options.state | async"
+                          (optionsChanged)="itemsRenderer.options.setState($event)"
+                          [itemCount]="itemsRenderer.itemCount | async">
+  </display-options-header>
 
   <div class="issues-container">
     <items-group *ngFor="let itemGroup of renderedItemGroups; let index = index; trackBy:getItemGroupKey"

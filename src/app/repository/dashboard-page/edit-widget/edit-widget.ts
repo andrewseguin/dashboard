@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {
@@ -8,8 +8,7 @@ import {
 } from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Item, ItemType} from 'app/repository/services/dao';
-import {RepoStore} from 'app/repository/services/dao/dao';
+import {Item} from 'app/repository/services/dao';
 import {
   DisplayType,
   ItemCountDisplayTypeOptions,
@@ -21,10 +20,7 @@ import {
 } from 'app/repository/services/dao/dashboard';
 import {Query} from 'app/repository/services/dao/query';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
-import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
-import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
+import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
 import {
   AutocompleteContext,
   ItemsFilterMetadata
@@ -40,7 +36,6 @@ export interface EditWidgetData {
   templateUrl: 'edit-widget.html',
   styleUrls: ['edit-widget.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ItemsRenderer]
 })
 export class EditWidget {
   widget: Widget;
@@ -75,10 +70,11 @@ export class EditWidget {
 
   private _destroyed = new Subject();
 
-  constructor(
-      private activeRepo: ActiveRepo, private dialogRef: MatDialogRef<EditWidget, Widget>,
-      public itemsRenderer: ItemsRenderer<Item>, private itemRecommendations: ItemRecommendations,
+  public itemsRenderer: ItemsRenderer<Item>;
 
+  constructor(
+      private itemsRendererFactory: ItemsRendererFactory, private activeRepo: ActiveRepo,
+      private cd: ChangeDetectorRef, private dialogRef: MatDialogRef<EditWidget, Widget>,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.groupIds.splice(this.groupIds.indexOf('all'), 1);
 
@@ -89,10 +85,11 @@ export class EditWidget {
           this.updateDisplayTypeOptionsForm(displayType);
         });
 
-
-    this.itemsRenderer.options.setState(this.widget.options);
+    // this.itemsRenderer = this.itemsRendererFactory.create(this.widget.itemType);
     this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
-      this.changeItemsRendererItemType(this.activeRepo.activeStore, itemType);
+      this.itemsRenderer = this.itemsRendererFactory.create(itemType);
+      this.itemsRenderer.options.setState(this.widget.options);
+      this.cd.markForCheck();
     });
 
     this.form.setValue({
@@ -128,18 +125,6 @@ export class EditWidget {
     if (query.options) {
       this.itemsRenderer.options.setState(query.options);
     }
-  }
-
-  private changeItemsRendererItemType(store: RepoStore, itemType: ItemType) {
-    const items = store.items.list.pipe(map(items => {
-      const issues = items.filter(item => !item.pr);
-      const pullRequests = items.filter(item => !!item.pr);
-      return itemType === 'issue' ? issues : pullRequests;
-    }));
-
-    this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, store.labels),
-        getItemsGrouper(store.labels), new MyItemSorter());
   }
 
   private updateDisplayTypeOptionsForm(displayType: DisplayType) {

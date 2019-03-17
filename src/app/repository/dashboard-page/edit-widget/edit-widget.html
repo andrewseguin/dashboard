@@ -114,7 +114,11 @@
                      (searchChanged)="itemsRenderer.options.search = $event"
                      (filtersChanged)="itemsRenderer.options.filters = $event">
     </advanced-search>
-    <display-options-header [hideGrouping]="true"></display-options-header>
+    <display-options-header [hideGrouping]="true"
+                            [options]="itemsRenderer.options.state | async"
+                            (optionsChanged)="itemsRenderer.options.setState($event)"
+                            [itemCount]="itemsRenderer.itemCount | async">
+    </display-options-header>
   </div>
 </div>
 

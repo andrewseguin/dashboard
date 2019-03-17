@@ -1,8 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {GroupIds, Groups, Sort, ViewKey} from 'app/package/items-renderer/item-renderer-options';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {
+  Group,
+  GroupIds,
+  Groups,
+  ItemRendererOptionsState,
+  Sort,
+  ViewKey
+} from 'app/package/items-renderer/item-renderer-options';
 
 @Component({
   selector: 'display-options-header',
@@ -31,32 +35,37 @@ export class DisplayOptionsHeader {
 
   @Input() hideGrouping: boolean;
 
-  private destroyed = new Subject();
+  @Input() options: ItemRendererOptionsState;
 
-  constructor(public itemsRenderer: ItemsRenderer<any>, private cd: ChangeDetectorRef) {
-    this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed)).subscribe(() => {
-      this.cd.markForCheck();
-    });
-  }
+  @Input() itemCount: number;
 
-  ngOnDestroy() {
-    this.destroyed.next();
-    this.destroyed.complete();
-  }
+  @Output() optionsChanged = new EventEmitter<ItemRendererOptionsState>();
 
   setSort(sort: Sort) {
-    const options = this.itemsRenderer.options;
+    const options = {...this.options};
+
     if (options.sorting === sort) {
       options.reverseSort = !options.reverseSort;
     } else {
       options.sorting = sort;
       options.reverseSort = false;
     }
+
+    this.optionsChanged.emit(options);
   }
 
   toggleViewKey(viewKey: ViewKey) {
-    const view = {...this.itemsRenderer.options.view};
+    const view = {...this.options.view};
     view[viewKey] = !view[viewKey];
-    this.itemsRenderer.options.view = view;
+
+    const options = {...this.options};
+    options.view = view;
+    this.optionsChanged.emit({...options});
+  }
+
+  setGroup(grouping: Group) {
+    const options = {...this.options};
+    options.grouping = grouping;
+    this.optionsChanged.emit(options);
   }
 }
