@@ -53,7 +53,7 @@
           </div>
         </div>
       </div>
-      <advanced-search [search]="search" [filters]="filters"
+      <advanced-search [search]="search" [filters]="filters" [autocompleteContext]="autocompleteContext | async"
                        [metadata]="metadata" (searchChanged)="search = $event"
                        (filtersChanged)="filters = $event">
       </advanced-search>

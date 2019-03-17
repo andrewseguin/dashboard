@@ -110,6 +110,7 @@
     <advanced-search [search]="itemsRenderer.options.search"
                      [filters]="itemsRenderer.options.filters"
                      [metadata]="metadata"
+                     [autocompleteContext]="autocompleteContext | async"
                      (searchChanged)="itemsRenderer.options.search = $event"
                      (filtersChanged)="itemsRenderer.options.filters = $event">
     </advanced-search>

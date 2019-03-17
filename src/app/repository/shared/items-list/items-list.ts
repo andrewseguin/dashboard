@@ -11,13 +11,16 @@ import {
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item, ItemType} from 'app/repository/services/dao';
-import {Dao} from 'app/repository/services/dao/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
 import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
+import {
+  AutocompleteContext,
+  ItemsFilterMetadata
+} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {fromEvent, Observable, Subject} from 'rxjs';
 import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
 
@@ -45,6 +48,10 @@ export class ItemsList {
 
   issueFilterMetadata = ItemsFilterMetadata;
 
+  autocompleteContext: Observable<AutocompleteContext> =
+      this.activeRepo.store.pipe(map(store => ({items: store.items, labels: store.labels})));
+
+
   @Input()
   set optionsState(state: ItemRendererOptionsState) {
     this.itemsRenderer.options.setState(state);
@@ -57,20 +64,21 @@ export class ItemsList {
   @Output() optionsStateChanged = new EventEmitter<ItemRendererOptionsState>();
 
   constructor(
-      private itemRecommendations: ItemRecommendations, private dao: Dao,
+      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo,
       public itemsRenderer: ItemsRenderer<any>, public cd: ChangeDetectorRef, public ngZone: NgZone,
       public elementRef: ElementRef) {}
 
   ngOnInit() {
-    const items = this.dao.items.list.pipe(map(items => {
+    const store = this.activeRepo.activeStore;
+    const items = store.items.list.pipe(map(items => {
       const issues = items.filter(item => !item.pr);
       const pullRequests = items.filter(item => !!item.pr);
       return this.type === 'issue' ? issues : pullRequests;
     }));
 
     this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.dao.labels),
-        getItemsGrouper(this.dao.labels), new MyItemSorter());
+        items, getItemsFilterer(this.itemRecommendations, store.labels),
+        getItemsGrouper(store.labels), new MyItemSorter());
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.optionsStateChanged.next(options.getState());

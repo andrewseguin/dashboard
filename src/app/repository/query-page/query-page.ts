@@ -8,7 +8,7 @@ import {
 } from 'app/package/items-renderer/item-renderer-options';
 import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
-import {filter, map, take, takeUntil} from 'rxjs/operators';
+import {map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveRepo} from '../services/active-repo';
 import {ItemType} from '../services/dao';
@@ -125,13 +125,11 @@ export class QueryPage {
   }
 
   saveAs() {
-    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
-      const queryType = this.query.type;
-      if (!queryType) {
-        throw Error('Missing query type');
-      }
-      this.queryDialog.saveAsQuery(this.currentOptions, repository!, queryType);
-    });
+    const queryType = this.query.type;
+    if (!queryType) {
+      throw Error('Missing query type');
+    }
+    this.queryDialog.saveAsQuery(this.currentOptions, this.activeRepo.activeRepository, queryType);
   }
 
   save() {

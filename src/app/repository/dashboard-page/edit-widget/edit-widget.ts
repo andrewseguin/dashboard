@@ -25,8 +25,11 @@ import {ItemRecommendations} from 'app/repository/services/item-recommendations'
 import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
 import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
 import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
-import {Subject} from 'rxjs';
+import {
+  AutocompleteContext,
+  ItemsFilterMetadata
+} from 'app/repository/utility/items-renderer/items-filter-metadata';
+import {Observable, Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
 
 export interface EditWidgetData {
@@ -51,6 +54,9 @@ export class EditWidget {
   });
 
   displayTypeOptions: FormGroup;
+
+  autocompleteContext: Observable<AutocompleteContext> =
+      this.activeRepo.store.pipe(map(store => ({items: store.items, labels: store.labels})));
 
   metadata = ItemsFilterMetadata;
 

@@ -12,8 +12,6 @@ import {
 import {FormControl} from '@angular/forms';
 import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
 import {Query} from 'app/package/items-renderer/search-utility/query';
-import {Dao} from 'app/repository/services/dao/dao';
-import {AutocompleteContext} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {ANIMATION_DURATION} from 'app/utility/animations';
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, takeUntil} from 'rxjs/operators';
@@ -43,7 +41,7 @@ import {debounceTime, takeUntil} from 'rxjs/operators';
         ]),
   ]
 })
-export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
+export class AdvancedSearch<A> implements OnInit, AfterViewInit, OnDestroy {
   searchFormControl = new FormControl('');
   destroyed = new Subject();
 
@@ -57,9 +55,11 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = (i: number) => i;
 
-  @Input() metadata: Map<string, IFilterMetadata<any, AutocompleteContext>>;
+  @Input() metadata: Map<string, IFilterMetadata<any, A>>;
 
   @Input() filters: Filter[] = [];
+
+  @Input() autocompleteContext: A;
 
   @Input()
   set search(v: string) {
@@ -73,13 +73,12 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   @Output() filtersChanged = new EventEmitter<Filter[]>();
 
-  constructor(private dao: Dao) {}
+  constructor() {}
 
   ngOnInit() {
     this.metadata.forEach((value, key) => {
       if (value.autocomplete) {
-        this.autocomplete.set(
-            key, value.autocomplete({items: this.dao.items, labels: this.dao.labels}));
+        this.autocomplete.set(key, value.autocomplete(this.autocompleteContext));
       }
     });
 

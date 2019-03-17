@@ -7,10 +7,10 @@ import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
+import {ItemsFilterMetadata, AutocompleteContext} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
-import {merge, of, Subject} from 'rxjs';
+import {merge, of, Subject, Observable} from 'rxjs';
 import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
 
@@ -75,6 +75,10 @@ export class EditableRecommendation {
 
   addAssigneesAutocomplete = this.activeRepo.store.pipe(
       mergeMap(store => store.items.list), map(items => getAssignees(items)));
+
+
+  autocompleteContext: Observable<AutocompleteContext> =
+      this.activeRepo.store.pipe(map(store => ({items: store.items, labels: store.labels})));
 
   private _destroyed = new Subject();
 
