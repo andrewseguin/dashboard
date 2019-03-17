@@ -34,7 +34,7 @@ export class LoadData {
       {issueDateType: new FormControl('last updated since'), issueDate: new FormControl('')});
 
   totalLabelsCount =
-      this.activeRepo.change.pipe(filter(v => !!v), mergeMap((repository => {
+      this.activeRepo.repository.pipe(filter(v => !!v), mergeMap((repository => {
                                     return this.github.getLabels(repository!)
                                         .pipe(
                                             filter(result => result.completed === result.total),
@@ -42,14 +42,14 @@ export class LoadData {
                                   })));
 
   totalItemCount =
-      combineLatest(this.activeRepo.change, this.formGroup.valueChanges.pipe(startWith(null)))
+      combineLatest(this.activeRepo.repository, this.formGroup.valueChanges.pipe(startWith(null)))
           .pipe(filter(result => !!result[0]), mergeMap(result => {
                   const repository = result[0]!;
                   const since = this.getIssuesDateSince();
                   return this.github.getItemsCount(repository!, since);
                 }));
 
-  isEmpty = this.activeRepo.change.pipe(
+  isEmpty = this.activeRepo.repository.pipe(
       mergeMap(repository => isRepoStoreEmpty(this.dao.get(repository))));
 
   private destroyed = new Subject();
@@ -73,8 +73,8 @@ export class LoadData {
   }
 
   store() {
-    const repository = this.activeRepo.repository;
-    const store = this.dao.get(this.activeRepo.repository);
+    const repository = this.activeRepo.activeRepository;
+    const store = this.dao.get(this.activeRepo.activeRepository);
 
     this.isLoading.next(true);
 

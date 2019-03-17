@@ -1,36 +1,26 @@
-<div class="title"> {{activeRepo.change | async}} </div>
+<div class="title"> {{activeRepo.repository | async}} </div>
 
 <load-data #loadData></load-data>
 
 <div class="description" *ngIf="!(isEmpty | async)">
-  <div class="type issues theme-border theme-background-card">
-    <div class="type-title">
-      {{(((store | async)?.items.list | async)?.length)}} Issues and Pull
-      Requests
+  <ng-container *ngFor="let typeInfo of repoDaoTypeInfo">
+    <div class="type issues theme-border theme-background-card"
+         *ngIf="(typeInfo.count | async) !== null">
+      <div class="type-title">
+        {{typeInfo.count | async}} {{typeInfo.label}}
 
-      <type-actions *ngIf="!(loadData.isLoading | async)" type="items">
-      </type-actions>
+        <type-actions *ngIf="!(loadData.isLoading | async)"
+                      [type]="typeInfo.type">
+        </type-actions>
+      </div>
+
+      <ng-container [ngSwitch]="typeInfo.type">
+        <ng-container *ngSwitchCase="'labels'">
+          <label-list [labelIds]="(repoLabels | async) || []"> </label-list>
+        </ng-container>
+      </ng-container>
     </div>
-  </div>
-
-  <div class="type issues theme-border theme-background-card">
-    <div class="type-title">
-      {{(((store | async)?.labels.list | async)?.length)}} Labels
-      <type-actions *ngIf="!(loadData.isLoading | async)" type="labels">
-      </type-actions>
-    </div>
-
-    <label-list [labelIds]="repoLabels | async"> </label-list>
-
-  </div>
-
-  <div class="type issues theme-border theme-background-card">
-    <div class="type-title">
-      {{(((store | async)?.contributors.list | async)?.length)}} Contributors
-      <type-actions *ngIf="!(loadData.isLoading | async)" type="contributors">
-      </type-actions>
-    </div>
-  </div>
+  </ng-container>
 
   <button mat-button class="remove" *ngIf="(isLoaded | async) && loadData"
           color="warn" (click)="remover.removeAllData()">

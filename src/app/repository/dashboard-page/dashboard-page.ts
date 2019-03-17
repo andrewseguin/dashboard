@@ -36,7 +36,7 @@ export class DashboardPage {
       this.edit.setValue(true);
     }
 
-    this.header.goBack = () => this.router.navigate([`/${this.activeRepo.repository}/dashboards`]);
+    this.header.goBack = () => this.router.navigate([`/${this.activeRepo.activeRepository}/dashboards`]);
   }
   get dashboard(): Dashboard {
     return this._dashboard;
@@ -71,7 +71,7 @@ export class DashboardPage {
         return;
       }
 
-      const dashboardsDao = this.dao.get(this.activeRepo.repository).dashboards;
+      const dashboardsDao = this.dao.get(this.activeRepo.activeRepository).dashboards;
 
       // Delay added to improve page responsiveness on first load
       this.getSubscription =
@@ -79,7 +79,7 @@ export class DashboardPage {
             if (map.has(id)) {
               this.dashboard = map.get(id)!;
             } else {
-              this.router.navigate([`${this.activeRepo.repository}/dashboards`]);
+              this.router.navigate([`${this.activeRepo.activeRepository}/dashboards`]);
             }
             this.cd.markForCheck();
           });
@@ -87,13 +87,13 @@ export class DashboardPage {
   }
 
   private createNewDashboard() {
-    const dashboardsDao = this.dao.get(this.activeRepo.repository).dashboards;
+    const dashboardsDao = this.dao.get(this.activeRepo.activeRepository).dashboards;
     const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
     const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
     this.dashboard = newDashboard;
     const newDashboardId = dashboardsDao.add(newDashboard);
     this.router.navigate(
-        [`${this.activeRepo.repository}/dashboard/${newDashboardId}`],
+        [`${this.activeRepo.activeRepository}/dashboard/${newDashboardId}`],
         {replaceUrl: true, queryParamsHandling: 'merge'});
   }
 
@@ -174,7 +174,7 @@ export class DashboardPage {
   }
 
   private save() {
-    this.dao.get(this.activeRepo.repository).dashboards.update(this.dashboard);
+    this.dao.get(this.activeRepo.activeRepository).dashboards.update(this.dashboard);
     this.cd.markForCheck();
   }
 

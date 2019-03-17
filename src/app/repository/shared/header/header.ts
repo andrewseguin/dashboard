@@ -13,7 +13,7 @@ import {mergeMap} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SeasonHeader {
-  isEmpty = this.activeRepo.change.pipe(mergeMap(activeRepo => isRepoStoreEmpty(this.dao.get(activeRepo))));
+  isEmpty = this.activeRepo.repository.pipe(mergeMap(activeRepo => isRepoStoreEmpty(this.dao.get(activeRepo))));
 
   @Input() sidenav: MatSidenav;
 

@@ -39,12 +39,12 @@ export class ItemDetail {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
-      const store = this.dao.get(this.activeRepo.repository);
+      const store = this.dao.get(this.activeRepo.activeRepository);
       this.bodyMarkdown = this.markdown.getItemBodyMarkdown(store, this.itemId);
       this.recommendations = this.itemRecommendations.allRecommendations.pipe(
           map(recommendations => recommendations.get(this.itemId) || []));
 
-      this.activities = this.activeRepo.change.pipe(
+      this.activities = this.activeRepo.repository.pipe(
           mergeMap(repository => {
             return combineLatest(
                 this.github.getComments(repository!, this.itemId),

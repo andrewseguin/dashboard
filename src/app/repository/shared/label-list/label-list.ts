@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Label} from 'app/repository/services/dao';
-import {Dao} from 'app/repository/services/dao/dao';
 import {BehaviorSubject, combineLatest} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 
 interface DisplayedLabel {
   id: string;
@@ -31,27 +31,30 @@ export class LabelList {
 
   @Output() selected = new EventEmitter<Label>();
 
-  labels = combineLatest(this._labelIds, this.dao.labels.list).pipe(map(result => {
-    const labelIds = result[0];
 
-    const labelsMap = new Map<string, Label>();
-    result[1].forEach(label => {
-      labelsMap.set(label.id, label);
-      labelsMap.set(label.name, label);
-    });
+  labels = this.activeRepo.store.pipe(
+      mergeMap(store => combineLatest(this._labelIds, store.labels.list)), map(result => {
+        const labelIds = result[0];
+        const repoLabels = result[1];
 
-    const labels: DisplayedLabel[] = [];
-    labelIds.forEach(labelId => {
-      const label = labelsMap.get(`${labelId}`);
-      if (label) {  // labels may be applied but no longer exist
-        labels.push(convertLabelToDisplayedLabel(label));
-      }
-    });
-    labels.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
-    return labels;
-  }));
+        const labelsMap = new Map<string, Label>();
+        repoLabels.forEach(label => {
+          labelsMap.set(label.id, label);
+          labelsMap.set(label.name, label);
+        });
 
-  constructor(private dao: Dao) {}
+        const labels: DisplayedLabel[] = [];
+        labelIds.forEach(labelId => {
+          const label = labelsMap.get(`${labelId}`);
+          if (label) {  // labels may be applied but no longer exist
+            labels.push(convertLabelToDisplayedLabel(label));
+          }
+        });
+        labels.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
+        return labels;
+      }));
+
+  constructor(private activeRepo: ActiveRepo) {}
 
   select(label: Label) {
     if (this.selectable) {

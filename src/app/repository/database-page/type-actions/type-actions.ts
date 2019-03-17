@@ -22,7 +22,7 @@ export class TypeActions {
 
   update() {
     this.updateState.next('updating');
-    this.updater.update(this.activeRepo.repository, this.type)
+    this.updater.update(this.activeRepo.activeRepository, this.type)
         .then(() => this.updateState.next('updated'));
   }
 }

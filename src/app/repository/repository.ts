@@ -23,19 +23,19 @@ export class Repository {
       private router: Router, private updater: Updater, private loadedRepos: LoadedRepos,
       private dao: Dao, private remover: Remover, private activeRepo: ActiveRepo,
       private auth: Auth) {
-    this.activeRepo.change
+    this.activeRepo.repository
         .pipe(mergeMap(activeRepo => isRepoStoreEmpty(this.dao.get(activeRepo)).pipe(take(1))))
         .subscribe(isEmpty => {
-          const isLoaded = this.loadedRepos.isLoaded(this.activeRepo.repository);
+          const isLoaded = this.loadedRepos.isLoaded(this.activeRepo.activeRepository);
 
           if (!isEmpty && !isLoaded) {
             this.remover.removeAllData(false);
           }
 
           if (isEmpty) {
-            this.router.navigate([`${this.activeRepo.repository}/database`]);
+            this.router.navigate([`${this.activeRepo.activeRepository}/database`]);
           } else if (this.auth.token) {
-            this.initializeAutoIssueUpdates(this.activeRepo.repository);
+            this.initializeAutoIssueUpdates(this.activeRepo.activeRepository);
           }
         });
   }

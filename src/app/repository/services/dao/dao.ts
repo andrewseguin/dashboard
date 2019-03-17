@@ -3,7 +3,6 @@ import {Config} from 'app/service/config';
 import {combineLatest, Subject} from 'rxjs';
 import {debounceTime, take, takeUntil} from 'rxjs/operators';
 import {RepoIndexedDb} from '../../utility/repo-indexed-db';
-import {ActiveRepo} from '../active-repo';
 import {RepoGist} from '../repo-gist';
 import {Contributor} from './contributor';
 import {Dashboard} from './dashboard';
@@ -14,6 +13,7 @@ import {Query} from './query';
 import {Recommendation} from './recommendation';
 
 export interface RepoStore {
+  repository: string;
   items: ListDao<Item>;
   labels: ListDao<Label>;
   contributors: ListDao<Contributor>;
@@ -31,20 +31,20 @@ export class Dao {
 
   private destroyed = new Subject();
 
-  private repoIndexedDb = new RepoIndexedDb(this.activateRepo.repository);
+  private repoIndexedDb = new RepoIndexedDb('angular/material2');
 
   items = new ListDao<Item>('items', this.repoIndexedDb);
   labels = new ListDao<Label>('labels', this.repoIndexedDb);
   queries = new ListDao<Query>('queries', this.repoIndexedDb);
   recommendations = new ListDao<Recommendation>('recommendations', this.repoIndexedDb);
 
-  constructor(
-      private activateRepo: ActiveRepo, private config: Config, private repoGist: RepoGist) {}
+  constructor(private config: Config, private repoGist: RepoGist) {}
 
   get(repository: string): RepoStore {
     if (!this.stores.has(repository)) {
       const repoIndexedDb = new RepoIndexedDb(repository!);
       const newStore = {
+        repository,
         items: new ListDao<Item>('items', repoIndexedDb),
         labels: new ListDao<Label>('labels', repoIndexedDb),
         contributors: new ListDao<Contributor>('contributors', repoIndexedDb),

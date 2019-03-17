@@ -24,7 +24,7 @@ export class RecommendationAction {
     newItem.labels = [...this.item.labels, +label.id];
     this.dao.items.update(newItem);
 
-    this.activeRepo.change.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       this.github.addLabel(repository!, this.item.id, label.name).subscribe(result => {
         console.log(result);
       });
@@ -36,7 +36,7 @@ export class RecommendationAction {
     newItem.assignees = [...this.item.assignees, assignee];
     this.dao.items.update(newItem);
 
-    this.activeRepo.change.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       this.github.addAssignee(repository!, this.item.id, assignee).subscribe(result => {
         console.log(result);
       });

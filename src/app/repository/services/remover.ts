@@ -16,7 +16,7 @@ export class Remover {
       private snackbar: MatSnackBar, private dao: Dao) {}
 
   removeData(type: RepoDaoType) {
-    const repository = this.activeRepo.repository;
+    const repository = this.activeRepo.activeRepository;
     this.dialog.open(DeleteConfirmation, {data: {name: of(`${type} data for ${repository}`)}})
         .afterClosed()
         .pipe(take(1))
@@ -40,7 +40,7 @@ export class Remover {
   }
 
   removeAllData(showConfirmationDialog = true, includeConfig = true) {
-    this.activeRepo.change.pipe(filter(v => !!v), take(1)).subscribe(repository => {
+    this.activeRepo.repository.pipe(filter(v => !!v), take(1)).subscribe(repository => {
       if (!showConfirmationDialog) {
         this.remove(repository!, includeConfig);
         return;

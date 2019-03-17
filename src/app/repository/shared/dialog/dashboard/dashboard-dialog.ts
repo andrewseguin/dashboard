@@ -20,7 +20,7 @@ export class DashboardDialog {
       name: dashboard.name,
       description: dashboard.description,
     };
-    const store = this.dao.get(this.activeRepo.repository);
+    const store = this.dao.get(this.activeRepo.activeRepository);
 
     this.dialog.open(DashboardEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
       if (result) {
@@ -35,7 +35,7 @@ export class DashboardDialog {
    */
   removeDashboard(dashboard: Dashboard) {
     const data = {name: of(dashboard.name)};
-    const store = this.dao.get(this.activeRepo.repository);
+    const store = this.dao.get(this.activeRepo.activeRepository);
 
     this.dialog.open(DeleteConfirmation, {data})
         .afterClosed()
