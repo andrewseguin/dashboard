@@ -7,10 +7,13 @@ import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
-import {ItemsFilterMetadata, AutocompleteContext} from 'app/repository/utility/items-renderer/items-filter-metadata';
+import {
+  AutocompleteContext,
+  ItemsFilterMetadata
+} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
-import {merge, of, Subject, Observable} from 'rxjs';
+import {merge, Observable, of, Subject} from 'rxjs';
 import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
 
