@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, Widget} from 'app/repository/services/dao';
+import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
 
 @Component({
   selector: 'count',
@@ -11,12 +12,19 @@ import {Item, Widget} from 'app/repository/services/dao';
 export class Count {
   @Input() widget: Widget;
 
-  @Input() itemsRenderer: ItemsRenderer<Item>;
+  private itemsRenderer: ItemsRenderer<Item>;
+
+  constructor(private itemsRendererFactory: ItemsRendererFactory) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemsRenderer.options.filters = this.widget.options.filters;
-      this.itemsRenderer.options.search = this.widget.options.search;
+      this.setupItemsRenderer();
     }
+  }
+
+  private setupItemsRenderer() {
+    this.itemsRenderer = this.itemsRendererFactory.create(this.widget.itemType);
+    this.itemsRenderer.options.filters = this.widget.options.filters;
+    this.itemsRenderer.options.search = this.widget.options.search;
   }
 }

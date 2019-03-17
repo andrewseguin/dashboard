@@ -10,6 +10,7 @@
 
   <div class="issues-container">
     <items-group *ngFor="let itemGroup of renderedItemGroups; let index = index; trackBy:getItemGroupKey"
+                 [view]="(itemsRenderer.options.state | async)?.view"
                  [items]="itemGroup.items" [title]="itemGroup.title">
     </items-group>
   </div>

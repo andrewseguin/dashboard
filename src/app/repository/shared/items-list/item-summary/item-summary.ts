@@ -1,16 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output
-} from '@angular/core';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {View} from 'app/package/items-renderer/item-renderer-options';
 import {Item} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Subject} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'item-summary',
@@ -29,14 +22,11 @@ export class ItemSummary {
 
   @Input() active: boolean;
 
+  @Input() view: View;
+
   @Output() select = new EventEmitter<number>();
 
-  constructor(
-      public itemRecommendations: ItemRecommendations, private cd: ChangeDetectorRef,
-      public itemsRenderer: ItemsRenderer<any>) {
-    this.itemsRenderer.options.changed.pipe(takeUntil(this.destroyed))
-        .subscribe(() => this.cd.markForCheck());
-  }
+  constructor(public itemRecommendations: ItemRecommendations) {}
 
   ngOnInit() {}
 

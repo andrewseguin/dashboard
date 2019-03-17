@@ -5,5 +5,5 @@
 <ng-container *ngFor="let item of items; trackBy:trackByItemNumber">
   <mat-divider></mat-divider>
   <item-summary [item]="item" [active]="(activeItem | async) === item.number"
-                (select)="navigateToItem($event)"></item-summary>
+                [view]="view" (select)="navigateToItem($event)"></item-summary>
 </ng-container>

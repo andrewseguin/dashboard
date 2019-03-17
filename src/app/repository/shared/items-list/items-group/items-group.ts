@@ -1,6 +1,7 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
+import {View} from 'app/package/items-renderer/item-renderer-options';
 import {Item} from 'app/repository/services/dao';
 import {isMobile} from 'app/utility/media-matcher';
 import {map} from 'rxjs/operators';
@@ -18,6 +19,8 @@ export class ItemsGroup {
 
   @Input() title: string;
 
+  @Input() view: View;
+
   trackByItemNumber = (_i: number, item: Item) => item.number;
 
   activeItem = this.activatedRoute.queryParamMap.pipe(map(queryParamMap => {
@@ -28,6 +31,9 @@ export class ItemsGroup {
   constructor(
       private router: Router, private dialog: MatDialog, private activatedRoute: ActivatedRoute) {}
 
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    console.log(simpleChanges);
+  }
   navigateToItem(item: number) {
     if (!isMobile()) {
       this.router.navigate([], {

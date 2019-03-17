@@ -9,8 +9,9 @@ import {
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item, TimeSeriesDisplayTypeOptions, Widget} from 'app/repository/services/dao';
+import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
 import * as Chart from 'chart.js';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
 interface CreatedAndClosedDate {
@@ -39,17 +40,19 @@ interface TimeSeriesData {
 export class TimeSeries {
   chart: Chart;
 
-  @Input() itemsRenderer: ItemsRenderer<Item>;
-
   @Input() widget: Widget;
 
   @ViewChild('canvas') canvas: ElementRef;
 
   private destroyed = new Subject();
 
-  ngOnInit() {
-    this.itemsRenderer.itemGroups.pipe(filter(v => !!v)).subscribe(groups => this.render(groups!));
-  }
+  private itemsRenderer: ItemsRenderer<Item>;
+
+  private itemsRendererSubscription: Subscription;
+
+  constructor(private itemsRendererFactory: ItemsRendererFactory) {}
+
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.destroyed.next();
@@ -58,8 +61,20 @@ export class TimeSeries {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemsRenderer.options.setState(this.widget.options);
+      this.setupItemsRenderer();
     }
+  }
+
+  private setupItemsRenderer() {
+    this.itemsRenderer = this.itemsRendererFactory.create(this.widget.itemType);
+    this.itemsRenderer.options.setState(this.widget.options);
+
+    if (this.itemsRendererSubscription) {
+      this.itemsRendererSubscription.unsubscribe();
+    }
+    
+    this.itemsRendererSubscription = this.itemsRenderer.itemGroups.pipe(filter(v => !!v))
+                                         .subscribe(groups => this.render(groups!));
   }
 
   getDateCounts(dates: CreatedAndClosedDate[]): DateCount[] {

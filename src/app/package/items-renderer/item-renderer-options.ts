@@ -1,5 +1,5 @@
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 
 export type Group = 'all'|'reporter'|'label'|'assignee';
 
@@ -38,7 +38,7 @@ export class ItemRendererOptions {
       return;
     }
     this._filters = v;
-    this.changed.next();
+    this.emitChanged();
   }
   get filters(): Filter[] {
     return this._filters;
@@ -50,7 +50,7 @@ export class ItemRendererOptions {
       return;
     }
     this._search = v;
-    this.changed.next();
+    this.emitChanged();
   }
   get search(): string {
     return this._search;
@@ -62,7 +62,7 @@ export class ItemRendererOptions {
       return;
     }
     this._grouping = v;
-    this.changed.next();
+    this.emitChanged();
   }
   get grouping(): Group {
     return this._grouping;
@@ -74,7 +74,7 @@ export class ItemRendererOptions {
       return;
     }
     this._sorting = v;
-    this.changed.next();
+    this.emitChanged();
   }
   get sorting(): Sort {
     return this._sorting;
@@ -86,7 +86,7 @@ export class ItemRendererOptions {
       return;
     }
     this._view = v;
-    this.changed.next();
+    this.emitChanged();
   }
   get view(): View {
     return this._view;
@@ -98,14 +98,20 @@ export class ItemRendererOptions {
       return;
     }
     this._reverseSort = v;
-    this.changed.next();
+    this.emitChanged();
   }
   get reverseSort(): boolean {
     return this._reverseSort;
   }
   private _reverseSort = true;
 
-  changed = new Subject<void>();
+  changed = new Subject<ItemRendererOptionsState>();
+
+  state = new BehaviorSubject<ItemRendererOptionsState>(this.getState());
+
+  emitChanged() {
+    this.state.next(this.getState());
+  }
 
   setState(options: ItemRendererOptionsState) {
     this._filters = options.filters;
@@ -114,7 +120,7 @@ export class ItemRendererOptions {
     this._sorting = options.sorting;
     this._view = options.view;
     this._reverseSort = options.reverseSort;
-    this.changed.next();
+    this.emitChanged();
   }
 
   getState() {

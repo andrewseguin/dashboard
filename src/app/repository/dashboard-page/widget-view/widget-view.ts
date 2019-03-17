@@ -1,16 +1,9 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Router} from '@angular/router';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Theme} from 'app/repository/services';
 import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Item} from 'app/repository/services/dao';
 import {Widget} from 'app/repository/services/dao/dashboard';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
-import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
-import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
 import * as Chart from 'chart.js';
-import {map, mergeMap} from 'rxjs/operators';
 
 @Component({
   selector: 'widget-view',
@@ -20,7 +13,6 @@ import {map, mergeMap} from 'rxjs/operators';
   host: {
     'class': 'theme-background-card theme-border',
   },
-  providers: [ItemsRenderer]
 })
 export class WidgetView {
   @Input() widget: Widget;
@@ -35,25 +27,11 @@ export class WidgetView {
 
   @Output() remove = new EventEmitter<void>();
 
-  constructor(
-      public itemsRenderer: ItemsRenderer<Item>, private router: Router,
-      private itemRecommendations: ItemRecommendations, private theme: Theme,
-      private activeRepo: ActiveRepo) {
+  constructor(private router: Router, private theme: Theme, private activeRepo: ActiveRepo) {
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
   }
 
-  ngOnInit() {
-    const items = this.activeRepo.store.pipe(
-        mergeMap(store => store.items.list), map(items => {
-          const issues = items.filter(item => !item.pr);
-          const pullRequests = items.filter(item => !!item.pr);
-          return this.widget.itemType === 'issue' ? issues : pullRequests;
-        }));
-
-    this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, this.activeRepo.activeStore.labels),
-        getItemsGrouper(this.activeRepo.activeStore.labels), new MyItemSorter());
-  }
+  ngOnInit() {}
 
   openQuery() {
     this.router.navigate(

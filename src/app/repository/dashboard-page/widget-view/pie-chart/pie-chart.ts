@@ -7,12 +7,12 @@ import {
   ViewChild
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
-import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Theme} from 'app/repository/services';
 import {Item, PieChartDisplayTypeOptions, Widget} from 'app/repository/services/dao';
+import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
 import * as Chart from 'chart.js';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
 @Component({
@@ -24,21 +24,15 @@ import {filter} from 'rxjs/operators';
 export class PieChart {
   chart: Chart;
 
-  @Input() itemsRenderer: ItemsRenderer<Item>;
-
   @Input() widget: Widget;
 
   @ViewChild('canvas') canvas: ElementRef;
 
+  private itemsRenderer: ItemsRenderer<Item>;
+
   private destroyed = new Subject();
 
-  constructor(private theme: Theme) {}
-
-  ngOnInit() {
-    const displayTypeOptions = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
-    this.itemsRenderer.options.grouping = displayTypeOptions.group!;
-    this.itemsRenderer.itemGroups.pipe(filter(v => !!v)).subscribe(groups => this.render(groups!));
-  }
+  constructor(private theme: Theme, private itemsRendererFactory: ItemsRendererFactory) {}
 
   ngOnDestroy() {
     this.destroyed.next();
@@ -61,12 +55,11 @@ export class PieChart {
     return {data, labels};
   }
 
+  private itemsRendererSubscription: Subscription;
+
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      const displayTypeOptions = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
-      const options:
-          ItemRendererOptionsState = {...this.widget.options!, grouping: displayTypeOptions.group!};
-      this.itemsRenderer.options.setState(options);
+      this.setupItemsRenderer();
     }
   }
 
@@ -97,6 +90,20 @@ export class PieChart {
       this.chart = new Chart(this.canvas.nativeElement, {type: 'pie', data: chartData, options});
       this.chart.render();
     }
+  }
+
+  private setupItemsRenderer() {
+    const displayTypeOptions = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
+
+    this.itemsRenderer = this.itemsRendererFactory.create(this.widget.itemType);
+    this.itemsRenderer.options.setState(
+        {...this.widget.options!, grouping: displayTypeOptions.group!});
+
+    if (this.itemsRendererSubscription) {
+      this.itemsRendererSubscription.unsubscribe();
+    }
+    this.itemsRendererSubscription = this.itemsRenderer.itemGroups.pipe(filter(v => !!v))
+                                         .subscribe(groups => this.render(groups!));
   }
 }
 

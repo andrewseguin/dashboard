@@ -10,13 +10,13 @@
     </div>
 
     <div class="details theme-secondary-text">
-      <ng-container *ngIf="itemsRenderer.options.view.reporter">
+      <ng-container *ngIf="view.reporter">
         <div class="section">
           Reporter: {{item.reporter}}
         </div>
       </ng-container>
 
-      <ng-container *ngIf="itemsRenderer.options.view.assignees">
+      <ng-container *ngIf="view.assignees">
         <div class="section" *ngIf="item.assignees.length === 1">
           Assignee: {{item.assignees}}
         </div>
@@ -25,14 +25,14 @@
         </div>
       </ng-container>
 
-      <ng-container *ngIf="itemsRenderer.options.view.labels">
+      <ng-container *ngIf="view.labels">
         <div class="section">
           <label-list [labelIds]="item.labels"></label-list>
         </div>
       </ng-container>
 
       <ng-container
-                    *ngIf="(warnings | async)?.length && itemsRenderer.options.view.warnings">
+                    *ngIf="(warnings | async)?.length && view.warnings">
         <div class="section theme-warn">
           <div *ngFor="let warning of warnings | async" class="recommendation">
             <mat-icon> warning </mat-icon>
@@ -42,7 +42,7 @@
       </ng-container>
 
       <ng-container
-                    *ngIf="(suggestions | async)?.length && itemsRenderer.options.view.suggestions">
+                    *ngIf="(suggestions | async)?.length && view.suggestions">
         <div class="section">
           <div *ngFor="let suggestion of suggestions | async"
                class="recommendation">

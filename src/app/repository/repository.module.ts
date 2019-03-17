@@ -7,6 +7,7 @@ import {Header} from './services';
 import {ActiveRepo} from './services/active-repo';
 import {Dao} from './services/dao/dao';
 import {ItemRecommendations} from './services/item-recommendations';
+import {ItemsRendererFactory} from './services/items-renderer-factory';
 import {Markdown} from './services/markdown';
 import {Remover} from './services/remover';
 import {RepoGist} from './services/repo-gist';
@@ -73,7 +74,10 @@ export class RepositoryRoutingModule {
   ],
   declarations: [Repository],
   exports: [Repository],
-  providers: [Dao, Header, Updater, Remover, ItemRecommendations, Markdown, ActiveRepo, RepoGist]
+  providers: [
+    Dao, Header, Updater, Remover, ItemRecommendations, Markdown, ActiveRepo, RepoGist,
+    ItemsRendererFactory
+  ]
 })
 export class RepositoryModule {
 }
