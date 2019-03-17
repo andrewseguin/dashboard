@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, QueryList, ViewChildren} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {combineLatest} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import {map, mergeMap, startWith} from 'rxjs/operators';
+import {ActiveRepo} from '../services/active-repo';
 import {Recommendation} from '../services/dao';
-import {Dao} from '../services/dao/dao';
 import {EditableRecommendation} from './editable-recommendation/editable-recommendation';
 
 @Component({
@@ -17,17 +17,19 @@ export class RecommendationsPage {
 
   @ViewChildren(EditableRecommendation) editableRecommendations: QueryList<EditableRecommendation>;
 
-  sortedRecommendations =
-      combineLatest(this.dao.recommendations.list, this.filter.valueChanges.pipe(startWith('')))
-          .pipe(map(result => {
-            const filtered = result[0].filter(r => this.matchesFilter(r));
-            return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
-          }));
+  sortedRecommendations = this.activeRepo.store.pipe(
+      mergeMap(
+          store => combineLatest(
+              store.recommendations.list, this.filter.valueChanges.pipe(startWith('')))),
+      map(result => {
+        const filtered = result[0].filter(r => this.matchesFilter(r));
+        return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
+      }));
   trackById = (_i: number, r: Recommendation) => r.id;
-  constructor(public dao: Dao) {}
+  constructor(private activeRepo: ActiveRepo) {}
 
   add() {
-    this.dao.recommendations.add({
+    this.activeRepo.activeStore.recommendations.add({
       message: 'New recommendation',
       type: 'warning',
       actionType: 'none',

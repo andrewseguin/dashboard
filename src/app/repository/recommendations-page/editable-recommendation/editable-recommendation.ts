@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@ang
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Filter} from 'app/package/items-renderer/search-utility/filter';
-import {Dao} from 'app/repository/services/dao/dao';
+import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {
   DeleteConfirmation
@@ -11,7 +11,7 @@ import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-f
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {merge, of, Subject} from 'rxjs';
-import {debounceTime, map, take, takeUntil} from 'rxjs/operators';
+import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
 
 @Component({
@@ -70,14 +70,16 @@ export class EditableRecommendation {
   actionLabels = [];
   actionAssignees = [];
 
-  addLabelsAutocomplete = this.dao.labels.list.pipe(map(labels => labels.map(l => l.name).sort()));
+  addLabelsAutocomplete = this.activeRepo.store.pipe(
+      mergeMap(store => store.labels.list), map(labels => labels.map(l => l.name).sort()));
 
-  addAssigneesAutocomplete = this.dao.items.list.pipe(map(items => getAssignees(items)));
+  addAssigneesAutocomplete = this.activeRepo.store.pipe(
+      mergeMap(store => store.items.list), map(items => getAssignees(items)));
 
   private _destroyed = new Subject();
 
   constructor(
-      private cd: ChangeDetectorRef, private dao: Dao, private snackbar: MatSnackBar,
+      private cd: ChangeDetectorRef, private activeRepo: ActiveRepo, private snackbar: MatSnackBar,
       private dialog: MatDialog) {}
 
   ngOnInit() {
@@ -97,10 +99,11 @@ export class EditableRecommendation {
   }
 
   ngAfterViewInit() {
+    const store = this.activeRepo.activeStore;
     merge(this.form.valueChanges, this.queryChanged)
         .pipe(debounceTime(2000), takeUntil(this._destroyed))
         .subscribe(() => {
-          this.dao.recommendations.update({
+          store.recommendations.update({
             ...this.recommendation,
             message: this.form.value.message,
             type: this.form.value.type,
@@ -118,6 +121,7 @@ export class EditableRecommendation {
   }
 
   deleteRecommendation() {
+    const store = this.activeRepo.activeStore;
     const data = {name: of('this recommendation')};
 
     this.dialog.open(DeleteConfirmation, {data})
@@ -125,7 +129,7 @@ export class EditableRecommendation {
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.dao.recommendations.remove(this.recommendation.id!);
+            store.recommendations.remove(this.recommendation.id!);
             this.snackbar.open(`Recommendation deleted`, undefined, {duration: 2000});
           }
         });

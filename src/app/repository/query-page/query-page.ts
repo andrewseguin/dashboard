@@ -12,7 +12,7 @@ import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveRepo} from '../services/active-repo';
 import {ItemType} from '../services/dao';
-import {Dao} from '../services/dao/dao';
+import {RepoStore} from '../services/dao/dao';
 import {Widget} from '../services/dao/dashboard';
 import {Query} from '../services/dao/query';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
@@ -67,7 +67,7 @@ export class QueryPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private router: Router, private activatedRoute: ActivatedRoute, private dao: Dao,
+      private router: Router, private activatedRoute: ActivatedRoute,
       private activeRepo: ActiveRepo, private header: Header, private queryDialog: QueryDialog,
       private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
@@ -85,7 +85,7 @@ export class QueryPage {
         const dashboard = queryParamMap.get('dashboard');
 
         if (recommendationId) {
-          this.createNewQueryFromRecommendation(recommendationId);
+          this.createNewQueryFromRecommendation(this.activeRepo.activeStore, recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
           this.query = createNewQuery(widget.itemType, widget.title, widget.options);
@@ -101,14 +101,15 @@ export class QueryPage {
         this.cd.markForCheck();
       } else {
         this.getSubscription =
-            this.dao.queries.map.pipe(takeUntil(this.destroyed)).subscribe(map => {
-              if (map.get(id)) {
-                this.query = map.get(id)!;
-              } else {
-                this.router.navigate([`${this.activeRepo.activeRepository}/queries`]);
-              }
-              this.cd.markForCheck();
-            });
+            this.activeRepo.activeStore.queries.map.pipe(takeUntil(this.destroyed))
+                .subscribe(map => {
+                  if (map.get(id)) {
+                    this.query = map.get(id)!;
+                  } else {
+                    this.router.navigate([`${this.activeRepo.activeRepository}/queries`]);
+                  }
+                  this.cd.markForCheck();
+                });
       }
     });
   }
@@ -134,7 +135,7 @@ export class QueryPage {
   }
 
   save() {
-    this.dao.queries.update({id: this.query.id, options: this.currentOptions});
+    this.activeRepo.activeStore.queries.update({id: this.query.id, options: this.currentOptions});
   }
 
   setBack(fromDashboard?: string) {
@@ -147,8 +148,8 @@ export class QueryPage {
     }
   }
 
-  private createNewQueryFromRecommendation(id: string) {
-    this.dao.recommendations.list.pipe(take(1)).subscribe(list => {
+  private createNewQueryFromRecommendation(store: RepoStore, id: string) {
+    store.recommendations.list.pipe(take(1)).subscribe(list => {
       list.forEach(r => {
         if (r.id === id) {
           const options = new ItemRendererOptions();

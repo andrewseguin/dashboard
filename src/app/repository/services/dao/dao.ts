@@ -36,7 +36,6 @@ export class Dao {
   items = new ListDao<Item>('items', this.repoIndexedDb);
   labels = new ListDao<Label>('labels', this.repoIndexedDb);
   queries = new ListDao<Query>('queries', this.repoIndexedDb);
-  recommendations = new ListDao<Recommendation>('recommendations', this.repoIndexedDb);
 
   constructor(private config: Config, private repoGist: RepoGist) {}
 
