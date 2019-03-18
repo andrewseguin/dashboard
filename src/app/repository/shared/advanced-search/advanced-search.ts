@@ -39,7 +39,7 @@ import {debounceTime, takeUntil} from 'rxjs/operators';
         ]),
   ]
 })
-export class AdvancedSearch<A> implements OnInit, AfterViewInit, OnDestroy {
+export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
   searchFormControl = new FormControl('');
   destroyed = new Subject();
 
@@ -53,9 +53,7 @@ export class AdvancedSearch<A> implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = (i: number) => i;
 
-  @Input() filterer: ItemFilterer<any, any>;
-
-  @Input() autocompleteContext: A;
+  @Input() filterer: ItemFilterer<any, any, any>;
 
   hasDisplayedFilters: boolean;
 
@@ -64,7 +62,7 @@ export class AdvancedSearch<A> implements OnInit, AfterViewInit, OnDestroy {
 
     metadata.forEach((value, key) => {
       if (value.autocomplete) {
-        this.autocomplete.set(key, value.autocomplete(this.autocompleteContext));
+        this.autocomplete.set(key, value.autocomplete(this.filterer.autocompleteContext));
       }
     });
 

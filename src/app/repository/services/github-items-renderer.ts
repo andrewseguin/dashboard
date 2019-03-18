@@ -9,7 +9,11 @@ import {
   TitleTransformContext
 } from '../utility/items-renderer/item-grouping';
 import {MyItemSorter} from '../utility/items-renderer/item-sorter';
-import {ItemsFilterMetadata, MatcherContext} from '../utility/items-renderer/items-filter-metadata';
+import {
+  AutocompleteContext,
+  ItemsFilterMetadata,
+  MatcherContext
+} from '../utility/items-renderer/items-filter-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
 import {ActiveRepo} from './active-repo';
 import {Item, ItemType, Label} from './dao';
@@ -23,7 +27,7 @@ export class GithubItemsRenderer extends ItemsRenderer<Item> {
 
     const store = this.activeRepo.activeStore;
 
-    this.filterer = getItemsFilterer(this.itemRecommendations, store.labels);
+    this.filterer = getItemsFilterer(this.itemRecommendations, store);
     this.grouper = getItemsGrouper(store.labels);
     this.grouper.setGroup('all');
 
@@ -36,7 +40,8 @@ function getItemsGrouper(labelsDao: ListDao<Label>):
   const titleTransformContextProvider =
       labelsDao.map.pipe(map(labelsMap => ({labelsMap: labelsMap})));
 
-  return new ItemGrouper(titleTransformContextProvider, GithubItemGroupingMetadata);
+  return new ItemGrouper<Item, Group, TitleTransformContext>(
+      titleTransformContextProvider, GithubItemGroupingMetadata);
 }
 
 
@@ -50,11 +55,10 @@ export function getItemsList(store: RepoStore, type: ItemType) {
   }));
 }
 
-export function getItemsFilterer(
-    itemRecommendations: ItemRecommendations,
-    labelsDao: ListDao<Label>): ItemFilterer<Item, MatcherContext> {
+export function getItemsFilterer(itemRecommendations: ItemRecommendations, store: RepoStore):
+    ItemFilterer<Item, MatcherContext, AutocompleteContext> {
   const filterContextProvider =
-      combineLatest(itemRecommendations.allRecommendations, labelsDao.map).pipe(map(results => {
+      combineLatest(itemRecommendations.allRecommendations, store.labels.map).pipe(map(results => {
         const recommendationsByItem = results[0]!;
         const labelsMap = results[1]!;
 
@@ -70,5 +74,9 @@ export function getItemsFilterer(
         };
       }));
 
-  return new ItemFilterer(filterContextProvider, tokenizeItem, ItemsFilterMetadata);
+  const filterer = new ItemFilterer<Item, MatcherContext, AutocompleteContext>(
+      filterContextProvider, tokenizeItem, ItemsFilterMetadata);
+  filterer.autocompleteContext = ({items: store.items, labels: store.labels});
+
+  return filterer;
 }

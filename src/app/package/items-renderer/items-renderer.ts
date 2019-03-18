@@ -8,7 +8,7 @@ import {ItemSorter} from './item-sorter';
 import {IFilterMetadata} from './search-utility/filter';
 
 type DataProvider<T> = Observable<T[]>;
-type FiltererProvider<T> = Observable<ItemFilterer<T, any>>;
+type FiltererProvider<T> = Observable<ItemFilterer<T, any, any>>;
 type SortProvider<T> = Observable<ItemSorter<T>>;
 
 export interface ItemsRendererResult<T> {
@@ -54,7 +54,7 @@ export class ItemsRenderer<T> {
 
   // TODO: Implement a reasonable default filterer, at least with basic search
   /** Provider for the grouper which will group items together. */
-  filterer: ItemFilterer<T, any> =
+  filterer: ItemFilterer<T, any, any> =
       new ItemFilterer(of((_item: T) => null), (_item: T) => '', DefaultFilterMetadata);
 
   /** The grouper is responsible for grouping the filtered data into ItemGroups */

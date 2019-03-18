@@ -9,14 +9,10 @@ import {
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item} from 'app/repository/services/dao';
-import {
-  AutocompleteContext,
-  ItemsFilterMetadata
-} from 'app/repository/utility/items-renderer/items-filter-metadata';
+import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {fromEvent, Observable, ReplaySubject, Subject} from 'rxjs';
-import {auditTime, map, takeUntil} from 'rxjs/operators';
+import {auditTime, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'items-list',
@@ -41,18 +37,13 @@ export class ItemsList {
 
   issueFilterMetadata = ItemsFilterMetadata;
 
-  autocompleteContext: Observable<AutocompleteContext> =
-      this.activeRepo.store.pipe(map(store => ({items: store.items, labels: store.labels})));
-
   group = new ReplaySubject<Group>();
 
   @Input() itemsRenderer: ItemsRenderer<any>;
 
   @Input() printMode: boolean;
 
-  constructor(
-      private activeRepo: ActiveRepo, public cd: ChangeDetectorRef, public ngZone: NgZone,
-      public elementRef: ElementRef) {}
+  constructor(public cd: ChangeDetectorRef, public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
     this.group.pipe(takeUntil(this.destroyed)).subscribe(() => {
@@ -66,7 +57,7 @@ export class ItemsList {
       const scrollTop = el.scrollTop;
       const scrollHeight = el.scrollHeight;
 
-    const distanceFromBottom = scrollHeight - scrollTop - viewHeight;
+      const distanceFromBottom = scrollHeight - scrollTop - viewHeight;
       if (distanceFromBottom < 1000 && scrollTop > 200) {
         this.issuesToDisplay += 40;
         this.render();

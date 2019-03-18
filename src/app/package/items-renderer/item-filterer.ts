@@ -2,7 +2,7 @@ import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-export class ItemFilterer<T, M> {
+export class ItemFilterer<T, M, A> {
   set filters(filters: Filter[]) {
     this.filters$.next(filters);
   }
@@ -18,6 +18,11 @@ export class ItemFilterer<T, M> {
     return this.search$.value;
   }
   search$ = new BehaviorSubject<string>('');
+
+  /**
+   * Context given to a filters to provide autocomplete suggestions. Probably should be a stream?
+   */
+  autocompleteContext: A;
 
   constructor(
       private contextProvider: Observable<(item: T) => M>, public tokenizeItem: (item: T) => string,

@@ -1,7 +1,5 @@
 <ng-container *ngIf="itemGroups !== null; else loading">
-  <advanced-search [filterer]="itemsRenderer.filterer"
-                   [autocompleteContext]="autocompleteContext | async">
-  </advanced-search>
+  <advanced-search [filterer]="itemsRenderer.filterer"></advanced-search>
   <display-options-header [options]="itemsRenderer.options.state | async"
                           (optionsChanged)="itemsRenderer.options.setState($event)"
                           [grouper]="itemsRenderer.grouper"
