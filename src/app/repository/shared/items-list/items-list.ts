@@ -66,7 +66,7 @@ export class ItemsList {
       const scrollTop = el.scrollTop;
       const scrollHeight = el.scrollHeight;
 
-      const distanceFromBottom = scrollHeight - scrollTop - viewHeight;
+    const distanceFromBottom = scrollHeight - scrollTop - viewHeight;
       if (distanceFromBottom < 1000 && scrollTop > 200) {
         this.issuesToDisplay += 40;
         this.render();

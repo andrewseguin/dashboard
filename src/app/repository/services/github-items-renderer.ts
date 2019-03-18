@@ -1,14 +1,16 @@
+import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {ItemGrouper} from 'app/package/items-renderer/item-grouping';
 import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {combineLatest, of} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {getItemsFilterer} from '../utility/items-renderer/get-items-filterer';
 import {
   GithubItemGroupingMetadata,
   TitleTransformContext
 } from '../utility/items-renderer/item-grouping';
 import {MyItemSorter} from '../utility/items-renderer/item-sorter';
+import {ItemsFilterMetadata, MatcherContext} from '../utility/items-renderer/items-filter-metadata';
+import {tokenizeItem} from '../utility/tokenize-item';
 import {ActiveRepo} from './active-repo';
 import {Item, ItemType, Label} from './dao';
 import {RepoStore} from './dao/dao';
@@ -21,8 +23,7 @@ export class GithubItemsRenderer extends ItemsRenderer<Item> {
 
     const store = this.activeRepo.activeStore;
 
-    this.filtererProvider = getItemsFilterer(this.itemRecommendations, store.labels);
-
+    this.filterer = getItemsFilterer(this.itemRecommendations, store.labels);
     this.grouper = getItemsGrouper(store.labels);
     this.grouper.setGroup('all');
 
@@ -47,4 +48,27 @@ export function getItemsList(store: RepoStore, type: ItemType) {
     const pullRequests = items.filter(item => !!item.pr);
     return type === 'issue' ? issues : pullRequests;
   }));
+}
+
+export function getItemsFilterer(
+    itemRecommendations: ItemRecommendations,
+    labelsDao: ListDao<Label>): ItemFilterer<Item, MatcherContext> {
+  const filterContextProvider =
+      combineLatest(itemRecommendations.allRecommendations, labelsDao.map).pipe(map(results => {
+        const recommendationsByItem = results[0]!;
+        const labelsMap = results[1]!;
+
+        // Add name to labels map for filtering
+        labelsMap.forEach(label => labelsMap.set(label.name, label));
+
+        return (item: Item) => {
+          return {
+            item,
+            labelsMap,
+            recommendations: recommendationsByItem.get(item.id) || [],
+          };
+        };
+      }));
+
+  return new ItemFilterer(filterContextProvider, tokenizeItem, ItemsFilterMetadata);
 }

@@ -1,10 +1,6 @@
 <ng-container *ngIf="itemGroups !== null; else loading">
-  <advanced-search [search]="itemsRenderer.options.search"
-                   [filters]="itemsRenderer.options.filters"
-                   [metadata]="issueFilterMetadata"
-                   [autocompleteContext]="autocompleteContext | async"
-                   (searchChanged)="itemsRenderer.options.search = $event"
-                   (filtersChanged)="itemsRenderer.options.filters = $event">
+  <advanced-search [filterer]="itemsRenderer.filterer"
+                   [autocompleteContext]="autocompleteContext | async">
   </advanced-search>
   <display-options-header [options]="itemsRenderer.options.state | async"
                           (optionsChanged)="itemsRenderer.options.setState($event)"

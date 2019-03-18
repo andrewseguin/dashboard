@@ -3,14 +3,12 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
+import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {Query} from 'app/package/items-renderer/search-utility/query';
 import {ANIMATION_DURATION} from 'app/utility/animations';
 import {Observable, Subject} from 'rxjs';
@@ -21,7 +19,7 @@ import {debounceTime, takeUntil} from 'rxjs/operators';
   templateUrl: 'advanced-search.html',
   styleUrls: ['advanced-search.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'[class.has-filters]': 'hasDisplayedFilters()'},
+  host: {'[class.has-filters]': 'hasDisplayedFilters'},
   animations: [
     trigger(
         'expand',
@@ -55,44 +53,37 @@ export class AdvancedSearch<A> implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = (i: number) => i;
 
-  @Input() metadata: Map<string, IFilterMetadata<any, A>>;
-
-  @Input() filters: Filter[] = [];
+  @Input() filterer: ItemFilterer<any, any>;
 
   @Input() autocompleteContext: A;
 
-  @Input()
-  set search(v: string) {
-    this.searchFormControl.setValue(v, {emitEvent: false});
-  }
-  get search(): string {
-    return this.searchFormControl.value;
-  }
-
-  @Output() searchChanged = new EventEmitter<string>();
-
-  @Output() filtersChanged = new EventEmitter<Filter[]>();
-
-  constructor() {}
+  hasDisplayedFilters: boolean;
 
   ngOnInit() {
-    this.metadata.forEach((value, key) => {
+    const metadata = this.filterer.metadata;
+
+    metadata.forEach((value, key) => {
       if (value.autocomplete) {
         this.autocomplete.set(key, value.autocomplete(this.autocompleteContext));
       }
     });
 
+    this.filterer.filters$.pipe(takeUntil(this.destroyed)).subscribe(filters => {
+      this.hasDisplayedFilters = filters.some(filter => !filter.isImplicit);
+    });
+
+    this.filterer.search$.pipe(takeUntil(this.destroyed)).subscribe(search => {
+      this.searchFormControl.setValue(search, {emitEvent: false});
+    });
     this.searchFormControl.valueChanges.pipe(debounceTime(100), takeUntil(this.destroyed))
-        .subscribe(value => {
-          this.searchChanged.emit(value);
-        });
+        .subscribe(value => this.filterer.search = value);
 
     this.displayedFilterTypes =
-        Array.from(this.metadata.keys())
-            .filter(key => this.metadata.get(key) && this.metadata.get(key)!.displayName)
+        Array.from(metadata.keys())
+            .filter(key => metadata.get(key) && metadata.get(key)!.displayName)
             .sort((a, b) => {
-              const nameA = this.metadata.get(a)!.displayName || '';
-              const nameB = this.metadata.get(b)!.displayName || '';
+              const nameA = metadata.get(a)!.displayName || '';
+              const nameB = metadata.get(b)!.displayName || '';
               return nameA < nameB ? -1 : 1;
             });
   }
@@ -108,24 +99,20 @@ export class AdvancedSearch<A> implements OnInit, AfterViewInit, OnDestroy {
 
   addFilter(type: string) {
     this.focusInput = true;
-    const filters = this.filters.slice();
+    const filters = this.filterer.filters.slice();
     filters.push({type});
-    this.filtersChanged.emit(filters);
+    this.filterer.filters = filters;
   }
 
   removeFilter(index: number) {
-    const filters = this.filters.slice();
+    const filters = this.filterer.filters.slice();
     filters.splice(index, 1);
-    this.filtersChanged.emit(filters);
+    this.filterer.filters = filters;
   }
 
   queryChange(index: number, query: Query) {
-    const filters = this.filters.slice();
+    const filters = this.filterer.filters.slice();
     filters[index] = {...filters[index], query};
-    this.filtersChanged.emit(filters);
-  }
-
-  hasDisplayedFilters() {
-    return this.filters.some(filter => !filter.isImplicit);
+    this.filterer.filters = filters;
   }
 }

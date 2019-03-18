@@ -170,6 +170,8 @@ export class QueryPage {
 
   private updateItemsRenderer(options: ItemRendererOptionsState) {
     this.itemsRenderer.grouper.setGroup(options.grouping);
+    this.itemsRenderer.filterer.filters = options.filters;
+    this.itemsRenderer.filterer.search = options.search;
   }
 }
 

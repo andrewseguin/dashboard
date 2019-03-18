@@ -5,6 +5,7 @@ import {ItemFilterer} from './item-filterer';
 import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouping';
 import {ItemRendererOptions} from './item-renderer-options';
 import {ItemSorter} from './item-sorter';
+import {IFilterMetadata} from './search-utility/filter';
 
 type DataProvider<T> = Observable<T[]>;
 type FiltererProvider<T> = Observable<ItemFilterer<T, any>>;
@@ -15,7 +16,9 @@ export interface ItemsRendererResult<T> {
   count: number;
 }
 
-const DefaultGroupingMetadata = new Map<'all', GroupingMetadata<any, 'all', null>>([
+const DefaultFilterMetadata = new Map<string, IFilterMetadata<null, null>>([]);
+
+const DefaultGroupMetadata = new Map<'all', GroupingMetadata<any, 'all', null>>([
   [
     'all', {
       id: 'all',
@@ -49,8 +52,13 @@ export class ItemsRenderer<T> {
 
   filteredData = new ReplaySubject<T[]>();
 
+  // TODO: Implement a reasonable default filterer, at least with basic search
   /** Provider for the grouper which will group items together. */
-  grouper: ItemGrouper<T, any, any> = new ItemGrouper(of(null), DefaultGroupingMetadata);
+  filterer: ItemFilterer<T, any> =
+      new ItemFilterer(of((_item: T) => null), (_item: T) => '', DefaultFilterMetadata);
+
+  /** The grouper is responsible for grouping the filtered data into ItemGroups */
+  grouper: ItemGrouper<T, any, any> = new ItemGrouper(of(null), DefaultGroupMetadata);
 
   /** Provider for the sort which will sort items in each group. */
   get sorterProvider() {
@@ -90,25 +98,11 @@ export class ItemsRenderer<T> {
   }
 
   private initialize() {
-    const filteredData =
-        combineLatest(
-            this._dataProvider, this._filtererProvider, this.options.state.pipe(startWith(null)))
-            .pipe(
-                mergeMap(results => {
-                  const dataProvider = results[0];
-                  const filtererProvider = results[1];
-
-                  return combineLatest(dataProvider, filtererProvider);
-                }),
-                map(results => {
-                  const data = results[0];
-                  const filterer = results[1];
-
-                  return filterer.filter(data, this.options.filters, this.options.search);
-                }),
-                tap(filteredData => {
-                  this.filteredData.next(filteredData);
-                }));
+    const filteredData = this._dataProvider.pipe(
+        mergeMap(dataProvider => dataProvider), mergeMap(data => this.filterer.filterItems(data)),
+        tap(filteredData => {
+          this.filteredData.next(filteredData);
+        }));
 
     const groupedData = filteredData.pipe(mergeMap(items => this.grouper.groupItems(items)));
 

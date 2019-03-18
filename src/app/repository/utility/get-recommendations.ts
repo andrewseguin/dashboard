@@ -1,4 +1,4 @@
-import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
+import {filterItems, searchItems} from 'app/package/items-renderer/item-filterer';
 import {Item, Label} from '../services/dao';
 import {Recommendation} from '../services/dao/recommendation';
 import {ItemsFilterMetadata, MatcherContext} from './items-renderer/items-filter-metadata';
@@ -24,10 +24,10 @@ export function getRecommendations(
         ],  // Recommendations cannot be determined based on recommendations, TODO: or can they be?
       };
     };
-    const filterer =
-        new ItemFilterer<Item, MatcherContext>(contextProvider, tokenizeItem, ItemsFilterMetadata);
-    const matchedIssues =
-        filterer.filter([item], recommendation.filters || [], recommendation.search || '');
-    return !!matchedIssues.length;
+
+    const filteredItems = filterItems<Item, MatcherContext>(
+        [item], recommendation.filters || [], contextProvider, ItemsFilterMetadata);
+    const searchedItems = searchItems(filteredItems, recommendation.search || '', tokenizeItem);
+    return !!searchedItems.length;
   });
 }

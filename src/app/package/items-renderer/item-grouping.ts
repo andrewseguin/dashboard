@@ -15,7 +15,7 @@ export interface GroupingMetadata<T, G, C> {
 }
 
 export class ItemGrouper<T, G, C> {
-  private group = new BehaviorSubject<G|null>(null);
+  group = new BehaviorSubject<G|null>(null);
 
   constructor(
       private titleTransformContextProvider: Observable<C>,
@@ -59,6 +59,7 @@ export class ItemGrouper<T, G, C> {
     return groups;
   }
 
+  // TODO: Can remove, just use groups subject
   setGroup(group: G) {
     this.group.next(group);
   }
