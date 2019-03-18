@@ -7,12 +7,11 @@ import {
   ViewChild
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Theme} from 'app/repository/services';
-import {Item, PieChartDisplayTypeOptions, Widget} from 'app/repository/services/dao';
+import {Item, ItemType, PieChartDisplayTypeOptions, Widget} from 'app/repository/services/dao';
 import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
 import * as Chart from 'chart.js';
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
 @Component({
@@ -27,12 +26,17 @@ export class PieChart {
   @Input() widget: Widget;
 
   @ViewChild('canvas') canvas: ElementRef;
+  private itemType = new Subject<ItemType>();
 
-  private itemsRenderer: ItemsRenderer<Item>;
+  private itemsRenderer = this.itemsRendererFactory.create(this.itemType);
 
   private destroyed = new Subject();
 
   constructor(private theme: Theme, private itemsRendererFactory: ItemsRendererFactory) {}
+
+  ngOnInit() {
+    this.itemsRenderer.itemGroups.pipe(filter(v => !!v)).subscribe(groups => this.render(groups!));
+  }
 
   ngOnDestroy() {
     this.destroyed.next();
@@ -55,10 +59,9 @@ export class PieChart {
     return {data, labels};
   }
 
-  private itemsRendererSubscription: Subscription;
-
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
+      this.itemType.next(this.widget.itemType);
       this.setupItemsRenderer();
     }
   }
@@ -95,15 +98,8 @@ export class PieChart {
   private setupItemsRenderer() {
     const displayTypeOptions = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
 
-    this.itemsRenderer = this.itemsRendererFactory.create(this.widget.itemType);
     this.itemsRenderer.options.setState(
         {...this.widget.options!, grouping: displayTypeOptions.group!});
-
-    if (this.itemsRendererSubscription) {
-      this.itemsRendererSubscription.unsubscribe();
-    }
-    this.itemsRendererSubscription = this.itemsRenderer.itemGroups.pipe(filter(v => !!v))
-                                         .subscribe(groups => this.render(groups!));
   }
 }
 

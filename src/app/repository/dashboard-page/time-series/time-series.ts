@@ -7,12 +7,10 @@ import {
   ViewChild
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {Item, TimeSeriesDisplayTypeOptions, Widget} from 'app/repository/services/dao';
+import {Item, ItemType, TimeSeriesDisplayTypeOptions, Widget} from 'app/repository/services/dao';
 import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
 import * as Chart from 'chart.js';
-import {Subject, Subscription} from 'rxjs';
-import {filter} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 interface CreatedAndClosedDate {
   created: string;
@@ -46,13 +44,17 @@ export class TimeSeries {
 
   private destroyed = new Subject();
 
-  private itemsRenderer: ItemsRenderer<Item>;
+  private itemType = new Subject<ItemType>();
 
-  private itemsRendererSubscription: Subscription;
+  private itemsRenderer = this.itemsRendererFactory.create(this.itemType);
 
-  constructor(private itemsRendererFactory: ItemsRendererFactory) {}
+  constructor(private itemsRendererFactory: ItemsRendererFactory) {
+    this.itemsRenderer = this.itemsRendererFactory.create(this.itemType);
+  }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.itemsRenderer.itemGroups.subscribe(groups => this.render(groups!));
+  }
 
   ngOnDestroy() {
     this.destroyed.next();
@@ -61,20 +63,9 @@ export class TimeSeries {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.setupItemsRenderer();
+      this.itemType.next(this.widget.itemType);
+      this.itemsRenderer.options.setState(this.widget.options);
     }
-  }
-
-  private setupItemsRenderer() {
-    this.itemsRenderer = this.itemsRendererFactory.create(this.widget.itemType);
-    this.itemsRenderer.options.setState(this.widget.options);
-
-    if (this.itemsRendererSubscription) {
-      this.itemsRendererSubscription.unsubscribe();
-    }
-    
-    this.itemsRendererSubscription = this.itemsRenderer.itemGroups.pipe(filter(v => !!v))
-                                         .subscribe(groups => this.render(groups!));
   }
 
   getDateCounts(dates: CreatedAndClosedDate[]): DateCount[] {
