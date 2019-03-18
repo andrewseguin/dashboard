@@ -15,7 +15,9 @@ export class ItemsRendererFactory {
 
   create(type: Observable<ItemType>): ItemsRenderer<Item> {
     const store = this.activeRepo.activeStore;
-    const items = combineLatest(store.items.list, type).pipe(map(results => {
+
+    const itemsRenderer = new ItemsRenderer<Item>();
+    itemsRenderer.data = combineLatest(store.items.list, type).pipe(map(results => {
       const items = results[0];
       const type = results[1];
 
@@ -23,11 +25,11 @@ export class ItemsRendererFactory {
       const pullRequests = items.filter(item => !!item.pr);
       return type === 'issue' ? issues : pullRequests;
     }));
+    itemsRenderer.filterer = getItemsFilterer(this.itemRecommendations, store.labels);
+    itemsRenderer.grouper = getItemsGrouper(store.labels);
+    
+    itemsRenderer.initialize(new MyItemSorter());
 
-    const itemsRenderer = new ItemsRenderer<Item>();
-    itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, store.labels),
-        getItemsGrouper(store.labels), new MyItemSorter());
 
     return itemsRenderer;
   }

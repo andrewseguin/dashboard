@@ -6,7 +6,7 @@ export class ItemFilterer<T, M> {
       private contextProvider: (item: T) => M, public tokenizeItem: (item: T) => string,
       private metadata: Map<string, IFilterMetadata<M, any>>) {}
 
-  filter(items: T[], filters: Filter[], search: string) {
+  filter(items: T[], filters: Filter[], search: string): T[] {
     const filteredItems = items.filter(item => {
       return filters.every(filter => {
         if (!filter.query) {
@@ -27,7 +27,7 @@ export class ItemFilterer<T, M> {
     return this.search(filteredItems, search);
   }
 
-  private search(items: T[], search: string) {
+  private search(items: T[], search: string): T[] {
     return !search ? items : items.filter(item => {
       const tokens = search.split(' OR ');
       return tokens.some(token => {

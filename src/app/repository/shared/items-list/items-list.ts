@@ -70,15 +70,16 @@ export class ItemsList {
 
   ngOnInit() {
     const store = this.activeRepo.activeStore;
-    const items = store.items.list.pipe(map(items => {
+
+    this.itemsRenderer.data = store.items.list.pipe(map(items => {
       const issues = items.filter(item => !item.pr);
       const pullRequests = items.filter(item => !!item.pr);
       return this.type === 'issue' ? issues : pullRequests;
-    }));
+    }));;
+    this.itemsRenderer.filterer = getItemsFilterer(this.itemRecommendations, store.labels);
+    this.itemsRenderer.grouper = getItemsGrouper(store.labels);
 
-    this.itemsRenderer.initialize(
-        items, getItemsFilterer(this.itemRecommendations, store.labels),
-        getItemsGrouper(store.labels), new MyItemSorter());
+    this.itemsRenderer.initialize(new MyItemSorter());
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.optionsStateChanged.next(options.getState());
