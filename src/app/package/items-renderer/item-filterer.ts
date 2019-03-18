@@ -1,6 +1,5 @@
 import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
 
-
 export class ItemFilterer<T, M> {
   constructor(
       private contextProvider: (item: T) => M, public tokenizeItem: (item: T) => string,

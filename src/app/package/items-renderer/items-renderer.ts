@@ -2,19 +2,28 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {filter, map, mergeMap, startWith, tap} from 'rxjs/operators';
 import {ItemFilterer} from './item-filterer';
-import {ItemGroup, ItemGrouping} from './item-grouping';
+import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouping';
 import {ItemRendererOptions} from './item-renderer-options';
 import {ItemSorter} from './item-sorter';
 
 type DataProvider<T> = Observable<T[]>;
 type FiltererProvider<T> = Observable<ItemFilterer<T, any>>;
-type GrouperProvider<T> = Observable<ItemGrouping<T>>;
 type SortProvider<T> = Observable<ItemSorter<T>>;
 
 export interface ItemsRendererResult<T> {
   groups: ItemGroup<T>[];
   count: number;
 }
+
+const DefaultGroupingMetadata = new Map<'all', GroupingMetadata<any, 'all', null>>([
+  [
+    'all', {
+      id: 'all',
+      label: 'All',
+      groupingFunction: (items: any[]) => [{id: 'all', title: 'All', items}]
+    }
+  ],
+]);
 
 @Injectable()
 export class ItemsRenderer<T> {
@@ -41,14 +50,7 @@ export class ItemsRenderer<T> {
   filteredData = new ReplaySubject<T[]>();
 
   /** Provider for the grouper which will group items together. */
-  get grouperProvider() {
-    return this._grouperProvider.value;
-  }
-  set grouperProvider(grouperProvider: GrouperProvider<T>) {
-    this._grouperProvider.next(grouperProvider);
-  }
-  private readonly _grouperProvider = new BehaviorSubject<GrouperProvider<T>|null>(null).pipe(
-                                          filter(v => !!v)) as BehaviorSubject<GrouperProvider<T>>;
+  grouper: ItemGrouper<T, any, any> = new ItemGrouper(of(null), DefaultGroupingMetadata);
 
   /** Provider for the sort which will sort items in each group. */
   get sorterProvider() {
@@ -108,18 +110,7 @@ export class ItemsRenderer<T> {
                   this.filteredData.next(filteredData);
                 }));
 
-    // TODO: Options contains too much - group options should be separated
-    const groupedData = this._grouperProvider.pipe(
-        mergeMap(
-            grouper =>
-                combineLatest(filteredData, grouper, this.options.state.pipe(startWith(null)))),
-        map(results => {
-          const filteredData = results[0];
-          const grouper = results[1];
-          let itemGroups = grouper.getGroups(filteredData, this.options.grouping);
-
-          return itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
-        }));
+    const groupedData = filteredData.pipe(mergeMap(items => this.grouper.groupItems(items)));
 
     const sortedData = this._sorterProvider.pipe(
         mergeMap(

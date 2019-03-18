@@ -8,8 +8,10 @@ import {
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {Theme} from 'app/repository/services';
-import {Item, ItemType, PieChartDisplayTypeOptions, Widget} from 'app/repository/services/dao';
-import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
+import {ActiveRepo} from 'app/repository/services/active-repo';
+import {Item, PieChartDisplayTypeOptions, Widget} from 'app/repository/services/dao';
+import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 
@@ -25,13 +27,14 @@ export class PieChart {
   @Input() widget: Widget;
 
   @ViewChild('canvas') canvas: ElementRef;
-  private itemType = new Subject<ItemType>();
 
-  private itemsRenderer = this.itemsRendererFactory.create(this.itemType);
+  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
 
   private destroyed = new Subject();
 
-  constructor(private theme: Theme, private itemsRendererFactory: ItemsRendererFactory) {}
+  constructor(
+      private theme: Theme, private itemRecommendations: ItemRecommendations,
+      private activeRepo: ActiveRepo) {}
 
   ngOnInit() {
     this.itemsRenderer.connect().subscribe(result => this.render(result.groups));
@@ -60,7 +63,8 @@ export class PieChart {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemType.next(this.widget.itemType);
+      this.itemsRenderer.dataProvider =
+          getItemsList(this.activeRepo.activeStore, this.widget.itemType);
       this.setupItemsRenderer();
     }
   }

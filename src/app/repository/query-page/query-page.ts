@@ -15,6 +15,8 @@ import {ItemType} from '../services/dao';
 import {RepoStore} from '../services/dao/dao';
 import {Widget} from '../services/dao/dashboard';
 import {Query} from '../services/dao/query';
+import {getItemsList, GithubItemsRenderer} from '../services/github-items-renderer';
+import {ItemRecommendations} from '../services/item-recommendations';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
 
 
@@ -28,11 +30,16 @@ export class QueryPage {
   isMobile = isMobile;
 
   set query(query: Query) {
-    // When a query is set, the options state should be updated to be
-    // whatever the query is, and the title should always match
     this._query = query;
+
+    const type = this._query.type;
+    if (type) {
+      this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, type);
+    }
+
     if (this.query.options) {
       this.currentOptions = this.query.options;
+      this.updateItemsRenderer(this.query.options);
     }
 
     this.header.title.next(this.query.name || '');
@@ -64,12 +71,14 @@ export class QueryPage {
   private destroyed = new Subject();
   private getSubscription: Subscription;
 
+  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
+
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
-      private activeRepo: ActiveRepo, private header: Header, private queryDialog: QueryDialog,
-      private cd: ChangeDetectorRef) {
+      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo,
+      private header: Header, private queryDialog: QueryDialog, private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
       this.canSave = false;
@@ -157,6 +166,10 @@ export class QueryPage {
         }
       });
     });
+  }
+
+  private updateItemsRenderer(options: ItemRendererOptionsState) {
+    this.itemsRenderer.grouper.setGroup(options.grouping);
   }
 }
 

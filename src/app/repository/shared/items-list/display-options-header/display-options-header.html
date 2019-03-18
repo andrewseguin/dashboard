@@ -18,11 +18,11 @@
 <!-- Group Menu -->
 <mat-menu #groupingMenu="matMenu">
   <button mat-menu-item *ngFor="let groupId of groupIds"
-          [class.selected]="options.grouping == groupId"
-          (click)="this.setGroup(groupId); $event.stopPropagation();">
+          [class.selected]="(grouper.group | async) === groupId"
+          (click)="grouper.setGroup(groupId); $event.stopPropagation();">
     <div class="button-content">
       <mat-icon>check</mat-icon>
-      {{groups.get(groupId)}}
+      {{groups.get(groupId).label}}
     </div>
   </button>
 </mat-menu>

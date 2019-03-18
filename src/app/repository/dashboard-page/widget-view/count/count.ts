@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
-import {ItemType, Widget} from 'app/repository/services/dao';
-import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
-import {Subject} from 'rxjs';
+import {ActiveRepo} from 'app/repository/services/active-repo';
+import {Widget} from 'app/repository/services/dao';
+import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
 import {map} from 'rxjs/operators';
+import { ItemRecommendations } from 'app/repository/services/item-recommendations';
 
 @Component({
   selector: 'count',
@@ -13,17 +14,16 @@ import {map} from 'rxjs/operators';
 export class Count {
   @Input() widget: Widget;
 
-  private itemType = new Subject<ItemType>();
-
-  private itemsRenderer = this.itemsRendererFactory.create(this.itemType);
+  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
 
   count = this.itemsRenderer.connect().pipe(map(result => result.count));
 
-  constructor(private itemsRendererFactory: ItemsRendererFactory) {}
+  constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemType.next(this.widget.itemType);
+      this.itemsRenderer.dataProvider =
+          getItemsList(this.activeRepo.activeStore, this.widget.itemType);
       this.itemsRenderer.options.filters = this.widget.options.filters;
       this.itemsRenderer.options.search = this.widget.options.search;
     }

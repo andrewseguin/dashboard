@@ -1,4 +1,5 @@
-import {Group} from './item-renderer-options';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {filter, map, mergeMap} from 'rxjs/operators';
 
 export class ItemGroup<T> {
   id: string;
@@ -6,50 +7,69 @@ export class ItemGroup<T> {
   items: T[];
 }
 
-export interface AutoGroup<G> {
-  group: G;
-  type: 'value'|'list';
-  key: string;
-  transform?: (value: string) => string;
+export interface GroupingMetadata<T, G, C> {
+  id: G;
+  label: string;
+  groupingFunction: (items: T[]) => ItemGroup<T>[];
+  titleTransform?: (title: string, c: C) => string;
 }
 
-export class ItemGrouping<T> {
-  groupingFunctions = new Map<string, (items: T[]) => ItemGroup<T>[]>();
+export class ItemGrouper<T, G, C> {
+  private group = new BehaviorSubject<G|null>(null);
 
-  constructor(autoGroups: AutoGroup<any>[]) {
-    this.groupingFunctions.set('all', (items: T[]) => {
-      return [{id: 'all', title: ``, items}];
-    });
+  constructor(
+      private titleTransformContextProvider: Observable<C>,
+      public metadata: Map<G, GroupingMetadata<T, G, C>>) {}
 
-    autoGroups.forEach(autoGroup => {
-      const key = autoGroup.key;
-      const transform = autoGroup.transform || ((v: string) => v || 'None');
-      switch (autoGroup.type) {
-        case 'value':
-          this.groupingFunctions.set(
-              autoGroup.group, (items: T[]) => getGroupByValue(items, key, transform));
-          break;
-        case 'list':
-          this.groupingFunctions.set(
-              autoGroup.group, (items: T[]) => getGroupByListValues(items, key, transform));
-          break;
-      }
-    });
+  groupItems(items: T[]): Observable<ItemGroup<T>[]> {
+    let config: GroupingMetadata<T, G, C>|null;
+    return this.group.pipe(
+        filter(v => !!v), map(group => {
+          group = group!;
+
+          if (this.metadata.has(group)) {
+            config = this.metadata.get(group) || null;
+          }
+
+          if (!config) {
+            throw Error(`Missing config for group ${group}`);
+          }
+
+          return config.groupingFunction(items);
+        }),
+        mergeMap(itemGroups => {
+          const titleTransform = config!.titleTransform || ((title: string) => title);
+
+          return this.titleTransformContextProvider.pipe(map(context => {
+            itemGroups.forEach(itemGroup => {
+              itemGroup.title = titleTransform(itemGroup.title, context);
+            });
+            return itemGroups;
+          }));
+        }),
+        map(itemGroups => {
+          // TODO: Move sort function to the metadata
+          return itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
+        }));
   }
 
-  getGroups(items: T[], group: Group): ItemGroup<T>[] {
-    const groupingFunction = this.groupingFunctions.get(group);
-    return groupingFunction ? groupingFunction(items) : [];
+  getGroups(): GroupingMetadata<T, G, C>[] {
+    const groups: GroupingMetadata<T, G, C>[] = [];
+    this.metadata.forEach(group => groups.push(group));
+    return groups;
+  }
+
+  setGroup(group: G) {
+    this.group.next(group);
   }
 }
 
-
-export function getGroupByValue<T>(
-    items: T[], property: string, transform: (v: string) => string): ItemGroup<T>[] {
+/** Utility function that creates a group based on the value of the item's property. */
+export function getGroupByValue<T>(items: T[], property: string): ItemGroup<T>[] {
   const map: Map<string, T[]> = new Map();
 
   items.forEach((item: any) => {
-    const value = transform(item[property]);
+    const value = item[property];
     if (!map.has(value)) {
       map.set(value, []);
     }
@@ -60,13 +80,12 @@ export function getGroupByValue<T>(
   return getGroupsFromMap(map);
 }
 
-export function getGroupByListValues<T>(
-    items: T[], key: string, transform: (v: string) => string): ItemGroup<T>[] {
+/** Utility function that creates a group based on the list of values of the item's property. */
+export function getGroupByListValues<T>(items: T[], key: string): ItemGroup<T>[] {
   const map: Map<string, T[]> = new Map();
   items.forEach((item: any) => {
     const values: any[] = item[key] ? item[key] : [];
     values.forEach((value: any) => {
-      value = transform(value);
       if (!map.get(value)) {
         map.set(value, []);
       }
@@ -77,7 +96,8 @@ export function getGroupByListValues<T>(
   return getGroupsFromMap(map);
 }
 
-export function getGroupsFromMap<T>(groupsMap: Map<string, T[]>) {
+/** Utility function that transforms a map of groups into a list. */
+export function getGroupsFromMap<T>(groupsMap: Map<string, T[]>): ItemGroup<T>[] {
   const groups: ItemGroup<T>[] = [];
   groupsMap.forEach((items, title) => {
     groups.push({id: title, title, items});

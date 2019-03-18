@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {GroupingMetadata, ItemGrouper} from 'app/package/items-renderer/item-grouping';
 import {
-  Group,
-  GroupIds,
-  Groups,
   ItemRendererOptionsState,
   Sort,
   ViewKey
@@ -14,9 +12,9 @@ import {
   styleUrls: ['display-options-header.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DisplayOptionsHeader {
-  groups = Groups;
-  groupIds = GroupIds;
+export class DisplayOptionsHeader<G> {
+  groups: Map<G, GroupingMetadata<any, G, any>>;
+  groupIds: G[] = [];
 
   sorts = new Map<Sort, string>([
     ['created', 'Date created'],
@@ -38,6 +36,19 @@ export class DisplayOptionsHeader {
   @Input() options: ItemRendererOptionsState;
 
   @Input() itemCount: number;
+
+  @Input()
+  set grouper(grouper: ItemGrouper<any, G, any>) {
+    this._grouper = grouper;
+    if (this.grouper) {
+      this.groups = this.grouper.metadata;
+      this.groupIds = this.grouper.getGroups().map(value => value.id);
+    }
+  }
+  get grouper(): ItemGrouper<any, G, any> {
+    return this._grouper;
+  }
+  _grouper: ItemGrouper<any, G, any>;
 
   @Output() optionsChanged = new EventEmitter<ItemRendererOptionsState>();
 
@@ -61,11 +72,5 @@ export class DisplayOptionsHeader {
     const options = {...this.options};
     options.view = view;
     this.optionsChanged.emit({...options});
-  }
-
-  setGroup(grouping: Group) {
-    const options = {...this.options};
-    options.grouping = grouping;
-    this.optionsChanged.emit(options);
   }
 }

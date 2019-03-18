@@ -6,9 +6,7 @@ import {
   Groups,
   ItemRendererOptions
 } from 'app/package/items-renderer/item-renderer-options';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Item} from 'app/repository/services/dao';
 import {
   DisplayType,
   ItemCountDisplayTypeOptions,
@@ -20,7 +18,8 @@ import {
 } from 'app/repository/services/dao/dashboard';
 import {Query} from 'app/repository/services/dao/query';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
-import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
+import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {
   AutocompleteContext,
   ItemsFilterMetadata
@@ -70,10 +69,10 @@ export class EditWidget {
 
   private _destroyed = new Subject();
 
-  public itemsRenderer: ItemsRenderer<Item>;
+  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
 
   constructor(
-      private itemsRendererFactory: ItemsRendererFactory, private activeRepo: ActiveRepo,
+      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo,
       private cd: ChangeDetectorRef, private dialogRef: MatDialogRef<EditWidget, Widget>,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     this.groupIds.splice(this.groupIds.indexOf('all'), 1);
@@ -86,8 +85,8 @@ export class EditWidget {
         });
 
     // this.itemsRenderer = this.itemsRendererFactory.create(this.widget.itemType);
-    this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(itemType => {
-      this.itemsRenderer = this.itemsRendererFactory.create(itemType);
+    this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(type => {
+      this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, type);
       this.itemsRenderer.options.setState(this.widget.options);
       this.cd.markForCheck();
     });

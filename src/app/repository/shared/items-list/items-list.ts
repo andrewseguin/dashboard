@@ -3,22 +3,20 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
   Input,
-  NgZone,
-  Output
+  NgZone
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
-import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
+import {Group} from 'app/package/items-renderer/item-renderer-options';
+import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Item, ItemType} from 'app/repository/services/dao';
-import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
+import {Item} from 'app/repository/services/dao';
 import {
   AutocompleteContext,
   ItemsFilterMetadata
 } from 'app/repository/utility/items-renderer/items-filter-metadata';
 import {fromEvent, Observable, ReplaySubject, Subject} from 'rxjs';
-import {auditTime, debounceTime, map, takeUntil} from 'rxjs/operators';
+import {auditTime, map, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'items-list',
@@ -46,31 +44,18 @@ export class ItemsList {
   autocompleteContext: Observable<AutocompleteContext> =
       this.activeRepo.store.pipe(map(store => ({items: store.items, labels: store.labels})));
 
-  itemType = new ReplaySubject<ItemType>();
+  group = new ReplaySubject<Group>();
 
-  private itemsRenderer = this.itemsRendererFactory.create(this.itemType);
-
-  @Input()
-  set optionsState(state: ItemRendererOptionsState) {
-    this.itemsRenderer.options.setState(state);
-  }
+  @Input() itemsRenderer: ItemsRenderer<any>;
 
   @Input() printMode: boolean;
 
-  @Input() type: ItemType;
-
-  @Output() optionsStateChanged = new EventEmitter<ItemRendererOptionsState>();
-
   constructor(
-      private itemsRendererFactory: ItemsRendererFactory, private activeRepo: ActiveRepo,
-      public cd: ChangeDetectorRef, public ngZone: NgZone, public elementRef: ElementRef) {}
+      private activeRepo: ActiveRepo, public cd: ChangeDetectorRef, public ngZone: NgZone,
+      public elementRef: ElementRef) {}
 
   ngOnInit() {
-    this.itemType.next(this.type);
-
-    const options = this.itemsRenderer.options;
-    options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
-      this.optionsStateChanged.next(options.getState());
+    this.group.pipe(takeUntil(this.destroyed)).subscribe(() => {
       this.elementRef.nativeElement.scrollTop = 0;
     });
 

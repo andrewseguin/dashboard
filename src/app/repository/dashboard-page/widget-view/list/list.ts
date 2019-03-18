@@ -7,8 +7,10 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {View} from 'app/package/items-renderer/item-renderer-options';
-import {Item, ItemListDisplayTypeOptions, ItemType, Widget} from 'app/repository/services/dao';
-import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
+import {ActiveRepo} from 'app/repository/services/active-repo';
+import {Item, ItemListDisplayTypeOptions, Widget} from 'app/repository/services/dao';
+import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -32,13 +34,11 @@ export class List {
 
   private destroyed = new Subject();
 
-  private itemType = new Subject<ItemType>();
-
-  private itemsRenderer = this.itemsRendererFactory.create(this.itemType);
+  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
 
   constructor(
       private dialog: MatDialog, private cd: ChangeDetectorRef,
-      private itemsRendererFactory: ItemsRendererFactory) {}
+      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo) {}
 
   ngOnInit() {
     this.itemsRenderer.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
@@ -50,7 +50,8 @@ export class List {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemType.next(this.widget.itemType);
+      this.itemsRenderer.dataProvider =
+          getItemsList(this.activeRepo.activeStore, this.widget.itemType);
       this.itemsRenderer.options.setState(this.widget.options!);
       this.listLength = (this.widget.displayTypeOptions as ItemListDisplayTypeOptions).listLength;
     }

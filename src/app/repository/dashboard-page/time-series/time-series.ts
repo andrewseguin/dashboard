@@ -7,8 +7,10 @@ import {
   ViewChild
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
-import {Item, ItemType, TimeSeriesDisplayTypeOptions, Widget} from 'app/repository/services/dao';
-import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
+import {ActiveRepo} from 'app/repository/services/active-repo';
+import {Item, TimeSeriesDisplayTypeOptions, Widget} from 'app/repository/services/dao';
+import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 
@@ -44,13 +46,9 @@ export class TimeSeries {
 
   private destroyed = new Subject();
 
-  private itemType = new Subject<ItemType>();
+  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
 
-  private itemsRenderer = this.itemsRendererFactory.create(this.itemType);
-
-  constructor(private itemsRendererFactory: ItemsRendererFactory) {
-    this.itemsRenderer = this.itemsRendererFactory.create(this.itemType);
-  }
+  constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo) {}
 
   ngOnInit() {
     this.itemsRenderer.connect().subscribe(result => this.render(result.groups));
@@ -63,7 +61,8 @@ export class TimeSeries {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemType.next(this.widget.itemType);
+      this.itemsRenderer.dataProvider =
+          getItemsList(this.activeRepo.activeStore, this.widget.itemType);
       this.itemsRenderer.options.setState(this.widget.options);
     }
   }

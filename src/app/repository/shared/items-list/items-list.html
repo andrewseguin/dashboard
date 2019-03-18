@@ -8,6 +8,7 @@
   </advanced-search>
   <display-options-header [options]="itemsRenderer.options.state | async"
                           (optionsChanged)="itemsRenderer.options.setState($event)"
+                          [grouper]="itemsRenderer.grouper"
                           [itemCount]="(itemsRenderer.filteredData | async)?.length">
   </display-options-header>
 
