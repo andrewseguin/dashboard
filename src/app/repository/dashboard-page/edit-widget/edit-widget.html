@@ -117,7 +117,7 @@
     <display-options-header [hideGrouping]="true"
                             [options]="itemsRenderer.options.state | async"
                             (optionsChanged)="itemsRenderer.options.setState($event)"
-                            [itemCount]="itemsRenderer.itemCount | async">
+                            [itemCount]="(itemsRenderer.filteredData | async)?.length">
     </display-options-header>
   </div>
 </div>

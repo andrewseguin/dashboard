@@ -12,7 +12,6 @@ import {Item, ItemType, PieChartDisplayTypeOptions, Widget} from 'app/repository
 import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
-import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'pie-chart',
@@ -35,7 +34,7 @@ export class PieChart {
   constructor(private theme: Theme, private itemsRendererFactory: ItemsRendererFactory) {}
 
   ngOnInit() {
-    this.itemsRenderer.itemGroups.pipe(filter(v => !!v)).subscribe(groups => this.render(groups!));
+    this.itemsRenderer.connect().subscribe(result => this.render(result.groups));
   }
 
   ngOnDestroy() {
@@ -67,10 +66,10 @@ export class PieChart {
   }
 
   render(groups: ItemGroup<Item>[]) {
-    const filteredGroups =
-        (this.widget.displayTypeOptions as PieChartDisplayTypeOptions).filteredGroups!;
-    if (filteredGroups) {
-      const filteredGroupsSet = new Set<string>(filteredGroups.split(',').map(v => v.trim()));
+    const options = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
+    if (options.filteredGroups) {
+      const filteredGroupsSet =
+          new Set<string>(options.filteredGroups.split(',').map(v => v.trim()));
       groups = groups.filter(g => filteredGroupsSet.has(g.title));
     }
 

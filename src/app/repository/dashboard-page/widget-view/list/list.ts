@@ -41,9 +41,9 @@ export class List {
       private itemsRendererFactory: ItemsRendererFactory) {}
 
   ngOnInit() {
-    this.itemsRenderer.itemGroups.pipe(takeUntil(this.destroyed)).subscribe(itemGroups => {
+    this.itemsRenderer.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
       this.items = [];
-      itemGroups.forEach(itemGroup => this.items.push(...itemGroup.items));
+      result.groups.forEach(itemGroup => this.items.push(...itemGroup.items));
       this.cd.markForCheck();
     });
   }

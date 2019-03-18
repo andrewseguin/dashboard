@@ -21,8 +21,8 @@ import {
   AutocompleteContext,
   ItemsFilterMetadata
 } from 'app/repository/utility/items-renderer/items-filter-metadata';
-import {fromEvent, Observable, Subject} from 'rxjs';
-import {auditTime, debounceTime, filter, map, takeUntil} from 'rxjs/operators';
+import {fromEvent, Observable, of, Subject} from 'rxjs';
+import {auditTime, debounceTime, map, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'items-list',
@@ -71,15 +71,16 @@ export class ItemsList {
   ngOnInit() {
     const store = this.activeRepo.activeStore;
 
-    this.itemsRenderer.data = store.items.list.pipe(map(items => {
+    this.itemsRenderer.dataProvider = store.items.list.pipe(map(items => {
       const issues = items.filter(item => !item.pr);
       const pullRequests = items.filter(item => !!item.pr);
       return this.type === 'issue' ? issues : pullRequests;
-    }));;
-    this.itemsRenderer.filterer = getItemsFilterer(this.itemRecommendations, store.labels);
-    this.itemsRenderer.grouper = getItemsGrouper(store.labels);
+    }));
 
-    this.itemsRenderer.initialize(new MyItemSorter());
+    this.itemsRenderer.filtererProvider = getItemsFilterer(this.itemRecommendations, store.labels);
+    this.itemsRenderer.grouperProvider = getItemsGrouper(store.labels);
+    this.itemsRenderer.sorterProvider = of(new MyItemSorter());
+
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
       this.optionsStateChanged.next(options.getState());
@@ -107,13 +108,11 @@ export class ItemsList {
       }
     });
 
-    // When groups change, render the first ten, then debounce and
-    // render more
-    this.itemsRenderer.itemGroups.pipe(filter(v => !!v), takeUntil(this.destroyed))
-        .subscribe(itemGroups => {
-          this.itemGroups = itemGroups!;
-          this.render();
-        });
+    // When groups change, render the first ten, then debounce and render more
+    this.itemsRenderer.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
+      this.itemGroups = result.groups;
+      this.render();
+    });
   }
 
   ngOnDestroy() {

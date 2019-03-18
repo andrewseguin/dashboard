@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {getItemsFilterer} from '../utility/items-renderer/get-items-filterer';
 import {getItemsGrouper} from '../utility/items-renderer/get-items-grouper';
@@ -17,7 +17,7 @@ export class ItemsRendererFactory {
     const store = this.activeRepo.activeStore;
 
     const itemsRenderer = new ItemsRenderer<Item>();
-    itemsRenderer.data = combineLatest(store.items.list, type).pipe(map(results => {
+    itemsRenderer.dataProvider = combineLatest(store.items.list, type).pipe(map(results => {
       const items = results[0];
       const type = results[1];
 
@@ -25,11 +25,10 @@ export class ItemsRendererFactory {
       const pullRequests = items.filter(item => !!item.pr);
       return type === 'issue' ? issues : pullRequests;
     }));
-    itemsRenderer.filterer = getItemsFilterer(this.itemRecommendations, store.labels);
-    itemsRenderer.grouper = getItemsGrouper(store.labels);
-    
-    itemsRenderer.initialize(new MyItemSorter());
 
+    itemsRenderer.filtererProvider = getItemsFilterer(this.itemRecommendations, store.labels);
+    itemsRenderer.grouperProvider = getItemsGrouper(store.labels);
+    itemsRenderer.sorterProvider = of(new MyItemSorter());
 
     return itemsRenderer;
   }

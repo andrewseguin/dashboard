@@ -1,4 +1,4 @@
-<ng-container *ngIf="(itemsRenderer.itemGroups | async) !== null; else loading">
+<ng-container *ngIf="itemGroups !== null; else loading">
   <advanced-search [search]="itemsRenderer.options.search"
                    [filters]="itemsRenderer.options.filters"
                    [metadata]="issueFilterMetadata"
@@ -8,7 +8,7 @@
   </advanced-search>
   <display-options-header [options]="itemsRenderer.options.state | async"
                           (optionsChanged)="itemsRenderer.options.setState($event)"
-                          [itemCount]="itemsRenderer.itemCount | async">
+                          [itemCount]="(itemsRenderer.filteredData | async)?.length">
   </display-options-header>
 
   <div class="issues-container">

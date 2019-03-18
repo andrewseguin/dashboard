@@ -53,7 +53,7 @@ export class TimeSeries {
   }
 
   ngOnInit() {
-    this.itemsRenderer.itemGroups.subscribe(groups => this.render(groups!));
+    this.itemsRenderer.connect().subscribe(result => this.render(result.groups));
   }
 
   ngOnDestroy() {

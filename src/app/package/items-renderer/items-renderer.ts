@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {filter, map, mergeMap, startWith, tap} from 'rxjs/operators';
 import {ItemFilterer} from './item-filterer';
 import {ItemGroup, ItemGrouping} from './item-grouping';
@@ -9,63 +9,87 @@ import {ItemSorter} from './item-sorter';
 type DataProvider<T> = Observable<T[]>;
 type FiltererProvider<T> = Observable<ItemFilterer<T, any>>;
 type GrouperProvider<T> = Observable<ItemGrouping<T>>;
+type SortProvider<T> = Observable<ItemSorter<T>>;
 
+export interface ItemsRendererResult<T> {
+  groups: ItemGroup<T>[];
+  count: number;
+}
 @Injectable()
 export class ItemsRenderer<T> {
-  /** Observable that provides the items to be filtered. */
-  get data() {
-    return this._data.value;
+  /** Provider for the items to be filtered, grouped, and sorted. */
+  get dataProvider() {
+    return this._dataProvider.value;
   }
-  set data(data: Observable<T[]>) {
-    this._data.next(data);
+  set dataProvider(dataProvider: Observable<T[]>) {
+    this._dataProvider.next(dataProvider);
   }
-  private readonly _data = new BehaviorSubject<DataProvider<T>>(of([]));
+  private readonly _dataProvider = new BehaviorSubject<DataProvider<T>>(of([]));
 
-  /** Provider for the filterer used to filter items. */
-  get filterer() {
-    return this._filterer.value;
+  /** Provider for the filterer that will filter the items. */
+  get filtererProvider() {
+    return this._filtererProvider.value;
   }
-  set filterer(filterer: FiltererProvider<T>) {
-    this._filterer.next(filterer);
+  set filtererProvider(filtererProvider: FiltererProvider<T>) {
+    this._filtererProvider.next(filtererProvider);
   }
-  private readonly _filterer = new BehaviorSubject<FiltererProvider<T>|null>(null).pipe(
-                                   filter(v => !!v)) as BehaviorSubject<FiltererProvider<T>>;
+  private readonly _filtererProvider =
+      new BehaviorSubject<FiltererProvider<T>|null>(null).pipe(filter(v => !!v)) as
+      BehaviorSubject<FiltererProvider<T>>;
+
+  filteredData = new ReplaySubject<T[]>();
 
   /** Provider for the grouper which will group items together. */
-  get grouper() {
-    return this._grouper.value;
+  get grouperProvider() {
+    return this._grouperProvider.value;
   }
-  set grouper(grouper: GrouperProvider<T>) {
-    this._grouper.next(grouper);
+  set grouperProvider(grouperProvider: GrouperProvider<T>) {
+    this._grouperProvider.next(grouperProvider);
   }
-  private readonly _grouper = new BehaviorSubject<GrouperProvider<T>|null>(null).pipe(
-                                  filter(v => !!v)) as BehaviorSubject<GrouperProvider<T>>;
+  private readonly _grouperProvider = new BehaviorSubject<GrouperProvider<T>|null>(null).pipe(
+                                          filter(v => !!v)) as BehaviorSubject<GrouperProvider<T>>;
+
+  /** Provider for the sort which will sort items in each group. */
+  get sorterProvider() {
+    return this._sorterProvider.value;
+  }
+  set sorterProvider(sorterProvider: SortProvider<T>) {
+    this._sorterProvider.next(sorterProvider);
+  }
+  private readonly _sorterProvider = new BehaviorSubject<SortProvider<T>|null>(null).pipe(
+                                         filter(v => !!v)) as BehaviorSubject<SortProvider<T>>;
 
   options: ItemRendererOptions = new ItemRendererOptions();
 
-  _itemGroups = new BehaviorSubject<ItemGroup<T>[]|null>(null);
-  itemGroups = this._itemGroups.pipe(filter(v => !!v)) as Observable<ItemGroup<T>[]>;
+  /** Stream emitting render data to the table (depends on ordered data changes). */
+  private readonly _renderData = new ReplaySubject<ItemsRendererResult<T>>();
 
-  // Number of items in the item groups.
-  itemCount = new BehaviorSubject<number|null>(null);
-
-  private initSubscription: Subscription;
+  /**
+   * Subscription to the changes that should trigger an update to the table's rendered rows, such
+   * as filtering, sorting, pagination, or base data changes.
+   */
+  _renderChangesSubscription: Subscription;
 
   constructor() {}
 
   ngOnDestroy() {
-    if (this.initSubscription) {
-      this.initSubscription.unsubscribe();
+    if (this._renderChangesSubscription) {
+      this._renderChangesSubscription.unsubscribe();
     }
   }
 
-  initialize(sorter: ItemSorter<T>) {
-    if (this.initSubscription) {
-      this.initSubscription.unsubscribe();
+  connect(): Observable<ItemsRendererResult<T>> {
+    if (!this._renderChangesSubscription) {
+      this.initialize();
     }
 
+    return this._renderData;
+  }
+
+  private initialize() {
     const filteredData =
-        combineLatest(this._data, this._filterer, this.options.state.pipe(startWith(null)))
+        combineLatest(
+            this._dataProvider, this._filtererProvider, this.options.state.pipe(startWith(null)))
             .pipe(
                 mergeMap(results => {
                   const dataProvider = results[0];
@@ -80,12 +104,11 @@ export class ItemsRenderer<T> {
                   return filterer.filter(data, this.options.filters, this.options.search);
                 }),
                 tap(filteredData => {
-                  // TODO: Item count should just watch filtered data
-                  return this.itemCount.next(filteredData.length);
+                  this.filteredData.next(filteredData);
                 }));
 
     // TODO: Options contains too much - group options should be separated
-    const groupedData = this._grouper.pipe(
+    const groupedData = this._grouperProvider.pipe(
         mergeMap(
             grouper =>
                 combineLatest(filteredData, grouper, this.options.state.pipe(startWith(null)))),
@@ -97,9 +120,12 @@ export class ItemsRenderer<T> {
           return itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
         }));
 
-    const sortedData =
-        combineLatest(groupedData, this.options.state.pipe(startWith(null))).pipe(map(results => {
+    const sortedData = this._sorterProvider.pipe(
+        mergeMap(
+            sorter => combineLatest(groupedData, sorter, this.options.state.pipe(startWith(null)))),
+        map(results => {
           const groupedData = results[0];
+          const sorter = results[1];
 
           groupedData.forEach(group => {
             const sort = this.options.sorting;
@@ -114,8 +140,11 @@ export class ItemsRenderer<T> {
           return groupedData;
         }));
 
-    this.initSubscription = sortedData.subscribe(sortedData => {
-      this._itemGroups.next(sortedData);
+
+    this._renderChangesSubscription = combineLatest(filteredData, sortedData).subscribe(results => {
+      const count = results[0].length;
+      const groups = results[1];
+      this._renderData.next({groups, count});
     });
   }
 }
