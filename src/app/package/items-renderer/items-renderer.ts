@@ -15,6 +15,7 @@ export interface ItemsRendererResult<T> {
   groups: ItemGroup<T>[];
   count: number;
 }
+
 @Injectable()
 export class ItemsRenderer<T> {
   /** Provider for the items to be filtered, grouped, and sorted. */

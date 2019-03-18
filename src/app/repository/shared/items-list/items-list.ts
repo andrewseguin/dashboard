@@ -10,18 +10,14 @@ import {
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {ItemRendererOptionsState} from 'app/package/items-renderer/item-renderer-options';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item, ItemType} from 'app/repository/services/dao';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {getItemsFilterer} from 'app/repository/utility/items-renderer/get-items-filterer';
-import {getItemsGrouper} from 'app/repository/utility/items-renderer/get-items-grouper';
-import {MyItemSorter} from 'app/repository/utility/items-renderer/item-sorter';
+import {ItemsRendererFactory} from 'app/repository/services/items-renderer-factory';
 import {
   AutocompleteContext,
   ItemsFilterMetadata
 } from 'app/repository/utility/items-renderer/items-filter-metadata';
-import {fromEvent, Observable, of, Subject} from 'rxjs';
+import {fromEvent, Observable, ReplaySubject, Subject} from 'rxjs';
 import {auditTime, debounceTime, map, takeUntil} from 'rxjs/operators';
 
 @Component({
@@ -29,7 +25,6 @@ import {auditTime, debounceTime, map, takeUntil} from 'rxjs/operators';
   templateUrl: 'items-list.html',
   styleUrls: ['items-list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ItemsRenderer]
 })
 export class ItemsList {
   destroyed = new Subject();
@@ -51,6 +46,9 @@ export class ItemsList {
   autocompleteContext: Observable<AutocompleteContext> =
       this.activeRepo.store.pipe(map(store => ({items: store.items, labels: store.labels})));
 
+  itemType = new ReplaySubject<ItemType>();
+
+  private itemsRenderer = this.itemsRendererFactory.create(this.itemType);
 
   @Input()
   set optionsState(state: ItemRendererOptionsState) {
@@ -64,22 +62,11 @@ export class ItemsList {
   @Output() optionsStateChanged = new EventEmitter<ItemRendererOptionsState>();
 
   constructor(
-      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo,
-      public itemsRenderer: ItemsRenderer<any>, public cd: ChangeDetectorRef, public ngZone: NgZone,
-      public elementRef: ElementRef) {}
+      private itemsRendererFactory: ItemsRendererFactory, private activeRepo: ActiveRepo,
+      public cd: ChangeDetectorRef, public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    const store = this.activeRepo.activeStore;
-
-    this.itemsRenderer.dataProvider = store.items.list.pipe(map(items => {
-      const issues = items.filter(item => !item.pr);
-      const pullRequests = items.filter(item => !!item.pr);
-      return this.type === 'issue' ? issues : pullRequests;
-    }));
-
-    this.itemsRenderer.filtererProvider = getItemsFilterer(this.itemRecommendations, store.labels);
-    this.itemsRenderer.grouperProvider = getItemsGrouper(store.labels);
-    this.itemsRenderer.sorterProvider = of(new MyItemSorter());
+    this.itemType.next(this.type);
 
     const options = this.itemsRenderer.options;
     options.changed.pipe(debounceTime(100), takeUntil(this.destroyed)).subscribe(() => {
