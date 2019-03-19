@@ -39,7 +39,7 @@ export class ItemsList<G> {
 
   group = new ReplaySubject<G>();
 
-  itemCount = new Subject<number>();
+  itemCount = new ReplaySubject<number>();
 
   @Input() itemsRenderer: ItemsRenderer<any>;
 

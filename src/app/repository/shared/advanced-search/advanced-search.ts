@@ -10,9 +10,10 @@ import {
 import {FormControl} from '@angular/forms';
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {Query} from 'app/package/items-renderer/search-utility/query';
-import {ANIMATION_DURATION} from 'app/utility/animations';
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, takeUntil} from 'rxjs/operators';
+
+export const ANIMATION_DURATION = '250ms cubic-bezier(0.35, 0, 0.25, 1)';
 
 @Component({
   selector: 'advanced-search',
@@ -77,14 +78,13 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
           this.filterer.setState({...filtererState, search});
         });
 
-    this.displayedFilterTypes =
-        Array.from(metadata.keys())
-            .filter(key => metadata.get(key) && metadata.get(key)!.label)
-            .sort((a, b) => {
-              const nameA = metadata.get(a)!.label || '';
-              const nameB = metadata.get(b)!.label || '';
-              return nameA < nameB ? -1 : 1;
-            });
+    this.displayedFilterTypes = Array.from(metadata.keys())
+                                    .filter(key => metadata.get(key) && metadata.get(key)!.label)
+                                    .sort((a, b) => {
+                                      const nameA = metadata.get(a)!.label || '';
+                                      const nameB = metadata.get(b)!.label || '';
+                                      return nameA < nameB ? -1 : 1;
+                                    });
   }
 
   ngAfterViewInit() {

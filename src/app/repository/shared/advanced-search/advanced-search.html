@@ -14,7 +14,7 @@
            *ngFor="let filter of (filterer.state | async).filters; let index = index; trackBy: trackByIndex">
         <ng-container *ngIf="!filter.isImplicit">
           <div class="filter-type">
-            {{filterer.metadata.get(filter.type).displayName}}:
+            {{filterer.metadata.get(filter.type).label}}:
           </div>
 
           <ng-container
@@ -56,6 +56,6 @@
   <mat-divider></mat-divider>
   <button mat-menu-item *ngFor="let filterType of displayedFilterTypes"
           (click)="addFilter(filterType)">
-    {{filterer.metadata.get(filterType).displayName}}
+    {{filterer.metadata.get(filterType).label}}
   </button>
 </mat-menu>

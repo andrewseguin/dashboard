@@ -14,8 +14,7 @@
         {{canSave ? 'Save' : 'Saved'}}
       </button>
 
-      <query-menu [query]="query" icon="settings" *ngIf="query.id"
-                  [optionsOverride]="currentOptions">
+      <query-menu [query]="query" icon="settings" *ngIf="query.id">
       </query-menu>
     </ng-container>
   </ng-template>

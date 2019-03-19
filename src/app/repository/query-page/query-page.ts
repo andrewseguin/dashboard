@@ -60,7 +60,7 @@ export class QueryPage {
   public canSave = combineLatest(
                        this.itemsRenderer.filterer.state, this.itemsRenderer.grouper.state,
                        this.itemsRenderer.sorter.state, this.itemViewer.state)
-                       .pipe(map(() => this.areStatesEquivalent()));
+                       .pipe(map(() => !this.areStatesEquivalent()));
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
