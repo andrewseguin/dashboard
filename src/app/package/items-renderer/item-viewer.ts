@@ -5,26 +5,27 @@ export interface ViewingMetadata<V> {
   label: string;
 }
 
-
-
 export class ItemViewer<V> {
-  set view(view: V|null) {
-    this.view$.next(view);
+  set views(views: Set<V>) {
+    this.views$.next(views);
   }
-  get view(): V|null {
-    return this.view$.value;
+  get views(): Set<V> {
+    return this.views$.value;
   }
-  view$ = new BehaviorSubject<V|null>(null);
+  views$ = new BehaviorSubject<Set<V>>(new Set<V>());
 
   constructor(public metadata: Map<V, ViewingMetadata<V>>) {}
 
-  toggleView(viewId: V) {
-    const
-  }
-
-  getView(): ViewingMetadata<V>[] {
+  getViews(): ViewingMetadata<V>[] {
     const views: ViewingMetadata<V>[] = [];
     this.metadata.forEach(view => views.push(view));
     return views;
+  }
+
+  toggle(view: V) {
+    const currentViews = this.views;
+    const newViews = new Set(currentViews);
+    currentViews.has(view) ? newViews.delete(view) : newViews.add(view);
+    this.views = newViews;
   }
 }

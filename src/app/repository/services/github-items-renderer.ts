@@ -30,7 +30,6 @@ export class GithubItemsRenderer extends ItemsRenderer<Item> {
 
     this.filterer = getItemsFilterer(this.itemRecommendations, store);
     this.grouper = getItemsGrouper(store.labels);
-
     this.sorter = new ItemSorter(of(null), GithubItemSortingMetadata);
   }
 }

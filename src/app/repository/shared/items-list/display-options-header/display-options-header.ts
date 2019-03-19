@@ -57,7 +57,7 @@ export class DisplayOptionsHeader<G, S, V> {
     this._viewer = viewer;
     if (this.viewer) {
       this.views = this.viewer.metadata;
-      this.viewIds = this.viewer.getView().map(value => value.id);
+      this.viewIds = this.viewer.getViews().map(value => value.id);
     }
   }
   get viewer(): ItemViewer<V> {
@@ -76,7 +76,7 @@ export class DisplayOptionsHeader<G, S, V> {
     }
   }
 
-  toggleViewKey(viewKey: ViewKey) {
-    this.viewer.toggleView(viewKey);
+  toggleViewKey(view: V) {
+    this.viewer.toggle(view);
   }
 }

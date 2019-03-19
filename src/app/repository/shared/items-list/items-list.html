@@ -1,14 +1,13 @@
 <ng-container *ngIf="itemGroups !== null; else loading">
   <advanced-search [filterer]="itemsRenderer.filterer"></advanced-search>
-  <display-options-header [grouper]="itemsRenderer.grouper"
-                          [sorter]="itemsRenderer.sorter"
-                          [itemCount]="(itemsRenderer.filteredData | async)?.length">
+  <display-options-header [grouper]="itemsRenderer.grouper" [sorter]="itemsRenderer.sorter"
+                          [viewer]="viewer" [itemCount]="(itemsRenderer.filteredData | async)?.length">
   </display-options-header>
 
   <div class="issues-container">
     <items-group *ngFor="let itemGroup of renderedItemGroups; let index = index; trackBy:getItemGroupKey"
-                 [view]="(itemsRenderer.options.state | async)?.view"
-                 [items]="itemGroup.items" [title]="itemGroup.title">
+                 [view]="(itemsRenderer.options.state | async)?.view" [items]="itemGroup.items"
+                 [title]="itemGroup.title">
     </items-group>
   </div>
 

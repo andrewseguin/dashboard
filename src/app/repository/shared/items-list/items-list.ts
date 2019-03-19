@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {Group} from 'app/package/items-renderer/item-renderer-options';
+import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item} from 'app/repository/services/dao';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
@@ -40,6 +41,8 @@ export class ItemsList {
   group = new ReplaySubject<Group>();
 
   @Input() itemsRenderer: ItemsRenderer<any>;
+
+  @Input() viewer: ItemViewer<any>;
 
   @Input() printMode: boolean;
 

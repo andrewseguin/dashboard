@@ -1,15 +1,17 @@
 <div class="master theme-border">
-  <items-list [itemsRenderer]="itemsRenderer"></items-list>
+  <items-list [itemsRenderer]="itemsRenderer" [viewer]="itemViewer">
+
+  </items-list>
 
   <ng-template cdkPortal>
     <ng-container *ngIf="query">
-      <button mat-raised-button color="primary" *ngIf="!query.id"
-              class="save-as" (click)="saveAs()">
+      <button mat-raised-button color="primary" *ngIf="!query.id" class="save-as"
+              (click)="saveAs()">
         Save As
       </button>
 
-      <button mat-raised-button color="primary" *ngIf="query.id"
-              (click)="save()" [disabled]="!canSave">
+      <button mat-raised-button color="primary" *ngIf="query.id" (click)="save()"
+              [disabled]="!canSave">
         {{canSave ? 'Save' : 'Saved'}}
       </button>
 

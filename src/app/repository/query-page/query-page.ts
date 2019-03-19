@@ -180,6 +180,8 @@ export class QueryPage {
 
     this.itemsRenderer.sorter.sort = options.sorting;
     this.itemsRenderer.sorter.reverse = options.reverseSort;
+
+    this.itemViewer.views = new Set();
   }
 }
 

@@ -1,18 +1,8 @@
 import {ViewingMetadata} from 'app/package/items-renderer/item-viewer';
 
-export type View = 'reporter'|'assignees'|'labels'|'warnings'|'suggestions';
+export type GithubItemView = 'reporter'|'assignees'|'labels'|'warnings'|'suggestions';
 
-export const ViewIds: View[] = ['reporter', 'assignees', 'labels', 'warnings', 'suggestions'];
-
-export interface GithubItemView {
-  reporter: boolean;
-  assignees: boolean;
-  labels: boolean;
-  warnings: boolean;
-  suggestions: boolean;
-}
-
-export const GithubItemViewerMetadata = new Map<View, ViewingMetadata<View>>([
+export const GithubItemViewerMetadata = new Map<GithubItemView, ViewingMetadata<GithubItemView>>([
   [
     'reporter',
     {
