@@ -36,7 +36,7 @@ export const ItemsFilterMetadata =
 
       [
         'title', {
-          displayName: 'Title',
+          label: 'Title',
           queryType: 'input',
           matcher: (c: MatcherContext, q: Query) => {
             return stringContainsQuery(c.item.title, q as InputQuery);
@@ -49,7 +49,7 @@ export const ItemsFilterMetadata =
 
       [
         'assignees', {
-          displayName: 'Assignee',
+          label: 'Assignee',
           queryType: 'input',
           matcher: (c: MatcherContext, q: Query) => {
             return arrayContainsQuery(c.item.assignees, q as InputQuery);
@@ -62,7 +62,7 @@ export const ItemsFilterMetadata =
 
       [
         'body', {
-          displayName: 'Body',
+          label: 'Body',
           queryType: 'input',
           matcher: (c: MatcherContext, q: Query) => {
             return stringContainsQuery(c.item.body, q as InputQuery);
@@ -72,7 +72,7 @@ export const ItemsFilterMetadata =
 
       [
         'labels', {
-          displayName: 'Labels',
+          label: 'Labels',
           queryType: 'input',
           matcher: (c: MatcherContext, q: Query) => {
             const labelIds = c.item.labels.map(labelId => `${labelId}`);
@@ -98,7 +98,7 @@ export const ItemsFilterMetadata =
 
       [
         'commentCount', {
-          displayName: 'Comment Count',
+          label: 'Comment Count',
           queryType: 'number',
           matcher: (c: MatcherContext, q: Query) => {
             return numberMatchesEquality(c.item.comments, q as NumberQuery);
@@ -108,7 +108,7 @@ export const ItemsFilterMetadata =
 
       [
         'days-since-created', {
-          displayName: 'Days Since Created',
+          label: 'Days Since Created',
           queryType: 'number',
           matcher: (c: MatcherContext, q: Query) => {
             const dayInMs = 1000 * 60 * 60 * 24;
@@ -123,7 +123,7 @@ export const ItemsFilterMetadata =
 
       [
         'days-since-updated', {
-          displayName: 'Days Since Updated',
+          label: 'Days Since Updated',
           queryType: 'number',
           matcher: (c: MatcherContext, q: Query) => {
             const dayInMs = 1000 * 60 * 60 * 24;
@@ -140,7 +140,7 @@ export const ItemsFilterMetadata =
 
       [
         'created', {
-          displayName: 'Date Created',
+          label: 'Date Created',
           queryType: 'date',
           matcher: (c: MatcherContext, q: Query) => {
             return dateMatchesEquality(c.item.created, q as DateQuery);
@@ -152,7 +152,7 @@ export const ItemsFilterMetadata =
 
       [
         'state', {
-          displayName: 'State',
+          label: 'State',
           queryType: 'state',
           queryTypeData: {states: ['open', 'closed']},
           matcher: (c: MatcherContext, q: Query) => {
@@ -168,7 +168,7 @@ export const ItemsFilterMetadata =
 
       [
         'recommendation', {
-          displayName: 'Recommendation',
+          label: 'Recommendation',
           queryType: 'state',
           queryTypeData: {states: ['empty', 'at least one warning', 'at least one suggestion']},
           matcher: (c: MatcherContext, q: Query) => {

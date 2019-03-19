@@ -16,10 +16,7 @@ import {Query} from 'app/repository/services/dao/query';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
 import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {
-  AutocompleteContext,
-  ItemsFilterMetadata
-} from 'app/repository/utility/items-renderer/item-filter-metadata';
+import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
 import {
   GithubItemGroupingMetadata,
   Group
@@ -28,7 +25,7 @@ import {
   GithubItemView,
   GithubItemViewerMetadata
 } from 'app/repository/utility/items-renderer/item-viewer-metadata';
-import {Observable, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
 
 export interface EditWidgetData {
@@ -50,9 +47,6 @@ export class EditWidget<S, V, G> {
   });
 
   recommendationsList = this.activeRepo.store.pipe(mergeMap(store => store.recommendations.list));
-
-  autocompleteContext: Observable<AutocompleteContext> =
-      this.activeRepo.store.pipe(map(store => ({items: store.items, labels: store.labels})));
 
   metadata = ItemsFilterMetadata;
 

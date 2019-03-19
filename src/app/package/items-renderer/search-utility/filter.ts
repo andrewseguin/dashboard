@@ -1,5 +1,5 @@
-import { Observable } from 'rxjs';
-import { Query } from './query';
+import {Observable} from 'rxjs';
+import {Query} from './query';
 
 export interface Filter {
   type: string;
@@ -8,7 +8,7 @@ export interface Filter {
 }
 
 export interface IFilterMetadata<M, A> {
-  displayName?: string;  // If present, will display as an option to the user
+  label?: string;  // If present, will display as an option to the user
   queryType?: string;
   queryTypeData?: any;
   matcher?: (c: M, q: Query) => boolean;
