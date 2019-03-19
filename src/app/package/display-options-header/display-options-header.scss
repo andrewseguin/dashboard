@@ -1,8 +1,6 @@
-// Import your custom theme
-@import '../common';
-
 :host {
-  @include content-width;
+  width: 100%;
+  max-width: 650px;
   display: block;
   margin: auto;
 }

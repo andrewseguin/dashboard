@@ -165,8 +165,7 @@ export class EditWidget<S, V, G> {
 
     this.dialogRef.close(widget);
   }
-
-  loadFromRecommendation(recommendation: Recommendation) {
+  commendation(recommendation: Recommendation) {
     if (recommendation.filtererState) {
       this.itemGroupsDataSource.filterer.setState(recommendation.filtererState);
     }
