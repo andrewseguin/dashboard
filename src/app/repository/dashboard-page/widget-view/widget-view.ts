@@ -10,7 +10,10 @@ import {Router} from '@angular/router';
 import {Theme} from 'app/repository/services';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Widget} from 'app/repository/services/dao/dashboard';
-import {getItemsList, GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
+import {
+  getItemsList,
+  GithubItemGroupsDataSource
+} from 'app/repository/services/github-item-groups-data-source';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import * as Chart from 'chart.js';
 
@@ -36,7 +39,8 @@ export class WidgetView {
 
   @Output() remove = new EventEmitter<void>();
 
-  public itemGroupsDataSource = new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+  public itemGroupsDataSource =
+      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
 
   constructor(
       private router: Router, private theme: Theme, private activeRepo: ActiveRepo,

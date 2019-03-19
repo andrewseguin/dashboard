@@ -7,7 +7,7 @@
 
   <div class="issues-container">
     <div class="item-group"
-         *ngFor="let itemGroup of renderedItemGroups; let index = index; trackBy:getItemGroupKey">
+         *ngFor="let itemGroup of (renderState | async)?.groups; let index = index; trackBy:getItemGroupKey">
       <div class="title">
         {{itemGroup.title}}
       </div>

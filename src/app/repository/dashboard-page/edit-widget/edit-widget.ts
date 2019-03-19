@@ -14,7 +14,10 @@ import {
 } from 'app/repository/services/dao/dashboard';
 import {Query} from 'app/repository/services/dao/query';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
-import {getItemsList, GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
+import {
+  getItemsList,
+  GithubItemGroupsDataSource
+} from 'app/repository/services/github-item-groups-data-source';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
 import {
@@ -78,7 +81,8 @@ export class EditWidget<S, V, G> {
 
   private _destroyed = new Subject();
 
-  public itemGroupsDataSource = new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+  public itemGroupsDataSource =
+      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 

@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, ReplaySubject, Subscription } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
-import { ItemFilterer } from './item-filterer';
-import { GroupingMetadata, ItemGroup, ItemGrouper } from './item-grouper';
-import { ItemSorter } from './item-sorter';
-import { IFilterMetadata } from './search-utility/filter';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {mergeMap, tap} from 'rxjs/operators';
+import {ItemFilterer} from './item-filterer';
+import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouper';
+import {ItemSorter} from './item-sorter';
+import {IFilterMetadata} from './search-utility/filter';
 
 type DataProvider<T> = Observable<T[]>;
 
@@ -68,17 +68,18 @@ export class ItemGroupsDataSource<T> {
 
   private initialize() {
     let filteredDataCount: number;
-    this._dataProvider
-        .pipe(
-            mergeMap(dataProvider => dataProvider),
-            mergeMap(data => this.filterer.filterItems(data)),
-            tap(filteredData => filteredDataCount = filteredData.length),
-            mergeMap(filteredItems => this.grouper.groupItems(filteredItems)),
-            mergeMap(groupedItems => this.sorter.performSort(groupedItems)))
-        .subscribe(sortedItems => {
-          const count = filteredDataCount;
-          const groups = sortedItems;
-          this._renderData.next({groups, count});
-        });
+    this._renderChangesSubscription =
+        this._dataProvider
+            .pipe(
+                mergeMap(dataProvider => dataProvider),
+                mergeMap(data => this.filterer.filterItems(data)),
+                tap(filteredData => filteredDataCount = filteredData.length),
+                mergeMap(filteredItems => this.grouper.groupItems(filteredItems)),
+                mergeMap(groupedItems => this.sorter.performSort(groupedItems)))
+            .subscribe(sortedItems => {
+              const count = filteredDataCount;
+              const groups = sortedItems;
+              this._renderData.next({groups, count});
+            });
   }
 }
