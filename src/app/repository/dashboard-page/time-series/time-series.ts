@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {Item, TimeSeriesDisplayTypeOptions} from 'app/repository/services/dao';
-import {GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -32,7 +32,7 @@ interface TimeSeriesData {
 export class TimeSeries {
   chart: Chart;
 
-  @Input() itemsRenderer: GithubItemsRenderer;
+  @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
 
   @Input() options: TimeSeriesDisplayTypeOptions;
 
@@ -43,7 +43,7 @@ export class TimeSeries {
   constructor() {}
 
   ngOnInit() {
-    this.itemsRenderer.connect()
+    this.itemGroupsDataSource.connect()
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result.groups));
   }

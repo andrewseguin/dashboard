@@ -1,7 +1,7 @@
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorter} from 'app/package/items-renderer/item-sorter';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {combineLatest, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
@@ -22,7 +22,7 @@ import {RepoStore} from './dao/dao';
 import {ListDao} from './dao/list-dao';
 import {ItemRecommendations} from './item-recommendations';
 
-export class GithubItemsRenderer extends ItemsRenderer<Item> {
+export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
   constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo) {
     super();
 

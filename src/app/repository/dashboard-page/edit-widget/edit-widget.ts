@@ -14,7 +14,7 @@ import {
 } from 'app/repository/services/dao/dashboard';
 import {Query} from 'app/repository/services/dao/query';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
-import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {getItemsList, GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
 import {
@@ -78,7 +78,7 @@ export class EditWidget<S, V, G> {
 
   private _destroyed = new Subject();
 
-  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
+  public itemGroupsDataSource = new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
@@ -100,15 +100,15 @@ export class EditWidget<S, V, G> {
         displayType: data.widget.displayType,
       });
 
-      this.itemsRenderer.dataProvider =
+      this.itemGroupsDataSource.dataProvider =
           getItemsList(this.activeRepo.activeStore, data.widget.itemType);
 
       this.setDisplayTypeOptionsForm(data.widget.displayType, data.widget.displayTypeOptions);
     }
 
-    this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, 'issue');
+    this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeStore, 'issue');
     this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(type => {
-      this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, type);
+      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeStore, type);
       this.cd.markForCheck();
     });
   }
@@ -132,7 +132,7 @@ export class EditWidget<S, V, G> {
       case 'list':
         displayTypeOptions = {
           listLength: form.value.listLength,
-          sorterState: this.itemsRenderer.sorter.getState(),
+          sorterState: this.itemGroupsDataSource.sorter.getState(),
           viewerState: this.itemViewer.getState(),
         };
         break;
@@ -154,7 +154,7 @@ export class EditWidget<S, V, G> {
     const widget: Widget = {
       title: this.form.value.title,
       itemType: this.form.value.itemType,
-      filtererState: this.itemsRenderer.filterer.getState(),
+      filtererState: this.itemGroupsDataSource.filterer.getState(),
       displayType: this.form.value.displayType,
       displayTypeOptions
     };
@@ -164,17 +164,17 @@ export class EditWidget<S, V, G> {
 
   loadFromRecommendation(recommendation: Recommendation) {
     if (recommendation.filtererState) {
-      this.itemsRenderer.filterer.setState(recommendation.filtererState);
+      this.itemGroupsDataSource.filterer.setState(recommendation.filtererState);
     }
   }
 
   loadFromQuery(query: Query) {
     if (query.filtererState) {
-      this.itemsRenderer.filterer.setState(query.filtererState);
+      this.itemGroupsDataSource.filterer.setState(query.filtererState);
     }
 
     if (query.sorterState) {
-      this.itemsRenderer.sorter.setState(query.sorterState);
+      this.itemGroupsDataSource.sorter.setState(query.sorterState);
     }
 
     if (query.viewerState) {

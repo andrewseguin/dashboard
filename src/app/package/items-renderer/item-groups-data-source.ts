@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {mergeMap, tap} from 'rxjs/operators';
-import {ItemFilterer} from './item-filterer';
-import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouper';
-import {ItemSorter} from './item-sorter';
-import {IFilterMetadata} from './search-utility/filter';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of, ReplaySubject, Subscription } from 'rxjs';
+import { mergeMap, tap } from 'rxjs/operators';
+import { ItemFilterer } from './item-filterer';
+import { GroupingMetadata, ItemGroup, ItemGrouper } from './item-grouper';
+import { ItemSorter } from './item-sorter';
+import { IFilterMetadata } from './search-utility/filter';
 
 type DataProvider<T> = Observable<T[]>;
 
-export interface ItemsRendererResult<T> {
+export interface ItemGroupsResult<T> {
   groups: ItemGroup<T>[];
   count: number;
 }
@@ -16,17 +16,11 @@ export interface ItemsRendererResult<T> {
 const DefaultFilterMetadata = new Map<string, IFilterMetadata<null, null>>([]);
 
 const DefaultGroupMetadata = new Map<'all', GroupingMetadata<any, 'all', null>>([
-  [
-    'all', {
-      id: 'all',
-      label: 'All',
-      groupingFunction: (items: any[]) => [{id: 'all', title: 'All', items}]
-    }
-  ],
+  ['all', {id: 'all', groupingFunction: (items: any[]) => [{id: 'all', title: 'All', items}]}],
 ]);
 
 @Injectable()
-export class ItemsRenderer<T> {
+export class ItemGroupsDataSource<T> {
   /** Provider for the items to be filtered, grouped, and sorted. */
   get dataProvider() {
     return this._dataProvider.value;
@@ -48,7 +42,7 @@ export class ItemsRenderer<T> {
   sorter: ItemSorter<T, any, any> = new ItemSorter<T, '', null>(of(null), new Map());
 
   /** Stream emitting render data to the table (depends on ordered data changes). */
-  private readonly _renderData = new ReplaySubject<ItemsRendererResult<T>>();
+  private readonly _renderData = new ReplaySubject<ItemGroupsResult<T>>();
 
   /**
    * Subscription to the changes that should trigger an update to the table's rendered rows, such
@@ -64,7 +58,7 @@ export class ItemsRenderer<T> {
     }
   }
 
-  connect(): Observable<ItemsRendererResult<T>> {
+  connect(): Observable<ItemGroupsResult<T>> {
     if (!this._renderChangesSubscription) {
       this.initialize();
     }

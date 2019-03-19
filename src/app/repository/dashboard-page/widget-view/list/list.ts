@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular
 import {MatDialog} from '@angular/material';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {Item, ListDisplayTypeOptions} from 'app/repository/services/dao';
-import {GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {
   GithubItemView,
@@ -20,7 +20,7 @@ import {map} from 'rxjs/operators';
 export class List<S> {
   trackById = (_i: number, item: Item) => item.id;
 
-  @Input() itemsRenderer: GithubItemsRenderer;
+  @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
 
   @Input() options: ListDisplayTypeOptions<S, GithubItemView>;
 
@@ -31,12 +31,12 @@ export class List<S> {
   constructor(private dialog: MatDialog) {}
 
   ngOnInit() {
-    this.items = this.itemsRenderer.connect().pipe(map(result => result.groups[0].items));
+    this.items = this.itemGroupsDataSource.connect().pipe(map(result => result.groups[0].items));
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['options'] && this.options) {
-      this.itemsRenderer.sorter.setState(this.options.sorterState);
+      this.itemGroupsDataSource.sorter.setState(this.options.sorterState);
       this.itemViewer.setState(this.options.viewerState);
     }
   }

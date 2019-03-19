@@ -9,7 +9,7 @@ import {
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {Theme} from 'app/repository/services';
 import {Item, PieChartDisplayTypeOptions} from 'app/repository/services/dao';
-import {GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -23,7 +23,7 @@ import {takeUntil} from 'rxjs/operators';
 export class PieChart<G> {
   chart: Chart;
 
-  @Input() itemsRenderer: GithubItemsRenderer;
+  @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
 
   @Input() options: PieChartDisplayTypeOptions<G>;
 
@@ -34,14 +34,14 @@ export class PieChart<G> {
   constructor(private theme: Theme) {}
 
   ngOnInit() {
-    this.itemsRenderer.connect()
+    this.itemGroupsDataSource.connect()
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result.groups));
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['options'] && this.options) {
-      this.itemsRenderer.grouper.setState(this.options.grouperState);
+      this.itemGroupsDataSource.grouper.setState(this.options.grouperState);
     }
   }
 

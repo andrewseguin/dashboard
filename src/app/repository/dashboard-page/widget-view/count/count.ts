@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {CountDisplayTypeOptions} from 'app/repository/services/dao';
-import {GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
+import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -11,13 +11,13 @@ import {map} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Count {
-  @Input() itemsRenderer: GithubItemsRenderer;
+  @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
 
   @Input() options: CountDisplayTypeOptions;
 
   count: Observable<number>;
 
   ngOnInit() {
-    this.count = this.itemsRenderer.connect().pipe(map(result => result.count));
+    this.count = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
   }
 }

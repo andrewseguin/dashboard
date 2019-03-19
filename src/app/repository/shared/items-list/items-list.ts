@@ -9,8 +9,8 @@ import {
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
-import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item} from 'app/repository/services/dao';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
 import {isMobile} from 'app/utility/media-matcher';
@@ -63,7 +63,7 @@ export class ItemsList<G> {
 
   itemCount = new ReplaySubject<number>();
 
-  @Input() itemsRenderer: ItemsRenderer<any>;
+  @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
 
   @Input() viewer: ItemViewer<any>;
 
@@ -101,7 +101,7 @@ export class ItemsList<G> {
     });
 
     // When groups change, render the first ten, then debounce and render more
-    this.itemsRenderer.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
+    this.itemGroupsDataSource.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
       this.itemGroups = result.groups;
       this.itemCount.next(result.count);
       this.render();

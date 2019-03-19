@@ -107,9 +107,11 @@
       Load Saved Search
     </button>
 
-    <advanced-search [filterer]="itemsRenderer.filterer"></advanced-search>
-    <display-options-header [sorter]="itemsRenderer.sorter" [viewer]="viewer"
-                            [itemCount]="(itemsRenderer.filteredData | async)?.length">
+    <advanced-search [filterer]="itemGroupsDataSource.filterer">
+    </advanced-search>
+    <display-options-header [sorter]="itemGroupsDataSource.sorter"
+                            [viewer]="viewer"
+                            [itemCount]="(itemGroupsDataSource.filteredData | async)?.length">
     </display-options-header>
   </div>
 </div>

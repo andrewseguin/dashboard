@@ -11,7 +11,7 @@ import {ItemType} from '../services/dao';
 import {RepoStore} from '../services/dao/dao';
 import {Widget} from '../services/dao/dashboard';
 import {Query} from '../services/dao/query';
-import {getItemsList, GithubItemsRenderer} from '../services/github-items-renderer';
+import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
 import {
@@ -34,7 +34,7 @@ export class QueryPage {
 
     const type = this._query.type;
     if (type) {
-      this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, type);
+      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeStore, type);
     }
 
     this.updateQueryStates();
@@ -53,14 +53,15 @@ export class QueryPage {
   private destroyed = new Subject();
   private getSubscription: Subscription;
 
-  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
+  public itemGroupsDataSource = new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
-  public canSave = combineLatest(
-                       this.itemsRenderer.filterer.state, this.itemsRenderer.grouper.state,
-                       this.itemsRenderer.sorter.state, this.itemViewer.state)
-                       .pipe(map(() => !this.areStatesEquivalent()));
+  public canSave =
+      combineLatest(
+          this.itemGroupsDataSource.filterer.state, this.itemGroupsDataSource.grouper.state,
+          this.itemGroupsDataSource.sorter.state, this.itemViewer.state)
+          .pipe(map(() => !this.areStatesEquivalent()));
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
@@ -132,9 +133,9 @@ export class QueryPage {
 
   saveState() {
     const queryState = {
-      filtererState: this.itemsRenderer.filterer.getState(),
-      grouperState: this.itemsRenderer.grouper.getState(),
-      sorterState: this.itemsRenderer.sorter.getState(),
+      filtererState: this.itemGroupsDataSource.filterer.getState(),
+      grouperState: this.itemGroupsDataSource.grouper.getState(),
+      sorterState: this.itemGroupsDataSource.sorter.getState(),
       viewerState: this.itemViewer.getState(),
     };
 
@@ -177,17 +178,17 @@ export class QueryPage {
   private updateQueryStates() {
     const grouperState = this.query.grouperState;
     if (grouperState) {
-      this.itemsRenderer.grouper.setState(grouperState);
+      this.itemGroupsDataSource.grouper.setState(grouperState);
     }
 
     const sorterState = this.query.sorterState;
     if (sorterState) {
-      this.itemsRenderer.sorter.setState(sorterState);
+      this.itemGroupsDataSource.sorter.setState(sorterState);
     }
 
     const filtererState = this.query.filtererState;
     if (filtererState) {
-      this.itemsRenderer.filterer.setState(filtererState);
+      this.itemGroupsDataSource.filterer.setState(filtererState);
     }
 
     const viewerState = this.query.viewerState;
@@ -198,11 +199,11 @@ export class QueryPage {
 
   private areStatesEquivalent() {
     const filtererStatesEquivalent = this.query.filtererState &&
-        this.itemsRenderer.filterer.isEquivalent(this.query.filtererState);
-    const grouperStatesEquivalent =
-        this.query.grouperState && this.itemsRenderer.grouper.isEquivalent(this.query.grouperState);
-    const sorterStatesEquivalent =
-        this.query.sorterState && this.itemsRenderer.sorter.isEquivalent(this.query.sorterState);
+        this.itemGroupsDataSource.filterer.isEquivalent(this.query.filtererState);
+    const grouperStatesEquivalent = this.query.grouperState &&
+        this.itemGroupsDataSource.grouper.isEquivalent(this.query.grouperState);
+    const sorterStatesEquivalent = this.query.sorterState &&
+        this.itemGroupsDataSource.sorter.isEquivalent(this.query.sorterState);
     const viewerStatesEquivalent =
         this.query.viewerState && this.itemViewer.isEquivalent(this.query.viewerState);
 

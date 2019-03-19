@@ -1,8 +1,8 @@
 <ng-container *ngIf="itemGroups !== null; else loading">
-  <advanced-search [filterer]="itemsRenderer.filterer"></advanced-search>
-  <display-options-header [grouper]="itemsRenderer.grouper"
-                          [sorter]="itemsRenderer.sorter" [viewer]="viewer"
-                          [itemCount]="itemCount | async">
+  <advanced-search [filterer]="itemGroupsDataSource.filterer"></advanced-search>
+  <display-options-header [grouper]="itemGroupsDataSource.grouper"
+                          [sorter]="itemGroupsDataSource.sorter"
+                          [viewer]="viewer" [itemCount]="itemCount | async">
   </display-options-header>
 
   <div class="issues-container">

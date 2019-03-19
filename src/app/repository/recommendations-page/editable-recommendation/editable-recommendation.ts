@@ -3,7 +3,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
-import {getItemsFilterer} from 'app/repository/services/github-items-renderer';
+import {getItemsFilterer} from 'app/repository/services/github-item-groups-data-source';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {
   DeleteConfirmation

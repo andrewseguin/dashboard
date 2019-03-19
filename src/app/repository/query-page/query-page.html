@@ -1,5 +1,6 @@
 <div class="master theme-border">
-  <items-list [itemsRenderer]="itemsRenderer" [viewer]="itemViewer">
+  <items-list [itemGroupsDataSource]="itemGroupsDataSource"
+              [viewer]="itemViewer">
   </items-list>
 
   <ng-template cdkPortal>

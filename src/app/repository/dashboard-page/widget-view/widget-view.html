@@ -10,20 +10,20 @@
 <div [ngSwitch]="widget.displayType"
      [style.pointer-events]="editMode ? 'none' : ''">
   <list *ngSwitchCase="'list'" [options]="widget.displayTypeOptions"
-        [itemsRenderer]="itemsRenderer">
+        [itemGroupsDataSource]="itemGroupsDataSource">
   </list>
 
   <count *ngSwitchCase="'count'" [options]="widget.displayTypeOptions"
-         [itemsRenderer]="itemsRenderer">
+         [itemGroupsDataSource]="itemGroupsDataSource">
   </count>
 
   <pie-chart *ngSwitchCase="'pie'" [options]="widget.displayTypeOptions"
-             [itemsRenderer]="itemsRenderer">
+             [itemGroupsDataSource]="itemGroupsDataSource">
   </pie-chart>
 
   <time-series *ngSwitchCase="'time-series'"
                [options]="widget.displayTypeOptions"
-               [itemsRenderer]="itemsRenderer"></time-series>
+               [itemGroupsDataSource]="itemGroupsDataSource"></time-series>
 </div>
 
 <mat-menu #settings="matMenu">
