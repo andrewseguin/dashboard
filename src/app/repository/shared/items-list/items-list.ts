@@ -6,13 +6,17 @@ import {
   Input,
   NgZone
 } from '@angular/core';
+import {MatDialog} from '@angular/material';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item} from 'app/repository/services/dao';
 import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
+import {isMobile} from 'app/utility/media-matcher';
 import {fromEvent, Observable, ReplaySubject, Subject} from 'rxjs';
-import {auditTime, takeUntil} from 'rxjs/operators';
+import {auditTime, map, takeUntil} from 'rxjs/operators';
+import {ItemDetailDialog} from '../dialog/item-detail-dialog/item-detail-dialog';
 
 @Component({
   selector: 'items-list',
@@ -28,6 +32,24 @@ export class ItemsList<G> {
           () => fromEvent(this.elementRef.nativeElement, 'scroll')
                     .pipe(takeUntil(this.destroyed))
                     .subscribe(observer)));
+
+
+  activeItem = this.activatedRoute.queryParamMap.pipe(map(queryParamMap => {
+    const item = queryParamMap.get('item');
+    return item ? +item : '';
+  }));
+
+  navigateToItem(item: number) {
+    if (!isMobile()) {
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute.parent,
+        queryParams: {item: item},
+        queryParamsHandling: 'merge',
+      });
+    } else {
+      this.dialog.open(ItemDetailDialog, {data: {item}});
+    }
+  }
 
   loadingIssues: boolean;
 
@@ -45,9 +67,12 @@ export class ItemsList<G> {
 
   @Input() viewer: ItemViewer<any>;
 
-  @Input() printMode: boolean;
+  trackByIndex = (i: number) => i;
 
-  constructor(public cd: ChangeDetectorRef, public ngZone: NgZone, public elementRef: ElementRef) {}
+  constructor(
+      public cd: ChangeDetectorRef, public ngZone: NgZone, private router: Router,
+      private dialog: MatDialog, private activatedRoute: ActivatedRoute,
+      public elementRef: ElementRef) {}
 
   ngOnInit() {
     this.group.pipe(takeUntil(this.destroyed)).subscribe(() => {

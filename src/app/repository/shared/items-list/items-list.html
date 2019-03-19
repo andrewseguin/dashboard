@@ -6,10 +6,21 @@
   </display-options-header>
 
   <div class="issues-container">
-    <items-group *ngFor="let itemGroup of renderedItemGroups; let index = index; trackBy:getItemGroupKey"
-                 [views]="(viewer.state | async)?.views || []"
-                 [items]="itemGroup.items" [title]="itemGroup.title">
-    </items-group>
+    <div class="item-group"
+         *ngFor="let itemGroup of renderedItemGroups; let index = index; trackBy:getItemGroupKey">
+      <div class="title">
+        {{itemGroup.title}}
+      </div>
+
+      <ng-container *ngFor="let item of itemGroup.items; trackBy:trackByIndex">
+        <mat-divider></mat-divider>
+        <item-summary [item]="item"
+                      [active]="(activeItem | async) === item.number"
+                      [enabledViews]="(viewer.state | async)?.views || []"
+                      (select)="navigateToItem($event)">
+        </item-summary>
+      </ng-container>
+    </div>
   </div>
 
   <div *ngIf="loadingIssues" class="loading-more">
