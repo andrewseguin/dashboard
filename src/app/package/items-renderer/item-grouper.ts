@@ -112,6 +112,7 @@ export function getGroupByListValues<T>(items: T[], key: string): ItemGroup<T>[]
 export function getGroupsFromMap<T>(groupsMap: Map<string, T[]>): ItemGroup<T>[] {
   const groups: ItemGroup<T>[] = [];
   groupsMap.forEach((items, title) => {
+    title = `${title}`;  // TItle should always be a string, even if the ID is something else.
     groups.push({id: title, title, items});
   });
 
