@@ -1,18 +1,22 @@
 import {BehaviorSubject} from 'rxjs';
 
+export interface ItemViewerState<V> {
+  views: V[];
+}
+
 export interface ViewingMetadata<V> {
   id: V;
   label: string;
 }
 
 export class ItemViewer<V> {
-  set views(views: Set<V>) {
+  set views(views: V[]) {
     this.views$.next(views);
   }
-  get views(): Set<V> {
+  get views(): V[] {
     return this.views$.value;
   }
-  views$ = new BehaviorSubject<Set<V>>(new Set<V>());
+  views$ = new BehaviorSubject<V[]>([]);
 
   constructor(public metadata: Map<V, ViewingMetadata<V>>) {}
 
@@ -23,9 +27,22 @@ export class ItemViewer<V> {
   }
 
   toggle(view: V) {
-    const currentViews = this.views;
-    const newViews = new Set(currentViews);
-    currentViews.has(view) ? newViews.delete(view) : newViews.add(view);
+    const newViews = [...this.views];
+    const index = this.views.indexOf(view);
+    if (index !== -1) {
+      newViews.splice(index, 1);
+    } else {
+      newViews.push(view);
+    }
+
     this.views = newViews;
+  }
+
+  getState(): ItemViewerState<V> {
+    return {views: this.views};
+  }
+
+  setState(state: ItemViewerState<V>) {
+    this.views = state.views;
   }
 }

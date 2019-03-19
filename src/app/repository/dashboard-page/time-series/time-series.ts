@@ -6,7 +6,7 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {ItemGroup} from 'app/package/items-renderer/item-grouping';
+import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item, TimeSeriesDisplayTypeOptions, Widget} from 'app/repository/services/dao';
 import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';

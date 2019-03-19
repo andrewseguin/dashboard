@@ -2,7 +2,7 @@ import {
   getGroupByListValues,
   getGroupByValue,
   GroupingMetadata
-} from 'app/package/items-renderer/item-grouping';
+} from 'app/package/items-renderer/item-grouper';
 import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {Item, Label} from 'app/repository/services/dao';
 

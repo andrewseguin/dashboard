@@ -6,7 +6,7 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {ItemGroup} from 'app/package/items-renderer/item-grouping';
+import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {Theme} from 'app/repository/services';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Item, PieChartDisplayTypeOptions, Widget} from 'app/repository/services/dao';

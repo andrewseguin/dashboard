@@ -1,6 +1,10 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map, mergeMap} from 'rxjs/operators';
 
+export interface ItemGrouperState<G> {
+  group: G|null;
+}
+
 export class ItemGroup<T> {
   id: string;
   title: string;
@@ -63,6 +67,14 @@ export class ItemGrouper<T, G, C> {
     const groups: GroupingMetadata<T, G, C>[] = [];
     this.metadata.forEach(group => groups.push(group));
     return groups;
+  }
+
+  getState(): ItemGrouperState<G> {
+    return {group: this.group};
+  }
+
+  setState(state: ItemGrouperState<G>) {
+    this.group = state.group;
   }
 }
 

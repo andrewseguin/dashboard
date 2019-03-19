@@ -1,6 +1,11 @@
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ItemGroup} from './item-grouping';
+import {ItemGroup} from './item-grouper';
+
+export interface ItemSorterState<S> {
+  sort: S|null;
+  reverse: boolean;
+}
 
 export interface SortingMetadata<T, S, C> {
   id: S;
@@ -60,5 +65,14 @@ export class ItemSorter<T, S, C> {
     const sorts: SortingMetadata<T, S, C>[] = [];
     this.metadata.forEach(sort => sorts.push(sort));
     return sorts;
+  }
+
+  getState(): ItemSorterState<S> {
+    return {sort: this.sort, reverse: this.reverse};
+  }
+
+  setState(state: ItemSorterState<S>) {
+    this.sort = state.sort;
+    this.reverse = state.reverse;
   }
 }

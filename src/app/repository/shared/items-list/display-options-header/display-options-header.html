@@ -40,7 +40,7 @@
 
 <!-- View Menu -->
 <mat-menu #viewingMenu="matMenu">
-  <button mat-menu-item *ngFor="let viewId of viewIds" [class.selected]="!!(viewer.views$ | async).has(viewId)"
+  <button mat-menu-item *ngFor="let viewId of viewIds" [class.selected]="!!(viewer.views$ | async).indexOf(viewId) !== -1"
           (click)="viewer.toggle(viewId); $event.stopPropagation();">
     <div class="button-content">
       <mat-icon>check</mat-icon>

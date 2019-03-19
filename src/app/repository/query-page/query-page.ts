@@ -1,11 +1,6 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {
-  areOptionStatesEqual,
-  ItemRendererOptions,
-  ItemRendererOptionsState
-} from 'app/package/items-renderer/item-renderer-options';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
@@ -19,7 +14,10 @@ import {Query} from '../services/dao/query';
 import {getItemsList, GithubItemsRenderer} from '../services/github-items-renderer';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
-import {GithubItemViewerMetadata, View} from '../utility/items-renderer/item-viewer-metadata';
+import {
+  GithubItemView,
+  GithubItemViewerMetadata
+} from '../utility/items-renderer/item-viewer-metadata';
 
 
 @Component({
@@ -39,10 +37,7 @@ export class QueryPage {
       this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, type);
     }
 
-    if (this.query.options) {
-      this.currentOptions = this.query.options;
-      this.updateItemsRenderer(this.query.options);
-    }
+    this.updateQueryStates();
 
     this.header.title.next(this.query.name || '');
     this.setBack();
@@ -75,7 +70,8 @@ export class QueryPage {
 
   public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
 
-  public itemViewer = new ItemViewer<View>(GithubItemViewerMetadata);
+  public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
+
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
@@ -172,16 +168,26 @@ export class QueryPage {
     });
   }
 
-  private updateItemsRenderer(options: ItemRendererOptionsState) {
-    this.itemsRenderer.grouper.group = options.grouping;
+  private updateQueryStates() {
+    const grouperState = this.query.grouperState;
+    if (grouperState) {
+      this.itemsRenderer.grouper.setState(grouperState);
+    }
 
-    this.itemsRenderer.filterer.filters = options.filters;
-    this.itemsRenderer.filterer.search = options.search;
+    const sorterState = this.query.sorterState;
+    if (sorterState) {
+      this.itemsRenderer.sorter.setState(sorterState);
+    }
 
-    this.itemsRenderer.sorter.sort = options.sorting;
-    this.itemsRenderer.sorter.reverse = options.reverseSort;
+    const filtererState = this.query.filtererState;
+    if (filtererState) {
+      this.itemsRenderer.filterer.setState(filtererState);
+    }
 
-    this.itemViewer.views = new Set();
+    const viewerState = this.query.viewerState;
+    if (viewerState) {
+      this.itemViewer.setState(viewerState);
+    }
   }
 }
 

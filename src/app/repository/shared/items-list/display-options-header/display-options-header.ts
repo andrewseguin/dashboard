@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {GroupingMetadata, ItemGrouper} from 'app/package/items-renderer/item-grouping';
+import {GroupingMetadata, ItemGrouper} from 'app/package/items-renderer/item-grouper';
 import {ItemRendererOptionsState, ViewKey} from 'app/package/items-renderer/item-renderer-options';
 import {ItemSorter, SortingMetadata} from 'app/package/items-renderer/item-sorter';
 import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/item-viewer';

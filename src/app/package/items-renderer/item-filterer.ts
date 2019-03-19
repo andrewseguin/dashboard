@@ -2,6 +2,11 @@ import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
+export interface ItemFiltererState {
+  filters: Filter[];
+  search: string;
+}
+
 export class ItemFilterer<T, M, A> {
   set filters(filters: Filter[]) {
     this.filters$.next(filters);
@@ -38,6 +43,15 @@ export class ItemFilterer<T, M, A> {
       const filteredItems = filterItems(items, filters, contextProvider, this.metadata);
       return searchItems(filteredItems, search, this.tokenizeItem);
     }));
+  }
+
+  getState(): ItemFiltererState {
+    return {filters: this.filters, search: this.search};
+  }
+
+  setState(state: ItemFiltererState) {
+    this.filters = state.filters;
+    this.search = state.search;
   }
 }
 

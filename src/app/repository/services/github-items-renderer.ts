@@ -1,5 +1,5 @@
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
-import {ItemGrouper} from 'app/package/items-renderer/item-grouping';
+import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
 import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {ItemSorter} from 'app/package/items-renderer/item-sorter';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';

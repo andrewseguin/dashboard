@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
 import {ItemFilterer} from './item-filterer';
-import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouping';
+import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouper';
 import {ItemRendererOptions} from './item-renderer-options';
 import {ItemSorter} from './item-sorter';
 import {IFilterMetadata} from './search-utility/filter';

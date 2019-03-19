@@ -6,7 +6,7 @@ import {
   Input,
   NgZone
 } from '@angular/core';
-import {ItemGroup} from 'app/package/items-renderer/item-grouping';
+import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
