@@ -5,8 +5,8 @@ import {LoadingModule} from 'app/repository/shared/loading/loading.module';
 import {CountModule} from './count/count.module';
 import {ListModule} from './list/list.module';
 import {PieChartModule} from './pie-chart/pie-chart.module';
+import {TimeSeriesModule} from './time-series/time-series.module';
 import {WidgetView} from './widget-view';
-import { TimeSeriesModule } from '../time-series/time-series.module';
 
 
 @NgModule({
