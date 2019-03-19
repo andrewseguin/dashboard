@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {DateEquality, DateQuery} from 'app/package/items-renderer/search-utility/query';
-import {isMobile} from 'app/utility/media-matcher';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -26,8 +25,6 @@ export class DateQueryForm {
   ];
   form = new FormGroup({equality: new FormControl('on'), date: new FormControl('')});
   destroyed = new Subject();
-
-  isMobile = isMobile;
 
   @Input()
   set query(query: DateQuery) {
@@ -56,6 +53,10 @@ export class DateQueryForm {
 
   constructor(private elementRef: ElementRef) {
     this.form.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.emit());
+  }
+
+  isMobile(): boolean {
+    return window.matchMedia('(max-width: 700px)').matches;
   }
 
   emit() {
