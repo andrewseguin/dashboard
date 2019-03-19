@@ -1,8 +1,7 @@
 <ng-container *ngIf="itemGroups !== null; else loading">
   <advanced-search [filterer]="itemsRenderer.filterer"></advanced-search>
-  <display-options-header [options]="itemsRenderer.options.state | async"
-                          (optionsChanged)="itemsRenderer.options.setState($event)"
-                          [grouper]="itemsRenderer.grouper"
+  <display-options-header [grouper]="itemsRenderer.grouper"
+                          [sorter]="itemsRenderer.sorter"
                           [itemCount]="(itemsRenderer.filteredData | async)?.length">
   </display-options-header>
 

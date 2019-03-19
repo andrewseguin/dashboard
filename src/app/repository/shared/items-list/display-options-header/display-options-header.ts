@@ -1,10 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {GroupingMetadata, ItemGrouper} from 'app/package/items-renderer/item-grouping';
-import {
-  ItemRendererOptionsState,
-  Sort,
-  ViewKey
-} from 'app/package/items-renderer/item-renderer-options';
+import {ItemRendererOptionsState, ViewKey} from 'app/package/items-renderer/item-renderer-options';
+import {ItemSorter, SortingMetadata} from 'app/package/items-renderer/item-sorter';
+import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/item-viewer';
 
 @Component({
   selector: 'display-options-header',
@@ -12,24 +10,15 @@ import {
   styleUrls: ['display-options-header.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DisplayOptionsHeader<G> {
+export class DisplayOptionsHeader<G, S, V> {
   groups: Map<G, GroupingMetadata<any, G, any>>;
   groupIds: G[] = [];
 
-  sorts = new Map<Sort, string>([
-    ['created', 'Date created'],
-    ['title', 'Title'],
-  ]);
-  sortIds = Array.from(this.sorts.keys());
+  sorts: Map<S, SortingMetadata<any, S, null>>;
+  sortIds: S[] = [];
 
-  views = new Map<ViewKey, string>([
-    ['reporter', 'Reporter'],
-    ['assignees', 'Assignees'],
-    ['labels', 'Labels'],
-    ['warnings', 'Warnings'],
-    ['suggestions', 'Suggestions'],
-  ]);
-  viewKeys = Array.from(this.views.keys());
+  views: Map<V, ViewingMetadata<V>>;
+  viewIds: V[] = [];
 
   @Input() hideGrouping: boolean;
 
@@ -50,27 +39,44 @@ export class DisplayOptionsHeader<G> {
   }
   _grouper: ItemGrouper<any, G, any>;
 
+  @Input()
+  set sorter(sorter: ItemSorter<any, S, any>) {
+    this._sorter = sorter;
+    if (this.sorter) {
+      this.sorts = this.sorter.metadata;
+      this.sortIds = this.sorter.getSorts().map(value => value.id);
+    }
+  }
+  get sorter(): ItemSorter<any, S, any> {
+    return this._sorter;
+  }
+  _sorter: ItemSorter<any, S, any>;
+
+  @Input()
+  set viewer(viewer: ItemViewer<V>) {
+    this._viewer = viewer;
+    if (this.viewer) {
+      this.views = this.viewer.metadata;
+      this.viewIds = this.viewer.getView().map(value => value.id);
+    }
+  }
+  get viewer(): ItemViewer<V> {
+    return this._viewer;
+  }
+  _viewer: ItemViewer<V>;
+
   @Output() optionsChanged = new EventEmitter<ItemRendererOptionsState>();
 
-  setSort(sort: Sort) {
-    const options = {...this.options};
-
-    if (options.sorting === sort) {
-      options.reverseSort = !options.reverseSort;
+  setSort(sort: S) {
+    if (this.sorter.sort === sort) {
+      this.sorter.reverse = !this.sorter.reverse;
     } else {
-      options.sorting = sort;
-      options.reverseSort = false;
+      this.sorter.sort = sort;
+      this.sorter.reverse = false;
     }
-
-    this.optionsChanged.emit(options);
   }
 
   toggleViewKey(viewKey: ViewKey) {
-    const view = {...this.options.view};
-    view[viewKey] = !view[viewKey];
-
-    const options = {...this.options};
-    options.view = view;
-    this.optionsChanged.emit({...options});
+    this.viewer.toggleView(viewKey);
   }
 }

@@ -6,6 +6,7 @@ import {
   ItemRendererOptions,
   ItemRendererOptionsState
 } from 'app/package/items-renderer/item-renderer-options';
+import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {isMobile} from 'app/utility/media-matcher';
 import {Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
@@ -18,6 +19,7 @@ import {Query} from '../services/dao/query';
 import {getItemsList, GithubItemsRenderer} from '../services/github-items-renderer';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
+import {GithubItemViewerMetadata, View} from '../utility/items-renderer/item-viewer-metadata';
 
 
 @Component({
@@ -72,6 +74,8 @@ export class QueryPage {
   private getSubscription: Subscription;
 
   public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
+
+  public itemViewer = new ItemViewer<View>(GithubItemViewerMetadata);
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
@@ -169,9 +173,13 @@ export class QueryPage {
   }
 
   private updateItemsRenderer(options: ItemRendererOptionsState) {
-    this.itemsRenderer.grouper.setGroup(options.grouping);
+    this.itemsRenderer.grouper.group = options.grouping;
+
     this.itemsRenderer.filterer.filters = options.filters;
     this.itemsRenderer.filterer.search = options.search;
+
+    this.itemsRenderer.sorter.sort = options.sorting;
+    this.itemsRenderer.sorter.reverse = options.reverseSort;
   }
 }
 

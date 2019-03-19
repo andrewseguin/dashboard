@@ -23,7 +23,7 @@ import {ItemRecommendations} from 'app/repository/services/item-recommendations'
 import {
   AutocompleteContext,
   ItemsFilterMetadata
-} from 'app/repository/utility/items-renderer/items-filter-metadata';
+} from 'app/repository/utility/items-renderer/item-filter-metadata';
 import {Observable, Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
 

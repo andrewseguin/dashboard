@@ -15,7 +15,13 @@ export interface GroupingMetadata<T, G, C> {
 }
 
 export class ItemGrouper<T, G, C> {
-  group = new BehaviorSubject<G|null>(null);
+  set group(group: G|null) {
+    this.group$.next(group);
+  }
+  get group(): G|null {
+    return this.group$.value;
+  }
+  group$ = new BehaviorSubject<G|null>(null);
 
   constructor(
       private titleTransformContextProvider: Observable<C>,
@@ -23,7 +29,7 @@ export class ItemGrouper<T, G, C> {
 
   groupItems(items: T[]): Observable<ItemGroup<T>[]> {
     let config: GroupingMetadata<T, G, C>|null;
-    return this.group.pipe(
+    return this.group$.pipe(
         filter(v => !!v), map(group => {
           group = group!;
 
@@ -57,11 +63,6 @@ export class ItemGrouper<T, G, C> {
     const groups: GroupingMetadata<T, G, C>[] = [];
     this.metadata.forEach(group => groups.push(group));
     return groups;
-  }
-
-  // TODO: Can remove, just use groups subject
-  setGroup(group: G) {
-    this.group.next(group);
   }
 }
 

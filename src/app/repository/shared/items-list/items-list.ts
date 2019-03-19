@@ -10,7 +10,7 @@ import {ItemGroup} from 'app/package/items-renderer/item-grouping';
 import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item} from 'app/repository/services/dao';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/items-filter-metadata';
+import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
 import {fromEvent, Observable, ReplaySubject, Subject} from 'rxjs';
 import {auditTime, takeUntil} from 'rxjs/operators';
 

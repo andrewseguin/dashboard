@@ -55,4 +55,10 @@ export class ItemSorter<T, S, C> {
       return itemGroups;
     }));
   }
+
+  getSorts(): SortingMetadata<T, S, C>[] {
+    const sorts: SortingMetadata<T, S, C>[] = [];
+    this.metadata.forEach(sort => sorts.push(sort));
+    return sorts;
+  }
 }

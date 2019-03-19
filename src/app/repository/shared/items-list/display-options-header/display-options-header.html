@@ -18,8 +18,8 @@
 <!-- Group Menu -->
 <mat-menu #groupingMenu="matMenu">
   <button mat-menu-item *ngFor="let groupId of groupIds"
-          [class.selected]="(grouper.group | async) === groupId"
-          (click)="grouper.setGroup(groupId); $event.stopPropagation();">
+          [class.selected]="(grouper.group$ | async) === groupId"
+          (click)="grouper.group = groupId; $event.stopPropagation();">
     <div class="button-content">
       <mat-icon>check</mat-icon>
       {{groups.get(groupId).label}}
@@ -30,14 +30,11 @@
 <!-- Sort Menu -->
 <mat-menu #sortingMenu="matMenu">
   <button mat-menu-item *ngFor="let sort of sortIds"
-          [class.selected]="options.sorting == sort"
-          (click)="setSort(sort); $event.stopPropagation();">
+          [class.selected]="(sorter.sorts$ | async) === sort"
+          (click)="sorter.sort = sort; $event.stopPropagation();">
     <div class="button-content">
-      <mat-icon *ngIf="!options.reverseSort">
-        arrow_upward
-      </mat-icon>
-      <mat-icon *ngIf="options.reverseSort">
-        arrow_downward
+      <mat-icon>
+        {{(sorter.reverse$ | async) ? arrow_downward : arrow_upward}}
       </mat-icon>
       {{sorts.get(sort)}}
     </div>

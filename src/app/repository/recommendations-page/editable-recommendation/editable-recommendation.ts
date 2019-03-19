@@ -10,7 +10,7 @@ import {
 import {
   AutocompleteContext,
   ItemsFilterMetadata
-} from 'app/repository/utility/items-renderer/items-filter-metadata';
+} from 'app/repository/utility/items-renderer/item-filter-metadata';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {merge, Observable, of, Subject} from 'rxjs';

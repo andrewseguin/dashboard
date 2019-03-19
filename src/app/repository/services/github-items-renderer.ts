@@ -6,15 +6,15 @@ import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {combineLatest, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
-  GithubItemGroupingMetadata,
-  TitleTransformContext
-} from '../utility/items-renderer/item-grouping';
-import {GithubItemSortingMetadata} from '../utility/items-renderer/item-sorter';
-import {
   AutocompleteContext,
   ItemsFilterMetadata,
   MatcherContext
-} from '../utility/items-renderer/items-filter-metadata';
+} from '../utility/items-renderer/item-filter-metadata';
+import {
+  GithubItemGroupingMetadata,
+  TitleTransformContext
+} from '../utility/items-renderer/item-grouper-metadata';
+import {GithubItemSortingMetadata} from '../utility/items-renderer/item-sorter-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
 import {ActiveRepo} from './active-repo';
 import {Item, ItemType, Label} from './dao';
@@ -30,7 +30,6 @@ export class GithubItemsRenderer extends ItemsRenderer<Item> {
 
     this.filterer = getItemsFilterer(this.itemRecommendations, store);
     this.grouper = getItemsGrouper(store.labels);
-    this.grouper.setGroup('all');
 
     this.sorter = new ItemSorter(of(null), GithubItemSortingMetadata);
   }
@@ -41,8 +40,10 @@ function getItemsGrouper(labelsDao: ListDao<Label>):
   const titleTransformContextProvider =
       labelsDao.map.pipe(map(labelsMap => ({labelsMap: labelsMap})));
 
-  return new ItemGrouper<Item, Group, TitleTransformContext>(
+  const grouper = new ItemGrouper<Item, Group, TitleTransformContext>(
       titleTransformContextProvider, GithubItemGroupingMetadata);
+  grouper.group = 'all';
+  return grouper;
 }
 
 
