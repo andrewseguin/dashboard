@@ -13,7 +13,14 @@ export interface TitleTransformContext {
 
 export const GithubItemGroupingMetadata =
     new Map<Group, GroupingMetadata<Item, Group, TitleTransformContext>>([
-      ['all', {id: 'all', groupingFunction: (items: Item[]) => [{id: 'all', title: 'All', items}]}],
+      [
+        'all', {
+          id: 'all',
+          label: 'All',
+          groupingFunction: (items: Item[]) => [{id: 'all', title: 'All', items}],
+          titleTransform: () => ''
+        }
+      ],
       [
         'reporter', {
           id: 'reporter',

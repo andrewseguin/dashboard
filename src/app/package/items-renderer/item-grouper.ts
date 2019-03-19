@@ -13,7 +13,7 @@ export class ItemGroup<T> {
 
 export interface GroupingMetadata<T, G, C> {
   id: G;
-  label?: string;
+  label: string;
   groupingFunction: (items: T[]) => ItemGroup<T>[];
   titleTransform?: (title: string, c: C) => string;
 }

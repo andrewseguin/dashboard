@@ -1,32 +1,27 @@
-<ng-container *ngIf="itemGroups !== null; else loading">
-  <advanced-search [filterer]="itemGroupsDataSource.filterer"></advanced-search>
-  <display-options-header [grouper]="itemGroupsDataSource.grouper"
-                          [sorter]="itemGroupsDataSource.sorter"
-                          [viewer]="viewer" [itemCount]="itemCount | async">
-  </display-options-header>
+<advanced-search [filterer]="itemGroupsDataSource.filterer"></advanced-search>
+<display-options-header [grouper]="itemGroupsDataSource.grouper" [sorter]="itemGroupsDataSource.sorter"
+                        [viewer]="viewer" [itemCount]="itemCount | async">
+</display-options-header>
 
-  <div class="issues-container">
-    <div class="item-group"
-         *ngFor="let itemGroup of (renderState | async)?.groups; let index = index; trackBy:getItemGroupKey">
-      <div class="title">
-        {{itemGroup.title}}
-      </div>
-
-      <ng-container *ngFor="let item of itemGroup.items; trackBy:trackByIndex">
-        <mat-divider></mat-divider>
-        <item-summary [item]="item"
-                      [active]="(activeItem | async) === item.number"
-                      [enabledViews]="(viewer.state | async)?.views || []"
-                      (select)="navigateToItem($event)">
-        </item-summary>
-      </ng-container>
+<div class="issues-container">
+  <div class="item-group" *ngFor="let itemGroup of (renderState | async)?.groups; let index = index; trackBy:getItemGroupKey">
+    <div class="title">
+      {{itemGroup.title}}
     </div>
-  </div>
 
-  <div *ngIf="loadingIssues" class="loading-more">
-    <mat-spinner diameter="48"></mat-spinner>
+    <ng-container *ngFor="let item of itemGroup.items; trackBy:trackByIndex">
+      <mat-divider></mat-divider>
+      <item-summary [item]="item" [active]="(activeItem | async) === item.number"
+                    [enabledViews]="(viewer.state | async)?.views || []"
+                    (select)="navigateToItem($event)">
+      </item-summary>
+    </ng-container>
   </div>
-</ng-container>
+</div>
+
+<div *ngIf="hasMore | async" class="loading-more">
+  <mat-spinner diameter="48"></mat-spinner>
+</div>
 
 <ng-template #loading>
   <loading></loading>

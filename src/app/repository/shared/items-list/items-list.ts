@@ -7,7 +7,7 @@ import {ItemGroupsRenderer, RenderState} from 'app/package/items-renderer/item-g
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {Item} from 'app/repository/services/dao';
 import {isMobile} from 'app/utility/media-matcher';
-import {fromEvent, Observable, Subject} from 'rxjs';
+import {combineLatest, fromEvent, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 import {ItemDetailDialog} from '../dialog/item-detail-dialog/item-detail-dialog';
 
@@ -42,6 +42,8 @@ export class ItemsList {
 
   renderState = new Subject<RenderState<Item>>();
 
+  hasMore: Observable<boolean>;
+
   constructor(
       public ngZone: NgZone, private router: Router, private dialog: MatDialog,
       private activatedRoute: ActivatedRoute, public elementRef: ElementRef) {}
@@ -53,6 +55,11 @@ export class ItemsList {
     });
 
     this.itemCount = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
+
+    this.hasMore =
+        combineLatest(this.renderState, this.itemGroupsDataSource.connect()).pipe(map(result => {
+          return result[0].count < result[1].count;
+        }));
   }
 
   ngOnDestroy() {

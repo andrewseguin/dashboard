@@ -16,7 +16,14 @@ export interface ItemGroupsResult<T> {
 const DefaultFilterMetadata = new Map<string, IFilterMetadata<null, null>>([]);
 
 const DefaultGroupMetadata = new Map<'all', GroupingMetadata<any, 'all', null>>([
-  ['all', {id: 'all', groupingFunction: (items: any[]) => [{id: 'all', title: 'All', items}]}],
+  [
+    'all', {
+      id: 'all',
+      label: 'All',
+      groupingFunction: (items: any[]) => [{id: 'all', title: 'All', items}],
+      titleTransform: () => '',
+    }
+  ],
 ]);
 
 @Injectable()

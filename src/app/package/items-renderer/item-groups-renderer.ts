@@ -73,7 +73,7 @@ export class ItemGroupsRenderer<T> {
       const items = itemGroup.items.slice(0, itemsToRender);
       itemGroups.push({...itemGroup, items});
       itemsToRender -= itemGroup.items.length;
-      count += itemGroup.items.length;
+      count += items.length;
       index++;
     } while (itemsToRender > 0 && itemGroups.length !== this.itemGroups.length);
 
