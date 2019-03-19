@@ -1,6 +1,7 @@
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {ItemGrouper} from 'app/package/items-renderer/item-grouping';
 import {Group} from 'app/package/items-renderer/item-renderer-options';
+import {ItemSorter} from 'app/package/items-renderer/item-sorter';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {combineLatest, of} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -8,7 +9,7 @@ import {
   GithubItemGroupingMetadata,
   TitleTransformContext
 } from '../utility/items-renderer/item-grouping';
-import {MyItemSorter} from '../utility/items-renderer/item-sorter';
+import {GithubItemSortingMetadata} from '../utility/items-renderer/item-sorter';
 import {
   AutocompleteContext,
   ItemsFilterMetadata,
@@ -31,7 +32,7 @@ export class GithubItemsRenderer extends ItemsRenderer<Item> {
     this.grouper = getItemsGrouper(store.labels);
     this.grouper.setGroup('all');
 
-    this.sorterProvider = of(new MyItemSorter());
+    this.sorter = new ItemSorter(of(null), GithubItemSortingMetadata);
   }
 }
 
