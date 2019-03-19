@@ -1,6 +1,5 @@
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
-import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {ItemSorter} from 'app/package/items-renderer/item-sorter';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {combineLatest, of} from 'rxjs';
@@ -12,6 +11,7 @@ import {
 } from '../utility/items-renderer/item-filter-metadata';
 import {
   GithubItemGroupingMetadata,
+  Group,
   TitleTransformContext
 } from '../utility/items-renderer/item-grouper-metadata';
 import {GithubItemSortingMetadata} from '../utility/items-renderer/item-sorter-metadata';
@@ -41,7 +41,7 @@ function getItemsGrouper(labelsDao: ListDao<Label>):
 
   const grouper = new ItemGrouper<Item, Group, TitleTransformContext>(
       titleTransformContextProvider, GithubItemGroupingMetadata);
-  grouper.group = 'all';
+  grouper.setState({group: 'all'});
   return grouper;
 }
 

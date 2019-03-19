@@ -1,19 +1,15 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {MatDialog} from '@angular/material';
-import {View} from 'app/package/items-renderer/item-renderer-options';
-import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Item, ItemListDisplayTypeOptions, Widget} from 'app/repository/services/dao';
-import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
+import {ItemViewer} from 'app/package/items-renderer/item-viewer';
+import {Item, ListDisplayTypeOptions} from 'app/repository/services/dao';
+import {GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
-import {Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {
+  GithubItemView,
+  GithubItemViewerMetadata
+} from 'app/repository/utility/items-renderer/item-viewer-metadata';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'list',
@@ -21,45 +17,28 @@ import {takeUntil} from 'rxjs/operators';
   styleUrls: ['list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class List {
+export class List<S> {
   trackById = (_i: number, item: Item) => item.id;
 
-  @Input() widget: Widget;
+  @Input() itemsRenderer: GithubItemsRenderer;
 
-  items: Item[];
+  @Input() options: ListDisplayTypeOptions<S, GithubItemView>;
 
-  listLength = 0;
+  items: Observable<Item[]>;
 
-  view: Observable<View>;
+  public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
-  private destroyed = new Subject();
-
-  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
-
-  constructor(
-      private dialog: MatDialog, private cd: ChangeDetectorRef,
-      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo) {}
+  constructor(private dialog: MatDialog) {}
 
   ngOnInit() {
-    this.itemsRenderer.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
-      this.items = [];
-      result.groups.forEach(itemGroup => this.items.push(...itemGroup.items));
-      this.cd.markForCheck();
-    });
+    this.items = this.itemsRenderer.connect().pipe(map(result => result.groups[0].items));
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['widget'] && this.widget) {
-      this.itemsRenderer.dataProvider =
-          getItemsList(this.activeRepo.activeStore, this.widget.itemType);
-      this.itemsRenderer.options.setState(this.widget.options!);
-      this.listLength = (this.widget.displayTypeOptions as ItemListDisplayTypeOptions).listLength;
+    if (simpleChanges['options'] && this.options) {
+      this.itemsRenderer.sorter.setState(this.options.sorterState);
+      this.itemViewer.setState(this.options.viewerState);
     }
-  }
-
-  ngOnDestroy() {
-    this.destroyed.next();
-    this.destroyed.complete();
   }
 
   openItemModal(itemId: number) {

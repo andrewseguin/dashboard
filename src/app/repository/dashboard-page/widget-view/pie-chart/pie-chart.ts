@@ -8,12 +8,11 @@ import {
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {Theme} from 'app/repository/services';
-import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Item, PieChartDisplayTypeOptions, Widget} from 'app/repository/services/dao';
-import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
+import {Item, PieChartDisplayTypeOptions} from 'app/repository/services/dao';
+import {GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'pie-chart',
@@ -21,23 +20,29 @@ import {Subject} from 'rxjs';
   styleUrls: ['pie-chart.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PieChart {
+export class PieChart<G> {
   chart: Chart;
 
-  @Input() widget: Widget;
+  @Input() itemsRenderer: GithubItemsRenderer;
+
+  @Input() options: PieChartDisplayTypeOptions<G>;
 
   @ViewChild('canvas') canvas: ElementRef;
 
-  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
-
   private destroyed = new Subject();
 
-  constructor(
-      private theme: Theme, private itemRecommendations: ItemRecommendations,
-      private activeRepo: ActiveRepo) {}
+  constructor(private theme: Theme) {}
 
   ngOnInit() {
-    this.itemsRenderer.connect().subscribe(result => this.render(result.groups));
+    this.itemsRenderer.connect()
+        .pipe(takeUntil(this.destroyed))
+        .subscribe(result => this.render(result.groups));
+  }
+
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    if (simpleChanges['options'] && this.options) {
+      this.itemsRenderer.grouper.setState(this.options.grouperState);
+    }
   }
 
   ngOnDestroy() {
@@ -61,19 +66,9 @@ export class PieChart {
     return {data, labels};
   }
 
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['widget'] && this.widget) {
-      this.itemsRenderer.dataProvider =
-          getItemsList(this.activeRepo.activeStore, this.widget.itemType);
-      this.setupItemsRenderer();
-    }
-  }
-
   render(groups: ItemGroup<Item>[]) {
-    const options = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
-    if (options.filteredGroups) {
-      const filteredGroupsSet =
-          new Set<string>(options.filteredGroups.split(',').map(v => v.trim()));
+    if (this.options.filteredGroupsByTitle) {
+      const filteredGroupsSet = new Set<string>(this.options.filteredGroupsByTitle);
       groups = groups.filter(g => filteredGroupsSet.has(g.title));
     }
 
@@ -96,13 +91,6 @@ export class PieChart {
       this.chart = new Chart(this.canvas.nativeElement, {type: 'pie', data: chartData, options});
       this.chart.render();
     }
-  }
-
-  private setupItemsRenderer() {
-    const displayTypeOptions = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
-
-    this.itemsRenderer.options.setState(
-        {...this.widget.options!, grouping: displayTypeOptions.group!});
   }
 }
 

@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '
 import {ActivatedRoute, Router} from '@angular/router';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {isMobile} from 'app/utility/media-matcher';
-import {Subject, Subscription} from 'rxjs';
+import {combineLatest, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveRepo} from '../services/active-repo';
@@ -47,21 +47,6 @@ export class QueryPage {
   }
   private _query: Query;
 
-  set currentOptions(currentOptions: ItemRendererOptionsState) {
-    // When current options change, a check should be evaluated if they differ
-    // from the current query's options. If so, the save button should
-    // display.
-    this._currentOptions = currentOptions;
-    this.canSave = !!this.query && !!this.query.options && this.currentOptions &&
-        !areOptionStatesEqual(this.query.options, this.currentOptions);
-  }
-  get currentOptions(): ItemRendererOptionsState {
-    return this._currentOptions;
-  }
-  private _currentOptions: ItemRendererOptionsState;
-
-  canSave: boolean;
-
   itemId =
       this.activatedRoute.queryParamMap.pipe(map(queryParamsMap => queryParamsMap.get('item')));
 
@@ -72,6 +57,10 @@ export class QueryPage {
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
+  public canSave = combineLatest(
+                       this.itemsRenderer.filterer.state, this.itemsRenderer.grouper.state,
+                       this.itemsRenderer.sorter.state, this.itemViewer.state)
+                       .pipe(map(() => this.areStatesEquivalent()));
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
@@ -81,7 +70,6 @@ export class QueryPage {
       private header: Header, private queryDialog: QueryDialog, private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
-      this.canSave = false;
 
       if (this.getSubscription) {
         this.getSubscription.unsubscribe();
@@ -97,10 +85,11 @@ export class QueryPage {
           this.createNewQueryFromRecommendation(this.activeRepo.activeStore, recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
-          this.query = createNewQuery(widget.itemType, widget.title, widget.options);
+          this.query = createNewQuery(widget.title, widget.itemType);
+          // TODO: widget.options
         } else {
           const type = queryParamMap.get('type') as ItemType;
-          this.query = createNewQuery(type);
+          this.query = createNewQuery('New Query', type);
         }
 
         // If navigated from dashboard, go back to the dashboard, not queries page
@@ -132,16 +121,36 @@ export class QueryPage {
     this.destroyed.complete();
   }
 
-  saveAs() {
+  openSaveAsDialog() {
     const queryType = this.query.type;
     if (!queryType) {
       throw Error('Missing query type');
     }
-    this.queryDialog.saveAsQuery(this.currentOptions, queryType, this.activeRepo.activeStore);
+    this.queryDialog.saveAsQuery().pipe(take(1)).subscribe(
+        result => this.saveAs(result.name, result.group));
   }
 
-  save() {
-    this.activeRepo.activeStore.queries.update({id: this.query.id, options: this.currentOptions});
+  saveState() {
+    const queryState = {
+      filtererState: this.itemsRenderer.filterer.getState(),
+      grouperState: this.itemsRenderer.grouper.getState(),
+      sorterState: this.itemsRenderer.sorter.getState(),
+      viewerState: this.itemViewer.getState(),
+    };
+
+    this.activeRepo.activeStore.queries.update({...this.query, ...queryState});
+  }
+
+  saveAs(name: string, group: string) {
+    this.query = {...this.query, name, group};
+    const store = this.activeRepo.activeStore;
+    const newQueryId = store.queries.add(this.query);
+
+    this.saveState();
+
+    this.router.navigate(
+        [`${this.activeRepo.activeStore.repository}/query/${newQueryId}`],
+        {replaceUrl: true, queryParamsHandling: 'merge'});
   }
 
   setBack(fromDashboard?: string) {
@@ -158,10 +167,7 @@ export class QueryPage {
     store.recommendations.list.pipe(take(1)).subscribe(list => {
       list.forEach(r => {
         if (r.id === id) {
-          const options = new ItemRendererOptions();
-          options.filters = r.filters || [];
-          options.search = r.search || '';
-          this.query = createNewQuery('issue', r.message, options.getState());
+          this.query = createNewQuery('New Query', 'issue');
           this.cd.markForCheck();
         }
       });
@@ -189,15 +195,22 @@ export class QueryPage {
       this.itemViewer.setState(viewerState);
     }
   }
+
+  private areStatesEquivalent() {
+    const filtererStatesEquivalent = this.query.filtererState &&
+        this.itemsRenderer.filterer.isEquivalent(this.query.filtererState);
+    const grouperStatesEquivalent =
+        this.query.grouperState && this.itemsRenderer.grouper.isEquivalent(this.query.grouperState);
+    const sorterStatesEquivalent =
+        this.query.sorterState && this.itemsRenderer.sorter.isEquivalent(this.query.sorterState);
+    const viewerStatesEquivalent =
+        this.query.viewerState && this.itemViewer.isEquivalent(this.query.viewerState);
+
+    return filtererStatesEquivalent && grouperStatesEquivalent && sorterStatesEquivalent &&
+        viewerStatesEquivalent;
+  }
 }
 
-function createNewQuery(
-    type: ItemType, name = 'New Query', optionsState: ItemRendererOptionsState|null = null): Query {
-  const options = new ItemRendererOptions();
-
-  if (optionsState) {
-    options.setState(optionsState);
-  }
-
-  return {name, type, options: options.getState()};
+function createNewQuery(name: string, type: ItemType): Query {
+  return {name, type};
 }

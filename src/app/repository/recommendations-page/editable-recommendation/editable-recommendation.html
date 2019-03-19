@@ -53,10 +53,7 @@
           </div>
         </div>
       </div>
-      <advanced-search [search]="search" [filters]="filters" [autocompleteContext]="autocompleteContext | async"
-                       [metadata]="metadata" (searchChanged)="search = $event"
-                       (filtersChanged)="filters = $event">
-      </advanced-search>
+      <advanced-search [filterer]="itemsFilterer"></advanced-search>
       <div class="delete">
         <button mat-stroked-button color="warn"
                 (click)="deleteRecommendation()">

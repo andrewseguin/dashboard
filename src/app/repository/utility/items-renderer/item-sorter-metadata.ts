@@ -1,4 +1,3 @@
-import {Sort} from 'app/package/items-renderer/item-renderer-options';
 import {SortingMetadata} from 'app/package/items-renderer/item-sorter';
 import {Item} from 'app/repository/services/dao';
 

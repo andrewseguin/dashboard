@@ -3,8 +3,9 @@ import {
   getGroupByValue,
   GroupingMetadata
 } from 'app/package/items-renderer/item-grouper';
-import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {Item, Label} from 'app/repository/services/dao';
+
+export type Group = 'all'|'reporter'|'label'|'assignee';
 
 export interface TitleTransformContext {
   labelsMap: Map<string, Label>;
@@ -12,13 +13,7 @@ export interface TitleTransformContext {
 
 export const GithubItemGroupingMetadata =
     new Map<Group, GroupingMetadata<Item, Group, TitleTransformContext>>([
-      [
-        'all', {
-          id: 'all',
-          label: 'All',
-          groupingFunction: (items: Item[]) => [{id: 'all', title: 'All', items}]
-        }
-      ],
+      ['all', {id: 'all', groupingFunction: (items: Item[]) => [{id: 'all', title: 'All', items}]}],
       [
         'reporter', {
           id: 'reporter',

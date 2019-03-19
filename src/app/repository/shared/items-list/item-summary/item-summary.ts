@@ -1,8 +1,14 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {View} from 'app/package/items-renderer/item-renderer-options';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Item} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {Subject} from 'rxjs';
+import {GithubItemView} from 'app/repository/utility/items-renderer/item-viewer-metadata';
 import {map} from 'rxjs/operators';
 
 @Component({
@@ -16,22 +22,22 @@ export class ItemSummary {
   warnings = this.itemRecommendations.warnings.pipe(map(map => map.get(this.item.id)));
   suggestions = this.itemRecommendations.suggestions.pipe(map(map => map.get(this.item.id)));
 
-  private destroyed = new Subject();
+  enabledViewsSet = new Set<GithubItemView>();
 
   @Input() item: Item;
 
   @Input() active: boolean;
 
-  @Input() view: View;
+  @Input() enabledViews: GithubItemView[];
 
   @Output() select = new EventEmitter<number>();
 
   constructor(public itemRecommendations: ItemRecommendations) {}
 
-  ngOnInit() {}
-
-  ngOnDestroy() {
-    this.destroyed.next();
-    this.destroyed.complete();
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    if (simpleChanges['enabledViews'] && this.enabledViews) {
+      this.enabledViewsSet = new Set<GithubItemView>();
+      this.enabledViews.forEach(v => this.enabledViewsSet.add(v));
+    }
   }
 }

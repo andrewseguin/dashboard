@@ -2,14 +2,17 @@ import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ActiveRepo} from 'app/repository/services/active-repo';
-import {RepoStore} from 'app/repository/services/dao/dao';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 export interface QueryEditData {
   name: string;
   group: string;
-  store: RepoStore;
+}
+
+export interface QueryEditResult {
+  name: string;
+  group: string;
 }
 
 @Component({

@@ -9,10 +9,21 @@
 
 <div [ngSwitch]="widget.displayType"
      [style.pointer-events]="editMode ? 'none' : ''">
-  <list *ngSwitchCase="'list'" [widget]="widget"></list>
-  <count *ngSwitchCase="'count'" [widget]="widget"></count>
-  <pie-chart *ngSwitchCase="'pie'" [widget]="widget"></pie-chart>
-  <time-series *ngSwitchCase="'time-series'" [widget]="widget"></time-series>
+  <list *ngSwitchCase="'list'" [options]="widget.displayTypeOptions"
+        [itemsRenderer]="itemsRenderer">
+  </list>
+
+  <count *ngSwitchCase="'count'" [options]="widget.displayTypeOptions"
+         [itemsRenderer]="itemsRenderer">
+  </count>
+
+  <pie-chart *ngSwitchCase="'pie'" [options]="widget.displayTypeOptions"
+             [itemsRenderer]="itemsRenderer">
+  </pie-chart>
+
+  <time-series *ngSwitchCase="'time-series'"
+               [options]="widget.displayTypeOptions"
+               [itemsRenderer]="itemsRenderer"></time-series>
 </div>
 
 <mat-menu #settings="matMenu">

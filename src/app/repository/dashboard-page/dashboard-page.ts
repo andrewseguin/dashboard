@@ -4,7 +4,6 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '
 import {FormControl} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ItemRendererOptions} from 'app/package/items-renderer/item-renderer-options';
 import {Subject, Subscription} from 'rxjs';
 import {delay, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
@@ -120,14 +119,7 @@ export class DashboardPage {
   }
 
   addWidget(column: Column) {
-    const widget: Widget = {
-      title: '',
-      options: new ItemRendererOptions().getState(),
-      itemType: 'issue',
-      displayType: 'list',
-      displayTypeOptions: {listLength: 3}
-    };
-    const config: MatDialogConfig<EditWidgetData> = {width: '650px', data: {widget}};
+    const config: MatDialogConfig<EditWidgetData> = {width: '650px'};
 
     this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {
       if (result) {

@@ -7,7 +7,6 @@ import {
   NgZone
 } from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
-import {Group} from 'app/package/items-renderer/item-renderer-options';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {ItemsRenderer} from 'app/package/items-renderer/items-renderer';
 import {Item} from 'app/repository/services/dao';
@@ -21,7 +20,7 @@ import {auditTime, takeUntil} from 'rxjs/operators';
   styleUrls: ['items-list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ItemsList {
+export class ItemsList<G> {
   destroyed = new Subject();
 
   private elementScrolled: Observable<Event> = new Observable(
@@ -38,7 +37,9 @@ export class ItemsList {
 
   issueFilterMetadata = ItemsFilterMetadata;
 
-  group = new ReplaySubject<Group>();
+  group = new ReplaySubject<G>();
+
+  itemCount = new Subject<number>();
 
   @Input() itemsRenderer: ItemsRenderer<any>;
 
@@ -77,6 +78,7 @@ export class ItemsList {
     // When groups change, render the first ten, then debounce and render more
     this.itemsRenderer.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
       this.itemGroups = result.groups;
+      this.itemCount.next(result.count);
       this.render();
     });
   }

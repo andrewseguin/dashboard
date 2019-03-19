@@ -1,5 +1,5 @@
 import {BehaviorSubject, Observable} from 'rxjs';
-import {filter, map, mergeMap} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 
 export interface ItemGrouperState<G> {
   group: G|null;
@@ -13,19 +13,13 @@ export class ItemGroup<T> {
 
 export interface GroupingMetadata<T, G, C> {
   id: G;
-  label: string;
+  label?: string;
   groupingFunction: (items: T[]) => ItemGroup<T>[];
   titleTransform?: (title: string, c: C) => string;
 }
 
 export class ItemGrouper<T, G, C> {
-  set group(group: G|null) {
-    this.group$.next(group);
-  }
-  get group(): G|null {
-    return this.group$.value;
-  }
-  group$ = new BehaviorSubject<G|null>(null);
+  state = new BehaviorSubject<ItemGrouperState<G>>({group: null});
 
   constructor(
       private titleTransformContextProvider: Observable<C>,
@@ -33,9 +27,9 @@ export class ItemGrouper<T, G, C> {
 
   groupItems(items: T[]): Observable<ItemGroup<T>[]> {
     let config: GroupingMetadata<T, G, C>|null;
-    return this.group$.pipe(
-        filter(v => !!v), map(group => {
-          group = group!;
+    return this.state.pipe(
+        map(state => {
+          const group = state.group!;
 
           if (this.metadata.has(group)) {
             config = this.metadata.get(group) || null;
@@ -70,11 +64,15 @@ export class ItemGrouper<T, G, C> {
   }
 
   getState(): ItemGrouperState<G> {
-    return {group: this.group};
+    return this.state.value;
   }
 
   setState(state: ItemGrouperState<G>) {
-    this.group = state.group;
+    this.state.next({...state});
+  }
+
+  isEquivalent(otherState: ItemGrouperState<G>) {
+    return this.getState().group === otherState.group;
   }
 }
 

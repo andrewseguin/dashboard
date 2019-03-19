@@ -66,15 +66,16 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.filterer.filters$.pipe(takeUntil(this.destroyed)).subscribe(filters => {
-      this.hasDisplayedFilters = filters.some(filter => !filter.isImplicit);
+    this.filterer.state.pipe(takeUntil(this.destroyed)).subscribe(state => {
+      this.hasDisplayedFilters = state.filters.some(filter => !filter.isImplicit);
+      this.searchFormControl.setValue(state.search, {emitEvent: false});
     });
 
-    this.filterer.search$.pipe(takeUntil(this.destroyed)).subscribe(search => {
-      this.searchFormControl.setValue(search, {emitEvent: false});
-    });
     this.searchFormControl.valueChanges.pipe(debounceTime(100), takeUntil(this.destroyed))
-        .subscribe(value => this.filterer.search = value);
+        .subscribe(search => {
+          const filtererState = this.filterer.getState();
+          this.filterer.setState({...filtererState, search});
+        });
 
     this.displayedFilterTypes =
         Array.from(metadata.keys())
@@ -96,21 +97,30 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addFilter(type: string) {
+    const filtererState = this.filterer.getState();
+
     this.focusInput = true;
-    const filters = this.filterer.filters.slice();
+    const filters = filtererState.filters.slice();
     filters.push({type});
-    this.filterer.filters = filters;
+
+    this.filterer.setState({...filtererState, filters});
   }
 
   removeFilter(index: number) {
-    const filters = this.filterer.filters.slice();
+    const filtererState = this.filterer.getState();
+
+    const filters = filtererState.filters.slice();
     filters.splice(index, 1);
-    this.filterer.filters = filters;
+
+    this.filterer.setState({...filtererState, filters});
   }
 
   queryChange(index: number, query: Query) {
-    const filters = this.filterer.filters.slice();
+    const filtererState = this.filterer.getState();
+
+    const filters = filtererState.filters.slice();
     filters[index] = {...filters[index], query};
-    this.filterer.filters = filters;
+
+    this.filterer.setState({...filtererState, filters});
   }
 }

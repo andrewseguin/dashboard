@@ -1,16 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {
-  GroupIds,
-  Groups,
-  ItemRendererOptions
-} from 'app/package/items-renderer/item-renderer-options';
+import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {
+  CountDisplayTypeOptions,
   DisplayType,
-  ItemCountDisplayTypeOptions,
-  ItemListDisplayTypeOptions,
+  ListDisplayTypeOptions,
   PieChartDisplayTypeOptions,
   TimeSeriesDisplayTypeOptions,
   Widget,
@@ -24,6 +20,14 @@ import {
   AutocompleteContext,
   ItemsFilterMetadata
 } from 'app/repository/utility/items-renderer/item-filter-metadata';
+import {
+  GithubItemGroupingMetadata,
+  Group
+} from 'app/repository/utility/items-renderer/item-grouper-metadata';
+import {
+  GithubItemView,
+  GithubItemViewerMetadata
+} from 'app/repository/utility/items-renderer/item-viewer-metadata';
 import {Observable, Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
 
@@ -36,20 +40,16 @@ export interface EditWidgetData {
   styleUrls: ['edit-widget.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditWidget {
-  widget: Widget;
-
+export class EditWidget<S, V, G> {
   queryChanged = new Subject<void>();
 
   form = new FormGroup({
-    title: new FormControl(),
-    itemType: new FormControl(),
-    displayType: new FormControl(),
+    title: new FormControl(''),
+    itemType: new FormControl('issue'),
+    displayType: new FormControl('list'),
   });
 
   recommendationsList = this.activeRepo.store.pipe(mergeMap(store => store.recommendations.list));
-
-  displayTypeOptions: FormGroup;
 
   autocompleteContext: Observable<AutocompleteContext> =
       this.activeRepo.store.pipe(map(store => ({items: store.items, labels: store.labels})));
@@ -64,37 +64,58 @@ export class EditWidget {
   prQueries = this.activeRepo.store.pipe(
       mergeMap(store => store.queries.list), map(queries => queries.filter(q => q.type === 'pr')));
 
-  groups = Groups;
-  groupIds = [...GroupIds];
+  groups = GithubItemGroupingMetadata;
+  groupIds: Group[];
+
+  displayTypeOptionsForm: {[key in DisplayType]: FormGroup} = {
+    count: new FormGroup({fontSize: new FormControl('normal')}),
+    list: new FormGroup({listLength: new FormControl(5)}),
+    pie: new FormGroup({
+      group: new FormControl('label'),
+      filteredGroupsByTitle: new FormControl(''),
+    }),
+    'time-series': new FormGroup({
+      start: new FormControl(),
+      end: new FormControl(),
+      group: new FormControl('week'),
+      datasets: new FormControl('open'),
+    })
+  };
 
   private _destroyed = new Subject();
 
   public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
 
+  public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
+
   constructor(
       private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo,
-      private cd: ChangeDetectorRef, private dialogRef: MatDialogRef<EditWidget, Widget>,
+      private cd: ChangeDetectorRef, private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
-    this.groupIds.splice(this.groupIds.indexOf('all'), 1);
-
-    this.widget = {...data.widget};
-
-    this.form.get('displayType')!.valueChanges.pipe(takeUntil(this._destroyed))
-        .subscribe(displayType => {
-          this.updateDisplayTypeOptionsForm(displayType);
-        });
-
-    // this.itemsRenderer = this.itemsRendererFactory.create(this.widget.itemType);
-    this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(type => {
-      this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, type);
-      this.itemsRenderer.options.setState(this.widget.options);
-      this.cd.markForCheck();
+    this.groupIds = [];
+    this.groups.forEach(g => {
+      if (g.label) {
+        this.groupIds.push(g.id);
+      }
     });
 
-    this.form.setValue({
-      title: this.widget.title,
-      itemType: this.widget.itemType,
-      displayType: this.widget.displayType,
+    if (data && data.widget) {
+      this.form.setValue({
+        title: data.widget.title,
+        itemType: data.widget.itemType,
+        displayType: data.widget.displayType,
+      });
+
+      this.itemsRenderer.dataProvider =
+          getItemsList(this.activeRepo.activeStore, data.widget.itemType);
+
+      this.setDisplayTypeOptionsForm(data.widget.displayType, data.widget.displayTypeOptions);
+    }
+
+    this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, 'issue');
+    this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(type => {
+      this.itemsRenderer.dataProvider = getItemsList(this.activeRepo.activeStore, type);
+      this.cd.markForCheck();
     });
   }
 
@@ -104,59 +125,94 @@ export class EditWidget {
   }
 
   edit() {
-    this.dialogRef.close({
+    let displayType = this.form.value.displayType as DisplayType;
+    let displayTypeOptions: WidgetDisplayTypeOptions;
+
+    const form = this.displayTypeOptionsForm[displayType];
+    switch (displayType) {
+      case 'count':
+        displayTypeOptions = {
+          fontSize: form.value.fontSize,
+        };
+        break;
+      case 'list':
+        displayTypeOptions = {
+          listLength: form.value.listLength,
+          sorterState: this.itemsRenderer.sorter.getState(),
+          viewerState: this.itemViewer.getState(),
+        };
+        break;
+      case 'pie':
+        displayTypeOptions = {
+          grouperState: {group: form.value.group},
+          filteredGroupsByTitle: form.value.filteredGroupsByTitle,
+        };
+        break;
+      case 'time-series':
+        const datasets = (form.value.datasets as string).split(',').map(v => v.trim());
+        displayTypeOptions =
+            {start: form.value.start, end: form.value.end, group: form.value.group, datasets};
+        break;
+      default:
+        throw Error(`Could not set up options for type ${displayType}`);
+    }
+
+    const widget: Widget = {
       title: this.form.value.title,
-      options: this.itemsRenderer.options.getState(),
       itemType: this.form.value.itemType,
+      filtererState: this.itemsRenderer.filterer.getState(),
       displayType: this.form.value.displayType,
-      displayTypeOptions: this.displayTypeOptions.value
-    } as Widget);
+      displayTypeOptions
+    };
+
+    this.dialogRef.close(widget);
   }
 
   loadFromRecommendation(recommendation: Recommendation) {
-    const options = new ItemRendererOptions();
-    options.filters = recommendation.filters || [];
-    options.search = recommendation.search || '';
-    this.itemsRenderer.options.setState(options.getState());
-  }
-
-  loadFromQuery(query: Query) {
-    if (query.options) {
-      this.itemsRenderer.options.setState(query.options);
+    if (recommendation.filtererState) {
+      this.itemsRenderer.filterer.setState(recommendation.filtererState);
     }
   }
 
-  private updateDisplayTypeOptionsForm(displayType: DisplayType) {
-    let options: WidgetDisplayTypeOptions;
+  loadFromQuery(query: Query) {
+    if (query.filtererState) {
+      this.itemsRenderer.filterer.setState(query.filtererState);
+    }
+
+    if (query.sorterState) {
+      this.itemsRenderer.sorter.setState(query.sorterState);
+    }
+
+    if (query.viewerState) {
+      this.itemViewer.setState(query.viewerState);
+    }
+  }
+
+  private setDisplayTypeOptionsForm(displayType: DisplayType, options: WidgetDisplayTypeOptions) {
+    const form = this.displayTypeOptionsForm[displayType];
     switch (displayType) {
       case 'count':
-        options = this.widget.displayTypeOptions as ItemCountDisplayTypeOptions;
-        this.displayTypeOptions =
-            new FormGroup({fontSize: new FormControl(options.fontSize || 'normal')});
+        options = options as CountDisplayTypeOptions;
+        form.get('fontSize')!.setValue(options.fontSize);
         break;
 
       case 'list':
-        options = this.widget.displayTypeOptions as ItemListDisplayTypeOptions;
-        this.displayTypeOptions =
-            new FormGroup({listLength: new FormControl(options.listLength || 'normal')});
+        options = options as ListDisplayTypeOptions<S, V>;
+        form.get('listLength')!.setValue(options.listLength);
         break;
 
       case 'pie':
-        options = this.widget.displayTypeOptions as PieChartDisplayTypeOptions;
-        this.displayTypeOptions = new FormGroup({
-          group: new FormControl(options.group || 'label'),
-          filteredGroups: new FormControl(options.filteredGroups || '')
-        });
+        options = options as PieChartDisplayTypeOptions<G>;
+        form.get('group')!.setValue(options.grouperState.group);
+        form.get('filteredGroupsByTitle')!.setValue(options.filteredGroupsByTitle);
         break;
 
       case 'time-series':
-        options = this.widget.displayTypeOptions as TimeSeriesDisplayTypeOptions;
-        this.displayTypeOptions = new FormGroup({
-          start: new FormControl(options.start),
-          end: new FormControl(options.end),
-          group: new FormControl(options.group || 'week'),
-          datasets: new FormControl(options.datasets || 'open')
-        });
+        options = options as TimeSeriesDisplayTypeOptions;
+        form.get('start')!.setValue(options.start);
+        form.get('end')!.setValue(options.end);
+        form.get('group')!.setValue(options.group);
+        form.get('datasets')!.setValue(options.datasets);
         break;
     }
   }

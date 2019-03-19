@@ -3,7 +3,6 @@ import {BehaviorSubject, Observable, of, ReplaySubject, Subscription} from 'rxjs
 import {mergeMap, tap} from 'rxjs/operators';
 import {ItemFilterer} from './item-filterer';
 import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouper';
-import {ItemRendererOptions} from './item-renderer-options';
 import {ItemSorter} from './item-sorter';
 import {IFilterMetadata} from './search-utility/filter';
 
@@ -37,8 +36,6 @@ export class ItemsRenderer<T> {
   }
   private readonly _dataProvider = new BehaviorSubject<DataProvider<T>>(of([]));
 
-  filteredData = new ReplaySubject<T[]>();
-
   // TODO: Implement a reasonable default filterer, at least with basic search
   /** Provider for the grouper which will group items together. */
   filterer: ItemFilterer<T, any, any> =
@@ -49,8 +46,6 @@ export class ItemsRenderer<T> {
 
   /** The sorter handles the sorting of items within each group. */
   sorter: ItemSorter<T, any, any> = new ItemSorter<T, '', null>(of(null), new Map());
-
-  options: ItemRendererOptions = new ItemRendererOptions();
 
   /** Stream emitting render data to the table (depends on ordered data changes). */
   private readonly _renderData = new ReplaySubject<ItemsRendererResult<T>>();
@@ -82,10 +77,8 @@ export class ItemsRenderer<T> {
     this._dataProvider
         .pipe(
             mergeMap(dataProvider => dataProvider),
-            mergeMap(data => this.filterer.filterItems(data)), tap(filteredData => {
-              filteredDataCount = filteredData.length;
-              return this.filteredData.next(filteredData);
-            }),
+            mergeMap(data => this.filterer.filterItems(data)),
+            tap(filteredData => filteredDataCount = filteredData.length),
             mergeMap(filteredItems => this.grouper.groupItems(filteredItems)),
             mergeMap(groupedItems => this.sorter.performSort(groupedItems)))
         .subscribe(sortedItems => {

@@ -14,29 +14,15 @@ export interface SortingMetadata<T, S, C> {
 }
 
 export class ItemSorter<T, S, C> {
-  set sort(sort: S|null) {
-    this.sort$.next(sort);
-  }
-  get sort(): S|null {
-    return this.sort$.value;
-  }
-  sort$ = new BehaviorSubject<S|null>(null);
-
-  set reverse(reverse: boolean) {
-    this.reverse$.next(reverse);
-  }
-  get reverse(): boolean {
-    return this.reverse$.value;
-  }
-  reverse$ = new BehaviorSubject<boolean>(false);
+  state = new BehaviorSubject<ItemSorterState<S>>({sort: null, reverse: false});
 
   constructor(private context: Observable<C>, public metadata: Map<S, SortingMetadata<T, S, C>>) {}
 
   performSort(itemGroups: ItemGroup<T>[]): Observable<ItemGroup<T>[]> {
-    return combineLatest(this.sort$, this.reverse$, this.context).pipe(map(results => {
-      const sort = results[0];
-      const reverse = results[1];
-      const context = results[2];
+    return combineLatest(this.state, this.context).pipe(map(results => {
+      const sort = results[0].sort;
+      const reverse = results[0].reverse;
+      const context = results[1];
 
       if (!sort) {
         return itemGroups;
@@ -68,11 +54,15 @@ export class ItemSorter<T, S, C> {
   }
 
   getState(): ItemSorterState<S> {
-    return {sort: this.sort, reverse: this.reverse};
+    return this.state.value;
   }
 
   setState(state: ItemSorterState<S>) {
-    this.sort = state.sort;
-    this.reverse = state.reverse;
+    this.state.next({...state});
+  }
+
+  isEquivalent(otherState: ItemSorterState<S>) {
+    const thisState = this.getState();
+    return thisState.sort === otherState.sort && thisState.reverse === otherState.reverse;
   }
 }

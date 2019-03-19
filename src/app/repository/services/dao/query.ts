@@ -10,8 +10,8 @@ export interface Query {
   name?: string;
   type?: 'issue'|'pr';
   group?: string;
-  grouperState?: ItemGrouperState<any>;
   filtererState?: ItemFiltererState;
+  grouperState?: ItemGrouperState<any>;
   sorterState?: ItemSorterState<any>;
   viewerState?: ItemViewerState<any>;
 }

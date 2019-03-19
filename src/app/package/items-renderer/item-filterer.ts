@@ -8,21 +8,7 @@ export interface ItemFiltererState {
 }
 
 export class ItemFilterer<T, M, A> {
-  set filters(filters: Filter[]) {
-    this.filters$.next(filters);
-  }
-  get filters(): Filter[] {
-    return this.filters$.value;
-  }
-  filters$ = new BehaviorSubject<Filter[]>([]);
-
-  set search(search: string) {
-    this.search$.next(search);
-  }
-  get search(): string {
-    return this.search$.value;
-  }
-  search$ = new BehaviorSubject<string>('');
+  state = new BehaviorSubject<ItemFiltererState>({filters: [], search: ''});
 
   /**
    * Context given to a filters to provide autocomplete suggestions. Probably should be a stream?
@@ -35,10 +21,10 @@ export class ItemFilterer<T, M, A> {
 
   /** Gets a stream that returns the items and updates whenever the filters or search changes. */
   filterItems(items: T[]): Observable<T[]> {
-    return combineLatest(this.filters$, this.search$, this.contextProvider).pipe(map(results => {
-      const filters = results[0];
-      const search = results[1];
-      const contextProvider = results[2];
+    return combineLatest(this.state, this.contextProvider).pipe(map(results => {
+      const filters = results[0].filters;
+      const search = results[0].search;
+      const contextProvider = results[1];
 
       const filteredItems = filterItems(items, filters, contextProvider, this.metadata);
       return searchItems(filteredItems, search, this.tokenizeItem);
@@ -46,12 +32,21 @@ export class ItemFilterer<T, M, A> {
   }
 
   getState(): ItemFiltererState {
-    return {filters: this.filters, search: this.search};
+    return this.state.value;
   }
 
   setState(state: ItemFiltererState) {
-    this.filters = state.filters;
-    this.search = state.search;
+    this.state.next({...state});
+  }
+
+  isEquivalent(otherState: ItemFiltererState) {
+    const thisState = this.getState();
+
+    const filtersEquivalent =
+        JSON.stringify(thisState.filters.sort()) === JSON.stringify(otherState.filters.sort());
+    const searchEquivalent = thisState.search === otherState.search;
+
+    return filtersEquivalent && searchEquivalent;
   }
 }
 

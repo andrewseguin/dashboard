@@ -1,6 +1,5 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {GroupingMetadata, ItemGrouper} from 'app/package/items-renderer/item-grouper';
-import {ItemRendererOptionsState, ViewKey} from 'app/package/items-renderer/item-renderer-options';
 import {ItemSorter, SortingMetadata} from 'app/package/items-renderer/item-sorter';
 import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/item-viewer';
 
@@ -21,8 +20,6 @@ export class DisplayOptionsHeader<G, S, V> {
   viewIds: V[] = [];
 
   @Input() hideGrouping: boolean;
-
-  @Input() options: ItemRendererOptionsState;
 
   @Input() itemCount: number;
 
@@ -65,15 +62,21 @@ export class DisplayOptionsHeader<G, S, V> {
   }
   _viewer: ItemViewer<V>;
 
-  @Output() optionsChanged = new EventEmitter<ItemRendererOptionsState>();
+  setGroup(group: G) {
+    const grouperState = this.grouper.getState();
+    this.grouper.setState({...grouperState, group});
+  }
 
   setSort(sort: S) {
-    if (this.sorter.sort === sort) {
-      this.sorter.reverse = !this.sorter.reverse;
+    const sorterState = this.sorter.getState();
+    let reverse = sorterState.reverse;
+    if (sorterState.sort === sort) {
+      reverse = !reverse;
     } else {
-      this.sorter.sort = sort;
-      this.sorter.reverse = false;
+      reverse = false;
     }
+
+    this.sorter.setState({...sorterState, sort, reverse});
   }
 
   toggleViewKey(view: V) {

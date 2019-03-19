@@ -25,9 +25,13 @@ export function getRecommendations(
       };
     };
 
-    const filteredItems = filterItems<Item, MatcherContext>(
-        [item], recommendation.filters || [], contextProvider, ItemsFilterMetadata);
-    const searchedItems = searchItems(filteredItems, recommendation.search || '', tokenizeItem);
+    const filters = recommendation.filtererState ? recommendation.filtererState.filters : [];
+    const filteredItems =
+        filterItems<Item, MatcherContext>([item], filters, contextProvider, ItemsFilterMetadata);
+
+    const search = recommendation.filtererState ? recommendation.filtererState.search : '';
+    const searchedItems = searchItems(filteredItems, search, tokenizeItem);
+
     return !!searchedItems.length;
   });
 }

@@ -1,4 +1,4 @@
-import { Filter } from 'app/package/items-renderer/search-utility/filter';
+import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
 
 export interface AddLabelAction {
   labels: string[];
@@ -19,8 +19,7 @@ export interface Recommendation {
   type?: RecommendationType;
   actionType?: ActionType;
   action?: Action;
-  filters?: Filter[];
-  search?: string;
+  filtererState?: ItemFiltererState;
   dbAdded?: string;
   dbModified?: string;
 }

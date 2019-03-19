@@ -1,7 +1,7 @@
 <ng-container
-              *ngFor="let item of items?.slice(0, listLength); trackBy: trackById; let last = last">
+              *ngFor="let item of (items | async)?.slice(0, options.listLength); trackBy: trackById; let last = last">
   <item-summary [item]="item"
-                [view]="(itemsRenderer.options.state | async)?.view"
+                [enabledViews]="(itemViewer.state | async)?.views || []"
                 (select)="openItemModal($event)">
   </item-summary>
   <mat-divider *ngIf="!last"></mat-divider>

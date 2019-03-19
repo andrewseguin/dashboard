@@ -1,18 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
-import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Item, TimeSeriesDisplayTypeOptions, Widget} from 'app/repository/services/dao';
-import {getItemsList, GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
+import {Item, TimeSeriesDisplayTypeOptions} from 'app/repository/services/dao';
+import {GithubItemsRenderer} from 'app/repository/services/github-items-renderer';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 interface CreatedAndClosedDate {
   created: string;
@@ -40,31 +32,25 @@ interface TimeSeriesData {
 export class TimeSeries {
   chart: Chart;
 
-  @Input() widget: Widget;
+  @Input() itemsRenderer: GithubItemsRenderer;
+
+  @Input() options: TimeSeriesDisplayTypeOptions;
 
   @ViewChild('canvas') canvas: ElementRef;
 
   private destroyed = new Subject();
 
-  public itemsRenderer = new GithubItemsRenderer(this.itemRecommendations, this.activeRepo);
-
-  constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo) {}
+  constructor() {}
 
   ngOnInit() {
-    this.itemsRenderer.connect().subscribe(result => this.render(result.groups));
+    this.itemsRenderer.connect()
+        .pipe(takeUntil(this.destroyed))
+        .subscribe(result => this.render(result.groups));
   }
 
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
-  }
-
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['widget'] && this.widget) {
-      this.itemsRenderer.dataProvider =
-          getItemsList(this.activeRepo.activeStore, this.widget.itemType);
-      this.itemsRenderer.options.setState(this.widget.options);
-    }
   }
 
   getDateCounts(dates: CreatedAndClosedDate[]): DateCount[] {
@@ -100,7 +86,7 @@ export class TimeSeries {
       return '';
     }
 
-    switch ((this.widget.displayTypeOptions as TimeSeriesDisplayTypeOptions).group) {
+    switch (this.options.group) {
       case 'day':
         return dateStr.substring(0, 10);
       case 'month':
@@ -138,9 +124,8 @@ export class TimeSeries {
     const data = this.getData(items);
 
     const datasets = [];
-    const options = this.widget.displayTypeOptions as TimeSeriesDisplayTypeOptions;
-    const enabledDatasets =
-        new Set<string>(options.datasets instanceof Array ? options.datasets : [options.datasets]);
+    const enabledDatasets = new Set<string>(
+        this.options.datasets instanceof Array ? this.options.datasets : [this.options.datasets]);
     if (enabledDatasets.has('created')) {
       datasets.push({
         label: 'Created',
@@ -170,8 +155,8 @@ export class TimeSeries {
     groups.forEach(g => items.push(...g.items));
     const datasets = this.getDatasets(items);
 
-    const options = this.widget.displayTypeOptions as TimeSeriesDisplayTypeOptions;
-    const time: Chart.TimeScale = {min: options.start, max: options.end, tooltipFormat: 'll'};
+    const time:
+        Chart.TimeScale = {min: this.options.start, max: this.options.end, tooltipFormat: 'll'};
 
     if (this.chart) {
       // Remove animations since dataset changes can cause weird glitching

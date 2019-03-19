@@ -10,13 +10,7 @@ export interface ViewingMetadata<V> {
 }
 
 export class ItemViewer<V> {
-  set views(views: V[]) {
-    this.views$.next(views);
-  }
-  get views(): V[] {
-    return this.views$.value;
-  }
-  views$ = new BehaviorSubject<V[]>([]);
+  state = new BehaviorSubject<ItemViewerState<V>>({views: []});
 
   constructor(public metadata: Map<V, ViewingMetadata<V>>) {}
 
@@ -27,22 +21,31 @@ export class ItemViewer<V> {
   }
 
   toggle(view: V) {
-    const newViews = [...this.views];
-    const index = this.views.indexOf(view);
+    const views = this.getState().views;
+
+    const newViews = [...views];
+    const index = views.indexOf(view);
     if (index !== -1) {
       newViews.splice(index, 1);
     } else {
       newViews.push(view);
     }
 
-    this.views = newViews;
+    this.setState({views: newViews});
   }
 
   getState(): ItemViewerState<V> {
-    return {views: this.views};
+    return this.state.value;
   }
 
   setState(state: ItemViewerState<V>) {
-    this.views = state.views;
+    this.state.next({...state});
+  }
+
+  isEquivalent(otherState: ItemViewerState<V>) {
+    const thisViews = this.getState().views.slice().sort();
+    const otherViews = otherState.views.slice().sort();
+
+    return thisViews.length === otherViews.length && thisViews.every((v, i) => otherViews[i] === v);
   }
 }

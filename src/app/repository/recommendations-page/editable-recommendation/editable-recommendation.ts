@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {Filter} from 'app/package/items-renderer/search-utility/filter';
 import {ActiveRepo} from 'app/repository/services/active-repo';
 import {Recommendation} from 'app/repository/services/dao/recommendation';
+import {getItemsFilterer} from 'app/repository/services/github-items-renderer';
+import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
@@ -33,29 +34,7 @@ import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 export class EditableRecommendation {
   expanded = false;
 
-  set filters(v: Filter[]) {
-    if (this._filters === v) {
-      return;
-    }
-    this._filters = v;
-    this.queryChanged.next();
-  }
-  get filters(): Filter[] {
-    return this._filters;
-  }
-  private _filters: Filter[] = [];
-
-  set search(v: string) {
-    if (this._search === v) {
-      return;
-    }
-    this._search = v;
-    this.queryChanged.next();
-  }
-  get search(): string {
-    return this._search;
-  }
-  private _search = '';
+  itemsFilterer = getItemsFilterer(this.itemRecommendations, this.activeRepo.activeStore);
 
   queryChanged = new Subject<void>();
 
@@ -86,8 +65,8 @@ export class EditableRecommendation {
   private _destroyed = new Subject();
 
   constructor(
-      private cd: ChangeDetectorRef, private activeRepo: ActiveRepo, private snackbar: MatSnackBar,
-      private dialog: MatDialog) {}
+      private itemRecommendations: ItemRecommendations, private cd: ChangeDetectorRef,
+      private activeRepo: ActiveRepo, private snackbar: MatSnackBar, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -97,8 +76,9 @@ export class EditableRecommendation {
       action: new FormControl(this.recommendation.action),
     });
 
-    this._search = this.recommendation.search || '';
-    this._filters = this.recommendation.filters || [];
+    const filtererState = this.recommendation.filtererState ||
+        {filters: [{query: {equality: 'is', state: 'open'}, type: 'state'}], search: ''};
+    this.itemsFilterer.setState(filtererState);
 
     this.form.get('actionType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(() => {
       this.form.get('action')!.setValue(null);
@@ -107,8 +87,8 @@ export class EditableRecommendation {
 
   ngAfterViewInit() {
     const store = this.activeRepo.activeStore;
-    merge(this.form.valueChanges, this.queryChanged)
-        .pipe(debounceTime(2000), takeUntil(this._destroyed))
+    merge(this.form.valueChanges, this.itemsFilterer.state)
+        .pipe(debounceTime(100), takeUntil(this._destroyed))
         .subscribe(() => {
           store.recommendations.update({
             ...this.recommendation,
@@ -116,8 +96,7 @@ export class EditableRecommendation {
             type: this.form.value.type,
             actionType: this.form.value.actionType,
             action: this.form.value.action,
-            filters: this.filters,
-            search: this.search
+            filtererState: this.itemsFilterer.getState()
           });
         });
   }

@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
-import {View} from 'app/package/items-renderer/item-renderer-options';
 import {Item} from 'app/repository/services/dao';
 import {isMobile} from 'app/utility/media-matcher';
 import {map} from 'rxjs/operators';
@@ -13,12 +12,12 @@ import {ItemDetailDialog} from '../../dialog/item-detail-dialog/item-detail-dial
   styleUrls: ['items-group.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ItemsGroup {
+export class ItemsGroup<V> {
   @Input() items: Item[];
 
   @Input() title: string;
 
-  @Input() view: View;
+  @Input() views: V[];
 
   trackByItemNumber = (_i: number, item: Item) => item.number;
 

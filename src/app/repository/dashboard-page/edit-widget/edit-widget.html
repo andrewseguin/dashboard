@@ -19,7 +19,7 @@
     </div>
 
     <ng-container [ngSwitch]="form.value.displayType"
-                  [formGroup]="displayTypeOptions">
+                  [formGroup]="displayTypeOptionsForm[form.value.displayType]">
 
       <ng-container *ngSwitchCase="'count'">
         <div class="type">
@@ -45,14 +45,14 @@
           <mat-button-toggle-group formControlName="group">
             <mat-button-toggle *ngFor="let groupId of groupIds"
                                [value]="groupId">
-              {{groups.get(groupId)}}
+              {{groups.get(groupId)?.label}}
             </mat-button-toggle>
           </mat-button-toggle-group>
         </div>
 
         <div class="type">
           <div class="label"> Filtered Groups </div>
-          <input matInput formControlName="filteredGroups">
+          <input matInput formControlName="filteredGroupsByTitle">
         </div>
       </ng-container>
 
@@ -107,16 +107,8 @@
       Load Saved Search
     </button>
 
-    <advanced-search [search]="itemsRenderer.options.search"
-                     [filters]="itemsRenderer.options.filters"
-                     [metadata]="metadata"
-                     [autocompleteContext]="autocompleteContext | async"
-                     (searchChanged)="itemsRenderer.options.search = $event"
-                     (filtersChanged)="itemsRenderer.options.filters = $event">
-    </advanced-search>
-    <display-options-header [hideGrouping]="true"
-                            [options]="itemsRenderer.options.state | async"
-                            (optionsChanged)="itemsRenderer.options.setState($event)"
+    <advanced-search [filterer]="itemsRenderer.filterer"></advanced-search>
+    <display-options-header [sorter]="itemsRenderer.sorter" [viewer]="viewer"
                             [itemCount]="(itemsRenderer.filteredData | async)?.length">
     </display-options-header>
   </div>
