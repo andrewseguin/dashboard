@@ -110,8 +110,8 @@
     <advanced-search [filterer]="itemGroupsDataSource.filterer">
     </advanced-search>
     <display-options-header [sorter]="itemGroupsDataSource.sorter"
-                            [viewer]="viewer"
-                            [itemCount]="(itemGroupsDataSource.filteredData | async)?.length">
+                            [viewer]="itemViewer"
+                            [itemCount]="itemCount | async">
     </display-options-header>
   </div>
 </div>

@@ -86,6 +86,8 @@ export class EditWidget<S, V, G> {
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
+  itemCount = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
+
   constructor(
       private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo,
       private cd: ChangeDetectorRef, private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
@@ -165,11 +167,6 @@ export class EditWidget<S, V, G> {
 
     this.dialogRef.close(widget);
   }
-  commendation(recommendation: Recommendation) {
-    if (recommendation.filtererState) {
-      this.itemGroupsDataSource.filterer.setState(recommendation.filtererState);
-    }
-  }
 
   loadFromQuery(query: Query) {
     if (query.filtererState) {
@@ -182,6 +179,12 @@ export class EditWidget<S, V, G> {
 
     if (query.viewerState) {
       this.itemViewer.setState(query.viewerState);
+    }
+  }
+
+  loadFromRecommendation(recommendation: Recommendation) {
+    if (recommendation.filtererState) {
+      this.itemGroupsDataSource.filterer.setState(recommendation.filtererState);
     }
   }
 
