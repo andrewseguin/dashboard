@@ -46,12 +46,12 @@ export const DisplayTypeOptionConfigs: {[key in DisplayType]: (o?: any) => Confi
 };
 
 @Component({
-  selector: 'edit-widget-options',
-  templateUrl: 'edit-widget-options.html',
-  styleUrls: ['edit-widget-options.scss', '../edit-widget.scss'],
+  selector: 'widget-type-options',
+  templateUrl: 'widget-type-options.html',
+  styleUrls: ['widget-type-options.scss', '../edit-widget.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditWidgetOptions {
+export class WidgetTypeOptions {
   configOptions: BaseConfigOption[];
 
   formGroup: FormGroup;

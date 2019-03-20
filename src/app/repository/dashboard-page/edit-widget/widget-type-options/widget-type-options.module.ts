@@ -2,12 +2,12 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from 'app/material.module';
-import {EditWidgetOptions} from './edit-widget-options';
+import {WidgetTypeOptions} from './widget-type-options';
 
 @NgModule({
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
-  declarations: [EditWidgetOptions],
-  exports: [EditWidgetOptions],
+  declarations: [WidgetTypeOptions],
+  exports: [WidgetTypeOptions],
 })
-export class EditWidgetOptionsModule {
+export class WidgetTypeOptionsModule {
 }

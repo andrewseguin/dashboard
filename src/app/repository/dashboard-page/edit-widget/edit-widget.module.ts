@@ -6,9 +6,8 @@ import {AdvancedSearchModule} from 'app/package/advanced-search/advanced-search.
 import {
   DisplayOptionsHeaderModule
 } from 'app/package/display-options-header/display-options-header.module';
-import {EditWidgetOptionsModule} from './edit-options/edit-widget-options.module';
 import {EditWidget} from './edit-widget';
-
+import {WidgetTypeOptionsModule} from './widget-type-options/widget-type-options.module';
 
 @NgModule({
   imports: [
@@ -17,7 +16,7 @@ import {EditWidget} from './edit-widget';
     ReactiveFormsModule,
     AdvancedSearchModule,
     DisplayOptionsHeaderModule,
-    EditWidgetOptionsModule,
+    WidgetTypeOptionsModule,
   ],
   declarations: [EditWidget],
   exports: [EditWidget],
