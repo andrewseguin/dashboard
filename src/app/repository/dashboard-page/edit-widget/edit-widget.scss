@@ -6,12 +6,13 @@ form {
 
 .config-option {
   display: flex;
-  align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   font-size: 14px;
 
   .label {
-    margin-bottom: 8px;
+    height: 32px;
+    display: flex;
+    align-items: center;
     font-size: 13px;
     font-weight: bold;
     min-width: 140px;
@@ -36,23 +37,26 @@ input {
   outline: none;
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  padding-bottom: 4px;
+  padding: 4px 0;
   width: 100%;
   font-size: 15px;
+
+  &.query {
+    margin-top: 8px;
+  }
 }
 
 input.date {
   width: 140px;
 }
 
-.query {
-  display: flex;
-  flex-direction: column;
-  margin-top: 16px;
+advanced-search {
+  flex: 1;
+}
 
-  button {
-    align-self: flex-end;
-    font-size: 12px;
-    margin-bottom: 8px;
-  }
+.option {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-height: 32px;
 }

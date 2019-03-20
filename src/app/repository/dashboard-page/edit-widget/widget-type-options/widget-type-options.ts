@@ -13,7 +13,7 @@ import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
 import {ItemViewer, ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {DisplayType, WidgetDisplayTypeOptions} from 'app/repository/services/dao';
 import {Subject, Subscription} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {startWith, takeUntil} from 'rxjs/operators';
 import {getCountConfigOptions} from '../../widget-view/count/count';
 import {getListConfigOptions} from '../../widget-view/list/list';
 import {getPieChartConfigOptions} from '../../widget-view/pie-chart/pie-chart';
@@ -109,9 +109,8 @@ export class WidgetTypeOptions<G, S, V> {
 
     this.formGroup = new FormGroup(controls);
     this.valueChangeSubscription =
-        this.formGroup.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(value => {
-          return this.optionsChanged.emit(value);
-        });
+        this.formGroup.valueChanges.pipe(startWith(null), takeUntil(this.destroyed))
+            .subscribe(() => this.optionsChanged.emit(this.formGroup.value));
   }
 
   setViewerStateFormValues(configOptionId: string, viewLabels: string[]) {

@@ -15,7 +15,7 @@ export function getCountConfigOptions(options: CountDisplayTypeOptions): ConfigO
       type: 'input',
       label: 'Font Size (px)',
       inputType: 'number',
-      initialValue: options ? options.fontSize : '16',
+      initialValue: options ? options.fontSize || '16' : null,
     },
   ];
 }

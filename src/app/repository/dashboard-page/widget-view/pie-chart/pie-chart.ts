@@ -35,7 +35,7 @@ export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any
       inputType: 'text',
       label: 'Filter (optional)',
       placeholder: 'Filter by group title, e.g. "Group A, Group B"',
-      initialValue: options ? options.filteredGroupsByTitle : '',
+      initialValue: options ? options.filteredGroupsByTitle : null,
     },
   ];
 }

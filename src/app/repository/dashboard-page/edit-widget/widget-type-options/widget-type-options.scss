@@ -1,9 +1,9 @@
 mat-select {
   height: 16px;
   display: block;
-  padding-bottom: 5px;
   border-bottom-width: 1px;
   border-bottom-style: solid;
+  padding: 6px 0 8px 0;
 
   &.auto-width {
     flex: 0;
