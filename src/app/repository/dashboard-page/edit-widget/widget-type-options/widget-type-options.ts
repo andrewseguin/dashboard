@@ -51,6 +51,10 @@ export const DisplayTypeOptionConfigs: {[key in DisplayType]: (o?: any) => Confi
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetTypeOptions {
+  groupIds: any[] = [];
+  sortIds: any[] = [];
+  viewLabels: any[] = [];
+
   configOptions: ConfigOption[];
 
   formGroup: FormGroup;
@@ -72,6 +76,12 @@ export class WidgetTypeOptions {
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['type'] && this.type) {
       this.setupForm();
+    }
+
+    if (simpleChanges['itemGroupsDataSource'] && this.itemGroupsDataSource) {
+      this.groupIds = this.itemGroupsDataSource.grouper.getGroups().map(value => value.id);
+      this.sortIds = this.itemGroupsDataSource.sorter.getSorts().map(value => value.id);
+      this.viewLabels = this.itemViewer.getViews().map(value => value.label);
     }
   }
 
@@ -98,4 +108,8 @@ export class WidgetTypeOptions {
           return this.optionsChanged.emit(value);
         });
   }
-}
+
+  setViewerStateFormValues(configOptionId: string, viewLabels: string[]) {
+    console.log(configOptionId, viewLabels);
+  }
+};

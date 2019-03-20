@@ -13,23 +13,24 @@
 
 
   <ng-container *ngSwitchCase="'datepicker'">
-    <input [formControlName]="configOption.id" [matDatepicker]="picker" (click)="picker.open()">
+    <input class="theme-border" [formControlName]="configOption.id"
+           [matDatepicker]="picker" (click)="picker.open()">
     <mat-datepicker #picker></mat-datepicker>
   </ng-container>
 
 
   <ng-container *ngSwitchCase="'grouperState'">
-    Implement grouper state
+    <mat-select class="theme-border">
+      <mat-option *ngFor="let groupId of groupIds" [value]="groupId">
+        {{itemGroupsDataSource.grouper.metadata.get(groupId)?.label}}
+      </mat-option>
+    </mat-select>
   </ng-container>
 
 
   <ng-container *ngSwitchCase="'input'">
-    <input matInput [formControlName]="configOption.id" [type]="configOption.inputType">
-  </ng-container>
-
-
-  <ng-container *ngSwitchCase="'select'">
-    Implement select
+    <input class="theme-border" matInput [formControlName]="configOption.id"
+           [type]="configOption.inputType">
   </ng-container>
 
 
@@ -39,6 +40,8 @@
 
 
   <ng-container *ngSwitchCase="'viewerState'">
-    Implement viewer state
+    <editable-chip-list [values]="configOption.initialValue" [autocomplete]="viewLabels"
+                        (listChange)="setViewerStateFormValues(configOption.id, $event)">
+    </editable-chip-list>
   </ng-container>
 </div>
