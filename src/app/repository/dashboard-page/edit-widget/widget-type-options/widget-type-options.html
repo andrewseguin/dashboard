@@ -13,8 +13,7 @@
 
 
   <ng-container *ngSwitchCase="'datepicker'">
-    <input [formControlName]="configOption.id" [matDatepicker]="picker"
-           (click)="picker.open()">
+    <input [formControlName]="configOption.id" [matDatepicker]="picker" (click)="picker.open()">
     <mat-datepicker #picker></mat-datepicker>
   </ng-container>
 
@@ -25,7 +24,7 @@
 
 
   <ng-container *ngSwitchCase="'input'">
-    <input matInput [formControlName]="configOption.id">
+    <input matInput [formControlName]="configOption.id" [type]="configOption.inputType">
   </ng-container>
 
 

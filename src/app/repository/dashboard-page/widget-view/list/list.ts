@@ -24,7 +24,7 @@ export function getListConfigOptions(_options: ListDisplayTypeOptions<any, any>)
     {
       id: 'listLength',
       type: 'input',
-      label: 'Font Size (px)',
+      label: 'Max list length',
       inputType: 'number',
       initialValue: '16',
     },

@@ -17,9 +17,8 @@ import {getListConfigOptions} from '../../widget-view/list/list';
 import {getPieChartConfigOptions} from '../../widget-view/pie-chart/pie-chart';
 import {getTimeSeriesConfigOptions} from '../../widget-view/time-series/time-series';
 
-
 export type ConfigOptionType =
-    'buttonToggle'|'datepicker'|'grouperState'|'input'|'select'|'sorterState'|'viewerState';
+    'buttonToggle'|'datepicker'|'grouperState'|'input'|'sorterState'|'viewerState';
 
 export interface BaseConfigOption {
   id: string;
@@ -32,11 +31,11 @@ export interface InputConfigOption extends BaseConfigOption {
   inputType?: 'text'|'number';
 }
 
-export interface SelectConfigOption extends BaseConfigOption {
+export interface ButtonToggleConfigOption extends BaseConfigOption {
   options?: {id: string, label: string}[];
 }
 
-export type ConfigOption = BaseConfigOption&InputConfigOption&SelectConfigOption;
+export type ConfigOption = BaseConfigOption&InputConfigOption&ButtonToggleConfigOption;
 
 export const DisplayTypeOptionConfigs: {[key in DisplayType]: (o?: any) => ConfigOption[]} = {
   count: getCountConfigOptions,
@@ -52,26 +51,26 @@ export const DisplayTypeOptionConfigs: {[key in DisplayType]: (o?: any) => Confi
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetTypeOptions {
-  configOptions: BaseConfigOption[];
+  configOptions: ConfigOption[];
 
   formGroup: FormGroup;
 
-  @Input() displayType: DisplayType;
+  @Input() type: DisplayType;
 
-  @Input() displayTypeOptions: WidgetDisplayTypeOptions;
+  @Input() options: WidgetDisplayTypeOptions;
 
   @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
 
   @Input() itemViewer: ItemViewer<any>;
 
-  @Output() displayTypeOptionsChanged = new EventEmitter<WidgetDisplayTypeOptions>();
+  @Output() optionsChanged = new EventEmitter<WidgetDisplayTypeOptions>();
 
   private valueChangeSubscription: Subscription;
 
   private destroyed = new Subject();
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['displayType'] && this.displayType) {
+    if (simpleChanges['type'] && this.type) {
       this.setupForm();
     }
   }
@@ -86,7 +85,7 @@ export class WidgetTypeOptions {
       this.valueChangeSubscription.unsubscribe();
     }
 
-    this.configOptions = DisplayTypeOptionConfigs[this.displayType]();
+    this.configOptions = DisplayTypeOptionConfigs[this.type]();
 
     const controls: any = {};
     this.configOptions.forEach(c => {
@@ -96,7 +95,7 @@ export class WidgetTypeOptions {
     this.formGroup = new FormGroup(controls);
     this.valueChangeSubscription =
         this.formGroup.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(value => {
-          return this.displayTypeOptionsChanged.emit(value);
+          return this.optionsChanged.emit(value);
         });
   }
 }

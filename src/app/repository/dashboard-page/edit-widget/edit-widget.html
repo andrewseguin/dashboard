@@ -9,7 +9,7 @@
     </div>
 
     <div class="config-option">
-      <div class="label"> Display Type </div>
+      <div class="label"> Type </div>
       <mat-button-toggle-group formControlName="displayType">
         <mat-button-toggle *ngFor="let displayType of displayTypes" [value]="displayType.id">
           {{displayType.label}}
@@ -17,11 +17,10 @@
       </mat-button-toggle-group>
     </div>
 
-    <edit-widget-options [displayType]="form.value.displayType"
-                         [displayTypeOptions]="displayTypeOptions"
+    <widget-type-options [type]="form.value.displayType" [options]="displayTypeOptions"
                          [itemGroupsDataSource]="itemGroupsDataSource"
-                         [itemViewer]="itemViewer" (displayTypeOptionsChanged)="displayTypeOptions = $event">
-    </edit-widget-options>
+                         [itemViewer]="itemViewer" (optionsChanged)="displayTypeOptions = $event">
+    </widget-type-options>
 
     <div class="config-option">
       <div class="label"> Query Type </div>
