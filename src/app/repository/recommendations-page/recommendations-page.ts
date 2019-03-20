@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, QueryList, ViewChildren} from '@angu
 import {FormControl} from '@angular/forms';
 import {combineLatest} from 'rxjs';
 import {map, mergeMap, startWith} from 'rxjs/operators';
-import {ActiveStore} from '../services/active-repo';
+import {ActiveStore} from '../services/active-store';
 import {Recommendation} from '../services/dao';
 import {EditableRecommendation} from './editable-recommendation/editable-recommendation';
 
@@ -17,7 +17,7 @@ export class RecommendationsPage {
 
   @ViewChildren(EditableRecommendation) editableRecommendations: QueryList<EditableRecommendation>;
 
-  sortedRecommendations = this.activeRepo.config.pipe(
+  sortedRecommendations = this.activeStore.config.pipe(
       mergeMap(
           store => combineLatest(
               store.recommendations.list, this.filter.valueChanges.pipe(startWith('')))),
@@ -26,10 +26,10 @@ export class RecommendationsPage {
         return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
       }));
   trackById = (_i: number, r: Recommendation) => r.id;
-  constructor(private activeRepo: ActiveStore) {}
+  constructor(private activeStore: ActiveStore) {}
 
   add() {
-    this.activeRepo.activeConfig.recommendations.add({
+    this.activeStore.activeConfig.recommendations.add({
       message: 'New recommendation',
       type: 'warning',
       actionType: 'none',

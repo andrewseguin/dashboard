@@ -9,7 +9,7 @@ export const StoreIds: StoreId[] =
     ['items', 'labels', 'contributors', 'dashboards', 'queries', 'recommendations'];
 
 export class AppIndexedDb {
-  initialValues: {[key in StoreId]?: Subject<any[]>} = {};
+  initialValues: {[key in string]: Subject<any[]>} = {};
 
   name: string;
 
@@ -17,8 +17,8 @@ export class AppIndexedDb {
 
   private destroyed = new Subject();
 
-  constructor(name: string) {
-    StoreIds.forEach(id => this.initialValues[id] = new Subject<any[]>());
+  constructor(name: string, private storeIds: string[]) {
+    storeIds.forEach(id => this.initialValues[id] = new Subject<any[]>());
     this.name = name!;
     this.openDb();
   }
@@ -71,7 +71,7 @@ export class AppIndexedDb {
   }
 
   private initializeAllValues() {
-    StoreIds.forEach(id => {
+    this.storeIds.forEach(id => {
       this.db.then(db => db.transaction(id, 'readonly').objectStore(id).getAll()).then(result => {
         const initialValues = this.initialValues[id];
         if (!initialValues) {

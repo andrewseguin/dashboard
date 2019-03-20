@@ -4,8 +4,8 @@ import {combineLatest, Subject} from 'rxjs';
 import {debounceTime, take, takeUntil} from 'rxjs/operators';
 import {AppIndexedDb} from '../../../utility/app-indexed-db';
 import {RepoGist} from '../../repo-gist';
-import {Dashboard} from './dashboard';
 import {ListDao} from '../list-dao';
+import {Dashboard} from './dashboard';
 import {Query} from './query';
 import {Recommendation} from './recommendation';
 
@@ -18,6 +18,8 @@ export interface ConfigStore {
 
 export type ConfigDaoType = 'dashboards'|'queries'|'recommendations';
 
+export const ConfigIds: ConfigDaoType[] = ['dashboards', 'queries', 'recommendations'];
+
 @Injectable()
 export class ConfigDao {
   private stores: Map<string, ConfigStore> = new Map();
@@ -28,7 +30,7 @@ export class ConfigDao {
 
   get(name: string): ConfigStore {
     if (!this.stores.has(name)) {
-      const appIndexedDb = new AppIndexedDb(name!);
+      const appIndexedDb = new AppIndexedDb(name, ConfigIds);
       const newStore = {
         name,
         dashboards: new ListDao<Dashboard>('dashboards', appIndexedDb),

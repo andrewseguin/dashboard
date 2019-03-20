@@ -3,7 +3,7 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Contributor, Item, Label} from './dao';
-import {RepoDaoType, DataStore} from './dao/data/data-dao';
+import {DataDaoType, DataStore} from './dao/data/data-dao';
 import {compareLocalToRemote, ListDao} from './dao/list-dao';
 
 export interface StaleIssuesState {
@@ -16,7 +16,7 @@ export interface StaleIssuesState {
 export class Updater {
   constructor(private github: Github) {}
 
-  update(store: DataStore, type: RepoDaoType): Promise<void> {
+  update(store: DataStore, type: DataDaoType): Promise<void> {
     switch (type) {
       case 'items':
         return this.updateIssues(store);

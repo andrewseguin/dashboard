@@ -4,7 +4,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 import {Repository} from './repository';
 import {Header} from './services';
-import {ActiveStore} from './services/active-repo';
+import {ActiveStore} from './services/active-store';
 import {ConfigDao} from './services/dao/config/config-dao';
 import {Dao} from './services/dao/data/data-dao';
 import {ItemRecommendations} from './services/item-recommendations';

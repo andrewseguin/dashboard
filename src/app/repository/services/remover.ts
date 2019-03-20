@@ -7,14 +7,14 @@ import {LoadedRepos} from 'app/service/loaded-repos';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {ConfigDaoType, ConfigStore} from './dao/config/config-dao';
-import {RepoDaoType, DataStore} from './dao/data/data-dao';
+import {DataDaoType, DataStore} from './dao/data/data-dao';
 
 @Injectable()
 export class Remover {
   constructor(
       private loadedRepos: LoadedRepos, private dialog: MatDialog, private snackbar: MatSnackBar) {}
 
-  removeData(store: DataStore, type: RepoDaoType) {
+  removeData(store: DataStore, type: DataDaoType) {
     this.dialog.open(DeleteConfirmation, {data: {name: of(`${type} data for ${store.name}`)}})
         .afterClosed()
         .pipe(take(1))

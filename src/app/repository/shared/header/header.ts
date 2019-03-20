@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {MatSidenav} from '@angular/material';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Header} from 'app/repository/services/header';
 import {isRepoStoreEmpty} from 'app/repository/utility/is-repo-store-empty';
 import {mergeMap} from 'rxjs/operators';
@@ -12,11 +12,11 @@ import {mergeMap} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SeasonHeader {
-  isEmpty = this.activeRepo.data.pipe(mergeMap(store => isRepoStoreEmpty(store)));
+  isEmpty = this.activeStore.data.pipe(mergeMap(store => isRepoStoreEmpty(store)));
 
   @Input() sidenav: MatSidenav;
 
-  constructor(public header: Header, private activeRepo: ActiveStore) {}
+  constructor(public header: Header, private activeStore: ActiveStore) {}
 
   leftButtonClicked() {
     if (this.header.goBack) {

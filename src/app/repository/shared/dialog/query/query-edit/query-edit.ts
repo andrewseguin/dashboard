@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -26,7 +26,7 @@ export class QueryEdit {
       new FormGroup({name: new FormControl('', Validators.required), group: new FormControl('')});
 
   filteredGroupOptions =
-      combineLatest(this.activeRepo.activeConfig.queries.list, this.formGroup.valueChanges)
+      combineLatest(this.activeStore.activeConfig.queries.list, this.formGroup.valueChanges)
           .pipe(map(result => {
             const queries = result[0];
             const groupOptionsSet = new Set<string>();
@@ -42,7 +42,7 @@ export class QueryEdit {
           }));
 
   constructor(
-      public dialogRef: MatDialogRef<QueryEdit>, private activeRepo: ActiveStore,
+      public dialogRef: MatDialogRef<QueryEdit>, private activeStore: ActiveStore,
       @Inject(MAT_DIALOG_DATA) public data: QueryEditData) {
     if (data && data.name) {
       this.formGroup.get('name')!.setValue(data.name);

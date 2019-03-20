@@ -6,7 +6,7 @@ import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
-import {ActiveStore} from '../services/active-repo';
+import {ActiveStore} from '../services/active-store';
 import {ItemType} from '../services/dao';
 import {ConfigStore} from '../services/dao/config/config-dao';
 import {Widget} from '../services/dao/config/dashboard';
@@ -34,7 +34,7 @@ export class QueryPage {
 
     const type = this._query.type;
     if (type) {
-      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, type);
+      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeStore.activeData, type);
     }
 
     this.updateQueryStates();
@@ -54,7 +54,7 @@ export class QueryPage {
   private getSubscription: Subscription;
 
   public itemGroupsDataSource =
-      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeStore);
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
@@ -68,7 +68,7 @@ export class QueryPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
-      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
+      private itemRecommendations: ItemRecommendations, private activeStore: ActiveStore,
       private header: Header, private queryDialog: QueryDialog, private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
@@ -84,8 +84,7 @@ export class QueryPage {
         const dashboard = queryParamMap.get('dashboard');
 
         if (recommendationId) {
-          this.createNewQueryFromRecommendation(
-              this.activeRepo.activeConfig, recommendationId);
+          this.createNewQueryFromRecommendation(this.activeStore.activeConfig, recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
           this.query = createNewQuery(widget.title, widget.itemType);
@@ -102,7 +101,7 @@ export class QueryPage {
         this.cd.markForCheck();
       } else {
         this.getSubscription =
-            this.activeRepo.activeConfig.queries.map.pipe(takeUntil(this.destroyed))
+            this.activeStore.activeConfig.queries.map.pipe(takeUntil(this.destroyed))
                 .subscribe(map => {
                   const query = map.get(id);
                   if (query) {
@@ -141,28 +140,28 @@ export class QueryPage {
       viewerState: this.itemViewer.getState(),
     };
 
-    this.activeRepo.activeConfig.queries.update({...this.query, ...queryState});
+    this.activeStore.activeConfig.queries.update({...this.query, ...queryState});
   }
 
   saveAs(name: string, group: string) {
     this.query = {...this.query, name, group};
-    const store = this.activeRepo.activeConfig;
+    const store = this.activeStore.activeConfig;
     const newQueryId = store.queries.add(this.query);
 
     this.saveState();
 
     this.router.navigate(
-        [`${this.activeRepo.activeData.name}/query/${newQueryId}`],
+        [`${this.activeStore.activeData.name}/query/${newQueryId}`],
         {replaceUrl: true, queryParamsHandling: 'merge'});
   }
 
   setBack(fromDashboard?: string) {
     if (fromDashboard) {
       this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.activeName}/dashboard/${fromDashboard}`]);
+          this.router.navigate([`/${this.activeStore.activeName}/dashboard/${fromDashboard}`]);
     } else {
       this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.activeName}/queries/${this.query.type}`]);
+          this.router.navigate([`/${this.activeStore.activeName}/queries/${this.query.type}`]);
     }
   }
 

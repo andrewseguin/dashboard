@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {Router} from '@angular/router';
 import {Theme} from 'app/repository/services';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Widget} from 'app/repository/services/dao/config/dashboard';
 import {
   getItemsList,
@@ -40,10 +40,10 @@ export class WidgetView {
   @Output() remove = new EventEmitter<void>();
 
   public itemGroupsDataSource =
-      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeStore);
 
   constructor(
-      private router: Router, private theme: Theme, private activeRepo: ActiveStore,
+      private router: Router, private theme: Theme, private activeStore: ActiveStore,
       private itemRecommendations: ItemRecommendations) {
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
   }
@@ -51,7 +51,7 @@ export class WidgetView {
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
       this.itemGroupsDataSource.dataProvider =
-          getItemsList(this.activeRepo.activeData, this.widget.itemType);
+          getItemsList(this.activeStore.activeData, this.widget.itemType);
 
       if (this.widget.filtererState) {
         this.itemGroupsDataSource.filterer.setState(this.widget.filtererState);
@@ -61,7 +61,7 @@ export class WidgetView {
 
   openQuery() {
     this.router.navigate(
-        [`${this.activeRepo.activeName}/query/new`],
+        [`${this.activeStore.activeName}/query/new`],
         {queryParams: {'widget': JSON.stringify(this.widget), dashboard: this.dashboardId}});
   }
 }

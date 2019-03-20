@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Item} from 'app/repository/services/dao';
-import {Dao} from 'app/repository/services/dao/data/data-dao';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
+import {Dao} from 'app/repository/services/dao/data/data-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';
@@ -37,18 +37,18 @@ export class ItemDetail {
   private destroyed = new Subject();
 
   constructor(
-      private markdown: Markdown, public activeRepo: ActiveStore, public github: Github,
+      private markdown: Markdown, public activeStore: ActiveStore, public github: Github,
       private itemRecommendations: ItemRecommendations, public dao: Dao) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
-      const store = this.dao.get(this.activeRepo.activeName);
+      const store = this.dao.get(this.activeStore.activeName);
       this.item = store.items.get(this.itemId);
       this.bodyMarkdown = this.markdown.getItemBodyMarkdown(store, this.itemId);
       this.recommendations = this.itemRecommendations.allRecommendations.pipe(
           map(recommendations => recommendations.get(this.itemId) || []));
 
-      this.activities = this.activeRepo.name.pipe(
+      this.activities = this.activeStore.name.pipe(
           mergeMap(repository => {
             return combineLatest(
                 this.github.getComments(repository!, this.itemId),

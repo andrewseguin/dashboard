@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map, mergeMap} from 'rxjs/operators';
-import {ActiveStore} from '../services/active-repo';
+import {ActiveStore} from '../services/active-store';
 import {ItemType} from '../services/dao';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
@@ -23,13 +23,13 @@ export class QueriesPage {
   type: Observable<ItemType> = this.activatedRoute.params.pipe(map(params => params.type));
 
   recommendationsList =
-      this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
+      this.activeStore.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
-  queryGroups = this.activeRepo.config.pipe(
+  queryGroups = this.activeStore.config.pipe(
       mergeMap(configStore => combineLatest(configStore.queries.list, this.type)),
       map(result => result[0].filter(item => item.type === result[1])), map(getSortedGroups));
 
-  queryResultsCount = this.activeRepo.data.pipe(
+  queryResultsCount = this.activeStore.data.pipe(
       mergeMap(
           store => combineLatest(
               store.items.list, this.queryGroups, this.issueRecommendations.allRecommendations,
@@ -43,20 +43,20 @@ export class QueriesPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
-      private issueRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {}
+      private issueRecommendations: ItemRecommendations, private activeStore: ActiveStore) {}
 
   createQuery(type: ItemType) {
-    this.router.navigate([`${this.activeRepo.activeName}/query/new`], {queryParams: {type}});
+    this.router.navigate([`${this.activeStore.activeName}/query/new`], {queryParams: {type}});
   }
 
   createQueryFromRecommendation(recommendation: Recommendation) {
     this.router.navigate(
-        [`${this.activeRepo.activeName}/query/new`],
+        [`${this.activeStore.activeName}/query/new`],
         {queryParams: {'recommendationId': recommendation.id}});
   }
 
   navigateToQuery(id: string) {
-    this.router.navigate([`${this.activeRepo.activeName}/query/${id}`]);
+    this.router.navigate([`${this.activeStore.activeName}/query/${id}`]);
   }
 }
 
