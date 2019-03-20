@@ -86,6 +86,8 @@ export class EditWidget<S, V, G> {
         displayType: data.widget.displayType,
       });
 
+      this.displayTypeOptions = data.widget.displayTypeOptions;
+
       this.itemGroupsDataSource.dataProvider =
           getItemsList(this.activeRepo.activeStore, data.widget.itemType);
     }

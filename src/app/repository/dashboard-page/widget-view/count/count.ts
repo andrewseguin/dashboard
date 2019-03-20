@@ -15,16 +15,25 @@ export function getCountConfigOptions(options: CountDisplayTypeOptions): ConfigO
       type: 'input',
       label: 'Font Size (px)',
       inputType: 'number',
-      initialValue: options && options.fontSize ? options.fontSize : '16',
+      initialValue: options && options.fontSize ? options.fontSize : '48',
     },
   ];
 }
 
 @Component({
   selector: 'count',
-  templateUrl: 'count.html',
-  styleUrls: ['count.scss'],
+  template: `{{count | async}}`,
+  styles: [`
+    :host {
+      display: block;
+      text-align: center;
+      padding: 24px;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[style.fontSize.px]': 'options.fontSize',
+  }
 })
 export class Count {
   @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
