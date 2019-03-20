@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
-import {Item, TimeSeriesDisplayTypeOptions} from 'app/repository/services/dao';
+import {Item} from 'app/repository/services/dao';
 import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {ConfigOption} from '../../edit-widget/edit-options/edit-widget-options';
 
 interface CreatedAndClosedDate {
   created: string;
@@ -21,6 +22,38 @@ interface DateCount {
 interface TimeSeriesData {
   x: string;
   y: number;
+}
+
+export interface TimeSeriesDisplayTypeOptions {
+  start: string;
+  end: string;
+  group: 'day'|'week'|'month';
+  datasets: string|string[];
+}
+
+export function getTimeSeriesConfigOptions(_options: TimeSeriesDisplayTypeOptions): ConfigOption[] {
+  return [
+    {
+      id: 'start',
+      type: 'datepicker',
+      label: 'Start date',
+    },
+    {
+      id: 'end',
+      type: 'datepicker',
+      label: 'End date',
+    },
+    {
+      id: 'group',
+      type: 'buttonToggle',
+      label: 'Group',
+    },
+    {
+      id: 'datasets',
+      type: 'input',
+      label: 'Datasets',
+    },
+  ];
 }
 
 @Component({

@@ -6,6 +6,7 @@ import {AdvancedSearchModule} from 'app/package/advanced-search/advanced-search.
 import {
   DisplayOptionsHeaderModule
 } from 'app/package/display-options-header/display-options-header.module';
+import {EditWidgetOptionsModule} from './edit-options/edit-widget-options.module';
 import {EditWidget} from './edit-widget';
 
 
@@ -16,6 +17,7 @@ import {EditWidget} from './edit-widget';
     ReactiveFormsModule,
     AdvancedSearchModule,
     DisplayOptionsHeaderModule,
+    EditWidgetOptionsModule,
   ],
   declarations: [EditWidget],
   exports: [EditWidget],

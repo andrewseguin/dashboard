@@ -6,13 +6,36 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {ItemGroup} from 'app/package/items-renderer/item-grouper';
+import {ItemGroup, ItemGrouperState} from 'app/package/items-renderer/item-grouper';
 import {Theme} from 'app/repository/services';
-import {Item, PieChartDisplayTypeOptions} from 'app/repository/services/dao';
+import {Item} from 'app/repository/services/dao';
 import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {ConfigOption} from '../../edit-widget/edit-options/edit-widget-options';
+
+export interface PieChartDisplayTypeOptions<G> {
+  grouperState: ItemGrouperState<G>;
+  filteredGroupsByTitle: string[];
+}
+
+export function getPieChartConfigOptions(_options: PieChartDisplayTypeOptions<any>): ConfigOption[] {
+  return [
+    {
+      id: 'grouperState',
+      type: 'grouperState',
+      label: 'Grouping',
+    },
+    {
+      id: 'filteredGroups',
+      type: 'input',
+      inputType: 'text',
+      label: 'Filter (by group title)',
+      initialValue: '',
+    },
+  ];
+}
 
 @Component({
   selector: 'pie-chart',

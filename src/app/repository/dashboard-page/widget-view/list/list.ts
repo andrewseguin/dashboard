@@ -1,7 +1,8 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {MatDialog} from '@angular/material';
-import {ItemViewer} from 'app/package/items-renderer/item-viewer';
-import {Item, ListDisplayTypeOptions} from 'app/repository/services/dao';
+import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
+import {ItemViewer, ItemViewerState} from 'app/package/items-renderer/item-viewer';
+import {Item} from 'app/repository/services/dao';
 import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {
@@ -10,6 +11,35 @@ import {
 } from 'app/repository/utility/items-renderer/item-viewer-metadata';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {ConfigOption} from '../../edit-widget/edit-options/edit-widget-options';
+
+export interface ListDisplayTypeOptions<S, V> {
+  listLength: number;
+  sorterState: ItemSorterState<S>;
+  viewerState: ItemViewerState<V>;
+}
+
+export function getListConfigOptions(_options: ListDisplayTypeOptions<any, any>): ConfigOption[] {
+  return [
+    {
+      id: 'listLength',
+      type: 'input',
+      label: 'Font Size (px)',
+      inputType: 'number',
+      initialValue: '16',
+    },
+    {
+      id: 'sorterState',
+      type: 'sorterState',
+      label: 'List sort',
+    },
+    {
+      id: 'viewerState',
+      type: 'viewerState',
+      label: 'View',
+    },
+  ];
+}
 
 @Component({
   selector: 'list',

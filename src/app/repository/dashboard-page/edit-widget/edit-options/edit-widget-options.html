@@ -1,0 +1,45 @@
+<div class="config-option" *ngFor="let configOption of configOptions"
+     [formGroup]="formGroup" [ngSwitch]="configOption.type">
+
+  <div class="label"> {{configOption.label}} </div>
+
+  <ng-container *ngSwitchCase="'buttonToggle'">
+    <mat-button-toggle-group [formControlName]="configOption.id">
+      <mat-button-toggle *ngFor="let option of options" [value]="option.id">
+        {{option.label}}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </ng-container>
+
+
+  <ng-container *ngSwitchCase="'datepicker'">
+    <input [formControlName]="configOption.id" [matDatepicker]="picker"
+           (click)="picker.open()">
+    <mat-datepicker #picker></mat-datepicker>
+  </ng-container>
+
+
+  <ng-container *ngSwitchCase="'grouperState'">
+    Implement grouper state
+  </ng-container>
+
+
+  <ng-container *ngSwitchCase="'input'">
+    <input matInput [formControlName]="configOption.id">
+  </ng-container>
+
+
+  <ng-container *ngSwitchCase="'select'">
+    Implement select
+  </ng-container>
+
+
+  <ng-container *ngSwitchCase="'sorterState'">
+    Implement sorter state
+  </ng-container>
+
+
+  <ng-container *ngSwitchCase="'viewerState'">
+    Implement viewer state
+  </ng-container>
+</div>

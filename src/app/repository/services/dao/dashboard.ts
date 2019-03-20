@@ -1,32 +1,15 @@
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {ItemGrouperState} from 'app/package/items-renderer/item-grouper';
-import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
-import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
+import {CountDisplayTypeOptions} from 'app/repository/dashboard-page/widget-view/count/count';
+import {ListDisplayTypeOptions} from 'app/repository/dashboard-page/widget-view/list/list';
+import {
+  PieChartDisplayTypeOptions
+} from 'app/repository/dashboard-page/widget-view/pie-chart/pie-chart';
+import {
+  TimeSeriesDisplayTypeOptions
+} from 'app/repository/dashboard-page/widget-view/time-series/time-series';
 import {ItemType} from './item';
 
-export interface CountDisplayTypeOptions {
-  fontSize: 'small'|'normal'|'large';
-}
-
-export interface ListDisplayTypeOptions<S, V> {
-  listLength: number;
-  sorterState: ItemSorterState<S>;
-  viewerState: ItemViewerState<V>;
-}
-
-export interface PieChartDisplayTypeOptions<G> {
-  grouperState: ItemGrouperState<G>;
-  filteredGroupsByTitle: string[];  // Comma deliminated
-}
-
-export interface TimeSeriesDisplayTypeOptions {
-  start: string;
-  end: string;
-  group: 'day'|'week'|'month';
-  datasets: string|string[];
-}
-
-export type DisplayType = 'list'|'count'|'pie'|'time-series';
+export type DisplayType = 'list'|'count'|'pie'|'timeSeries';
 
 export type WidgetDisplayTypeOptions = ListDisplayTypeOptions<any, any>|
     TimeSeriesDisplayTypeOptions|CountDisplayTypeOptions|PieChartDisplayTypeOptions<any>;
