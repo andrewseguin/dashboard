@@ -20,8 +20,7 @@ export interface PieChartDisplayTypeOptions<G> {
   filteredGroupsByTitle: string[];
 }
 
-export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>):
-    ConfigOption[] {
+export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>): ConfigOption[] {
   return [
     {
       id: 'grouperState',

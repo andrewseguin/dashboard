@@ -26,7 +26,7 @@ export function getListConfigOptions(options: ListDisplayTypeOptions<any, any>):
       type: 'input',
       label: 'Max list length',
       inputType: 'number',
-      initialValue: options ? options.listLength || 5 : null,
+      initialValue: options && options.listLength ? options.listLength : 5,
     },
     {
       id: 'sorterState',

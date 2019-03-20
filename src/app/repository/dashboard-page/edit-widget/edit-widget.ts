@@ -39,7 +39,7 @@ export class EditWidget<S, V, G> {
   form = new FormGroup({
     title: new FormControl(''),
     itemType: new FormControl('issue'),
-    displayType: new FormControl('list'),
+    displayType: new FormControl('count'),
   });
 
   recommendationsList = this.activeRepo.store.pipe(mergeMap(store => store.recommendations.list));
