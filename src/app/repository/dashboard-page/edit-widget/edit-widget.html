@@ -42,7 +42,7 @@
     <div class="config-option">
       <div class="label query">
         Query
-        <button mat-icon-button [matMenuTriggerFor]="loadSearch"
+        <button mat-icon-button [matMenuTriggerFor]="loadSearch" type="button"
                 matTooltip="Load from saved searches">
           <mat-icon> save_alt </mat-icon>
         </button>
@@ -52,12 +52,14 @@
         </advanced-search>
       </div>
     </div>
-  </form>
-</div>
 
-<div mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close> Cancel </button>
-  <button mat-raised-button (click)="edit()" color="primary"> Save </button>
+    <div mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close> Cancel </button>
+      <button mat-raised-button (click)="edit()" type="submit" color="primary"
+              cdkFocusInitial>
+        Save </button>
+    </div>
+  </form>
 </div>
 
 <mat-menu #loadSearch="matMenu">

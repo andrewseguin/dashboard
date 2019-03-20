@@ -4,7 +4,7 @@
       <input [formControl]="searchFormControl" class="theme-border"
              placeholder="Search">
       <button mat-icon-button [mat-menu-trigger-for]="filterTypesMenu"
-              matTooltip="Add filter" class="new-filter">
+              type="button" matTooltip="Add filter" class="new-filter">
         <mat-icon> filter_list </mat-icon>
       </button>
     </div>
@@ -40,7 +40,7 @@
             </state-query-form>
           </ng-container>
 
-          <button mat-icon-button class="remove-filter"
+          <button mat-icon-button class="remove-filter" type="button"
                   (click)="removeFilter(index)">
             <mat-icon> close </mat-icon>
           </button>
