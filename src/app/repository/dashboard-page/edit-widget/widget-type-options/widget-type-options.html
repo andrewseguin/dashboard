@@ -5,7 +5,7 @@
 
   <ng-container *ngSwitchCase="'buttonToggle'">
     <mat-button-toggle-group [formControlName]="configOption.id">
-      <mat-button-toggle *ngFor="let option of options" [value]="option.id">
+      <mat-button-toggle *ngFor="let option of configOption.options" [value]="option.id">
         {{option.label}}
       </mat-button-toggle>
     </mat-button-toggle-group>
@@ -20,7 +20,9 @@
 
 
   <ng-container *ngSwitchCase="'grouperState'">
-    <mat-select class="theme-border">
+    <mat-select class="theme-border"
+                [value]="formGroup.get(configOption.id).value.group"
+                (valueChange)="setGrouperStateFormValue(configOption.id, $event)">
       <mat-option *ngFor="let groupId of groupIds" [value]="groupId">
         {{itemGroupsDataSource.grouper.metadata.get(groupId)?.label}}
       </mat-option>
@@ -29,18 +31,32 @@
 
 
   <ng-container *ngSwitchCase="'input'">
-    <input class="theme-border" matInput [formControlName]="configOption.id"
-           [type]="configOption.inputType">
+    <input class="theme-border" matInput
+           [placeholder]="configOption.placeholder"
+           [formControlName]="configOption.id" [type]="configOption.inputType">
   </ng-container>
 
 
   <ng-container *ngSwitchCase="'sorterState'">
-    Implement sorter state
+    <mat-select class="theme-border auto-width" #sortIdSelect
+                [value]="formGroup.get(configOption.id).value.sort"
+                (valueChange)="setSorterStateFormValue(configOption.id, $event, sortDirSelect.value)">
+      <mat-option *ngFor="let sortId of sortIds" [value]="sortId">
+        {{itemGroupsDataSource.sorter.metadata.get(sortId)?.label}}
+      </mat-option>
+    </mat-select>
+    <mat-select class="theme-border auto-width" #sortDirSelect
+                [value]="formGroup.get(configOption.id).value.reverse"
+                (valueChange)="setSorterStateFormValue(configOption.id, sortIdSelect.value, $event)">
+      <mat-option [value]="false"> Ascending </mat-option>
+      <mat-option [value]="true"> Descending </mat-option>
+    </mat-select>
   </ng-container>
 
 
   <ng-container *ngSwitchCase="'viewerState'">
-    <editable-chip-list [values]="configOption.initialValue" [autocomplete]="viewLabels"
+    <editable-chip-list [values]="formGroup.get(configOption.id).value.views"
+                        [autocomplete]="viewLabels"
                         (listChange)="setViewerStateFormValues(configOption.id, $event)">
     </editable-chip-list>
   </ng-container>

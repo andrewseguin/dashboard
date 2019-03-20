@@ -4,4 +4,18 @@ mat-select {
   padding-bottom: 5px;
   border-bottom-width: 1px;
   border-bottom-style: solid;
+
+  &.auto-width {
+    flex: 0;
+
+    ::ng-deep .mat-select-value {
+      max-width: 100%;
+      width: auto;
+      padding-right: 8px;
+    }
+  }
+}
+
+mat-select + mat-select {
+  margin-left: 16px;
 }

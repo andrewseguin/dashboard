@@ -7,8 +7,10 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
+import {ItemGrouperState} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
-import {ItemViewer} from 'app/package/items-renderer/item-viewer';
+import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
+import {ItemViewer, ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {DisplayType, WidgetDisplayTypeOptions} from 'app/repository/services/dao';
 import {Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -29,6 +31,7 @@ export interface BaseConfigOption {
 
 export interface InputConfigOption extends BaseConfigOption {
   inputType?: 'text'|'number';
+  placeholder?: string;
 }
 
 export interface ButtonToggleConfigOption extends BaseConfigOption {
@@ -37,7 +40,9 @@ export interface ButtonToggleConfigOption extends BaseConfigOption {
 
 export type ConfigOption = BaseConfigOption&InputConfigOption&ButtonToggleConfigOption;
 
-export const DisplayTypeOptionConfigs: {[key in DisplayType]: (o?: any) => ConfigOption[]} = {
+export type ConfigOptionsProvider = (o: any) => ConfigOption[];
+
+export const DisplayTypeOptionConfigs: {[key in DisplayType]: ConfigOptionsProvider} = {
   count: getCountConfigOptions,
   list: getListConfigOptions,
   pie: getPieChartConfigOptions,
@@ -50,10 +55,10 @@ export const DisplayTypeOptionConfigs: {[key in DisplayType]: (o?: any) => Confi
   styleUrls: ['widget-type-options.scss', '../edit-widget.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WidgetTypeOptions {
-  groupIds: any[] = [];
-  sortIds: any[] = [];
-  viewLabels: any[] = [];
+export class WidgetTypeOptions<G, S, V> {
+  groupIds: G[] = [];
+  sortIds: S[] = [];
+  viewLabels: string[] = [];
 
   configOptions: ConfigOption[];
 
@@ -65,7 +70,7 @@ export class WidgetTypeOptions {
 
   @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
 
-  @Input() itemViewer: ItemViewer<any>;
+  @Input() itemViewer: ItemViewer<V>;
 
   @Output() optionsChanged = new EventEmitter<WidgetDisplayTypeOptions>();
 
@@ -74,14 +79,13 @@ export class WidgetTypeOptions {
   private destroyed = new Subject();
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['type'] && this.type) {
-      this.setupForm();
-    }
-
     if (simpleChanges['itemGroupsDataSource'] && this.itemGroupsDataSource) {
       this.groupIds = this.itemGroupsDataSource.grouper.getGroups().map(value => value.id);
       this.sortIds = this.itemGroupsDataSource.sorter.getSorts().map(value => value.id);
       this.viewLabels = this.itemViewer.getViews().map(value => value.label);
+    }
+    if (simpleChanges['type'] && this.type) {
+      this.setupForm();
     }
   }
 
@@ -95,11 +99,12 @@ export class WidgetTypeOptions {
       this.valueChangeSubscription.unsubscribe();
     }
 
-    this.configOptions = DisplayTypeOptionConfigs[this.type]();
+    this.configOptions = DisplayTypeOptionConfigs[this.type](this.options);
 
     const controls: any = {};
     this.configOptions.forEach(c => {
-      controls[c.id] = new FormControl(c.initialValue);
+      const initialValue = c.initialValue || this.getDefaultInitialValue(c.type);
+      controls[c.id] = new FormControl(initialValue);
     });
 
     this.formGroup = new FormGroup(controls);
@@ -112,4 +117,25 @@ export class WidgetTypeOptions {
   setViewerStateFormValues(configOptionId: string, viewLabels: string[]) {
     console.log(configOptionId, viewLabels);
   }
-};
+
+  setGrouperStateFormValue(configOptionId: string, group: any) {
+    console.log(configOptionId, group);
+  }
+
+  setSorterStateFormValue(configOptionId: string, sortId: any, reverse: boolean) {
+    console.log(configOptionId, sortId, reverse);
+  }
+
+  getDefaultInitialValue(configOptionType: ConfigOptionType) {
+    switch (configOptionType) {
+      case 'grouperState':
+        return {group: this.groupIds[0]} as ItemGrouperState<any>;
+      case 'sorterState':
+        return {sort: this.sortIds[0], reverse: false} as ItemSorterState<S>;
+      case 'viewerState':
+        return {views: []} as ItemViewerState<V>;
+      default:
+        return '';
+    }
+  }
+}

@@ -5,7 +5,7 @@ import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-gr
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {ConfigOption} from '../../edit-widget/edit-options/edit-widget-options';
+import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
 
 interface CreatedAndClosedDate {
   created: string;
@@ -31,27 +31,32 @@ export interface TimeSeriesDisplayTypeOptions {
   datasets: string|string[];
 }
 
-export function getTimeSeriesConfigOptions(_options: TimeSeriesDisplayTypeOptions): ConfigOption[] {
+export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions): ConfigOption[] {
   return [
     {
       id: 'start',
       type: 'datepicker',
       label: 'Start date',
+      initialValue: options ? options.start : null,
     },
     {
       id: 'end',
       type: 'datepicker',
       label: 'End date',
+      initialValue: options ? options.end : null,
     },
     {
       id: 'group',
       type: 'buttonToggle',
       label: 'Group',
+      options: [{id: 'one', label: 'One'}, {id: 'two', label: 'Two'}],
+      initialValue: options ? options.group : null,
     },
     {
       id: 'datasets',
       type: 'input',
       label: 'Datasets',
+      initialValue: options ? options.datasets : null,
     },
   ];
 }

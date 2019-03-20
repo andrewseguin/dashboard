@@ -13,26 +13,29 @@ import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-gr
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {ConfigOption} from '../../edit-widget/edit-options/edit-widget-options';
+import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
 
 export interface PieChartDisplayTypeOptions<G> {
   grouperState: ItemGrouperState<G>;
   filteredGroupsByTitle: string[];
 }
 
-export function getPieChartConfigOptions(_options: PieChartDisplayTypeOptions<any>): ConfigOption[] {
+export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>):
+    ConfigOption[] {
   return [
     {
       id: 'grouperState',
       type: 'grouperState',
       label: 'Grouping',
+      initialValue: options ? options.grouperState : null,
     },
     {
       id: 'filteredGroups',
       type: 'input',
       inputType: 'text',
-      label: 'Filter (by group title)',
-      initialValue: '',
+      label: 'Filter (optional)',
+      placeholder: 'Filter by group title, e.g. "Group A, Group B"',
+      initialValue: options ? options.filteredGroupsByTitle : '',
     },
   ];
 }

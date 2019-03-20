@@ -11,7 +11,7 @@ import {
 } from 'app/repository/utility/items-renderer/item-viewer-metadata';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ConfigOption} from '../../edit-widget/edit-options/edit-widget-options';
+import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
 
 export interface ListDisplayTypeOptions<S, V> {
   listLength: number;
@@ -19,24 +19,26 @@ export interface ListDisplayTypeOptions<S, V> {
   viewerState: ItemViewerState<V>;
 }
 
-export function getListConfigOptions(_options: ListDisplayTypeOptions<any, any>): ConfigOption[] {
+export function getListConfigOptions(options: ListDisplayTypeOptions<any, any>): ConfigOption[] {
   return [
     {
       id: 'listLength',
       type: 'input',
       label: 'Max list length',
       inputType: 'number',
-      initialValue: '16',
+      initialValue: options ? options.listLength : 5,
     },
     {
       id: 'sorterState',
       type: 'sorterState',
       label: 'List sort',
+      initialValue: options ? options.sorterState : null,
     },
     {
       id: 'viewerState',
       type: 'viewerState',
       label: 'View',
+      initialValue: options ? options.viewerState : null,
     },
   ];
 }
