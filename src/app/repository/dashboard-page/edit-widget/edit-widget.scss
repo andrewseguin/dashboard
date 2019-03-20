@@ -17,6 +17,14 @@ form {
     font-weight: bold;
     min-width: 140px;
     width: 140px;
+
+    &.query {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      padding-right: 16px;
+      box-sizing: border-box;
+    }
   }
 }
 
@@ -40,10 +48,6 @@ input {
   padding: 4px 0;
   width: 100%;
   font-size: 15px;
-
-  &.query {
-    margin-top: 8px;
-  }
 }
 
 input.date {
