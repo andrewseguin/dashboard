@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {ActiveRepo} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-repo';
 import {Item, Label} from 'app/repository/services/dao';
-import {Recommendation} from 'app/repository/services/dao/recommendation';
+import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Github} from 'app/service/github';
 import {take} from 'rxjs/operators';
 
@@ -16,13 +16,13 @@ export class RecommendationAction {
 
   @Input() recommendation: Recommendation;
 
-  constructor(private github: Github, private activeRepo: ActiveRepo) {}
+  constructor(private github: Github, private activeRepo: ActiveStore) {}
 
   addLabel(label: Label) {
     const newItem: Item = {...this.item};
     newItem.labels = [...this.item.labels, +label.id];
-    this.activeRepo.activeStore.items.update(newItem);
-    this.github.addLabel(this.activeRepo.activeRepository, this.item.id, label.name)
+    this.activeRepo.activeData.items.update(newItem);
+    this.github.addLabel(this.activeRepo.activeName, this.item.id, label.name)
         .pipe(take(1))
         .subscribe();
   }
@@ -30,8 +30,8 @@ export class RecommendationAction {
   addAssignee(assignee: string) {
     const newItem: Item = {...this.item};
     newItem.assignees = [...this.item.assignees, assignee];
-    this.activeRepo.activeStore.items.update(newItem);
-    this.github.addAssignee(this.activeRepo.activeRepository, this.item.id, assignee)
+    this.activeRepo.activeData.items.update(newItem);
+    this.github.addAssignee(this.activeRepo.activeName, this.item.id, assignee)
         .pipe(take(1))
         .subscribe();
   }

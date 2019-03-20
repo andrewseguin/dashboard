@@ -4,7 +4,7 @@ import * as hljs from 'highlight.js';
 import * as Remarkable from 'remarkable';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {RepoStore} from './dao/dao';
+import {DataStore} from './dao/data/data-dao';
 
 @Injectable()
 export class Markdown {
@@ -29,7 +29,7 @@ export class Markdown {
 
   constructor(private sanitizer: DomSanitizer) {}
 
-  getItemBodyMarkdown(store: RepoStore, itemId: string): Observable<SafeHtml> {
+  getItemBodyMarkdown(store: DataStore, itemId: string): Observable<SafeHtml> {
     return store.items.get(itemId).pipe(map(item => this.render(item ? item.body : '')));
   }
 

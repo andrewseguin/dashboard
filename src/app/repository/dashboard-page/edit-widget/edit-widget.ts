@@ -2,10 +2,10 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@an
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
-import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Widget, WidgetDisplayTypeOptions} from 'app/repository/services/dao/dashboard';
-import {Query} from 'app/repository/services/dao/query';
-import {Recommendation} from 'app/repository/services/dao/recommendation';
+import {ActiveStore} from 'app/repository/services/active-repo';
+import {Widget, WidgetDisplayTypeOptions} from 'app/repository/services/dao/config/dashboard';
+import {Query} from 'app/repository/services/dao/config/query';
+import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {
   getItemsList,
   GithubItemGroupsDataSource
@@ -42,16 +42,18 @@ export class EditWidget<S, V, G> {
     displayType: new FormControl('count'),
   });
 
-  recommendationsList = this.activeRepo.store.pipe(mergeMap(store => store.recommendations.list));
+  recommendationsList =
+      this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
   metadata = ItemsFilterMetadata;
 
-  recommendations = this.activeRepo.store.pipe(mergeMap(store => store.recommendations.list));
+  recommendations =
+      this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
-  issueQueries = this.activeRepo.store.pipe(
+  issueQueries = this.activeRepo.config.pipe(
       mergeMap(store => store.queries.list),
       map(queries => queries.filter(q => q.type === 'issue')));
-  prQueries = this.activeRepo.store.pipe(
+  prQueries = this.activeRepo.config.pipe(
       mergeMap(store => store.queries.list), map(queries => queries.filter(q => q.type === 'pr')));
 
   groups = GithubItemGroupingMetadata;
@@ -76,7 +78,7 @@ export class EditWidget<S, V, G> {
   displayTypeOptions: WidgetDisplayTypeOptions;
 
   constructor(
-      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo,
+      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
       private cd: ChangeDetectorRef, private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
     if (data && data.widget) {
@@ -89,12 +91,12 @@ export class EditWidget<S, V, G> {
       this.displayTypeOptions = data.widget.displayTypeOptions;
 
       this.itemGroupsDataSource.dataProvider =
-          getItemsList(this.activeRepo.activeStore, data.widget.itemType);
+          getItemsList(this.activeRepo.activeData, data.widget.itemType);
     }
 
-    this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeStore, 'issue');
+    this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');
     this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(type => {
-      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeStore, type);
+      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, type);
       this.cd.markForCheck();
     });
   }

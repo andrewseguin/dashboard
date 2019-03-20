@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
-import {ActiveRepo} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-repo';
 import {Contributor, Item, Label} from 'app/repository/services/dao';
 import {isRepoStoreEmpty} from 'app/repository/utility/is-repo-store-empty';
 import {Github} from 'app/service/github';
@@ -33,7 +33,7 @@ export class LoadData {
       {issueDateType: new FormControl('last updated since'), issueDate: new FormControl('')});
 
   totalLabelsCount =
-      this.activeRepo.repository.pipe(filter(v => !!v), mergeMap((repository => {
+      this.activeRepo.name.pipe(filter(v => !!v), mergeMap((repository => {
                                         return this.github.getLabels(repository!)
                                             .pipe(
                                                 filter(result => result.completed === result.total),
@@ -41,19 +41,19 @@ export class LoadData {
                                       })));
 
   totalItemCount =
-      combineLatest(this.activeRepo.repository, this.formGroup.valueChanges.pipe(startWith(null)))
+      combineLatest(this.activeRepo.name, this.formGroup.valueChanges.pipe(startWith(null)))
           .pipe(filter(result => !!result[0]), mergeMap(result => {
                   const repository = result[0]!;
                   const since = this.getIssuesDateSince();
                   return this.github.getItemsCount(repository!, since);
                 }));
 
-  isEmpty = this.activeRepo.store.pipe(mergeMap(store => isRepoStoreEmpty(store)));
+  isEmpty = this.activeRepo.data.pipe(mergeMap(store => isRepoStoreEmpty(store)));
 
   private destroyed = new Subject();
 
   constructor(
-      private loadedRepos: LoadedRepos, private activeRepo: ActiveRepo,
+      private loadedRepos: LoadedRepos, private activeRepo: ActiveStore,
       private snackbar: MatSnackBar, private github: Github, private cd: ChangeDetectorRef) {
     const lastMonth = new Date();
     lastMonth.setDate(new Date().getDate() - 30);
@@ -71,8 +71,8 @@ export class LoadData {
   }
 
   store() {
-    const repository = this.activeRepo.activeRepository;
-    const store = this.activeRepo.activeStore;
+    const repository = this.activeRepo.activeName;
+    const store = this.activeRepo.activeData;
 
     this.isLoading.next(true);
 

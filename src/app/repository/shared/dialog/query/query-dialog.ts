@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {RepoStore} from 'app/repository/services/dao/dao';
-import {Query} from 'app/repository/services/dao/query';
+import {ConfigStore} from 'app/repository/services/dao/config/config-dao';
+import {Query} from 'app/repository/services/dao/config/query';
 import {Observable, of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
@@ -13,7 +13,7 @@ export class QueryDialog {
   constructor(private dialog: MatDialog, private snackbar: MatSnackBar) {}
 
   /** Shows the edit query dialog to change the name/group.*/
-  editQuery(query: Query, store: RepoStore) {
+  editQuery(query: Query, store: ConfigStore) {
     const data = {
       name: query.name,
       group: query.group,
@@ -30,7 +30,7 @@ export class QueryDialog {
    * Shows delete query dialog. If user confirms deletion, remove the
    * query and navigate to the queries page.
    */
-  deleteQuery(query: Query, store: RepoStore) {
+  deleteQuery(query: Query, store: ConfigStore) {
     const data = {name: of(query.name)};
 
     this.dialog.open(DeleteConfirmation, {data})

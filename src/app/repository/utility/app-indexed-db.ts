@@ -8,18 +8,18 @@ export type StoreId = 'items'|'labels'|'contributors'|'dashboards'|'queries'|'re
 export const StoreIds: StoreId[] =
     ['items', 'labels', 'contributors', 'dashboards', 'queries', 'recommendations'];
 
-export class RepoIndexedDb {
+export class AppIndexedDb {
   initialValues: {[key in StoreId]?: Subject<any[]>} = {};
 
-  repository: string;
+  name: string;
 
   private db: Promise<DB>;
 
   private destroyed = new Subject();
 
-  constructor(repository: string) {
+  constructor(name: string) {
     StoreIds.forEach(id => this.initialValues[id] = new Subject<any[]>());
-    this.repository = repository!;
+    this.name = name!;
     this.openDb();
   }
 
@@ -36,7 +36,7 @@ export class RepoIndexedDb {
     this.db
         .then(db => {
           db.close();
-          return deleteDb(this.repository);
+          return deleteDb(this.name);
         })
         .then(() => this.openDb());
   }
@@ -60,7 +60,7 @@ export class RepoIndexedDb {
   }
 
   private openDb() {
-    this.db = openDb(this.repository, DB_VERSION, function(db) {
+    this.db = openDb(this.name, DB_VERSION, function(db) {
       StoreIds.forEach(collectionId => {
         if (!db.objectStoreNames.contains(collectionId)) {
           db.createObjectStore(collectionId, {keyPath: 'id'});

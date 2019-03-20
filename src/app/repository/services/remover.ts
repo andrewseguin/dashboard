@@ -6,61 +6,59 @@ import {
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
-import {RepoDaoType, RepoStore} from './dao/dao';
+import {ConfigDaoType, ConfigStore} from './dao/config/config-dao';
+import {RepoDaoType, DataStore} from './dao/data/data-dao';
 
 @Injectable()
 export class Remover {
   constructor(
       private loadedRepos: LoadedRepos, private dialog: MatDialog, private snackbar: MatSnackBar) {}
 
-  removeData(store: RepoStore, type: RepoDaoType) {
-    this.dialog.open(DeleteConfirmation, {data: {name: of(`${type} data for ${store.repository}`)}})
+  removeData(store: DataStore, type: RepoDaoType) {
+    this.dialog.open(DeleteConfirmation, {data: {name: of(`${type} data for ${store.name}`)}})
         .afterClosed()
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            switch (type) {
-              case 'labels':
-                store.labels.removeAll();
-                break;
-              case 'items':
-                store.items.removeAll();
-                break;
-              case 'contributors':
-                store.contributors.removeAll();
-                break;
-            }
-
+            store[type].removeAll();
             this.snackbar.open(`Successfully deleted ${type}`, '', {duration: 2000});
           }
         });
   }
 
-  removeAllData(store: RepoStore, showConfirmationDialog = true, includeConfig = true) {
+  removeConfig(store: ConfigStore, type: ConfigDaoType) {
+    this.dialog.open(DeleteConfirmation, {data: {name: of(`${type} data for ${store.name}`)}})
+        .afterClosed()
+        .pipe(take(1))
+        .subscribe(confirmed => {
+          if (confirmed) {
+            store[type].removeAll();
+            this.snackbar.open(`Successfully deleted ${type}`, '', {duration: 2000});
+          }
+        });
+  }
+
+  removeAllData(store: DataStore, showConfirmationDialog = true) {
     if (!showConfirmationDialog) {
-      this.remove(store, includeConfig);
+      this.remove(store);
       return;
     }
 
-    const name = `locally stored data for ${store.repository}`;
+    const name = `locally stored data for ${store.name}`;
     const data = {name: of(name)};
     this.dialog.open(DeleteConfirmation, {data})
         .afterClosed()
         .pipe(take(1))
         .subscribe(confirmed => {
           if (confirmed) {
-            this.remove(store, includeConfig);
+            this.remove(store);
             this.snackbar.open(`${name} deleted`, '', {duration: 2000});
           }
         });
   }
 
-  private remove(store: RepoStore, includeConfig: boolean) {
-    [store.contributors, store.items, store.labels].forEach(dao => dao.removeAll());
-    this.loadedRepos.removeLoadedRepo(store.repository!);
-
-    if (includeConfig) {
-      [store.dashboards, store.queries, store.recommendations].forEach(dao => dao.removeAll());
-    }
+  private remove(repoStore: DataStore) {
+    [repoStore.contributors, repoStore.items, repoStore.labels].forEach(dao => dao.removeAll());
+    this.loadedRepos.removeLoadedRepo(repoStore.name!);
   }
 }

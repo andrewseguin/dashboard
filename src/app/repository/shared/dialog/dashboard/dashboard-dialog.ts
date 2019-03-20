@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {ActiveRepo} from 'app/repository/services/active-repo';
-import {Dashboard} from 'app/repository/services/dao/dashboard';
+import {ActiveStore} from 'app/repository/services/active-repo';
+import {Dashboard} from 'app/repository/services/dao/config/dashboard';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
@@ -11,7 +11,7 @@ import {DashboardEdit} from './dashboard-edit/dashboard-edit';
 @Injectable()
 export class DashboardDialog {
   constructor(
-      private dialog: MatDialog, private snackbar: MatSnackBar, private activeRepo: ActiveRepo) {}
+      private dialog: MatDialog, private snackbar: MatSnackBar, private activeRepo: ActiveStore) {}
 
   editDashboard(dashboard: Dashboard) {
     const data = {
@@ -19,7 +19,7 @@ export class DashboardDialog {
       description: dashboard.description,
     };
 
-    const store = this.activeRepo.activeStore;
+    const store = this.activeRepo.activeConfig;
     this.dialog.open(DashboardEdit, {data}).afterClosed().pipe(take(1)).subscribe(result => {
       if (result) {
         store.dashboards.update({id: dashboard.id, ...result});
@@ -33,7 +33,7 @@ export class DashboardDialog {
    */
   removeDashboard(dashboard: Dashboard) {
     const data = {name: of(dashboard.name)};
-    const store = this.activeRepo.activeStore;
+    const store = this.activeRepo.activeConfig;
 
     this.dialog.open(DeleteConfirmation, {data})
         .afterClosed()

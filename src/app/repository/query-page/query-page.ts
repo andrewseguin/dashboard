@@ -6,11 +6,11 @@ import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
-import {ActiveRepo} from '../services/active-repo';
+import {ActiveStore} from '../services/active-repo';
 import {ItemType} from '../services/dao';
-import {RepoStore} from '../services/dao/dao';
-import {Widget} from '../services/dao/dashboard';
-import {Query} from '../services/dao/query';
+import {ConfigStore} from '../services/dao/config/config-dao';
+import {Widget} from '../services/dao/config/dashboard';
+import {Query} from '../services/dao/config/query';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
@@ -34,7 +34,7 @@ export class QueryPage {
 
     const type = this._query.type;
     if (type) {
-      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeStore, type);
+      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, type);
     }
 
     this.updateQueryStates();
@@ -53,7 +53,8 @@ export class QueryPage {
   private destroyed = new Subject();
   private getSubscription: Subscription;
 
-  public itemGroupsDataSource = new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+  public itemGroupsDataSource =
+      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
@@ -67,7 +68,7 @@ export class QueryPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
-      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo,
+      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
       private header: Header, private queryDialog: QueryDialog, private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
@@ -83,7 +84,8 @@ export class QueryPage {
         const dashboard = queryParamMap.get('dashboard');
 
         if (recommendationId) {
-          this.createNewQueryFromRecommendation(this.activeRepo.activeStore, recommendationId);
+          this.createNewQueryFromRecommendation(
+              this.activeRepo.activeConfig, recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
           this.query = createNewQuery(widget.title, widget.itemType);
@@ -100,7 +102,7 @@ export class QueryPage {
         this.cd.markForCheck();
       } else {
         this.getSubscription =
-            this.activeRepo.activeStore.queries.map.pipe(takeUntil(this.destroyed))
+            this.activeRepo.activeConfig.queries.map.pipe(takeUntil(this.destroyed))
                 .subscribe(map => {
                   const query = map.get(id);
                   if (query) {
@@ -139,32 +141,32 @@ export class QueryPage {
       viewerState: this.itemViewer.getState(),
     };
 
-    this.activeRepo.activeStore.queries.update({...this.query, ...queryState});
+    this.activeRepo.activeConfig.queries.update({...this.query, ...queryState});
   }
 
   saveAs(name: string, group: string) {
     this.query = {...this.query, name, group};
-    const store = this.activeRepo.activeStore;
+    const store = this.activeRepo.activeConfig;
     const newQueryId = store.queries.add(this.query);
 
     this.saveState();
 
     this.router.navigate(
-        [`${this.activeRepo.activeStore.repository}/query/${newQueryId}`],
+        [`${this.activeRepo.activeData.name}/query/${newQueryId}`],
         {replaceUrl: true, queryParamsHandling: 'merge'});
   }
 
   setBack(fromDashboard?: string) {
     if (fromDashboard) {
       this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.activeRepository}/dashboard/${fromDashboard}`]);
+          this.router.navigate([`/${this.activeRepo.activeName}/dashboard/${fromDashboard}`]);
     } else {
       this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.activeRepository}/queries/${this.query.type}`]);
+          this.router.navigate([`/${this.activeRepo.activeName}/queries/${this.query.type}`]);
     }
   }
 
-  private createNewQueryFromRecommendation(store: RepoStore, id: string) {
+  private createNewQueryFromRecommendation(store: ConfigStore, id: string) {
     store.recommendations.list.pipe(take(1)).subscribe(list => {
       list.forEach(r => {
         if (r.id === id) {

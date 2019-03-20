@@ -5,7 +5,7 @@ import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {map, mergeMap, take, tap} from 'rxjs/operators';
 import {ConfirmConfigUpdates} from '../shared/dialog/confirm-config-updates/confirm-config-updates';
 import {Dashboard, Query, Recommendation} from './dao';
-import {RepoStore} from './dao/dao';
+import {ConfigStore} from './dao/config/config-dao';
 import {compareLocalToRemote, IdentifiedObject, LocalToRemoteComparison} from './dao/list-dao';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class RepoGist {
 
   constructor(private config: Config, private dialog: MatDialog) {}
 
-  sync(repository: string, store: RepoStore): Observable<void> {
+  sync(repository: string, store: ConfigStore): Observable<void> {
     let syncResults: LocalToRemoteComparison<IdentifiedObject>[]|null;
     return this.config.getRepoConfig(repository)
         .pipe(
@@ -74,7 +74,7 @@ function hasSyncChanges(syncResponse: LocalToRemoteComparison<any>): boolean {
 }
 
 /** Gets the comparison results between the local store and remote config */
-function getSyncResults(store: RepoStore, remoteConfig: RepoConfig|null):
+function getSyncResults(store: ConfigStore, remoteConfig: RepoConfig|null):
     Observable<LocalToRemoteComparison<any>[]|null> {
   if (!remoteConfig) {
     return of(null);

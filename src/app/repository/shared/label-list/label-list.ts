@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {ActiveRepo} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-repo';
 import {Label} from 'app/repository/services/dao';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
@@ -32,7 +32,7 @@ export class LabelList {
   @Output() selected = new EventEmitter<Label>();
 
 
-  labels = this.activeRepo.store.pipe(
+  labels = this.activeRepo.data.pipe(
       mergeMap(store => combineLatest(this._labelIds, store.labels.list)), map(result => {
         const labelIds = result[0];
         const repoLabels = result[1];
@@ -54,7 +54,7 @@ export class LabelList {
         return labels;
       }));
 
-  constructor(private activeRepo: ActiveRepo) {}
+  constructor(private activeRepo: ActiveStore) {}
 
   select(label: Label) {
     if (this.selectable) {

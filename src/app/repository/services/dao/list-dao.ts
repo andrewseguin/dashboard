@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
-import {RepoIndexedDb, StoreId} from '../../utility/repo-indexed-db';
+import {AppIndexedDb, StoreId} from '../../utility/app-indexed-db';
 
 export interface IdentifiedObject {
   id?: string;
@@ -32,9 +32,9 @@ export class ListDao<T extends IdentifiedObject> {
   }
   _map: BehaviorSubject<Map<string, T>>;
 
-  private repoIndexedDb: RepoIndexedDb;
+  private repoIndexedDb: AppIndexedDb;
 
-  constructor(protected collectionId: StoreId, repoIndexedDb: RepoIndexedDb) {
+  constructor(protected collectionId: StoreId, repoIndexedDb: AppIndexedDb) {
     this.repoIndexedDb = repoIndexedDb;
     const initialValues = this.repoIndexedDb.initialValues[this.collectionId];
     if (!initialValues) {

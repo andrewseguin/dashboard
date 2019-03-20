@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Dashboard} from 'app/repository/services/dao/dashboard';
-import {Query} from 'app/repository/services/dao/query';
-import {Recommendation} from 'app/repository/services/dao/recommendation';
+import {Dashboard} from 'app/repository/services/dao/config/dashboard';
+import {Query} from 'app/repository/services/dao/config/query';
+import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Observable, of} from 'rxjs';
 import {map, mergeMap, take} from 'rxjs/operators';
 import {Github} from './github';

@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {ActiveRepo} from '../services/active-repo';
-import {RepoDaoType, RepoStore} from '../services/dao/dao';
+import {ActiveStore} from '../services/active-repo';
+import {RepoDaoType, DataStore} from '../services/dao/data/data-dao';
 import {Remover} from '../services/remover';
 import {isRepoStoreEmpty} from '../utility/is-repo-store-empty';
 
@@ -15,18 +15,18 @@ import {isRepoStoreEmpty} from '../utility/is-repo-store-empty';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatabasePage {
-  isEmpty = this.activeRepo.store.pipe(mergeMap(store => isRepoStoreEmpty(store)));
+  isEmpty = this.activeRepo.data.pipe(mergeMap(store => isRepoStoreEmpty(store)));
 
   isLoaded =
-      this.activeRepo.repository.pipe(map(activeRepo => this.loadedRepos.isLoaded(activeRepo)));
+      this.activeRepo.name.pipe(map(activeRepo => this.loadedRepos.isLoaded(activeRepo)));
 
-  repoLabels = this.activeRepo.store.pipe(
+  repoLabels = this.activeRepo.data.pipe(
       mergeMap(store => store.labels.list), map(labels => labels.map(l => l.id)));
 
   counts: {[key in RepoDaoType]: Observable<number>} = {
-    items: getStoreListCount(this.activeRepo.store, 'items'),
-    labels: getStoreListCount(this.activeRepo.store, 'labels'),
-    contributors: getStoreListCount(this.activeRepo.store, 'contributors'),
+    items: getStoreListCount(this.activeRepo.data, 'items'),
+    labels: getStoreListCount(this.activeRepo.data, 'labels'),
+    contributors: getStoreListCount(this.activeRepo.data, 'contributors'),
   };
 
   repoDaoTypeInfo: {type: RepoDaoType, label: string, count: Observable<number>}[] = [
@@ -36,9 +36,9 @@ export class DatabasePage {
   ];
 
   constructor(
-      public activeRepo: ActiveRepo, private loadedRepos: LoadedRepos, public remover: Remover) {}
+      public activeRepo: ActiveStore, private loadedRepos: LoadedRepos, public remover: Remover) {}
 }
 
-function getStoreListCount(store: Observable<RepoStore>, type: RepoDaoType) {
+function getStoreListCount(store: Observable<DataStore>, type: RepoDaoType) {
   return store.pipe(mergeMap(store => store[type].list), map(list => list.length));
 }

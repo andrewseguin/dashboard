@@ -16,17 +16,17 @@ import {
 } from '../utility/items-renderer/item-grouper-metadata';
 import {GithubItemSortingMetadata} from '../utility/items-renderer/item-sorter-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
-import {ActiveRepo} from './active-repo';
+import {ActiveStore} from './active-repo';
 import {Item, ItemType, Label} from './dao';
-import {RepoStore} from './dao/dao';
+import {DataStore} from './dao/data/data-dao';
 import {ListDao} from './dao/list-dao';
 import {ItemRecommendations} from './item-recommendations';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
-  constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveRepo) {
+  constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {
     super();
 
-    const store = this.activeRepo.activeStore;
+    const store = this.activeRepo.activeData;
 
     this.filterer = getItemsFilterer(this.itemRecommendations, store);
     this.grouper = getItemsGrouper(store.labels);
@@ -46,7 +46,7 @@ function getItemsGrouper(labelsDao: ListDao<Label>):
 }
 
 
-export function getItemsList(store: RepoStore, type: ItemType) {
+export function getItemsList(store: DataStore, type: ItemType) {
   return combineLatest(store.items.list).pipe(map(results => {
     const items = results[0];
 
@@ -56,7 +56,7 @@ export function getItemsList(store: RepoStore, type: ItemType) {
   }));
 }
 
-export function getItemsFilterer(itemRecommendations: ItemRecommendations, store: RepoStore):
+export function getItemsFilterer(itemRecommendations: ItemRecommendations, store: DataStore):
     ItemFilterer<Item, MatcherContext, AutocompleteContext> {
   const filterContextProvider =
       combineLatest(itemRecommendations.allRecommendations, store.labels.map).pipe(map(results => {

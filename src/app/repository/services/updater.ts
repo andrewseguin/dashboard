@@ -3,7 +3,7 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Contributor, Item, Label} from './dao';
-import {RepoDaoType, RepoStore} from './dao/dao';
+import {RepoDaoType, DataStore} from './dao/data/data-dao';
 import {compareLocalToRemote, ListDao} from './dao/list-dao';
 
 export interface StaleIssuesState {
@@ -16,14 +16,14 @@ export interface StaleIssuesState {
 export class Updater {
   constructor(private github: Github) {}
 
-  update(store: RepoStore, type: RepoDaoType): Promise<void> {
+  update(store: DataStore, type: RepoDaoType): Promise<void> {
     switch (type) {
       case 'items':
         return this.updateIssues(store);
       case 'labels':
-        return this.updateLabels(store.repository, store.labels);
+        return this.updateLabels(store.name, store.labels);
       case 'contributors':
-        return this.updateContributors(store.repository, store.contributors);
+        return this.updateContributors(store.name, store.contributors);
     }
   }
 
@@ -61,7 +61,7 @@ export class Updater {
     });
   }
 
-  private updateIssues(store: RepoStore): Promise<void> {
+  private updateIssues(store: DataStore): Promise<void> {
     return new Promise(resolve => {
       this.getStaleIssuesState(store)
           .pipe(
@@ -84,7 +84,7 @@ export class Updater {
               }));
   }
 
-  getStaleIssuesState(store: RepoStore): Observable<StaleIssuesState> {
+  getStaleIssuesState(store: DataStore): Observable<StaleIssuesState> {
     let lastUpdated = '';
 
     return store.items.list.pipe(
@@ -97,7 +97,7 @@ export class Updater {
 
           return lastUpdated;
         }),
-        mergeMap(() => this.github.getItemsCount(store.repository, lastUpdated)),
-        map(count => ({lastUpdated, count, repository: store.repository})));
+        mergeMap(() => this.github.getItemsCount(store.name, lastUpdated)),
+        map(count => ({lastUpdated, count, repository: store.name})));
   }
 }

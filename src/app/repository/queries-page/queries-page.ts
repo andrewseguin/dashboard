@@ -2,10 +2,10 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {combineLatest, Observable} from 'rxjs';
 import {delay, filter, map, mergeMap} from 'rxjs/operators';
-import {ActiveRepo} from '../services/active-repo';
+import {ActiveStore} from '../services/active-repo';
 import {ItemType} from '../services/dao';
-import {Query} from '../services/dao/query';
-import {Recommendation} from '../services/dao/recommendation';
+import {Query} from '../services/dao/config/query';
+import {Recommendation} from '../services/dao/config/recommendation';
 import {ItemRecommendations} from '../services/item-recommendations';
 
 
@@ -22,13 +22,14 @@ interface QueryGroup {
 export class QueriesPage {
   type: Observable<ItemType> = this.activatedRoute.params.pipe(map(params => params.type));
 
-  recommendationsList = this.activeRepo.store.pipe(mergeMap(store => store.recommendations.list));
+  recommendationsList =
+      this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
-  queryGroups = this.activeRepo.store.pipe(
-      mergeMap(store => combineLatest(store.queries.list, this.type)),
+  queryGroups = this.activeRepo.config.pipe(
+      mergeMap(configStore => combineLatest(configStore.queries.list, this.type)),
       map(result => result[0].filter(item => item.type === result[1])), map(getSortedGroups));
 
-  queryResultsCount = this.activeRepo.store.pipe(
+  queryResultsCount = this.activeRepo.data.pipe(
       mergeMap(
           store => combineLatest(
               store.items.list, this.queryGroups, this.issueRecommendations.allRecommendations,
@@ -42,20 +43,20 @@ export class QueriesPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
-      private issueRecommendations: ItemRecommendations, private activeRepo: ActiveRepo) {}
+      private issueRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {}
 
   createQuery(type: ItemType) {
-    this.router.navigate([`${this.activeRepo.activeRepository}/query/new`], {queryParams: {type}});
+    this.router.navigate([`${this.activeRepo.activeName}/query/new`], {queryParams: {type}});
   }
 
   createQueryFromRecommendation(recommendation: Recommendation) {
     this.router.navigate(
-        [`${this.activeRepo.activeRepository}/query/new`],
+        [`${this.activeRepo.activeName}/query/new`],
         {queryParams: {'recommendationId': recommendation.id}});
   }
 
   navigateToQuery(id: string) {
-    this.router.navigate([`${this.activeRepo.activeRepository}/query/${id}`]);
+    this.router.navigate([`${this.activeRepo.activeName}/query/${id}`]);
   }
 }
 

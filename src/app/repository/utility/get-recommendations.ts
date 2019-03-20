@@ -1,6 +1,6 @@
 import {filterItems, searchItems} from 'app/package/items-renderer/item-filterer';
 import {Item, Label} from '../services/dao';
-import {Recommendation} from '../services/dao/recommendation';
+import {Recommendation} from '../services/dao/config/recommendation';
 import {ItemsFilterMetadata, MatcherContext} from './items-renderer/item-filter-metadata';
 import {tokenizeItem} from './tokenize-item';
 

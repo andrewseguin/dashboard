@@ -7,7 +7,7 @@ import {
 import {
   TimeSeriesDisplayTypeOptions
 } from 'app/repository/dashboard-page/widget-view/time-series/time-series';
-import {ItemType} from './item';
+import {ItemType} from '../data/item';
 
 export type DisplayType = 'list'|'count'|'pie'|'timeSeries';
 

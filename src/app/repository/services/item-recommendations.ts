@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
 import {getRecommendations} from '../utility/get-recommendations';
-import {ActiveRepo} from './active-repo';
-import {Recommendation} from './dao/recommendation';
+import {ActiveStore} from './active-repo';
+import {Recommendation} from './dao/config/recommendation';
 
 
 @Injectable()
@@ -29,12 +29,12 @@ export class ItemRecommendations {
 
   private destroyed = new Subject();
 
-  constructor(private activeRepo: ActiveRepo) {
-    this.activeRepo.store
+  constructor(private activeRepo: ActiveStore) {
+    combineLatest(this.activeRepo.data, this.activeRepo.config)
         .pipe(
             mergeMap(
-                store =>
-                    combineLatest(store.items.map, store.recommendations.list, store.labels.map)),
+                results => combineLatest(
+                    results[0].items.map, results[1].recommendations.list, results[0].labels.map)),
             takeUntil(this.destroyed))
         .subscribe(result => {
           const items = result[0];
