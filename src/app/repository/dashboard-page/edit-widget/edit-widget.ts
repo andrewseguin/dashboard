@@ -64,6 +64,13 @@ export class EditWidget<S, V, G> {
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
+  displayTypes = [
+    {id: 'count', label: 'Count'},
+    {id: 'list', label: 'List'},
+    {id: 'pie', label: 'Pie Chart'},
+    {id: 'timeSeries', label: 'Time Series'},
+  ];
+
   itemCount = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
 
   displayTypeOptions: WidgetDisplayTypeOptions;

@@ -11,18 +11,16 @@
     <div class="config-option">
       <div class="label"> Display Type </div>
       <mat-button-toggle-group formControlName="displayType">
-        <mat-button-toggle value="list"> List </mat-button-toggle>
-        <mat-button-toggle value="count"> Count </mat-button-toggle>
-        <mat-button-toggle value="pie"> Pie Chart </mat-button-toggle>
-        <mat-button-toggle value="timeSeries"> Time Series </mat-button-toggle>
+        <mat-button-toggle *ngFor="let displayType of displayTypes" [value]="displayType.id">
+          {{displayType.label}}
+        </mat-button-toggle>
       </mat-button-toggle-group>
     </div>
 
     <edit-widget-options [displayType]="form.value.displayType"
                          [displayTypeOptions]="displayTypeOptions"
                          [itemGroupsDataSource]="itemGroupsDataSource"
-                         [itemViewer]="itemViewer"
-                         (displayTypeOptionsChanged)="displayTypeOptions = $event">
+                         [itemViewer]="itemViewer" (displayTypeOptionsChanged)="displayTypeOptions = $event">
     </edit-widget-options>
 
     <div class="config-option">
@@ -53,34 +51,29 @@
   <button mat-menu-item *ngIf="(recommendationsList | async)?.length > 0"
           [matMenuTriggerFor]="recommendationsMenu"> Recommendations
   </button>
-  <button mat-menu-item
-          *ngIf="(issueQueries | async)?.length > 0 && form.value.itemType === 'issue'"
+  <button mat-menu-item *ngIf="(issueQueries | async)?.length > 0 && form.value.itemType === 'issue'"
           [matMenuTriggerFor]="issueQueriesMenu"> Issue Queries
   </button>
-  <button mat-menu-item
-          *ngIf="(prQueries | async)?.length > 0 && form.value.itemType === 'pr'"
+  <button mat-menu-item *ngIf="(prQueries | async)?.length > 0 && form.value.itemType === 'pr'"
           [matMenuTriggerFor]="prQueriesMenu"> Pull Request Queries
   </button>
 </mat-menu>
 
 <mat-menu #recommendationsMenu="matMenu">
-  <button mat-menu-item
-          *ngFor="let recommendation of recommendationsList | async"
+  <button mat-menu-item *ngFor="let recommendation of recommendationsList | async"
           (click)="loadFromRecommendation(recommendation)">
     {{recommendation.message}}
   </button>
 </mat-menu>
 
 <mat-menu #issueQueriesMenu="matMenu">
-  <button mat-menu-item *ngFor="let query of issueQueries | async"
-          (click)="loadFromQuery(query)">
+  <button mat-menu-item *ngFor="let query of issueQueries | async" (click)="loadFromQuery(query)">
     {{query.name}}
   </button>
 </mat-menu>
 
 <mat-menu #prQueriesMenu="matMenu">
-  <button mat-menu-item *ngFor="let query of prQueries | async"
-          (click)="loadFromQuery(query)">
+  <button mat-menu-item *ngFor="let query of prQueries | async" (click)="loadFromQuery(query)">
     {{query.name}}
   </button>
 </mat-menu>
