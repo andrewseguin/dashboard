@@ -1,0 +1,53 @@
+<ng-container *ngIf="dashboard">
+  <!-- Column Group-->
+  <div
+       *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index; trackBy: trackByIndex">
+
+    <div class="column-group" cdkDropListGroup>
+      <button mat-button *ngIf="edit && !first"
+              (click)="removeColumnGroup(columnGroupIndex)">
+        <mat-icon> delete </mat-icon> Remove Group
+      </button>
+
+      <div class="columns">
+
+        <!-- Column -->
+        <div *ngFor="let column of columnGroup.columns; let columnIndex = index; let first = first; trackBy: trackByIndex"
+             class="column" [class.theme-border]="edit">
+          <button mat-button *ngIf="edit"
+                  [style.visibility]="first ? 'hidden' : ''"
+                  (click)="removeColumn(columnGroup, columnIndex)">
+            <mat-icon> delete </mat-icon> Remove Column
+          </button>
+
+          <div class="widgets theme-background-hover" cdkDropList
+               [cdkDropListData]="column.widgets"
+               (cdkDropListDropped)="dropWidget($event)">
+            <!-- Widget -->
+            <widget-view *ngFor="let widget of column.widgets; let widgetIndex = index; trackBy: trackByIndex"
+                         cdkDrag [cdkDragDisabled]="!edit" [widget]="widget"
+                         [dashboardId]="dashboard.id"
+                         (duplicate)="duplicateWidget(column, widget, widgetIndex)"
+                         (edit)="editWidget(column, widgetIndex)"
+                         [editMode]="edit"
+                         (remove)="removeWidget(column, widgetIndex)">
+            </widget-view>
+          </div>
+
+
+          <button mat-button *ngIf="edit" (click)="addWidget(column)"
+                  class="add-widget">
+            <mat-icon> add </mat-icon> Widget
+          </button>
+        </div>
+        <button mat-button *ngIf="edit" (click)="addColumn(columnGroup)">
+          <mat-icon> add </mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <button mat-button *ngIf="edit" (click)="addColumnGroup()">
+    <mat-icon> add </mat-icon> Group
+  </button>
+</ng-container>

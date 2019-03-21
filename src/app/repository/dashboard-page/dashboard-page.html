@@ -1,57 +1,5 @@
-<ng-container *ngIf="dashboard; else loading">
-  <!-- Column Group-->
-  <div
-       *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index; trackBy: trackByIndex">
-    <div class="column-group" cdkDropListGroup>
-      <button mat-button *ngIf="edit.value && !first"
-              (click)="removeColumnGroup(columnGroupIndex)">
-        <mat-icon> delete </mat-icon> Remove Group
-      </button>
-
-      <div class="columns">
-
-        <!-- Column -->
-        <div *ngFor="let column of columnGroup.columns; let columnIndex = index; let first = first; trackBy: trackByIndex"
-             class="column" [class.theme-border]="edit.value">
-          <button mat-button *ngIf="edit.value"
-                  [style.visibility]="first ? 'hidden' : ''"
-                  (click)="removeColumn(columnGroup, columnIndex)">
-            <mat-icon> delete </mat-icon> Remove Column
-          </button>
-
-          <div class="widgets theme-background-hover" cdkDropList
-               [cdkDropListData]="column.widgets"
-               (cdkDropListDropped)="dropWidget($event)">
-            <!-- Widget -->
-            <widget-view *ngFor="let widget of column.widgets; let widgetIndex = index; trackBy: trackByIndex"
-                         cdkDrag [cdkDragDisabled]="!edit.value"
-                         [widget]="widget" [dashboardId]="dashboard.id"
-                         (duplicate)="duplicateWidget(column, widget, widgetIndex)"
-                         (edit)="editWidget(column, widgetIndex)"
-                         [editMode]="edit.value"
-                         (remove)="removeWidget(column, widgetIndex)">
-            </widget-view>
-          </div>
-
-
-          <button mat-button *ngIf="edit.value" (click)="addWidget(column)"
-                  class="add-widget">
-            <mat-icon> add </mat-icon> Widget
-          </button>
-        </div>
-        <button mat-button *ngIf="edit.value" (click)="addColumn(columnGroup)">
-          <mat-icon> add </mat-icon>
-        </button>
-      </div>
-    </div>
-  </div>
-
-
-  <button mat-button *ngIf="edit.valueChanges | async"
-          (click)="addColumnGroup()">
-    <mat-icon> add </mat-icon> Group
-  </button>
-</ng-container>
+<dashboard-view *ngIf="dashboard" [dashboard]="dashboard" [edit]="edit.value"
+                (dashboardChange)="saveDashboard($event)"></dashboard-view>
 
 <ng-template cdkPortal>
   <button mat-raised-button color="primary" class="view" *ngIf="edit.value"
@@ -66,7 +14,3 @@
   <button mat-menu-item (click)="edit.setValue(!edit.value)"> Toggle Edit Mode
   </button>
 </mat-menu>
-
-<ng-template #loading>
-  <loading label="dashboard"></loading>
-</ng-template>

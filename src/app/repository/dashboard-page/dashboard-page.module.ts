@@ -5,6 +5,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 import {LoadingModule} from '../shared/loading/loading.module';
 import {DashboardPage} from './dashboard-page';
+import {DashboardViewModule} from './dashboard/dashboard-view.module';
 import {EditWidgetModule} from './edit-widget/edit-widget.module';
 import {WidgetViewModule} from './widget-view/widget-view.module';
 
@@ -21,7 +22,7 @@ export class DashboardPageRoutingModule {
 @NgModule({
   imports: [
     CommonModule, MaterialModule, ReactiveFormsModule, LoadingModule, EditWidgetModule,
-    WidgetViewModule, DashboardPageRoutingModule
+    WidgetViewModule, DashboardViewModule, DashboardPageRoutingModule
   ],
   declarations: [DashboardPage],
   exports: [DashboardPage],
