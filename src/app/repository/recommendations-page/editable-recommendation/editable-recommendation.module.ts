@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from 'app/material.module';
-import {AdvancedSearchModule} from 'app/package/advanced-search/advanced-search.module';
+import {AdvancedSearchModule} from 'app/package/component/advanced-search/advanced-search.module';
 import {
   DeleteConfirmationModule
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation.module';

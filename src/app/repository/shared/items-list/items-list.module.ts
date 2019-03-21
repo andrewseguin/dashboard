@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
-import {AdvancedSearchModule} from 'app/package/advanced-search/advanced-search.module';
+import {AdvancedSearchModule} from 'app/package/component/advanced-search/advanced-search.module';
 import {
   DisplayOptionsHeaderModule
 } from 'app/package/display-options-header/display-options-header.module';
