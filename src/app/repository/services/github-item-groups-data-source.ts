@@ -31,6 +31,7 @@ export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
     this.filterer = getItemsFilterer(this.itemRecommendations, store);
     this.grouper = getItemsGrouper(store.labels);
     this.sorter = new ItemSorter(of(null), GithubItemSortingMetadata);
+    this.sorter.setState({sort: 'created', reverse: true});
   }
 }
 

@@ -40,7 +40,7 @@ export class QueryPage {
     this.updateQueryStates();
 
     this.header.title.next(this.query.name || '');
-    this.setBack();
+    this.header.goBack = true;
   }
   get query(): Query {
     return this._query;
@@ -81,24 +81,18 @@ export class QueryPage {
         const queryParamMap = this.activatedRoute.snapshot.queryParamMap;
         const recommendationId = queryParamMap.get('recommendationId');
         const widgetJson = queryParamMap.get('widget');
-        const dashboard = queryParamMap.get('dashboard');
 
         if (recommendationId) {
-          this.createNewQueryFromRecommendation(
-              this.activeRepo.activeConfig, recommendationId);
+          this.createNewQueryFromRecommendation(this.activeRepo.activeConfig, recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
           this.query = createNewQuery(widget.title, widget.itemType);
-          // TODO: widget.options
+          this.itemGroupsDataSource.filterer.setState(widget.filtererState);
         } else {
           const type = queryParamMap.get('type') as ItemType;
           this.query = createNewQuery('New Query', type);
         }
 
-        // If navigated from dashboard, go back to the dashboard, not queries page
-        if (dashboard) {
-          this.setBack(dashboard);
-        }
         this.cd.markForCheck();
       } else {
         this.getSubscription =
@@ -156,21 +150,14 @@ export class QueryPage {
         {replaceUrl: true, queryParamsHandling: 'merge'});
   }
 
-  setBack(fromDashboard?: string) {
-    if (fromDashboard) {
-      this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.activeName}/dashboard/${fromDashboard}`]);
-    } else {
-      this.header.goBack = () =>
-          this.router.navigate([`/${this.activeRepo.activeName}/queries/${this.query.type}`]);
-    }
-  }
-
   private createNewQueryFromRecommendation(store: ConfigStore, id: string) {
     store.recommendations.list.pipe(take(1)).subscribe(list => {
       list.forEach(r => {
         if (r.id === id) {
           this.query = createNewQuery('New Query', 'issue');
+          if (r.filtererState) {
+            this.itemGroupsDataSource.filterer.setState(r.filtererState);
+          }
           this.cd.markForCheck();
         }
       });

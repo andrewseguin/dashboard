@@ -76,6 +76,7 @@ export class ItemsList {
       this.router.navigate([], {
         relativeTo: this.activatedRoute.parent,
         queryParams: {item: item},
+        replaceUrl: true,
         queryParamsHandling: 'merge',
       });
     } else {

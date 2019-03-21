@@ -62,6 +62,6 @@ export class WidgetView {
   openQuery() {
     this.router.navigate(
         [`${this.activeRepo.activeName}/query/new`],
-        {queryParams: {'widget': JSON.stringify(this.widget), dashboard: this.dashboardId}});
+        {queryParams: {'widget': JSON.stringify(this.widget)}});
   }
 }

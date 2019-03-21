@@ -113,16 +113,16 @@ export class WidgetTypeOptions<G, S, V> {
             .subscribe(() => this.optionsChanged.emit(this.formGroup.value));
   }
 
-  setViewerStateFormValues(configOptionId: string, viewLabels: string[]) {
-    console.log(configOptionId, viewLabels);
+  setViewerStateFormValues(configOptionId: string, views: string[]) {
+    this.formGroup.get(configOptionId)!.setValue({views});
   }
 
   setGrouperStateFormValue(configOptionId: string, group: any) {
-    console.log(configOptionId, group);
+    this.formGroup.get(configOptionId)!.setValue({group});
   }
 
   setSorterStateFormValue(configOptionId: string, sortId: any, reverse: boolean) {
-    console.log(configOptionId, sortId, reverse);
+    this.formGroup.get(configOptionId)!.setValue({sort: sortId, reverse});
   }
 
   getDefaultInitialValue(configOptionType: ConfigOptionType) {

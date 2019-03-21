@@ -20,7 +20,7 @@ export class SeasonHeader {
 
   leftButtonClicked() {
     if (this.header.goBack) {
-      this.header.goBack();
+      window.history.back();
     } else {
       this.sidenav.open();
     }

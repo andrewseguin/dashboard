@@ -10,7 +10,7 @@ const TOP_LEVEL_SECTIONS =
 
 @Injectable()
 export class Header {
-  goBack: (() => void)|null;
+  goBack: boolean;
 
   title = new BehaviorSubject<string>('Loading...');
 
@@ -45,7 +45,7 @@ export class Header {
           }
 
           if (TOP_LEVEL_SECTIONS.has(section)) {
-            this.goBack = null;
+            this.goBack = false;
           }
         });
   }

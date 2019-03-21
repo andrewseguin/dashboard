@@ -30,7 +30,7 @@ export class DashboardPage {
       this.edit.setValue(true);
     }
 
-    this.header.goBack = () => this.router.navigate([`/${this.activeRepo.activeName}/dashboards`]);
+    this.header.goBack = true;
   }
   get dashboard(): Dashboard {
     return this._dashboard;
@@ -70,9 +70,6 @@ export class DashboardPage {
               .subscribe(map => {
                 if (map.has(id)) {
                   this.dashboard = map.get(id)!;
-                } else {
-                  // Not quite working since the dao takes time to return
-                  // this.router.navigate([`${this.activeRepo.activeName}/dashboards`]);
                 }
                 this.cd.markForCheck();
               });

@@ -92,6 +92,8 @@ export class EditWidget<S, V, G> {
 
       this.itemGroupsDataSource.dataProvider =
           getItemsList(this.activeRepo.activeData, data.widget.itemType);
+
+      this.itemGroupsDataSource.filterer.setState(data.widget.filtererState);
     }
 
     this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');

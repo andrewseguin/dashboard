@@ -49,14 +49,19 @@ export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions
       id: 'group',
       type: 'buttonToggle',
       label: 'Group',
-      options: [{id: 'one', label: 'One'}, {id: 'two', label: 'Two'}],
-      initialValue: options ? options.group : null,
+      options:
+          [{id: 'day', label: 'Day'}, {id: 'week', label: 'Week'}, {id: 'month', label: 'Month'}],
+      initialValue: options && options.group ? options.group : 'week',
     },
     {
       id: 'datasets',
-      type: 'input',
+      type: 'buttonToggle',
       label: 'Datasets',
-      initialValue: options ? options.datasets : null,
+      options: [
+        {id: 'created', label: 'Created'}, {id: 'closed', label: 'Closed'},
+        {id: 'open', label: 'Open'}
+      ],
+      initialValue: options && options.datasets ? options.datasets : 'opened',
     },
   ];
 }
@@ -208,6 +213,7 @@ export class TimeSeries {
         data: {datasets},
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           legend: {display: false},
           elements: {point: {radius: 2}, line: {tension: 0}},
           scales: {

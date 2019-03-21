@@ -17,7 +17,7 @@ import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-op
 
 export interface PieChartDisplayTypeOptions<G> {
   grouperState: ItemGrouperState<G>;
-  filteredGroupsByTitle: string[];
+  filteredGroups: string;
 }
 
 export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>): ConfigOption[] {
@@ -34,7 +34,7 @@ export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any
       inputType: 'text',
       label: 'Filter (optional)',
       placeholder: 'Filter by group title, e.g. "Group A, Group B"',
-      initialValue: options ? options.filteredGroupsByTitle : null,
+      initialValue: options ? options.filteredGroups : null,
     },
   ];
 }
@@ -92,8 +92,9 @@ export class PieChart<G> {
   }
 
   render(groups: ItemGroup<Item>[]) {
-    if (this.options.filteredGroupsByTitle) {
-      const filteredGroupsSet = new Set<string>(this.options.filteredGroupsByTitle);
+    if (this.options.filteredGroups) {
+      const filteredGroupsSet =
+          new Set<string>(this.options.filteredGroups.split(',').map(v => v.trim()));
       groups = groups.filter(g => filteredGroupsSet.has(g.title));
     }
 

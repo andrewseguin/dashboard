@@ -35,20 +35,12 @@
   align-self: center;
 }
 
-.settings {
-  margin-right: 16px;
-}
-
 widget-view + widget-view {
   margin-top: 16px;
 }
 
 :host.edit-mode .widgets {
   min-height: 120px;
-}
-
-.view {
-  margin-right: 16px;
 }
 
 /** Drag and drop styles **/
