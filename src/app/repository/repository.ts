@@ -4,7 +4,7 @@ import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval, Subject} from 'rxjs';
 import {filter, mergeMap, take} from 'rxjs/operators';
-import {ActiveStore} from './services/active-store';
+import {ActiveStore} from './services/active-repo';
 import {DataStore} from './services/dao/data/data-dao';
 import {Remover} from './services/remover';
 import {Updater} from './services/updater';
@@ -21,10 +21,10 @@ export class Repository {
 
   constructor(
       private router: Router, private updater: Updater, private loadedRepos: LoadedRepos,
-      private remover: Remover, private activeStore: ActiveStore, private auth: Auth) {
-    this.activeStore.data.pipe(mergeMap(store => isRepoStoreEmpty(store).pipe(take(1))))
+      private remover: Remover, private activeRepo: ActiveStore, private auth: Auth) {
+    this.activeRepo.data.pipe(mergeMap(store => isRepoStoreEmpty(store).pipe(take(1))))
         .subscribe(isEmpty => {
-          const store = this.activeStore.activeData;
+          const store = this.activeRepo.activeData;
           const isLoaded = this.loadedRepos.isLoaded(store.name);
 
           if (!isEmpty && !isLoaded) {
@@ -34,7 +34,7 @@ export class Repository {
           if (isEmpty) {
             this.router.navigate([`${store.name}/database`]);
           } else if (this.auth.token) {
-            this.initializeAutoIssueUpdates(this.activeStore.activeData);
+            this.initializeAutoIssueUpdates(this.activeRepo.activeData);
           }
         });
   }

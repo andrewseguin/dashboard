@@ -7,7 +7,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Subject, Subscription} from 'rxjs';
 import {delay, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
-import {ActiveStore} from '../services/active-store';
+import {ActiveStore} from '../services/active-repo';
 import {Column, ColumnGroup, Dashboard, Widget} from '../services/dao/config/dashboard';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
 
@@ -34,7 +34,8 @@ export class DashboardPage {
       this.edit.setValue(true);
     }
 
-    this.header.goBack = () => this.router.navigate([`/${this.activeStore.activeName}/dashboards`]);
+    this.header.goBack = () =>
+        this.router.navigate([`/${this.activeRepo.activeName}/dashboards`]);
   }
   get dashboard(): Dashboard {
     return this._dashboard;
@@ -53,7 +54,7 @@ export class DashboardPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
-      private activeStore: ActiveStore, private header: Header, private cd: ChangeDetectorRef,
+      private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef,
       private dialog: MatDialog) {
     this.edit.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.cd.markForCheck());
 
@@ -71,12 +72,12 @@ export class DashboardPage {
 
       // Delay added to improve page responsiveness on first load
       this.getSubscription =
-          this.activeStore.activeConfig.dashboards.map.pipe(delay(0), takeUntil(this.destroyed))
+          this.activeRepo.activeConfig.dashboards.map.pipe(delay(0), takeUntil(this.destroyed))
               .subscribe(map => {
                 if (map.has(id)) {
                   this.dashboard = map.get(id)!;
                 } else {
-                  this.router.navigate([`${this.activeStore.activeName}/dashboards`]);
+                  this.router.navigate([`${this.activeRepo.activeName}/dashboards`]);
                 }
                 this.cd.markForCheck();
               });
@@ -87,9 +88,9 @@ export class DashboardPage {
     const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
     const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
     this.dashboard = newDashboard;
-    const newDashboardId = this.activeStore.activeConfig.dashboards.add(newDashboard);
+    const newDashboardId = this.activeRepo.activeConfig.dashboards.add(newDashboard);
     this.router.navigate(
-        [`${this.activeStore.activeName}/dashboard/${newDashboardId}`],
+        [`${this.activeRepo.activeName}/dashboard/${newDashboardId}`],
         {replaceUrl: true, queryParamsHandling: 'merge'});
   }
 
@@ -163,7 +164,7 @@ export class DashboardPage {
   }
 
   private save() {
-    this.activeStore.activeConfig.dashboards.update(this.dashboard);
+    this.activeRepo.activeConfig.dashboards.update(this.dashboard);
     this.cd.markForCheck();
   }
 

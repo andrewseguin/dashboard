@@ -16,17 +16,17 @@ import {
 } from '../utility/items-renderer/item-grouper-metadata';
 import {GithubItemSortingMetadata} from '../utility/items-renderer/item-sorter-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
-import {ActiveStore} from './active-store';
+import {ActiveStore} from './active-repo';
 import {Item, ItemType, Label} from './dao';
 import {DataStore} from './dao/data/data-dao';
 import {ListDao} from './dao/list-dao';
 import {ItemRecommendations} from './item-recommendations';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
-  constructor(private itemRecommendations: ItemRecommendations, private activeStore: ActiveStore) {
+  constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {
     super();
 
-    const store = this.activeStore.activeData;
+    const store = this.activeRepo.activeData;
 
     this.filterer = getItemsFilterer(this.itemRecommendations, store);
     this.grouper = getItemsGrouper(store.labels);

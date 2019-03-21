@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Router} from '@angular/router';
-import {ActiveStore} from '../services/active-store';
+import {ActiveStore} from '../services/active-repo';
 import {Dashboard} from '../services/dao/config/dashboard';
 import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
 
@@ -14,17 +14,17 @@ import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
 export class DashboardsPage {
   trackById = (_i: number, dashboard: Dashboard) => dashboard.id;
 
-  list = this.activeStore.activeConfig.dashboards.list;
+  list = this.activeRepo.activeConfig.dashboards.list;
 
   constructor(
       private router: Router, public dashboardDialog: DashboardDialog,
-      private activeStore: ActiveStore) {}
+      private activeRepo: ActiveStore) {}
 
   createDashboard() {
-    this.router.navigate([`${this.activeStore.activeName}/dashboard/new`]);
+    this.router.navigate([`${this.activeRepo.activeName}/dashboard/new`]);
   }
 
   navigateToDashboard(id: string) {
-    this.router.navigate([`${this.activeStore.activeName}/dashboard/${id}`]);
+    this.router.navigate([`${this.activeRepo.activeName}/dashboard/${id}`]);
   }
 }

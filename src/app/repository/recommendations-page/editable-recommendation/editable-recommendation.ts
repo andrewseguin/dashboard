@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {ActiveStore} from 'app/repository/services/active-store';
+import {ActiveStore} from 'app/repository/services/active-repo';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {getItemsFilterer} from 'app/repository/services/github-item-groups-data-source';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
@@ -31,7 +31,7 @@ import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 export class EditableRecommendation {
   expanded = false;
 
-  itemsFilterer = getItemsFilterer(this.itemRecommendations, this.activeStore.activeData);
+  itemsFilterer = getItemsFilterer(this.itemRecommendations, this.activeRepo.activeData);
 
   queryChanged = new Subject<void>();
 
@@ -49,17 +49,17 @@ export class EditableRecommendation {
   actionLabels = [];
   actionAssignees = [];
 
-  addLabelsAutocomplete = this.activeStore.data.pipe(
+  addLabelsAutocomplete = this.activeRepo.data.pipe(
       mergeMap(store => store.labels.list), map(labels => labels.map(l => l.name).sort()));
 
-  addAssigneesAutocomplete = this.activeStore.data.pipe(
+  addAssigneesAutocomplete = this.activeRepo.data.pipe(
       mergeMap(store => store.items.list), map(items => getAssignees(items)));
 
   private _destroyed = new Subject();
 
   constructor(
       private itemRecommendations: ItemRecommendations, private cd: ChangeDetectorRef,
-      private activeStore: ActiveStore, private snackbar: MatSnackBar, private dialog: MatDialog) {}
+      private activeRepo: ActiveStore, private snackbar: MatSnackBar, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -79,7 +79,7 @@ export class EditableRecommendation {
   }
 
   ngAfterViewInit() {
-    const configStore = this.activeStore.activeConfig;
+    const configStore = this.activeRepo.activeConfig;
     merge(this.form.valueChanges, this.itemsFilterer.state)
         .pipe(debounceTime(100), takeUntil(this._destroyed))
         .subscribe(() => {
@@ -100,7 +100,7 @@ export class EditableRecommendation {
   }
 
   deleteRecommendation() {
-    const configStore = this.activeStore.activeConfig;
+    const configStore = this.activeRepo.activeConfig;
     const data = {name: of('this recommendation')};
 
     this.dialog.open(DeleteConfirmation, {data})

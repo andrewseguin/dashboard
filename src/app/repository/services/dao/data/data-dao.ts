@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {AppIndexedDb} from '../../../utility/app-indexed-db';
-import {ListDao} from '../list-dao';
 import {Contributor} from './contributor';
 import {Item} from './item';
 import {Label} from './label';
+import {ListDao} from '../list-dao';
 
 export interface DataStore {
   name: string;
@@ -12,9 +12,7 @@ export interface DataStore {
   contributors: ListDao<Contributor>;
 }
 
-export type DataDaoType = 'items'|'labels'|'contributors';
-
-export const DataIds: DataDaoType[] = ['items', 'labels', 'contributors'];
+export type RepoDaoType = 'items'|'labels'|'contributors';
 
 @Injectable()
 export class Dao {
@@ -24,7 +22,7 @@ export class Dao {
 
   get(name: string): DataStore {
     if (!this.stores.has(name)) {
-      const appIndexedDb = new AppIndexedDb(name, DataIds);
+      const appIndexedDb = new AppIndexedDb(name!);
       const newStore: DataStore = {
         name,
         items: new ListDao<Item>('items', appIndexedDb),
