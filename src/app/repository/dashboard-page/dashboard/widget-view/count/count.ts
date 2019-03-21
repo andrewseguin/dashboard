@@ -33,6 +33,7 @@ export function getCountConfigOptions(options: CountDisplayTypeOptions): ConfigO
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[style.fontSize.px]': 'options.fontSize',
+    'class': 'theme-text',
   }
 })
 export class Count {

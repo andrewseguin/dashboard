@@ -47,8 +47,9 @@ export class DashboardPage {
       this.getSubscription =
           this.activeRepo.activeConfig.dashboards.map.pipe(delay(0), takeUntil(this.destroyed))
               .subscribe(map => {
-                if (map.has(id)) {
-                  this.dashboard = map.get(id)!;
+                const dashboard = map.get(id);
+                if (dashboard) {
+                  this.setDashboard(dashboard);
                 }
                 this.cd.markForCheck();
               });
@@ -58,7 +59,7 @@ export class DashboardPage {
   private createNewDashboard() {
     const columns: Column[] = [{widgets: []}, {widgets: []}, {widgets: []}];
     const newDashboard: Dashboard = {name: 'New Dashboard', columnGroups: [{columns}]};
-    this.dashboard = newDashboard;
+    this.setDashboard(newDashboard);
     const newDashboardId = this.activeRepo.activeConfig.dashboards.add(newDashboard);
     this.router.navigate(
         [`${this.activeRepo.activeName}/dashboard/${newDashboardId}`],
@@ -82,7 +83,11 @@ export class DashboardPage {
   setDashboard(dashboard: Dashboard) {
     this.dashboard = dashboard;
     this.header.title.next(this.dashboard.name || '');
-    this.edit.setValue(!hasWidgets(dashboard));
+
+    if (!hasWidgets(dashboard)) {
+      this.edit.setValue(true);
+    }
+
     this.header.goBack = true;
   }
 }
