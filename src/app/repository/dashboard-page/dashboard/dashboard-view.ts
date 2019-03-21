@@ -10,7 +10,7 @@ import {
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {Column, ColumnGroup, Dashboard, Widget} from 'app/repository/services/dao';
 import {take} from 'rxjs/operators';
-import {EditWidget, EditWidgetData} from '../edit-widget/edit-widget';
+import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
 
 @Component({
   selector: 'dashboard-view',

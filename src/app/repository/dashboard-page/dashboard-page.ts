@@ -6,7 +6,8 @@ import {Subject, Subscription} from 'rxjs';
 import {delay, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
-import {Column, Dashboard} from '../services/dao/config/dashboard';
+import {Column, Dashboard, hasWidgets} from './dashboard/dashboard';
+
 
 @Component({
   selector: 'dashboard-page',
@@ -15,27 +16,7 @@ import {Column, Dashboard} from '../services/dao/config/dashboard';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
-  set dashboard(dashboard: Dashboard) {
-    this._dashboard = dashboard;
-    this.header.title.next(this.dashboard.name || '');
-
-    const columnGroups = this.dashboard.columnGroups || [];
-    const hasWidgets = columnGroups.some(columnGroup => {
-      return columnGroup.columns.some(column => {
-        return column.widgets.some(widget => !!widget);
-      });
-    });
-
-    if (!hasWidgets) {
-      this.edit.setValue(true);
-    }
-
-    this.header.goBack = true;
-  }
-  get dashboard(): Dashboard {
-    return this._dashboard;
-  }
-  private _dashboard: Dashboard;
+  dashboard: Dashboard;
 
   edit = new FormControl();
 
@@ -50,8 +31,6 @@ export class DashboardPage {
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
       private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
-    this.edit.valueChanges.pipe(takeUntil(this.destroyed)).subscribe(() => this.cd.markForCheck());
-
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
 
@@ -98,5 +77,12 @@ export class DashboardPage {
 
   saveDashboard(dashboard: Dashboard) {
     this.activeRepo.activeConfig.dashboards.update(dashboard);
+  }
+
+  setDashboard(dashboard: Dashboard) {
+    this.dashboard = dashboard;
+    this.header.title.next(this.dashboard.name || '');
+    this.edit.setValue(!hasWidgets(dashboard));
+    this.header.goBack = true;
   }
 }

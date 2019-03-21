@@ -1,13 +1,17 @@
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {CountDisplayTypeOptions} from 'app/repository/dashboard-page/widget-view/count/count';
-import {ListDisplayTypeOptions} from 'app/repository/dashboard-page/widget-view/list/list';
+import {
+  CountDisplayTypeOptions
+} from 'app/repository/dashboard-page/dashboard/widget-view/count/count';
+import {
+  ListDisplayTypeOptions
+} from 'app/repository/dashboard-page/dashboard/widget-view/list/list';
 import {
   PieChartDisplayTypeOptions
-} from 'app/repository/dashboard-page/widget-view/pie-chart/pie-chart';
+} from 'app/repository/dashboard-page/dashboard/widget-view/pie-chart/pie-chart';
 import {
   TimeSeriesDisplayTypeOptions
-} from 'app/repository/dashboard-page/widget-view/time-series/time-series';
-import {ItemType} from '../data/item';
+} from 'app/repository/dashboard-page/dashboard/widget-view/time-series/time-series';
+import {ItemType} from '../../services/dao/data/item';
 
 export type DisplayType = 'list'|'count'|'pie'|'timeSeries';
 
@@ -37,4 +41,13 @@ export interface Dashboard {
   columnGroups?: ColumnGroup[];
   dbAdded?: string;
   dbModified?: string;
+}
+
+export function hasWidgets(dashboard: Dashboard) {
+  const columnGroups = dashboard.columnGroups || [];
+  return columnGroups.some(columnGroup => {
+    return columnGroup.columns.some(column => {
+      return column.widgets.some(widget => !!widget);
+    });
+  });
 }

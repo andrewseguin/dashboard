@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Dashboard} from 'app/repository/services/dao/config/dashboard';
+import {Dashboard} from 'app/repository/dashboard-page/dashboard/dashboard';
 import {Query} from 'app/repository/services/dao/config/query';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Observable, of} from 'rxjs';

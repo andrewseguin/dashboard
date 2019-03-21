@@ -9,7 +9,7 @@ import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {ItemType} from '../services/dao';
 import {ConfigStore} from '../services/dao/config/config-dao';
-import {Widget} from '../services/dao/config/dashboard';
+import {Widget} from '../dashboard-page/dashboard/dashboard';
 import {Query} from '../services/dao/config/query';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';

@@ -9,7 +9,7 @@ import {
 import {Router} from '@angular/router';
 import {Theme} from 'app/repository/services';
 import {ActiveStore} from 'app/repository/services/active-repo';
-import {Widget} from 'app/repository/services/dao/config/dashboard';
+import {Widget} from 'app/repository/dashboard-page/dashboard/dashboard';
 import {
   getItemsList,
   GithubItemGroupsDataSource

@@ -4,7 +4,7 @@ import {combineLatest, Subject} from 'rxjs';
 import {debounceTime, take, takeUntil} from 'rxjs/operators';
 import {AppIndexedDb} from '../../../utility/app-indexed-db';
 import {RepoGist} from '../../repo-gist';
-import {Dashboard} from './dashboard';
+import {Dashboard} from '../../../dashboard-page/dashboard/dashboard';
 import {ListDao} from '../list-dao';
 import {Query} from './query';
 import {Recommendation} from './recommendation';
