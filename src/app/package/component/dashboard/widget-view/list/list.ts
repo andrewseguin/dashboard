@@ -1,17 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject,
-  InjectionToken,
-  Input,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, InjectionToken} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
 import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
-import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
 
@@ -59,31 +51,19 @@ export function getListConfigOptions(options: ListDisplayTypeOptions<any, any>):
   styleUrls: ['list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class List<T, S, V> {
+export class List<S, V> {
   trackByIndex = (index: number) => index;
 
-  @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
+  options: ListDisplayTypeOptions<S, V>;
 
-  @Input() options: ListDisplayTypeOptions<S, V>;
-
-  items: Observable<T[]>;
+  items = this.data.itemGroupsDataSource.connect().pipe(map(result => result.groups[0].items));
 
   constructor(
       @Inject(WIDGET_DATA) public data: WidgetData<ListDisplayTypeOptions<S, V>>,
       private dialog: MatDialog) {
-    this.itemGroupsDataSource = data.itemGroupsDataSource;
     this.options = data.options;
-  }
-
-  ngOnInit() {
-    this.items = this.itemGroupsDataSource.connect().pipe(map(result => result.groups[0].items));
-  }
-
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['options'] && this.options) {
-      this.itemGroupsDataSource.sorter.setState(this.options.sorterState);
-      this.itemGroupsDataSource.viewer.setState(this.options.viewerState);
-    }
+    data.itemGroupsDataSource.sorter.setState(this.options.sorterState);
+    data.itemGroupsDataSource.viewer.setState(this.options.viewerState);
   }
 
   openItemModal(itemId: number) {

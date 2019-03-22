@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {map} from 'rxjs/operators';
 
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
 import {WIDGET_DATA, WidgetData} from '../list/list';
+
 
 export interface CountDisplayTypeOptions {
   fontSize: 'small'|'normal'|'large';
@@ -37,11 +37,7 @@ export function getCountConfigOptions(options: CountDisplayTypeOptions): ConfigO
     'class': 'theme-text',
   }
 })
-export class Count<T> {
-  itemGroupsDataSource: ItemGroupsDataSource<T>;
-
-  options: CountDisplayTypeOptions;
-
+export class Count {
   count = this.data.itemGroupsDataSource.connect().pipe(map(result => result.count));
 
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions>) {}
