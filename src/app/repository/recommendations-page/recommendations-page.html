@@ -15,8 +15,8 @@
   <loading label="recommendations"></loading>
 </ng-template>
 
-<ng-container *ngIf="sortedRecommendations | async; let sortedRecommendations">
-  <new-fab type="recommendation" [breathing]="!sortedRecommendations.length"
-           (click)="add()">
-  </new-fab>
-</ng-container>
+<ng-template cdkPortal>
+  <button mat-raised-button color="primary" class="create" (click)="add()">
+    Create New Recommendation
+  </button>
+</ng-template>

@@ -1,7 +1,15 @@
-import {ChangeDetectionStrategy, Component, QueryList, ViewChildren} from '@angular/core';
+import {CdkPortal} from '@angular/cdk/portal';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {combineLatest} from 'rxjs';
-import {map, mergeMap, startWith} from 'rxjs/operators';
+import {delay, map, mergeMap, startWith} from 'rxjs/operators';
+import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {Recommendation} from '../services/dao';
 import {EditableRecommendation} from './editable-recommendation/editable-recommendation';
@@ -17,7 +25,10 @@ export class RecommendationsPage {
 
   @ViewChildren(EditableRecommendation) editableRecommendations: QueryList<EditableRecommendation>;
 
+  @ViewChild(CdkPortal) toolbarActions: CdkPortal;
+
   sortedRecommendations = this.activeRepo.config.pipe(
+      delay(150),
       mergeMap(
           store => combineLatest(
               store.recommendations.list, this.filter.valueChanges.pipe(startWith('')))),
@@ -26,7 +37,17 @@ export class RecommendationsPage {
         return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
       }));
   trackById = (_i: number, r: Recommendation) => r.id;
-  constructor(private activeRepo: ActiveStore) {}
+
+  constructor(private header: Header, private activeRepo: ActiveStore) {}
+
+  ngOnInit() {
+    this.header.toolbarOutlet.next(this.toolbarActions);
+  }
+
+  ngOnDestroy() {
+    this.header.toolbarOutlet.next(null);
+  }
+
 
   add() {
     this.activeRepo.activeConfig.recommendations.add({
