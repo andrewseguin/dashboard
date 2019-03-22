@@ -1,20 +1,17 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ActiveStore} from 'app/repository/services/active-repo';
-import {Query} from 'app/repository/services/dao/config/query';
-import {Recommendation} from 'app/repository/services/dao/config/recommendation';
-import {getItemsList} from 'app/repository/services/github-item-groups-data-source';
-import {Subject} from 'rxjs';
-import {map, mergeMap, takeUntil} from 'rxjs/operators';
+import {combineLatest, ReplaySubject, Subject} from 'rxjs';
+import {filter, map, mergeMap, take} from 'rxjs/operators';
 
 import {Widget, WidgetDisplayTypeOptions} from '../dashboard';
+import {DataSource} from '../widget-view/widget-view';
 
 
 export interface EditWidgetData {
   widget: Widget;
-  dataSource: ItemGroupsDataSource<any>;
+  dataSources: Map<string, DataSource>;
 }
 
 @Component({
@@ -23,13 +20,12 @@ export interface EditWidgetData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditWidget<S, V, G> {
-  queryChanged = new Subject<void>();
-
   form = new FormGroup({
     title: new FormControl(''),
-    itemType: new FormControl('issue'),
     displayType: new FormControl('count'),
   });
+
+  dataSourceType = new ReplaySubject<string>();
 
   recommendationsList =
       this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
@@ -39,14 +35,17 @@ export class EditWidget<S, V, G> {
 
   issueQueries = this.activeRepo.config.pipe(
       mergeMap(store => store.queries.list),
-      map(queries => queries.filter(q => q.type === 'issue')));
+      map(queries => queries.filter(q => q.dataSourceType === 'issue')));
   prQueries = this.activeRepo.config.pipe(
-      mergeMap(store => store.queries.list), map(queries => queries.filter(q => q.type === 'pr')));
+      mergeMap(store => store.queries.list),
+      map(queries => queries.filter(q => q.dataSourceType === 'pr')));
 
-  public itemGroupsDataSource: ItemGroupsDataSource<any>;
+  itemGroupsDataSource = this.dataSourceType.pipe(
+      map(type => this.data.dataSources.get(type)), filter(v => !!v),
+      map(dataSource => dataSource!.factory()));
 
-  groups = this.itemGroupsDataSource.grouper.metadata;
-  groupIds: G[];
+  itemCount = this.itemGroupsDataSource.pipe(
+      mergeMap(dataSource => dataSource.connect().pipe(map(result => result.count))));
 
   private _destroyed = new Subject();
 
@@ -57,36 +56,30 @@ export class EditWidget<S, V, G> {
     {id: 'timeSeries', label: 'Time Series'},
   ];
 
-  itemCount = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
-
   displayTypeOptions: WidgetDisplayTypeOptions;
 
   constructor(
-      private activeRepo: ActiveStore, private cd: ChangeDetectorRef,
-      private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
-      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
-    this.itemGroupsDataSource = data.dataSource;
+      private activeRepo: ActiveStore, private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
+      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {}
 
-    if (data && data.widget) {
+  ngOnInit() {
+    if (this.data && this.data.widget) {
+      this.dataSourceType.next('issue');
       this.form.setValue({
-        title: data.widget.title,
-        itemType: data.widget.itemType,
-        displayType: data.widget.displayType,
+        title: this.data.widget.title || '',
+        displayType: this.data.widget.displayType || 'count',
       });
 
-      this.displayTypeOptions = data.widget.displayTypeOptions;
+      if (this.data.widget.displayTypeOptions) {
+        this.displayTypeOptions = this.data.widget.displayTypeOptions;
+      }
 
-      this.itemGroupsDataSource.dataProvider =
-          getItemsList(this.activeRepo.activeData, data.widget.itemType);
-
-      this.itemGroupsDataSource.filterer.setState(data.widget.filtererState);
+      this.itemGroupsDataSource.pipe(take(1)).subscribe(itemGroupsDataSource => {
+        if (this.data.widget.filtererState) {
+          itemGroupsDataSource.filterer.setState(this.data.widget.filtererState);
+        }
+      });
     }
-
-    this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');
-    this.form.get('itemType')!.valueChanges.pipe(takeUntil(this._destroyed)).subscribe(type => {
-      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, type);
-      this.cd.markForCheck();
-    });
   }
 
   ngOnDestroy() {
@@ -95,26 +88,16 @@ export class EditWidget<S, V, G> {
   }
 
   edit() {
-    const widget: Widget = {
-      title: this.form.value.title,
-      itemType: this.form.value.itemType,
-      filtererState: this.itemGroupsDataSource.filterer.getState(),
-      displayType: this.form.value.displayType,
-      displayTypeOptions: this.displayTypeOptions
-    };
+    combineLatest(this.itemGroupsDataSource, this.dataSourceType).pipe(take(1)).subscribe(results => {
+      const widget: Widget = {
+        title: this.form.value.title,
+        dataSourceType: results[1],
+        filtererState: results[0].filterer.getState(),
+        displayType: this.form.value.displayType,
+        displayTypeOptions: this.displayTypeOptions
+      };
 
-    this.dialogRef.close(widget);
-  }
-
-  loadFromQuery(query: Query) {
-    if (query.filtererState) {
-      this.itemGroupsDataSource.filterer.setState(query.filtererState);
-    }
-  }
-
-  loadFromRecommendation(recommendation: Recommendation) {
-    if (recommendation.filtererState) {
-      this.itemGroupsDataSource.filterer.setState(recommendation.filtererState);
-    }
+      this.dialogRef.close(widget);
+    });
   }
 }

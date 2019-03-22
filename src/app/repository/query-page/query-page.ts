@@ -1,5 +1,6 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Widget} from 'app/package/component/dashboard/dashboard';
 import {isMobile} from 'app/utility/media-matcher';
@@ -7,11 +8,11 @@ import {combineLatest, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
-import {ItemType} from '../services/dao';
 import {ConfigStore} from '../services/dao/config/config-dao';
 import {Query} from '../services/dao/config/query';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
+import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
 
 
@@ -27,7 +28,7 @@ export class QueryPage {
   set query(query: Query) {
     this._query = query;
 
-    const type = this._query.type;
+    const type = this._query.dataSourceType;
     if (type) {
       this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, type);
     }
@@ -62,7 +63,7 @@ export class QueryPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private router: Router, private activatedRoute: ActivatedRoute,
+      private dialog: MatDialog, private router: Router, private activatedRoute: ActivatedRoute,
       private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
       private header: Header, private queryDialog: QueryDialog, private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
@@ -81,10 +82,12 @@ export class QueryPage {
           this.createNewQueryFromRecommendation(this.activeRepo.activeConfig, recommendationId);
         } else if (widgetJson) {
           const widget: Widget = JSON.parse(widgetJson);
-          this.query = createNewQuery(widget.title, widget.itemType);
-          this.itemGroupsDataSource.filterer.setState(widget.filtererState);
+          this.query = createNewQuery(widget.title || 'Widget', widget.dataSourceType || 'issue');
+          if (widget.filtererState) {
+            this.itemGroupsDataSource.filterer.setState(widget.filtererState);
+          }
         } else {
-          const type = queryParamMap.get('type') as ItemType;
+          const type = queryParamMap.get('type') || '';
           this.query = createNewQuery('New Query', type);
         }
 
@@ -114,7 +117,7 @@ export class QueryPage {
   }
 
   openSaveAsDialog() {
-    const queryType = this.query.type;
+    const queryType = this.query.dataSourceType;
     if (!queryType) {
       throw Error('Missing query type');
     }
@@ -143,6 +146,19 @@ export class QueryPage {
     this.router.navigate(
         [`${this.activeRepo.activeData.name}/query/${newQueryId}`],
         {replaceUrl: true, queryParamsHandling: 'merge'});
+  }
+
+  navigateToItem(item: number) {
+    if (!isMobile()) {
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute.parent,
+        queryParams: {item: item},
+        replaceUrl: true,
+        queryParamsHandling: 'merge',
+      });
+    } else {
+      this.dialog.open(ItemDetailDialog, {data: {item}});
+    }
   }
 
   private createNewQueryFromRecommendation(store: ConfigStore, id: string) {
@@ -196,6 +212,6 @@ export class QueryPage {
   }
 }
 
-function createNewQuery(name: string, type: ItemType): Query {
-  return {name, type};
+function createNewQuery(name: string, dataSourceType: string): Query {
+  return {name, dataSourceType};
 }

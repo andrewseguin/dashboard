@@ -130,7 +130,8 @@ export class WidgetTypeOptions<G, S, V> {
       case 'sorterState':
         return {sort: this.sortIds[0], reverse: false} as ItemSorterState<S>;
       case 'viewerState':
-        return {views: []} as ItemViewerState<V>;
+        const views = this.itemGroupsDataSource.viewer.getViews().map(v => v.id);
+        return {views} as ItemViewerState<V>;
       default:
         return '';
     }

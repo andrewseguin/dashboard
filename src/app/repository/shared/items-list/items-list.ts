@@ -1,15 +1,18 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Input, NgZone} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {ActivatedRoute, Router} from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  Output
+} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemGroupsRenderer, RenderState} from 'app/package/items-renderer/item-groups-renderer';
-import {ItemViewer} from 'app/package/items-renderer/item-viewer';
-import {Item} from 'app/repository/services/dao';
-import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, fromEvent, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
-import {ItemDetailDialog} from '../dialog/item-detail-dialog/item-detail-dialog';
 
 @Component({
   selector: 'items-list',
@@ -17,7 +20,7 @@ import {ItemDetailDialog} from '../dialog/item-detail-dialog/item-detail-dialog'
   styleUrls: ['items-list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ItemsList {
+export class ItemsList<T> {
   destroyed = new Subject();
 
   private elementScrolled: Observable<Event> = new Observable(
@@ -34,19 +37,19 @@ export class ItemsList {
 
   itemCount: Observable<number>;
 
-  @Input() itemGroupsDataSource: ItemGroupsDataSource<Item>;
+  @Input() itemGroupsDataSource: ItemGroupsDataSource<T>;
 
-  @Input() viewer: ItemViewer<any, any, any>;
+  @Output() itemSelected = new EventEmitter<T>();
 
   trackByIndex = (i: number) => i;
 
-  renderState = new Subject<RenderState<Item>>();
+  renderState = new Subject<RenderState<T>>();
 
   hasMore: Observable<boolean>;
 
   constructor(
-      public ngZone: NgZone, private router: Router, private dialog: MatDialog,
-      private activatedRoute: ActivatedRoute, public elementRef: ElementRef) {}
+      public ngZone: NgZone, private activatedRoute: ActivatedRoute,
+      public elementRef: ElementRef) {}
 
   ngOnInit() {
     const renderer = new ItemGroupsRenderer(this.itemGroupsDataSource, this.elementScrolled);
@@ -67,20 +70,7 @@ export class ItemsList {
     this.destroyed.complete();
   }
 
-  getItemGroupKey(_i: number, itemGroup: ItemGroup<Item>) {
+  getItemGroupKey(_i: number, itemGroup: ItemGroup<T>) {
     return itemGroup.id;
-  }
-
-  navigateToItem(item: number) {
-    if (!isMobile()) {
-      this.router.navigate([], {
-        relativeTo: this.activatedRoute.parent,
-        queryParams: {item: item},
-        replaceUrl: true,
-        queryParamsHandling: 'merge',
-      });
-    } else {
-      this.dialog.open(ItemDetailDialog, {data: {item}});
-    }
   }
 }

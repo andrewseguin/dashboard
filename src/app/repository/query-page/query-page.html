@@ -1,6 +1,6 @@
 <div class="master theme-border">
   <items-list [itemGroupsDataSource]="itemGroupsDataSource"
-              [viewer]="itemViewer">
+              (itemSelected)="navigateToItem($event.number)">
   </items-list>
 
   <ng-template cdkPortal>

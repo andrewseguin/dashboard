@@ -7,8 +7,6 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/item-viewer';
-import {Item} from 'app/repository/services/dao';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -17,23 +15,18 @@ import {map} from 'rxjs/operators';
   templateUrl: 'item-summary.html',
   styleUrls: ['item-summary.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'(click)': 'select.emit(this.item.number)'}
+  host: {'(click)': 'select.emit(item)'}
 })
-export class ItemSummary<V> {
-  warnings = this.itemRecommendations.warnings.pipe(map(map => map.get(this.item.id)));
-  suggestions = this.itemRecommendations.suggestions.pipe(map(map => map.get(this.item.id)));
-
+export class ItemSummary<T, V> {
   views: Observable<ViewingMetadata<V, any>[]>;
 
-  @Input() item: Item;
+  @Input() item: T;
 
   @Input() active: boolean;
 
-  @Input() viewer: ItemViewer<any, V, any>;
+  @Input() viewer: ItemViewer<T, V, any>;
 
   @Output() select = new EventEmitter<number>();
-
-  constructor(public itemRecommendations: ItemRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['viewer'] && this.viewer) {

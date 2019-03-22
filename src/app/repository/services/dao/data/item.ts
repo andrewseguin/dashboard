@@ -1,8 +1,6 @@
 import {GithubIssue} from 'app/service/github-types/issue';
 import {Reactions} from 'app/service/github-types/reactions';
 
-export type ItemType = 'issue'|'pr';
-
 export interface Item {
   id: string;
   assignees: string[];

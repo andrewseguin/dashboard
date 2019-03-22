@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
 import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
 import * as Chart from 'chart.js';
-import {Subject, Subscription} from 'rxjs';
+import {Subject, Subscription, BehaviorSubject} from 'rxjs';
 import {delay, takeUntil} from 'rxjs/operators';
 import {Header, Theme} from '../services';
 import {ActiveStore} from '../services/active-repo';
@@ -21,7 +21,7 @@ import {ItemRecommendations} from '../services/item-recommendations';
 export class DashboardPage {
   dashboard: Dashboard;
 
-  edit = new FormControl();
+  edit = new BehaviorSubject<boolean>(false);
 
   trackByIndex = (i: number) => i;
 
@@ -121,7 +121,7 @@ export class DashboardPage {
     this.header.title.next(this.dashboard.name || '');
 
     if (!hasWidgets(dashboard)) {
-      this.edit.setValue(true);
+      this.edit.next(true);
     }
 
     this.header.goBack = true;

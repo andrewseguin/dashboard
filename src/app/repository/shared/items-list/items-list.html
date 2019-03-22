@@ -1,19 +1,23 @@
 <advanced-search [filterer]="itemGroupsDataSource.filterer"></advanced-search>
-<display-options-header [grouper]="itemGroupsDataSource.grouper" [sorter]="itemGroupsDataSource.sorter"
-                        [viewer]="viewer" [itemCount]="itemCount | async">
+<display-options-header [grouper]="itemGroupsDataSource.grouper"
+                        [sorter]="itemGroupsDataSource.sorter"
+                        [viewer]="itemGroupsDataSource.viewer"
+                        [itemCount]="itemCount | async">
 </display-options-header>
 
 <div class="issues-container">
-  <div class="item-group" *ngFor="let itemGroup of (renderState | async)?.groups; let index = index; trackBy:getItemGroupKey">
+  <div class="item-group"
+       *ngFor="let itemGroup of (renderState | async)?.groups; let index = index; trackBy:getItemGroupKey">
     <div class="title">
       {{itemGroup.title}}
     </div>
 
     <ng-container *ngFor="let item of itemGroup.items; trackBy:trackByIndex">
       <mat-divider></mat-divider>
-      <item-summary [item]="item" [active]="(activeItem | async) === item.number"
-                    [viewer]="viewer"
-                    (select)="navigateToItem($event)">
+      <item-summary [item]="item"
+                    [active]="(activeItem | async) === item.number"
+                    [viewer]="itemGroupsDataSource.viewer"
+                    (select)="itemSelected.emit($event)">
       </item-summary>
     </ng-container>
   </div>
@@ -22,7 +26,3 @@
 <div *ngIf="hasMore | async" class="loading-more">
   <mat-spinner diameter="48"></mat-spinner>
 </div>
-
-<ng-template #loading>
-  <loading></loading>
-</ng-template>

@@ -1,8 +1,7 @@
 <h1 mat-dialog-title> Edit Widget </h1>
 
-<div mat-dialog-content>
-  <form [formGroup]="form">
-
+<form [formGroup]="form">
+  <div mat-dialog-content *ngIf="itemGroupsDataSource | async; let dataSource">
     <div class="config-option">
       <div class="label"> Title </div>
       <div class="option">
@@ -24,14 +23,15 @@
 
     <widget-type-options [type]="form.value.displayType"
                          [options]="displayTypeOptions"
-                         [itemGroupsDataSource]="itemGroupsDataSource"
+                         [itemGroupsDataSource]="dataSource"
                          (optionsChanged)="displayTypeOptions = $event">
     </widget-type-options>
 
     <div class="config-option">
       <div class="label"> Query Type </div>
       <div class="option">
-        <mat-button-toggle-group formControlName="itemType">
+        <mat-button-toggle-group [value]="dataSourceType | async"
+                                 (change)="dataSourceType.next($event.value)">
           <mat-button-toggle value="issue"> Issue </mat-button-toggle>
           <mat-button-toggle value="pr">Pull Request</mat-button-toggle>
         </mat-button-toggle-group>
@@ -47,29 +47,29 @@
         </button>
       </div>
       <div class="option">
-        <advanced-search [filterer]="itemGroupsDataSource.filterer">
+        <advanced-search [filterer]="dataSource?.filterer">
         </advanced-search>
       </div>
     </div>
-  </form>
-</div>
+  </div>
 
-<div mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close> Cancel </button>
-  <button mat-raised-button (click)="edit()" color="primary" cdkFocusInitial>
-    Save </button>
-</div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close> Cancel </button>
+    <button mat-raised-button (click)="edit()" color="primary" cdkFocusInitial>
+      Save </button>
+  </div>
+</form>
 
 <mat-menu #loadSearch="matMenu">
   <button mat-menu-item *ngIf="(recommendationsList | async)?.length > 0"
           [matMenuTriggerFor]="recommendationsMenu"> Recommendations
   </button>
   <button mat-menu-item
-          *ngIf="(issueQueries | async)?.length > 0 && form.value.itemType === 'issue'"
+          *ngIf="(issueQueries | async)?.length > 0 && form.value.dataSourceType === 'issue'"
           [matMenuTriggerFor]="issueQueriesMenu"> Issue Queries
   </button>
   <button mat-menu-item
-          *ngIf="(prQueries | async)?.length > 0 && form.value.itemType === 'pr'"
+          *ngIf="(prQueries | async)?.length > 0 && form.value.dataSourceType === 'pr'"
           [matMenuTriggerFor]="prQueriesMenu"> Pull Request Queries
   </button>
 </mat-menu>

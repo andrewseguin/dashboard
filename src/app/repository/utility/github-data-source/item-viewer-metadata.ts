@@ -17,7 +17,7 @@ export const GithubItemViewerMetadata =
         {
           id: 'title',
           label: 'Title',
-          containerClassList: 'title',
+          containerClassList: 'title theme-text',
           containerStyles: {
             marginBottom: '4px',
             fontSize: '15px',
@@ -31,6 +31,7 @@ export const GithubItemViewerMetadata =
         {
           id: 'reporter',
           label: 'Reporter',
+          containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
           render: (c: ViewContext) => [{text: `Reporter: ${c.item.reporter}`}],
         },
@@ -41,6 +42,7 @@ export const GithubItemViewerMetadata =
         {
           id: 'assignees',
           label: 'Assignees',
+          containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
           render: (c: ViewContext) => {
             if (!c.item.assignees.length) {
@@ -56,6 +58,7 @@ export const GithubItemViewerMetadata =
         {
           id: 'suggestions',
           label: 'Suggestions',
+          containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
           render: (c: ViewContext) => {
             return c.recommendations.filter(r => r.type === 'suggestion')
@@ -69,6 +72,7 @@ export const GithubItemViewerMetadata =
         {
           id: 'warnings',
           label: 'Warnings',
+          containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-warn',
           render: (c: ViewContext) => {
             return c.recommendations.filter(r => r.type === 'warning').map(r => ({
@@ -86,6 +90,7 @@ export const GithubItemViewerMetadata =
           containerStyles: {
             display: 'flex',
             justifyContent: 'flex-end',
+            fontSize: '13px',
           },
           render: (c: ViewContext) => {
             return c.item.labels.map(id => {

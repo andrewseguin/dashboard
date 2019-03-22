@@ -8,8 +8,8 @@ export interface Query {
   dbAdded?: string;
   dbModified?: string;
   name?: string;
-  type?: 'issue'|'pr';
   group?: string;
+  dataSourceType?: string;
   filtererState?: ItemFiltererState;
   grouperState?: ItemGrouperState<any>;
   sorterState?: ItemSorterState<any>;

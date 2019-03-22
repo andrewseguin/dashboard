@@ -1,11 +1,10 @@
-<dashboard-view *ngIf="dashboard" [dashboard]="dashboard"
-                [edit]="edit.valueChanges | async" [dataSources]="dataSources"
-                (openWidget)="openQuery($event)"
+<dashboard-view *ngIf="dashboard" [dashboard]="dashboard" [edit]="edit | async"
+                [dataSources]="dataSources" (openWidget)="openQuery($event)"
                 (dashboardChange)="saveDashboard($event)"></dashboard-view>
 
 <ng-template cdkPortal>
-  <button mat-raised-button color="primary" class="view" *ngIf="edit.value"
-          (click)="edit.setValue(false)">
+  <button mat-raised-button color="primary" class="view" *ngIf="edit | async"
+          (click)="edit.next(false)">
     View </button>
   <button mat-icon-button [matMenuTriggerFor]="settings" class="settings">
     <mat-icon> settings </mat-icon>
@@ -13,6 +12,6 @@
 </ng-template>
 
 <mat-menu #settings="matMenu">
-  <button mat-menu-item (click)="edit.setValue(!edit.value)"> Toggle Edit Mode
+  <button mat-menu-item (click)="edit.next(!edit.value)"> Toggle Edit Mode
   </button>
 </mat-menu>

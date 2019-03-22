@@ -3,7 +3,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {combineLatest, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {ActiveStore} from '../services/active-repo';
-import {ItemType} from '../services/dao';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
@@ -21,18 +20,19 @@ interface QueryGroup {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class QueriesPage {
-  type: Observable<ItemType> = this.activatedRoute.params.pipe(map(params => params.type));
+  type: Observable<string> = this.activatedRoute.params.pipe(map(params => params.type));
 
   recommendationsList =
       this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
   queryGroups = this.activeRepo.config.pipe(
       mergeMap(configStore => combineLatest(configStore.queries.list, this.type)),
-      map(result => result[0].filter(item => item.type === result[1])), map(getSortedGroups));
+      map(result => result[0].filter(query => query.dataSourceType === result[1])),
+      map(getSortedGroups));
 
   queryResultsCount = this.activeRepo.config.pipe(
       mergeMap(config => combineLatest(config.queries.list, this.type)), map(results => {
-        const queries = results[0].filter(query => query.type === results[1]);
+        const queries = results[0].filter(query => query.dataSourceType === results[1]);
 
         const queryCountMap = new Map<string, Observable<number>>();
         queries.forEach(query => {
@@ -55,7 +55,7 @@ export class QueriesPage {
       private router: Router, private activatedRoute: ActivatedRoute,
       private issueRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {}
 
-  createQuery(type: ItemType) {
+  createQuery(type: string) {
     this.router.navigate([`${this.activeRepo.activeName}/query/new`], {queryParams: {type}});
   }
 

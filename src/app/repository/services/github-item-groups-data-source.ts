@@ -23,7 +23,7 @@ import {
 } from '../utility/github-data-source/item-viewer-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
 import {ActiveStore} from './active-repo';
-import {Item, ItemType, Label} from './dao';
+import {Item, Label} from './dao';
 import {DataStore} from './dao/data/data-dao';
 import {ListDao} from './dao/list-dao';
 import {ItemRecommendations} from './item-recommendations';
@@ -62,6 +62,7 @@ function createItemViewer(itemRecommendations: ItemRecommendations, store: DataS
 
   const viewer = new ItemViewer<Item, GithubItemView, ViewContext>(
       GithubItemViewerMetadata, viewContextProvider);
+  viewer.setState({views: viewer.getViews().map(v => v.id)});
 
   return viewer;
 }
@@ -84,7 +85,7 @@ function createItemsGrouper(labelsDao: ListDao<Label>):
 }
 
 
-export function getItemsList(store: DataStore, type: ItemType) {
+export function getItemsList(store: DataStore, type: string) {
   return combineLatest(store.items.list).pipe(map(results => {
     const items = results[0];
 

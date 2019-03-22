@@ -1,5 +1,4 @@
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {ItemType} from 'app/repository/services/dao';
 import {CountDisplayTypeOptions} from './widget-view/count/count';
 import {ListDisplayTypeOptions} from './widget-view/list/list';
 import {PieChartDisplayTypeOptions} from './widget-view/pie-chart/pie-chart';
@@ -11,11 +10,11 @@ export type WidgetDisplayTypeOptions = ListDisplayTypeOptions<any, any>|
     TimeSeriesDisplayTypeOptions|CountDisplayTypeOptions|PieChartDisplayTypeOptions<any>;
 
 export interface Widget {
-  title: string;
-  itemType: ItemType;
-  filtererState: ItemFiltererState;
-  displayType: DisplayType;
-  displayTypeOptions: WidgetDisplayTypeOptions;
+  title?: string;
+  dataSourceType?: string;
+  filtererState?: ItemFiltererState;
+  displayType?: DisplayType;
+  displayTypeOptions?: WidgetDisplayTypeOptions;
 }
 
 export interface Column {

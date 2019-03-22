@@ -41,14 +41,7 @@ export class DashboardView {
   }
 
   addWidget(column: Column) {
-    const config: MatDialogConfig<EditWidgetData> = {width: '650px'};
-
-    this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {
-      if (result) {
-        column.widgets.push(result);
-        this.save();
-      }
-    });
+    this.editWidget(column, {}, column.widgets.length);
   }
 
   duplicateWidget(column: Column, widget: Widget, index: number) {
@@ -56,14 +49,13 @@ export class DashboardView {
     column.widgets.splice(index, 0, newWidget);
   }
 
-  editWidget(column: Column, index: number) {
-    const widget = column.widgets[index];
+  editWidget(column: Column, widget: Widget, index: number) {
     const data: EditWidgetData = {
       widget,
-      dataSource: this.dataSources.get(widget.itemType)!.factory(),
+      dataSources: this.dataSources,
     };
 
-    const config: MatDialogConfig<EditWidgetData> = {width: '650px', data};
+    const config: MatDialogConfig<EditWidgetData> = {data, width: '650px'};
 
     this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {
       if (result) {

@@ -5,7 +5,6 @@ import {AdvancedSearchModule} from 'app/package/component/advanced-search/advanc
 import {
   DisplayOptionsHeaderModule
 } from 'app/package/component/display-options-header/display-options-header.module';
-import {LoadingModule} from '../loading/loading.module';
 import {ItemSummaryModule} from './item-summary/item-summary.module';
 import {ItemsList} from './items-list';
 
@@ -17,7 +16,6 @@ import {ItemsList} from './items-list';
     ItemSummaryModule,
     DisplayOptionsHeaderModule,
     AdvancedSearchModule,
-    LoadingModule,
   ],
   declarations: [ItemsList],
   exports: [ItemsList],
