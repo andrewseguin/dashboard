@@ -1,56 +1,14 @@
-<div class="item theme-hover" mat-ripple
-     [class.theme-background-hover]="active">
+<div class="item theme-hover" mat-ripple [class.theme-background-hover]="active">
   <div class="info">
-    <div class="top-row theme-text">
-      <div class="name">
-        <span class="section">
-          {{item.title}}
-        </span>
+    <ng-container *ngFor="let view of views | async">
+      <div *ngIf="(viewer.render(item, view) | async)?.length" [class]="view.containerClassList"
+           [ngStyle]="view.containerStyles">
+        <div *ngFor="let value of viewer.render(item, view) | async" [class]="'section ' + (value.classList || '')"
+             [ngStyle]="value.styles || {}">
+          {{value.text}}
+        </div>
       </div>
-    </div>
-
-    <div class="details theme-secondary-text">
-      <ng-container *ngIf="enabledViewsSet.has('reporter')">
-        <div class="section">
-          Reporter: {{item.reporter}}
-        </div>
-      </ng-container>
-
-      <ng-container *ngIf="enabledViewsSet.has('assignees')">
-        <div class="section" *ngIf="item.assignees.length === 1">
-          Assignee: {{item.assignees}}
-        </div>
-        <div class="section" *ngIf="item.assignees.length > 1">
-          Assignees: {{item.assignees}}
-        </div>
-      </ng-container>
-
-      <ng-container *ngIf="enabledViewsSet.has('labels')">
-        <div class="section">
-          <label-list [labelIds]="item.labels"></label-list>
-        </div>
-      </ng-container>
-
-      <ng-container
-                    *ngIf="(warnings | async)?.length && enabledViewsSet.has('warnings')">
-        <div class="section theme-warn">
-          <div *ngFor="let warning of warnings | async" class="recommendation">
-            <mat-icon> warning </mat-icon>
-            {{warning.message}}
-          </div>
-        </div>
-      </ng-container>
-
-      <ng-container
-                    *ngIf="(suggestions | async)?.length && enabledViewsSet.has('suggestions')">
-        <div class="section">
-          <div *ngFor="let suggestion of suggestions | async"
-               class="recommendation">
-            <mat-icon> label_important </mat-icon>{{suggestion.message}}
-          </div>
-        </div>
-      </ng-container>
-    </div>
+    </ng-container>
   </div>
 
   <div class="active" [style.visibility]="active ? 'visible' : 'hidden' ">

@@ -2,6 +2,7 @@ import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorter} from 'app/package/items-renderer/item-sorter';
+import {ItemViewer, ItemViewerContextProvider} from 'app/package/items-renderer/item-viewer';
 import {combineLatest, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
@@ -14,7 +15,12 @@ import {
   Group,
   TitleTransformContext
 } from '../utility/github-data-source/item-grouper-metadata';
-import {GithubItemSortingMetadata} from '../utility/github-data-source/item-sorter-metadata';
+import {GithubItemSortingMetadata, Sort} from '../utility/github-data-source/item-sorter-metadata';
+import {
+  GithubItemView,
+  GithubItemViewerMetadata,
+  ViewContext
+} from '../utility/github-data-source/item-viewer-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
 import {ActiveStore} from './active-repo';
 import {Item, ItemType, Label} from './dao';
@@ -28,14 +34,45 @@ export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
 
     const store = this.activeRepo.activeData;
 
-    this.filterer = getItemsFilterer(this.itemRecommendations, store);
-    this.grouper = getItemsGrouper(store.labels);
-    this.sorter = new ItemSorter(of(null), GithubItemSortingMetadata);
-    this.sorter.setState({sort: 'created', reverse: true});
+    this.filterer = createItemsFilterer(this.itemRecommendations, store);
+    this.grouper = createItemsGrouper(store.labels);
+    this.sorter = createItemSorter();
+    this.viewer = createItemViewer(this.itemRecommendations, store);
   }
 }
 
-function getItemsGrouper(labelsDao: ListDao<Label>):
+function createItemViewer(itemRecommendations: ItemRecommendations, store: DataStore):
+    ItemViewer<Item, GithubItemView, ViewContext> {
+  const viewContextProvider: ItemViewerContextProvider<Item, ViewContext> =
+      combineLatest(itemRecommendations.allRecommendations, store.labels.map).pipe(map(results => {
+        const recommendationsByItem = results[0]!;
+        const labelsMap = results[1]!;
+
+        // Add name to labels map for filtering
+        labelsMap.forEach(label => labelsMap.set(label.name, label));
+
+        return (item: Item) => {
+          return {
+            item,
+            labelsMap,
+            recommendations: recommendationsByItem.get(item.id) || [],
+          };
+        };
+      }));
+
+  const viewer = new ItemViewer<Item, GithubItemView, ViewContext>(
+      GithubItemViewerMetadata, viewContextProvider);
+
+  return viewer;
+}
+
+function createItemSorter(): ItemSorter<Item, Sort, null> {
+  const sorter = new ItemSorter(of(null), GithubItemSortingMetadata);
+  sorter.setState({sort: 'created', reverse: true});
+  return sorter;
+}
+
+function createItemsGrouper(labelsDao: ListDao<Label>):
     ItemGrouper<Item, Group, TitleTransformContext> {
   const titleTransformContextProvider =
       labelsDao.map.pipe(map(labelsMap => ({labelsMap: labelsMap})));
@@ -57,7 +94,7 @@ export function getItemsList(store: DataStore, type: ItemType) {
   }));
 }
 
-export function getItemsFilterer(itemRecommendations: ItemRecommendations, store: DataStore):
+export function createItemsFilterer(itemRecommendations: ItemRecommendations, store: DataStore):
     ItemFilterer<Item, MatcherContext, AutocompleteContext> {
   const filterContextProvider =
       combineLatest(itemRecommendations.allRecommendations, store.labels.map).pipe(map(results => {

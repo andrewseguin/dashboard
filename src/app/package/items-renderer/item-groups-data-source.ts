@@ -4,6 +4,7 @@ import {mergeMap, tap} from 'rxjs/operators';
 import {ItemFilterer} from './item-filterer';
 import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouper';
 import {ItemSorter} from './item-sorter';
+import {ItemViewer} from './item-viewer';
 import {IFilterMetadata} from './search-utility/filter';
 
 type DataProvider<T> = Observable<T[]>;
@@ -47,6 +48,9 @@ export class ItemGroupsDataSource<T> {
 
   /** The sorter handles the sorting of items within each group. */
   sorter: ItemSorter<T, any, any> = new ItemSorter<T, '', null>(of(null), new Map());
+
+  /** The viewer carries information to render the items to the view. */
+  viewer: ItemViewer<T, any, any> = new ItemViewer<T, null, any>(new Map(), of(() => null));
 
   /** Stream emitting render data to the table (depends on ordered data changes). */
   private readonly _renderData = new ReplaySubject<ItemGroupsResult<T>>();

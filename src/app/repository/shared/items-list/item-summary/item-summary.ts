@@ -6,9 +6,10 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
+import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/item-viewer';
 import {Item} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {GithubItemView} from 'app/repository/utility/github-data-source/item-viewer-metadata';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Component({
@@ -18,26 +19,29 @@ import {map} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {'(click)': 'select.emit(this.item.number)'}
 })
-export class ItemSummary {
+export class ItemSummary<V> {
   warnings = this.itemRecommendations.warnings.pipe(map(map => map.get(this.item.id)));
   suggestions = this.itemRecommendations.suggestions.pipe(map(map => map.get(this.item.id)));
 
-  enabledViewsSet = new Set<GithubItemView>();
+  views: Observable<ViewingMetadata<V, any>[]>;
 
   @Input() item: Item;
 
   @Input() active: boolean;
 
-  @Input() enabledViews: GithubItemView[];
+  @Input() viewer: ItemViewer<any, V, any>;
 
   @Output() select = new EventEmitter<number>();
 
   constructor(public itemRecommendations: ItemRecommendations) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['enabledViews'] && this.enabledViews) {
-      this.enabledViewsSet = new Set<GithubItemView>();
-      this.enabledViews.forEach(v => this.enabledViewsSet.add(v));
+    if (simpleChanges['viewer'] && this.viewer) {
+      this.views = this.viewer.state.pipe(map(state => {
+        const enabledViews =
+            this.viewer.getViews().filter(view => state.views.indexOf(view.id) !== -1);
+        return enabledViews.map(view => this.viewer.metadata.get(view.id)!);
+      }));
     }
   }
 }

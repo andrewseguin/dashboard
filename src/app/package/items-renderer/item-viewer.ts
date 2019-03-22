@@ -1,21 +1,33 @@
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 export interface ItemViewerState<V> {
   views: V[];
 }
 
-export interface ViewingMetadata<V> {
+export interface ViewingMetadata<V, C> {
   id: V;
   label: string;
+  containerClassList?: string;
+  containerStyles?: {[key in string]: string};
+  render: (context: C) => ({
+    text: string,
+    classList?: string,
+    styles?: {[key in string]: string},
+  }[]);
 }
 
-export class ItemViewer<V> {
+export type ItemViewerContextProvider<T, C> = Observable<(item: T) => C>;
+
+export class ItemViewer<T, V, C> {
   state = new BehaviorSubject<ItemViewerState<V>>({views: []});
 
-  constructor(public metadata: Map<V, ViewingMetadata<V>>) {}
+  constructor(
+      public metadata: Map<V, ViewingMetadata<V, C>>,
+      private contextProvider: ItemViewerContextProvider<T, C>) {}
 
-  getViews(): ViewingMetadata<V>[] {
-    const views: ViewingMetadata<V>[] = [];
+  getViews(): ViewingMetadata<V, C>[] {
+    const views: ViewingMetadata<V, C>[] = [];
     this.metadata.forEach(view => views.push(view));
     return views;
   }
@@ -47,5 +59,9 @@ export class ItemViewer<V> {
     const otherViews = otherState.views.slice().sort();
 
     return thisViews.length === otherViews.length && thisViews.every((v, i) => otherViews[i] === v);
+  }
+
+  render(item: T, view: ViewingMetadata<V, C>) {
+    return this.contextProvider.pipe(map(c => view.render(c(item))));
   }
 }

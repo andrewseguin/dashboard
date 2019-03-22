@@ -2,7 +2,6 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Widget} from 'app/package/component/dashboard/dashboard';
-import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
@@ -14,7 +13,6 @@ import {Query} from '../services/dao/config/query';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
-import { GithubItemView, GithubItemViewerMetadata } from '../utility/github-data-source/item-viewer-metadata';
 
 
 @Component({
@@ -53,7 +51,7 @@ export class QueryPage {
   public itemGroupsDataSource =
       new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
 
-  public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
+  public itemViewer = this.itemGroupsDataSource.viewer;
 
   public canSave =
       combineLatest(

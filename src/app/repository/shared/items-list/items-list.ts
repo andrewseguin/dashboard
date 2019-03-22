@@ -36,7 +36,7 @@ export class ItemsList {
 
   @Input() itemGroupsDataSource: ItemGroupsDataSource<Item>;
 
-  @Input() viewer: ItemViewer<any>;
+  @Input() viewer: ItemViewer<any, any, any>;
 
   trackByIndex = (i: number) => i;
 

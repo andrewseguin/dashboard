@@ -1,19 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {ItemViewer} from 'app/package/items-renderer/item-viewer';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ActiveStore} from 'app/repository/services/active-repo';
 import {Query} from 'app/repository/services/dao/config/query';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
-import {
-  getItemsList,
-  GithubItemGroupsDataSource
-} from 'app/repository/services/github-item-groups-data-source';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {
-  GithubItemView,
-  GithubItemViewerMetadata
-} from 'app/repository/utility/github-data-source/item-viewer-metadata';
+import {getItemsList} from 'app/repository/services/github-item-groups-data-source';
 import {Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
 
@@ -22,6 +14,7 @@ import {Widget, WidgetDisplayTypeOptions} from '../dashboard';
 
 export interface EditWidgetData {
   widget: Widget;
+  dataSource: ItemGroupsDataSource<any>;
 }
 
 @Component({
@@ -50,15 +43,12 @@ export class EditWidget<S, V, G> {
   prQueries = this.activeRepo.config.pipe(
       mergeMap(store => store.queries.list), map(queries => queries.filter(q => q.type === 'pr')));
 
-  public itemGroupsDataSource =
-      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+  public itemGroupsDataSource: ItemGroupsDataSource<any>;
 
   groups = this.itemGroupsDataSource.grouper.metadata;
   groupIds: G[];
 
   private _destroyed = new Subject();
-
-  public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 
   displayTypes = [
     {id: 'count', label: 'Count'},
@@ -72,9 +62,11 @@ export class EditWidget<S, V, G> {
   displayTypeOptions: WidgetDisplayTypeOptions;
 
   constructor(
-      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
-      private cd: ChangeDetectorRef, private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
+      private activeRepo: ActiveStore, private cd: ChangeDetectorRef,
+      private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+    this.itemGroupsDataSource = data.dataSource;
+
     if (data && data.widget) {
       this.form.setValue({
         title: data.widget.title,

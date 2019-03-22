@@ -57,8 +57,13 @@ export class DashboardView {
   }
 
   editWidget(column: Column, index: number) {
-    const config:
-        MatDialogConfig<EditWidgetData> = {width: '650px', data: {widget: column.widgets[index]}};
+    const widget = column.widgets[index];
+    const data: EditWidgetData = {
+      widget,
+      dataSource: this.dataSources.get(widget.itemType)!.factory(),
+    };
+
+    const config: MatDialogConfig<EditWidgetData> = {width: '650px', data};
 
     this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {
       if (result) {

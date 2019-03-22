@@ -16,7 +16,7 @@ export class DisplayOptionsHeader<G, S, V> {
   sorts: Map<S, SortingMetadata<any, S, null>>;
   sortIds: S[] = [];
 
-  views: Map<V, ViewingMetadata<V>>;
+  views: Map<V, ViewingMetadata<V, any>>;
   viewIds: V[] = [];
 
   @Input() hideGrouping: boolean;
@@ -50,17 +50,17 @@ export class DisplayOptionsHeader<G, S, V> {
   _sorter: ItemSorter<any, S, any>;
 
   @Input()
-  set viewer(viewer: ItemViewer<V>) {
+  set viewer(viewer: ItemViewer<V, any, any>) {
     this._viewer = viewer;
     if (this.viewer) {
       this.views = this.viewer.metadata;
       this.viewIds = this.viewer.getViews().map(value => value.id);
     }
   }
-  get viewer(): ItemViewer<V> {
+  get viewer(): ItemViewer<V, any, any> {
     return this._viewer;
   }
-  _viewer: ItemViewer<V>;
+  _viewer: ItemViewer<V, any, any>;
 
   setGroup(group: G) {
     const grouperState = this.grouper.getState();

@@ -1,14 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {MatDialog} from '@angular/material';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
-import {ItemViewer, ItemViewerState} from 'app/package/items-renderer/item-viewer';
-import {Item} from 'app/repository/services/dao';
-import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
+import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
-import {
-  GithubItemView,
-  GithubItemViewerMetadata
-} from 'app/repository/utility/github-data-source/item-viewer-metadata';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
@@ -49,16 +44,14 @@ export function getListConfigOptions(options: ListDisplayTypeOptions<any, any>):
   styleUrls: ['list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class List<S> {
-  trackById = (_i: number, item: Item) => item.id;
+export class List<T, S, V> {
+  trackByIndex = (index: number) => index;
 
-  @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
+  @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
 
-  @Input() options: ListDisplayTypeOptions<S, GithubItemView>;
+  @Input() options: ListDisplayTypeOptions<S, V>;
 
-  items: Observable<Item[]>;
-
-  public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
+  items: Observable<T[]>;
 
   constructor(private dialog: MatDialog) {}
 
@@ -69,7 +62,7 @@ export class List<S> {
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['options'] && this.options) {
       this.itemGroupsDataSource.sorter.setState(this.options.sorterState);
-      this.itemViewer.setState(this.options.viewerState);
+      this.itemGroupsDataSource.viewer.setState(this.options.viewerState);
     }
   }
 

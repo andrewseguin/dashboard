@@ -10,7 +10,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {ItemGrouperState} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
-import {ItemViewer, ItemViewerState} from 'app/package/items-renderer/item-viewer';
+import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {DisplayType, WidgetDisplayTypeOptions} from '../../dashboard';
@@ -70,8 +70,6 @@ export class WidgetTypeOptions<G, S, V> {
 
   @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
 
-  @Input() itemViewer: ItemViewer<V>;
-
   @Output() optionsChanged = new EventEmitter<WidgetDisplayTypeOptions>();
 
   private valueChangeSubscription: Subscription;
@@ -82,7 +80,7 @@ export class WidgetTypeOptions<G, S, V> {
     if (simpleChanges['itemGroupsDataSource'] && this.itemGroupsDataSource) {
       this.groupIds = this.itemGroupsDataSource.grouper.getGroups().map(value => value.id);
       this.sortIds = this.itemGroupsDataSource.sorter.getSorts().map(value => value.id);
-      this.viewLabels = this.itemViewer.getViews().map(value => value.label);
+      this.viewLabels = this.itemGroupsDataSource.viewer.getViews().map(value => value.label);
     }
     if (simpleChanges['type'] && this.type) {
       this.setupForm();
