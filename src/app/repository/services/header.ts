@@ -24,7 +24,6 @@ export class Header {
         .subscribe(e => {
           const sections = (e as NavigationEnd).urlAfterRedirects.split('/');
           const section = sections[3];
-          const subSection = sections[4];
 
           switch (section) {
             case 'recommendations':
@@ -37,10 +36,7 @@ export class Header {
               this.title.next('Database');
               break;
             case 'queries':
-              this.title.next(
-                  subSection.indexOf('issue') === 0 ?
-                      'Issue Queries' :
-                      subSection.indexOf('pr') === 0 ? 'Pull Request Queries' : '');
+              this.title.next('Queries');
               break;
           }
 

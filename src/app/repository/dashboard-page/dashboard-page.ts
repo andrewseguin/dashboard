@@ -1,11 +1,10 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
-import {FormControl} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
 import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
 import * as Chart from 'chart.js';
-import {Subject, Subscription, BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 import {delay, takeUntil} from 'rxjs/operators';
 import {Header, Theme} from '../services';
 import {ActiveStore} from '../services/active-repo';

@@ -1,20 +1,3 @@
-<div class="new-buttons" [class.menu-open]="recommendationsMenu.menuOpen"
-     *ngIf="type | async; let type">
-  <button mat-fab color="primary" class="secondary"
-          [style.visibility]="(recommendationsList | async)?.length > 0 ? 'visible' : 'hidden'"
-          #recommendationsMenu="matMenuTrigger"
-          [matMenuTriggerFor]="recommendations"
-          matTooltip="New query from recommendation"
-          [matTooltipPosition]="'before'">
-    <mat-icon>add</mat-icon>
-  </button>
-
-  <button mat-fab (click)="createQuery(type)" matTooltip="New empty query"
-          [matTooltipPosition]="'before'">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
-
 <ng-container *ngIf="queryGroups | async; let queryGroups; else loading">
   <div class="group" *ngFor="let queryGroup of queryGroups">
     <div class="group-title">
@@ -26,10 +9,9 @@
                     *ngFor="let query of queryGroup.queries; trackBy: queryKeyTrackBy">
         <div class="query theme-hover" mat-ripple
              (click)="navigateToQuery(query.id)">
-          <div class="name"> {{query.name}}
-            <ng-container *ngIf="queryResultsCount | async; let countMap">
-              ({{countMap.get(query.id) | async}})
-            </ng-container>
+          <div class="name">
+            {{query.name}}
+            ({{(query.count | async) || '..'}})
           </div>
 
           <query-menu [query]="query" icon="more_vert"
@@ -45,6 +27,36 @@
 <ng-template #loading>
   <loading label="queries"></loading>
 </ng-template>
+
+
+<ng-template cdkPortal>
+  <ng-container *ngIf="dataSourceTypes.length === 1; else createMenu">
+    <button mat-raised-button color="primary" class="create"
+            (click)="createQuery(queryTypes[0])">
+      Create New Query
+    </button>
+  </ng-container>
+
+  <ng-template #createMenu>
+    <button mat-raised-button color="primary" class="create"
+            [matMenuTriggerFor]="createQueryMenu">
+      <div class="button-text">
+        Create New Query
+        <mat-icon> arrow_drop_down </mat-icon>
+      </div>
+    </button>
+
+    <mat-menu #createQueryMenu="matMenu" xPosition="before">
+      <button mat-menu-item (click)="createQuery(queryType)"
+              *ngFor="let queryType of dataSourceTypes">{{dataSources.get(queryType).label}}</button>
+      <button mat-menu-item [matMenuTriggerFor]="recommendations">
+        From recommendations
+      </button>
+    </mat-menu>
+
+  </ng-template>
+</ng-template>
+
 
 <mat-menu #recommendations="matMenu" class="recommendations-menu">
   <button mat-menu-item

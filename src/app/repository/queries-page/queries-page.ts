@@ -1,16 +1,18 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {combineLatest, Observable} from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
+import {CdkPortal} from '@angular/cdk/portal';
+import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
+import {Router} from '@angular/router';
+import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
+import {Observable} from 'rxjs';
+import {delay, map, mergeMap} from 'rxjs/operators';
+import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
 
-
 interface QueryGroup {
-  queries: Query[];
+  queries: {id: string, name: string, count: Observable<number>}[];
   name: string;
 }
 
@@ -20,40 +22,58 @@ interface QueryGroup {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class QueriesPage {
-  type: Observable<string> = this.activatedRoute.params.pipe(map(params => params.type));
+  dataSources = new Map<string, DataSource>([
+    [
+      'issue', {
+        id: 'issue',
+        label: 'Issues',
+        factory:
+            () => {
+              const datasource =
+                  new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+              datasource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');
+              return datasource;
+            }
+      }
+    ],
+    [
+      'pr', {
+        id: 'pr',
+        label: 'Pull Requests',
+        factory:
+            () => {
+              const datasource =
+                  new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+              datasource.dataProvider = getItemsList(this.activeRepo.activeData, 'pr');
+              return datasource;
+            }
+      }
+    ],
+  ]);
+
+  dataSourceTypes: string[] = [];
 
   recommendationsList =
       this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
-  queryGroups = this.activeRepo.config.pipe(
-      mergeMap(configStore => combineLatest(configStore.queries.list, this.type)),
-      map(result => result[0].filter(query => query.dataSourceType === result[1])),
-      map(getSortedGroups));
+  queries = this.activeRepo.config.pipe(mergeMap(configStore => configStore.queries.list));
 
-  queryResultsCount = this.activeRepo.config.pipe(
-      mergeMap(config => combineLatest(config.queries.list, this.type)), map(results => {
-        const queries = results[0].filter(query => query.dataSourceType === results[1]);
-
-        const queryCountMap = new Map<string, Observable<number>>();
-        queries.forEach(query => {
-          const dataSource =
-              new GithubItemGroupsDataSource(this.issueRecommendations, this.activeRepo);
-          dataSource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');
-
-          if (query.filtererState) {
-            dataSource.filterer.setState(query.filtererState!);
-          }
-          queryCountMap.set(query.id!, dataSource.connect().pipe(map(result => result.count)));
-        });
-
-        return queryCountMap;
-      }));
+  queryGroups = this.queries.pipe(map(queries => this.getSortedGroups(queries)));
 
   queryKeyTrackBy = (_i: number, itemQuery: Query) => itemQuery.id;
 
+  @ViewChild(CdkPortal) toolbarActions: CdkPortal;
+
   constructor(
-      private router: Router, private activatedRoute: ActivatedRoute,
-      private issueRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {}
+      private itemRecommendations: ItemRecommendations, private header: Header,
+      private router: Router, private issueRecommendations: ItemRecommendations,
+      private activeRepo: ActiveStore) {
+    this.dataSources.forEach(dataSource => this.dataSourceTypes.push(dataSource.id));
+  }
+
+  ngOnInit() {
+    this.header.toolbarOutlet.next(this.toolbarActions);
+  }
 
   createQuery(type: string) {
     this.router.navigate([`${this.activeRepo.activeName}/query/new`], {queryParams: {type}});
@@ -68,26 +88,40 @@ export class QueriesPage {
   navigateToQuery(id: string) {
     this.router.navigate([`${this.activeRepo.activeName}/query/${id}`]);
   }
-}
 
+  ngOnDestroy() {
+    this.header.toolbarOutlet.next(null);
+  }
 
-function getSortedGroups(queries: Query[]) {
-  const groups = new Map<string, Query[]>();
-  queries.forEach(query => {
-    const group = query.group || 'Other';
-    if (!groups.has(group)) {
-      groups.set(group, []);
+  private getQueryCount(query: Query): Observable<number> {
+    const dataSource = new GithubItemGroupsDataSource(this.issueRecommendations, this.activeRepo);
+    dataSource.dataProvider = getItemsList(this.activeRepo.activeData, query.dataSourceType!);
+
+    if (query.filtererState) {
+      dataSource.filterer.setState(query.filtererState!);
     }
 
-    groups.get(group)!.push(query);
-  });
+    return dataSource.connect().pipe(delay(250), map(result => result.count));
+  }
 
-  const sortedGroups: QueryGroup[] = [];
-  Array.from(groups.keys()).sort().forEach(group => {
-    const queries = groups.get(group)!;
-    queries.sort((a, b) => (a.name! < b.name!) ? -1 : 1);
-    sortedGroups.push({name: group, queries});
-  });
+  private getSortedGroups(queries: Query[]) {
+    const groups = new Map<string, {id: string, name: string, count: Observable<number>}[]>();
+    queries.forEach(query => {
+      const group = query.group || 'Other';
+      if (!groups.has(group)) {
+        groups.set(group, []);
+      }
 
-  return sortedGroups;
+      groups.get(group)!.push({id: query.id!, name: query.name!, count: this.getQueryCount(query)});
+    });
+
+    const sortedGroups: QueryGroup[] = [];
+    Array.from(groups.keys()).sort().forEach(group => {
+      const queries = groups.get(group)!;
+      queries.sort((a, b) => (a.name! < b.name!) ? -1 : 1);
+      sortedGroups.push({name: group, queries});
+    });
+
+    return sortedGroups;
+  }
 }

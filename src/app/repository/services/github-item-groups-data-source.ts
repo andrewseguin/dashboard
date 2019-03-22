@@ -29,6 +29,7 @@ import {ListDao} from './dao/list-dao';
 import {ItemRecommendations} from './item-recommendations';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
+
   constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {
     super();
 

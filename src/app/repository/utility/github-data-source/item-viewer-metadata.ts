@@ -90,7 +90,9 @@ export const GithubItemViewerMetadata =
           containerStyles: {
             display: 'flex',
             justifyContent: 'flex-end',
+            flexWrap: 'wrap',
             fontSize: '13px',
+            marginTop: '8px',
           },
           render: (c: ViewContext) => {
             return c.item.labels.map(id => {
@@ -108,6 +110,7 @@ export const GithubItemViewerMetadata =
                 padding: '4px 8px',
                 borderRadius: '4px',
                 marginRight: '4px',
+                marginBottom: '4px',
               };
 
               return {text: label.name, styles};

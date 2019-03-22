@@ -28,28 +28,28 @@ const routes: Routes = [{
   children: [
     {
       path: 'database',
-      loadChildren: 'app/repository/database-page/database-page.module#DatabasePageModule'
+      loadChildren: 'app/repository/database-page/database-page.module#DatabasePageModule',
     },
     {
       path: 'dashboards',
-      loadChildren: 'app/repository/dashboards-page/dashboards-page.module#DashboardsPageModule'
+      loadChildren: 'app/repository/dashboards-page/dashboards-page.module#DashboardsPageModule',
     },
     {
       path: 'dashboard/:id',
-      loadChildren: 'app/repository/dashboard-page/dashboard-page.module#DashboardPageModule'
+      loadChildren: 'app/repository/dashboard-page/dashboard-page.module#DashboardPageModule',
     },
     {
-      path: 'queries/:type',
-      loadChildren: 'app/repository/queries-page/queries-page.module#QueriesPageModule'
+      path: 'queries',
+      loadChildren: 'app/repository/queries-page/queries-page.module#QueriesPageModule',
     },
     {
       path: 'query/:id',
-      loadChildren: 'app/repository/query-page/query-page.module#QueryPageModule'
+      loadChildren: 'app/repository/query-page/query-page.module#QueryPageModule',
     },
     {
       path: 'recommendations',
       loadChildren: 'app/repository/recommendations-page/' +
-          'recommendations-page.module#RecommendationsPageModule'
+          'recommendations-page.module#RecommendationsPageModule',
     },
 
     {path: '', redirectTo: 'database', pathMatch: 'full'},
