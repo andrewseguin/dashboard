@@ -9,21 +9,7 @@
 
 <div [ngSwitch]="widget.displayType"
      [style.pointer-events]="editMode ? 'none' : ''">
-  <list *ngSwitchCase="'list'" [options]="widget.displayTypeOptions"
-        [itemGroupsDataSource]="itemGroupsDataSource">
-  </list>
-
-  <count *ngSwitchCase="'count'" [options]="widget.displayTypeOptions"
-         [itemGroupsDataSource]="itemGroupsDataSource">
-  </count>
-
-  <pie-chart *ngSwitchCase="'pie'" [options]="widget.displayTypeOptions"
-             [itemGroupsDataSource]="itemGroupsDataSource">
-  </pie-chart>
-
-  <time-series *ngSwitchCase="'timeSeries'"
-               [options]="widget.displayTypeOptions"
-               [itemGroupsDataSource]="itemGroupsDataSource"></time-series>
+  <ng-template [cdkPortalOutlet]="widgetComponentPortal"></ng-template>
 </div>
 
 <mat-menu #settings="matMenu">

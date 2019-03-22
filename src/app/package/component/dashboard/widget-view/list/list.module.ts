@@ -11,6 +11,7 @@ import {List} from './list';
   imports: [CommonModule, MaterialModule, ItemSummaryModule, IssueDetailDialogModule],
   declarations: [List],
   exports: [List],
+  entryComponents: [List]
 })
 export class ListModule {
 }

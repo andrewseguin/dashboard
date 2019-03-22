@@ -1,13 +1,19 @@
+import {ComponentPortal, PortalInjector} from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  Injector,
   Input,
   Output,
   SimpleChanges
 } from '@angular/core';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
-import {Widget} from '../dashboard';
+
+import {DisplayType, Widget} from '../dashboard';
+
+import {WIDGET_DATA, WidgetData} from './list/list';
+
 
 export type DataSourceFactory = () => ItemGroupsDataSource<any>;
 export interface DataSource {
@@ -26,11 +32,11 @@ export interface DataSource {
   },
 })
 export class WidgetView {
+  @Input() widgetTypes: {[key in DisplayType]: any};
+
   @Input() widget: Widget;
 
   @Input() editMode: boolean;
-
-  @Input() dashboardId: string;
 
   @Input() dataSourceFactory: DataSourceFactory;
 
@@ -42,14 +48,30 @@ export class WidgetView {
 
   @Output() open = new EventEmitter<Widget>();
 
-  public itemGroupsDataSource: ItemGroupsDataSource<any>;
+  widgetComponentPortal: ComponentPortal<any>;
+
+  constructor(private injector: Injector) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemGroupsDataSource = this.dataSourceFactory();
-      if (this.widget.filtererState) {
-        this.itemGroupsDataSource.filterer.setState(this.widget.filtererState);
-      }
+      this.createWidget();
     }
+  }
+
+  private createWidget() {
+    const itemGroupsDataSource = this.dataSourceFactory();
+    if (this.widget.filtererState) {
+      itemGroupsDataSource.filterer.setState(this.widget.filtererState);
+    }
+
+    const widgetData: WidgetData<any> = {
+      options: this.widget.displayTypeOptions,
+      itemGroupsDataSource: itemGroupsDataSource,
+    };
+
+    const injectionTokens = new WeakMap<any, any>([[WIDGET_DATA, widgetData]]);
+    const widgetInjector = new PortalInjector(this.injector, injectionTokens);
+    this.widgetComponentPortal =
+        new ComponentPortal(this.widgetTypes[this.widget.displayType!], null, widgetInjector);
   }
 }

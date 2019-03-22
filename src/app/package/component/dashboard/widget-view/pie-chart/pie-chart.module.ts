@@ -7,6 +7,7 @@ import {PieChart} from './pie-chart';
   imports: [CommonModule, MaterialModule],
   declarations: [PieChart],
   exports: [PieChart],
+  entryComponents: [PieChart]
 })
 export class PieChartModule {
 }

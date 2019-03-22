@@ -4,7 +4,8 @@ import {
   ElementRef,
   Input,
   SimpleChanges,
-  ViewChild
+  ViewChild,
+  Inject
 } from '@angular/core';
 import {ItemGroup, ItemGrouperState} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
@@ -12,6 +13,7 @@ import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
+import { WIDGET_DATA, WidgetData } from '../list/list';
 
 export interface PieChartDisplayTypeOptions<G> {
   grouperState: ItemGrouperState<G>;
@@ -54,7 +56,10 @@ export class PieChart<T, G> {
 
   private destroyed = new Subject();
 
-  constructor() {}
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<PieChartDisplayTypeOptions<G>>) {
+    this.itemGroupsDataSource = data.itemGroupsDataSource;
+    this.options = data.options;
+  }
 
   ngOnInit() {
     this.itemGroupsDataSource.connect()

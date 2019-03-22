@@ -1,10 +1,19 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Inject,
+  Input,
+  ViewChild
+} from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
+import {WIDGET_DATA, WidgetData} from '../list/list';
 
 interface CreatedAndClosedDate {
   created: string;
@@ -82,7 +91,10 @@ export class TimeSeries<T> {
 
   private destroyed = new Subject();
 
-  constructor() {}
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions>) {
+    this.itemGroupsDataSource = data.itemGroupsDataSource;
+    this.options = data.options;
+  }
 
   ngOnInit() {
     this.itemGroupsDataSource.connect()

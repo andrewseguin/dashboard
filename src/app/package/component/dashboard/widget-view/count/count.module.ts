@@ -7,6 +7,7 @@ import {Count} from './count';
   imports: [CommonModule, MaterialModule],
   declarations: [Count],
   exports: [Count],
+  entryComponents: [Count]
 })
 export class CountModule {
 }

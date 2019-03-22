@@ -1,4 +1,11 @@
-import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  InjectionToken,
+  Input,
+  SimpleChanges
+} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
@@ -7,6 +14,14 @@ import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
+
+export interface WidgetData<O> {
+  itemGroupsDataSource: ItemGroupsDataSource<any>;
+  options: O;
+}
+
+/** Injection token that can be used to access the data that was passed in to a dialog. */
+export const WIDGET_DATA = new InjectionToken<any>('WidgetData');
 
 export interface ListDisplayTypeOptions<S, V> {
   listLength: number;
@@ -53,7 +68,12 @@ export class List<T, S, V> {
 
   items: Observable<T[]>;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(
+      @Inject(WIDGET_DATA) public data: WidgetData<ListDisplayTypeOptions<S, V>>,
+      private dialog: MatDialog) {
+    this.itemGroupsDataSource = data.itemGroupsDataSource;
+    this.options = data.options;
+  }
 
   ngOnInit() {
     this.items = this.itemGroupsDataSource.connect().pipe(map(result => result.groups[0].items));

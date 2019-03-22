@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
-import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
+import {WIDGET_DATA, WidgetData} from '../list/list';
 
 export interface CountDisplayTypeOptions {
   fontSize: 'small'|'normal'|'large';
@@ -32,18 +33,16 @@ export function getCountConfigOptions(options: CountDisplayTypeOptions): ConfigO
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[style.fontSize.px]': 'options.fontSize',
+    '[style.fontSize.px]': 'data.options.fontSize',
     'class': 'theme-text',
   }
 })
 export class Count<T> {
-  @Input() itemGroupsDataSource: ItemGroupsDataSource<T>;
+  itemGroupsDataSource: ItemGroupsDataSource<T>;
 
-  @Input() options: CountDisplayTypeOptions;
+  options: CountDisplayTypeOptions;
 
-  count: Observable<number>;
+  count = this.data.itemGroupsDataSource.connect().pipe(map(result => result.count));
 
-  ngOnInit() {
-    this.count = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
-  }
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions>) {}
 }

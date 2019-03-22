@@ -7,6 +7,7 @@ import {TimeSeries} from './time-series';
   imports: [CommonModule, MaterialModule],
   declarations: [TimeSeries],
   exports: [TimeSeries],
+  entryComponents: [TimeSeries]
 })
 export class TimeSeriesModule {
 }
