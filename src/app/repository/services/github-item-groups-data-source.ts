@@ -8,13 +8,13 @@ import {
   AutocompleteContext,
   ItemsFilterMetadata,
   MatcherContext
-} from '../utility/items-renderer/item-filter-metadata';
+} from '../utility/github-data-source/item-filter-metadata';
 import {
   GithubItemGroupingMetadata,
   Group,
   TitleTransformContext
-} from '../utility/items-renderer/item-grouper-metadata';
-import {GithubItemSortingMetadata} from '../utility/items-renderer/item-sorter-metadata';
+} from '../utility/github-data-source/item-grouper-metadata';
+import {GithubItemSortingMetadata} from '../utility/github-data-source/item-sorter-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
 import {ActiveStore} from './active-repo';
 import {Item, ItemType, Label} from './dao';

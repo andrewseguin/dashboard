@@ -14,10 +14,7 @@ import {Query} from '../services/dao/config/query';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
-import {
-  GithubItemView,
-  GithubItemViewerMetadata
-} from '../utility/items-renderer/item-viewer-metadata';
+import { GithubItemView, GithubItemViewerMetadata } from '../utility/github-data-source/item-viewer-metadata';
 
 
 @Component({

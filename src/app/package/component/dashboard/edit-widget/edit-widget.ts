@@ -10,15 +10,10 @@ import {
   GithubItemGroupsDataSource
 } from 'app/repository/services/github-item-groups-data-source';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
-import {
-  GithubItemGroupingMetadata,
-  Group
-} from 'app/repository/utility/items-renderer/item-grouper-metadata';
 import {
   GithubItemView,
   GithubItemViewerMetadata
-} from 'app/repository/utility/items-renderer/item-viewer-metadata';
+} from 'app/repository/utility/github-data-source/item-viewer-metadata';
 import {Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
 
@@ -46,8 +41,6 @@ export class EditWidget<S, V, G> {
   recommendationsList =
       this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
-  metadata = ItemsFilterMetadata;
-
   recommendations =
       this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
@@ -57,13 +50,13 @@ export class EditWidget<S, V, G> {
   prQueries = this.activeRepo.config.pipe(
       mergeMap(store => store.queries.list), map(queries => queries.filter(q => q.type === 'pr')));
 
-  groups = GithubItemGroupingMetadata;
-  groupIds: Group[];
-
-  private _destroyed = new Subject();
-
   public itemGroupsDataSource =
       new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+
+  groups = this.itemGroupsDataSource.grouper.metadata;
+  groupIds: G[];
+
+  private _destroyed = new Subject();
 
   public itemViewer = new ItemViewer<GithubItemView>(GithubItemViewerMetadata);
 

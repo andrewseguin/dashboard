@@ -8,7 +8,6 @@ import {ItemRecommendations} from 'app/repository/services/item-recommendations'
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
-import {ItemsFilterMetadata} from 'app/repository/utility/items-renderer/item-filter-metadata';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {merge, of, Subject} from 'rxjs';
@@ -38,8 +37,6 @@ export class EditableRecommendation {
   @Input() recommendation: Recommendation;
 
   form: FormGroup;
-
-  metadata = ItemsFilterMetadata;
 
   actionTypeOptions = [
     {label: 'No action', value: 'none'}, {label: 'Add label', value: 'add-label'},

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {Item} from 'app/repository/services/dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
-import {GithubItemView} from 'app/repository/utility/items-renderer/item-viewer-metadata';
+import {GithubItemView} from 'app/repository/utility/github-data-source/item-viewer-metadata';
 import {map} from 'rxjs/operators';
 
 @Component({

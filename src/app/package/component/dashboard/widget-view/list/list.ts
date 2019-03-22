@@ -8,7 +8,7 @@ import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/
 import {
   GithubItemView,
   GithubItemViewerMetadata
-} from 'app/repository/utility/items-renderer/item-viewer-metadata';
+} from 'app/repository/utility/github-data-source/item-viewer-metadata';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
