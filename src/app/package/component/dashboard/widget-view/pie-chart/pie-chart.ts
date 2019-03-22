@@ -12,7 +12,7 @@ import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
+import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 import { WIDGET_DATA, WidgetData } from '../list/list';
 
 export interface PieChartDisplayTypeOptions<G> {
@@ -20,7 +20,7 @@ export interface PieChartDisplayTypeOptions<G> {
   filteredGroups: string;
 }
 
-export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>): ConfigOption[] {
+export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>): WidgetDataOption[] {
   return [
     {
       id: 'grouperState',

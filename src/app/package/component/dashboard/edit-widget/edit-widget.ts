@@ -1,17 +1,17 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {ActiveStore} from 'app/repository/services/active-repo';
-import {combineLatest, ReplaySubject, Subject} from 'rxjs';
-import {filter, map, mergeMap, take} from 'rxjs/operators';
-
-import {Widget, WidgetDisplayTypeOptions} from '../dashboard';
-import {DataSource} from '../widget-view/widget-view';
-
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { ActiveStore } from 'app/repository/services/active-repo';
+import { combineLatest, ReplaySubject, Subject } from 'rxjs';
+import { filter, map, mergeMap, take } from 'rxjs/operators';
+import { Widget, WidgetDisplayTypeOptions } from '../dashboard';
+import { WidgetConfig } from '../dashboard-view';
+import { DataSource } from '../widget-view/widget-view';
 
 export interface EditWidgetData {
   widget: Widget;
   dataSources: Map<string, DataSource>;
+  widgetConfigs: {[key in string]: WidgetConfig};
 }
 
 @Component({
@@ -49,18 +49,17 @@ export class EditWidget<S, V, G> {
 
   private _destroyed = new Subject();
 
-  displayTypes = [
-    {id: 'count', label: 'Count'},
-    {id: 'list', label: 'List'},
-    {id: 'pie', label: 'Pie Chart'},
-    {id: 'timeSeries', label: 'Time Series'},
-  ];
+  widgetConfigs: WidgetConfig[] = [];
 
   displayTypeOptions: WidgetDisplayTypeOptions;
 
   constructor(
       private activeRepo: ActiveStore, private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
-      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {}
+      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+    for (let id of Object.keys(data.widgetConfigs)) {
+      this.widgetConfigs.push(data.widgetConfigs[id]);
+    }
+  }
 
   ngOnInit() {
     if (this.data && this.data.widget) {

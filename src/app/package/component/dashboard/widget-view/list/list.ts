@@ -5,7 +5,7 @@ import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
 import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {map} from 'rxjs/operators';
-import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
+import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 
 export interface WidgetData<O> {
   itemGroupsDataSource: ItemGroupsDataSource<any>;
@@ -21,7 +21,7 @@ export interface ListDisplayTypeOptions<S, V> {
   viewerState: ItemViewerState<V>;
 }
 
-export function getListConfigOptions(options: ListDisplayTypeOptions<any, any>): ConfigOption[] {
+export function getListConfigOptions(options: ListDisplayTypeOptions<any, any>): WidgetDataOption[] {
   return [
     {
       id: 'listLength',

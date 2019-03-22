@@ -3,7 +3,19 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '
 import {ActivatedRoute, Router} from '@angular/router';
 import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
 import {WidgetConfig} from 'app/package/component/dashboard/dashboard-view';
-import {Count} from 'app/package/component/dashboard/widget-view/count/count';
+import {
+  Count,
+  getCountConfigOptions
+} from 'app/package/component/dashboard/widget-view/count/count';
+import {getListConfigOptions, List} from 'app/package/component/dashboard/widget-view/list/list';
+import {
+  getPieChartConfigOptions,
+  PieChart
+} from 'app/package/component/dashboard/widget-view/pie-chart/pie-chart';
+import {
+  getTimeSeriesConfigOptions,
+  TimeSeries
+} from 'app/package/component/dashboard/widget-view/time-series/time-series';
 import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, Subject, Subscription} from 'rxjs';
@@ -27,10 +39,30 @@ export class DashboardPage {
   trackByIndex = (i: number) => i;
 
   widgetConfigs: {[key in string]: WidgetConfig} = {
-    count: {id: 'count', label: 'Count', component: Count},
-    list: {id: 'list', label: 'List', component: Count},
-    pie: {id: 'pie', label: 'Pie', component: Count},
-    timeSeries: {id: 'timeSeries', label: 'Time Series', component: Count},
+    count: {
+      id: 'count',
+      label: 'Count',
+      component: Count,
+      optionsProvider: getCountConfigOptions,
+    },
+    list: {
+      id: 'list',
+      label: 'List',
+      component: List,
+      optionsProvider: getListConfigOptions,
+    },
+    pie: {
+      id: 'pie',
+      label: 'Pie',
+      component: PieChart,
+      optionsProvider: getPieChartConfigOptions,
+    },
+    timeSeries: {
+      id: 'timeSeries',
+      label: 'Time Series',
+      component: TimeSeries,
+      optionsProvider: getTimeSeriesConfigOptions,
+    },
   };
 
   dataSources = new Map<string, DataSource>([

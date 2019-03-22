@@ -5,13 +5,15 @@ import {MatDialog, MatDialogConfig} from '@angular/material';
 import {take} from 'rxjs/operators';
 import {Column, ColumnGroup, Dashboard, Widget} from './dashboard';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
+import {WidgetDataOptionsProvider} from './edit-widget/widget-type-options/widget-type-options';
 import {DataSource} from './widget-view/widget-view';
 
 export interface WidgetConfig {
   id: string;
   label: string;
   component: ComponentType<any>;
-  widgetOptions?: any;
+  optionsProvider: WidgetDataOptionsProvider;
+  config?: any;
 }
 
 @Component({
@@ -63,6 +65,7 @@ export class DashboardView {
     const data: EditWidgetData = {
       widget,
       dataSources: this.dataSources,
+      widgetConfigs: this.widgetConfigs,
     };
 
     const config: MatDialogConfig<EditWidgetData> = {data, width: '650px'};

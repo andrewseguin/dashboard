@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {map} from 'rxjs/operators';
 
-import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
+import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 import {WIDGET_DATA, WidgetData} from '../list/list';
 
 
@@ -9,7 +9,7 @@ export interface CountDisplayTypeOptions {
   fontSize: 'small'|'normal'|'large';
 }
 
-export function getCountConfigOptions(options: CountDisplayTypeOptions): ConfigOption[] {
+export function getCountConfigOptions(options: CountDisplayTypeOptions): WidgetDataOption[] {
   return [
     {
       id: 'fontSize',

@@ -12,7 +12,7 @@ import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
-import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
+import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 import {WIDGET_DATA, WidgetData} from '../list/list';
 
 interface CreatedAndClosedDate {
@@ -39,7 +39,7 @@ export interface TimeSeriesDisplayTypeOptions {
   datasets: string|string[];
 }
 
-export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions): ConfigOption[] {
+export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions): WidgetDataOption[] {
   return [
     {
       id: 'start',

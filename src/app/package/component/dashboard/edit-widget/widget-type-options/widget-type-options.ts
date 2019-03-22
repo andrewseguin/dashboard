@@ -13,41 +13,31 @@ import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
 import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
-import {DisplayType, WidgetDisplayTypeOptions} from '../../dashboard';
-import {getCountConfigOptions} from '../../widget-view/count/count';
-import {getListConfigOptions} from '../../widget-view/list/list';
-import {getPieChartConfigOptions} from '../../widget-view/pie-chart/pie-chart';
-import {getTimeSeriesConfigOptions} from '../../widget-view/time-series/time-series';
+import {WidgetDisplayTypeOptions} from '../../dashboard';
 
 export type ConfigOptionType =
     'buttonToggle'|'datepicker'|'grouperState'|'input'|'sorterState'|'viewerState';
 
-export interface BaseConfigOption {
+export interface BaseWidgetDataOption {
   id: string;
   label: string;
   type: ConfigOptionType;
   initialValue?: any;
 }
 
-export interface InputConfigOption extends BaseConfigOption {
+export interface InputWidgetDataOption extends BaseWidgetDataOption {
   inputType?: 'text'|'number';
   placeholder?: string;
 }
 
-export interface ButtonToggleConfigOption extends BaseConfigOption {
+export interface ButtonToggleWidgetDataOption extends BaseWidgetDataOption {
   options?: {id: string, label: string}[];
 }
 
-export type ConfigOption = BaseConfigOption&InputConfigOption&ButtonToggleConfigOption;
+export type WidgetDataOption =
+    BaseWidgetDataOption&InputWidgetDataOption&ButtonToggleWidgetDataOption;
 
-export type ConfigOptionsProvider = (o: any) => ConfigOption[];
-
-export const DisplayTypeOptionConfigs: {[key in DisplayType]: ConfigOptionsProvider} = {
-  count: getCountConfigOptions,
-  list: getListConfigOptions,
-  pie: getPieChartConfigOptions,
-  timeSeries: getTimeSeriesConfigOptions,
-};
+export type WidgetDataOptionsProvider = (o: any) => WidgetDataOption[];
 
 @Component({
   selector: 'widget-type-options',
@@ -60,11 +50,11 @@ export class WidgetTypeOptions<G, S, V> {
   sortIds: S[] = [];
   viewLabels: string[] = [];
 
-  configOptions: ConfigOption[];
+  widgetDataOptions: WidgetDataOption[];
 
   formGroup: FormGroup;
 
-  @Input() type: DisplayType;
+  @Input() optionsProvider: WidgetDataOptionsProvider;
 
   @Input() options: WidgetDisplayTypeOptions;
 
@@ -82,7 +72,7 @@ export class WidgetTypeOptions<G, S, V> {
       this.sortIds = this.itemGroupsDataSource.sorter.getSorts().map(value => value.id);
       this.viewLabels = this.itemGroupsDataSource.viewer.getViews().map(value => value.label);
     }
-    if (simpleChanges['type'] && this.type) {
+    if (simpleChanges['optionsProvider'] && this.optionsProvider) {
       this.setupForm();
     }
   }
@@ -97,10 +87,10 @@ export class WidgetTypeOptions<G, S, V> {
       this.valueChangeSubscription.unsubscribe();
     }
 
-    this.configOptions = DisplayTypeOptionConfigs[this.type](this.options);
+    this.widgetDataOptions = this.optionsProvider(this.options);
 
     const controls: any = {};
-    this.configOptions.forEach(c => {
+    this.widgetDataOptions.forEach(c => {
       const initialValue = c.initialValue || this.getDefaultInitialValue(c.type);
       controls[c.id] = new FormControl(initialValue);
     });
