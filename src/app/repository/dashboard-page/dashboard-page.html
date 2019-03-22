@@ -1,7 +1,6 @@
 <dashboard-view *ngIf="dashboard" [dashboard]="dashboard" [edit]="edit | async"
                 [dataSources]="dataSources" (openWidget)="openQuery($event)"
-                [widgetConfigs]="widgetConfigs"
-                (dashboardChange)="saveDashboard($event)"></dashboard-view>
+                [widgetConfigs]="widgetConfigs" (dashboardChange)="saveDashboard($event)"></dashboard-view>
 
 <ng-template cdkPortal>
   <button mat-raised-button color="primary" class="view" *ngIf="edit | async; else editButton"
