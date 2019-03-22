@@ -3,9 +3,8 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
+import {DashboardViewModule} from 'app/package/component/dashboard/dashboard-view.module';
 import {DashboardPage} from './dashboard-page';
-import {DashboardViewModule} from './dashboard/dashboard-view.module';
-
 
 const routes: Routes = [{
   path: '',

@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material';
+import {Dashboard} from 'app/package/component/dashboard/dashboard';
 import {Config, RepoConfig} from 'app/service/config';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {map, mergeMap, take, tap} from 'rxjs/operators';
 import {ConfirmConfigUpdates} from '../shared/dialog/confirm-config-updates/confirm-config-updates';
-import {Dashboard, Query, Recommendation} from './dao';
+import {Query, Recommendation} from './dao';
 import {ConfigStore} from './dao/config/config-dao';
 import {compareLocalToRemote, IdentifiedObject, LocalToRemoteComparison} from './dao/list-dao';
 

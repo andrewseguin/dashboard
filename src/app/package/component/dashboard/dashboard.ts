@@ -1,17 +1,9 @@
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {
-  CountDisplayTypeOptions
-} from 'app/repository/dashboard-page/dashboard/widget-view/count/count';
-import {
-  ListDisplayTypeOptions
-} from 'app/repository/dashboard-page/dashboard/widget-view/list/list';
-import {
-  PieChartDisplayTypeOptions
-} from 'app/repository/dashboard-page/dashboard/widget-view/pie-chart/pie-chart';
-import {
-  TimeSeriesDisplayTypeOptions
-} from 'app/repository/dashboard-page/dashboard/widget-view/time-series/time-series';
-import {ItemType} from '../../services/dao/data/item';
+import {ItemType} from 'app/repository/services/dao';
+import {CountDisplayTypeOptions} from './widget-view/count/count';
+import {ListDisplayTypeOptions} from './widget-view/list/list';
+import {PieChartDisplayTypeOptions} from './widget-view/pie-chart/pie-chart';
+import {TimeSeriesDisplayTypeOptions} from './widget-view/time-series/time-series';
 
 export type DisplayType = 'list'|'count'|'pie'|'timeSeries';
 

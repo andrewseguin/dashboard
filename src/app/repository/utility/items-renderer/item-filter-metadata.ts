@@ -105,6 +105,15 @@ export const ItemsFilterMetadata =
           }
         }
       ],
+      [
+        'reactionCount', {
+          label: 'Reaction Count',
+          queryType: 'number',
+          matcher: (c: MatcherContext, q: Query) => {
+            return numberMatchesEquality(c.item.reactions['+1'], q as NumberQuery);
+          }
+        }
+      ],
 
       [
         'days-since-created', {

@@ -7,15 +7,19 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {Router} from '@angular/router';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {Theme} from 'app/repository/services';
 import {ActiveStore} from 'app/repository/services/active-repo';
-import {Widget} from 'app/repository/dashboard-page/dashboard/dashboard';
-import {
-  getItemsList,
-  GithubItemGroupsDataSource
-} from 'app/repository/services/github-item-groups-data-source';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import * as Chart from 'chart.js';
+import {Widget} from '../dashboard';
+
+export type DataSourceFactory = () => ItemGroupsDataSource<any>;
+
+export interface DataSource {
+  id: string;
+  label: string;
+  factory: DataSourceFactory;
+}
 
 @Component({
   selector: 'widget-view',
@@ -33,26 +37,23 @@ export class WidgetView {
 
   @Input() dashboardId: string;
 
+  @Input() dataSourceFactory: DataSourceFactory;
+
   @Output() edit = new EventEmitter<void>();
 
   @Output() duplicate = new EventEmitter<void>();
 
   @Output() remove = new EventEmitter<void>();
 
-  public itemGroupsDataSource =
-      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+  public itemGroupsDataSource: ItemGroupsDataSource<any>;
 
-  constructor(
-      private router: Router, private theme: Theme, private activeRepo: ActiveStore,
-      private itemRecommendations: ItemRecommendations) {
+  constructor(private router: Router, private theme: Theme, private activeRepo: ActiveStore) {
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
-      this.itemGroupsDataSource.dataProvider =
-          getItemsList(this.activeRepo.activeData, this.widget.itemType);
-
+      this.itemGroupsDataSource = this.dataSourceFactory();
       if (this.widget.filtererState) {
         this.itemGroupsDataSource.filterer.setState(this.widget.filtererState);
       }

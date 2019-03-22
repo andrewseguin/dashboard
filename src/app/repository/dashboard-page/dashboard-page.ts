@@ -2,12 +2,14 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Column, Dashboard, hasWidgets} from 'app/package/component/dashboard/dashboard';
+import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
 import {Subject, Subscription} from 'rxjs';
 import {delay, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
-import {Column, Dashboard, hasWidgets} from './dashboard/dashboard';
-
+import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
+import {ItemRecommendations} from '../services/item-recommendations';
 
 @Component({
   selector: 'dashboard-page',
@@ -22,6 +24,35 @@ export class DashboardPage {
 
   trackByIndex = (i: number) => i;
 
+  dataSources = new Map<string, DataSource>([
+    [
+      'issue', {
+        id: 'issue',
+        label: 'Issues',
+        factory:
+            () => {
+              const datasource =
+                  new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+              datasource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');
+              return datasource;
+            }
+      }
+    ],
+    [
+      'pr', {
+        id: 'pr',
+        label: 'Pull Requests',
+        factory:
+            () => {
+              const datasource =
+                  new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+              datasource.dataProvider = getItemsList(this.activeRepo.activeData, 'pr');
+              return datasource;
+            }
+      }
+    ],
+  ]);
+
   private destroyed = new Subject();
 
   private getSubscription: Subscription;
@@ -30,7 +61,8 @@ export class DashboardPage {
 
   constructor(
       private router: Router, private activatedRoute: ActivatedRoute,
-      private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
+      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
+      private header: Header, private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
 

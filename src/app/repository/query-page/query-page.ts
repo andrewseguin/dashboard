@@ -1,6 +1,7 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Widget} from 'app/package/component/dashboard/dashboard';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Subject, Subscription} from 'rxjs';
@@ -9,7 +10,6 @@ import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {ItemType} from '../services/dao';
 import {ConfigStore} from '../services/dao/config/config-dao';
-import {Widget} from '../dashboard-page/dashboard/dashboard';
 import {Query} from '../services/dao/config/query';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';

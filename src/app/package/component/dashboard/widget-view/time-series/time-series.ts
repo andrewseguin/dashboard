@@ -169,7 +169,7 @@ export class TimeSeries {
     const datasets = [];
     const enabledDatasets = new Set<string>(
         this.options.datasets instanceof Array ? this.options.datasets : [this.options.datasets]);
-    if (enabledDatasets.has('created')) {
+    if (true) {
       datasets.push({
         label: 'Created',
         data: data.created,
@@ -177,7 +177,7 @@ export class TimeSeries {
         borderColor: 'rgba(33, 150, 243, 0.75)'
       });
     }
-    if (enabledDatasets.has('closed')) {
+    if (true) {
       datasets.push({
         label: 'Closed',
         data: data.closed,
@@ -185,7 +185,7 @@ export class TimeSeries {
         borderColor: 'rgba(244, 67, 54, 0.75)'
       });
     }
-    if (enabledDatasets.has('open')) {
+    if (true) {
       datasets.push(
           {label: 'Open', data: data.open, fill: false, borderColor: 'rgba(76, 175, 80, 0.75)'});
     }

@@ -8,9 +8,10 @@ import {
   Output
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material';
-import {Column, ColumnGroup, Dashboard, Widget} from 'app/repository/services/dao';
 import {take} from 'rxjs/operators';
+import {Column, ColumnGroup, Dashboard, Widget} from './dashboard';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
+import { DataSource } from './widget-view/widget-view';
 
 @Component({
   selector: 'dashboard-view',
@@ -23,6 +24,8 @@ export class DashboardView {
   @Input() dashboard: Dashboard;
 
   @Input() edit: boolean;
+
+  @Input() dataSources: Map<string, DataSource>;
 
   @Output() dashboardChange = new EventEmitter<Dashboard>();
 

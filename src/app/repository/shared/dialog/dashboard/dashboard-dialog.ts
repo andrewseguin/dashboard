@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
+import {Dashboard} from 'app/package/component/dashboard/dashboard';
 import {ActiveStore} from 'app/repository/services/active-repo';
-import {Dashboard} from 'app/repository/dashboard-page/dashboard/dashboard';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DeleteConfirmation} from '../delete-confirmation/delete-confirmation';
 import {DashboardEdit} from './dashboard-edit/dashboard-edit';
-
 
 @Injectable()
 export class DashboardDialog {

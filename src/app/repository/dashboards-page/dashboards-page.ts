@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {ActiveStore} from '../services/active-repo';
-import {Dashboard} from '../dashboard-page/dashboard/dashboard';
 import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
+import { Dashboard } from 'app/package/component/dashboard/dashboard';
 
 
 @Component({

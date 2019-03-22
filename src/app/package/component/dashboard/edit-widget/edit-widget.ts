@@ -3,7 +3,6 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ItemViewer} from 'app/package/items-renderer/item-viewer';
 import {ActiveStore} from 'app/repository/services/active-repo';
-import {Widget, WidgetDisplayTypeOptions} from 'app/repository/dashboard-page/dashboard/dashboard';
 import {Query} from 'app/repository/services/dao/config/query';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {
@@ -22,6 +21,8 @@ import {
 } from 'app/repository/utility/items-renderer/item-viewer-metadata';
 import {Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
+
+import {Widget, WidgetDisplayTypeOptions} from '../dashboard';
 
 
 export interface EditWidgetData {
