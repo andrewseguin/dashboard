@@ -1,5 +1,5 @@
-<dashboard-view *ngIf="dashboard" [dashboard]="dashboard" [edit]="edit.value"
-                [dataSources]="dataSources"
+<dashboard-view *ngIf="dashboard" [dashboard]="dashboard"
+                [edit]="edit.valueChanges | async" [dataSources]="dataSources"
                 (dashboardChange)="saveDashboard($event)"></dashboard-view>
 
 <ng-template cdkPortal>
