@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {combineLatest} from 'rxjs';
-import {delay, map, mergeMap, startWith} from 'rxjs/operators';
+import {map, mergeMap, startWith} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {Recommendation} from '../services/dao';
@@ -28,7 +28,6 @@ export class RecommendationsPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   sortedRecommendations = this.activeRepo.config.pipe(
-      delay(150),
       mergeMap(
           store => combineLatest(
               store.recommendations.list, this.filter.valueChanges.pipe(startWith('')))),

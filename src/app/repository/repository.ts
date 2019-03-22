@@ -50,6 +50,7 @@ export class Repository {
         .subscribe(() => {
           this.updater.update(store, 'items');
         });
+
     this.updater.update(store, 'contributors');
     this.updater.update(store, 'labels');
   }

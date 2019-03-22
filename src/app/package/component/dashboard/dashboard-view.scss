@@ -7,6 +7,7 @@
 .column-group {
   display: flex;
   flex-direction: column;
+  margin: 16px 16px 0 16px;
 }
 
 .columns {
@@ -17,12 +18,15 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin: 16px 16px 8px 16px;
   border-width: 1px;
   border-style: solid;
 
   :host:not(.edit-mode) & {
     border-width: 0;
+  }
+
+  & + .column {
+    margin-left: 16px;
   }
 }
 
@@ -70,4 +74,8 @@ widget-view:not(.cdk-drag-disabled) {
 
 .widgets:not(.cdk-drop-list-dragging):not(.cdk-drop-list-receiving) {
   background: inherit;
+}
+
+.add-column-group {
+  height: 200px;
 }

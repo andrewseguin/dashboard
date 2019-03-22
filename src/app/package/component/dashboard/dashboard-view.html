@@ -1,7 +1,7 @@
 <ng-container *ngIf="dashboard">
   <!-- Column Group-->
-  <div
-       *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index; trackBy: trackByIndex">
+  <ng-container
+                *ngFor="let columnGroup of dashboard.columnGroups; let last = last; let first = first; let columnGroupIndex = index; trackBy: trackByIndex">
 
     <div class="column-group" cdkDropListGroup>
       <button mat-button *ngIf="edit && !first"
@@ -46,9 +46,10 @@
         </button>
       </div>
     </div>
-  </div>
+  </ng-container>
 
-  <button mat-button *ngIf="edit" (click)="addColumnGroup()">
+  <button mat-button class="add-column-group" *ngIf="edit"
+          (click)="addColumnGroup()">
     <mat-icon> add </mat-icon> Group
   </button>
 </ng-container>

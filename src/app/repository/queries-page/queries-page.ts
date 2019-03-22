@@ -64,7 +64,7 @@ export class QueriesPage {
       this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
 
   queries =
-      this.activeRepo.config.pipe(delay(150), mergeMap(configStore => configStore.queries.list));
+      this.activeRepo.config.pipe(delay(100), mergeMap(configStore => configStore.queries.list));
 
   queryGroups = this.queries.pipe(map(queries => this.getSortedGroups(queries)));
 

@@ -28,6 +28,8 @@ import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
   animations: EXPANSION_ANIMATION
 })
 export class EditableRecommendation {
+  hasExpanded = false;
+
   expanded = false;
 
   itemsFilterer = createItemsFilterer(this.itemRecommendations, this.activeRepo.activeData);
@@ -120,6 +122,7 @@ export class EditableRecommendation {
   }
 
   expand() {
+    this.hasExpanded = true;
     this.expanded = true;
     this.cd.markForCheck();
   }
