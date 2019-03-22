@@ -1,5 +1,5 @@
 <div class="widget-header theme-text" *ngIf="editMode || widget.title">
-  <div class="title" (click)="!editMode ? openWidget.emit() : null">
+  <div class="title" (click)="!editMode ? open.emit() : null">
     {{widget.title}}
   </div>
   <button mat-icon-button *ngIf="editMode" [matMenuTriggerFor]="settings">

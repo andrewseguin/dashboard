@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {combineLatest, Observable} from 'rxjs';
-import {delay, filter, map, mergeMap} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 import {ActiveStore} from '../services/active-repo';
 import {ItemType} from '../services/dao';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
+import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
 
 
@@ -29,14 +30,23 @@ export class QueriesPage {
       mergeMap(configStore => combineLatest(configStore.queries.list, this.type)),
       map(result => result[0].filter(item => item.type === result[1])), map(getSortedGroups));
 
-  queryResultsCount = this.activeRepo.data.pipe(
-      mergeMap(
-          store => combineLatest(
-              store.items.list, this.queryGroups, this.issueRecommendations.allRecommendations,
-              this.type, store.labels.map)),
-      filter(result => result.every(r => !!r)), delay(1000), map(() => {
-        // TODO: Reimplement with the renderer
-        return 0;
+  queryResultsCount = this.activeRepo.config.pipe(
+      mergeMap(config => combineLatest(config.queries.list, this.type)), map(results => {
+        const queries = results[0].filter(query => query.type === results[1]);
+
+        const queryCountMap = new Map<string, Observable<number>>();
+        queries.forEach(query => {
+          const dataSource =
+              new GithubItemGroupsDataSource(this.issueRecommendations, this.activeRepo);
+          dataSource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');
+
+          if (query.filtererState) {
+            dataSource.filterer.setState(query.filtererState!);
+          }
+          queryCountMap.set(query.id!, dataSource.connect().pipe(map(result => result.count)));
+        });
+
+        return queryCountMap;
       }));
 
   queryKeyTrackBy = (_i: number, itemQuery: Query) => itemQuery.id;

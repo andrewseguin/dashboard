@@ -28,7 +28,7 @@
              (click)="navigateToQuery(query.id)">
           <div class="name"> {{query.name}}
             <ng-container *ngIf="queryResultsCount | async; let countMap">
-              ({{countMap.get(query.id)}})
+              ({{countMap.get(query.id) | async}})
             </ng-container>
           </div>
 
@@ -47,7 +47,8 @@
 </ng-template>
 
 <mat-menu #recommendations="matMenu" class="recommendations-menu">
-  <button mat-menu-item *ngFor="let recommendation of recommendationsList | async"
+  <button mat-menu-item
+          *ngFor="let recommendation of recommendationsList | async"
           (click)="createQueryFromRecommendation(recommendation)">
     {{recommendation.message}}
   </button>

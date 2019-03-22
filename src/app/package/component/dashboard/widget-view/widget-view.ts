@@ -40,7 +40,7 @@ export class WidgetView {
 
   @Output() remove = new EventEmitter<void>();
 
-  @Output() openWidget = new EventEmitter<Widget>();
+  @Output() open = new EventEmitter<Widget>();
 
   public itemGroupsDataSource: ItemGroupsDataSource<any>;
 

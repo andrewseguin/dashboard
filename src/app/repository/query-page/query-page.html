@@ -11,7 +11,7 @@
       </button>
 
       <button mat-raised-button color="primary" *ngIf="query.id"
-              (click)="save()" [disabled]="!(canSave | async)">
+              (click)="saveState()" [disabled]="!(canSave | async)">
         {{canSave ? 'Save' : 'Saved'}}
       </button>
 

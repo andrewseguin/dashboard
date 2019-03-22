@@ -30,8 +30,7 @@
                          [dashboardId]="dashboard.id"
                          (duplicate)="duplicateWidget(column, widget, widgetIndex)"
                          (edit)="editWidget(column, widgetIndex)"
-                         (openWidget)="openWidget.emit(widget)"
-                         [editMode]="edit"
+                         (open)="openWidget.emit(widget)" [editMode]="edit"
                          (remove)="removeWidget(column, widgetIndex)">
             </widget-view>
           </div>
