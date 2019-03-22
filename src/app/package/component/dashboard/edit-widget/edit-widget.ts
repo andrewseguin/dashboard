@@ -88,16 +88,18 @@ export class EditWidget<S, V, G> {
   }
 
   edit() {
-    combineLatest(this.itemGroupsDataSource, this.dataSourceType).pipe(take(1)).subscribe(results => {
-      const widget: Widget = {
-        title: this.form.value.title,
-        dataSourceType: results[1],
-        filtererState: results[0].filterer.getState(),
-        displayType: this.form.value.displayType,
-        displayTypeOptions: this.displayTypeOptions
-      };
+    combineLatest(this.itemGroupsDataSource, this.dataSourceType)
+        .pipe(take(1))
+        .subscribe(results => {
+          const widget: Widget = {
+            title: this.form.value.title,
+            dataSourceType: results[1],
+            filtererState: results[0].filterer.getState(),
+            displayType: this.form.value.displayType,
+            displayTypeOptions: this.displayTypeOptions
+          };
 
-      this.dialogRef.close(widget);
-    });
+          this.dialogRef.close(widget);
+        });
   }
 }

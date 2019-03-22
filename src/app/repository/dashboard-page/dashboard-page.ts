@@ -1,17 +1,9 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {
-  Column,
-  Dashboard,
-  DisplayType,
-  hasWidgets,
-  Widget
-} from 'app/package/component/dashboard/dashboard';
+import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
+import {WidgetConfig} from 'app/package/component/dashboard/dashboard-view';
 import {Count} from 'app/package/component/dashboard/widget-view/count/count';
-import {List} from 'app/package/component/dashboard/widget-view/list/list';
-import {PieChart} from 'app/package/component/dashboard/widget-view/pie-chart/pie-chart';
-import {TimeSeries} from 'app/package/component/dashboard/widget-view/time-series/time-series';
 import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, Subject, Subscription} from 'rxjs';
@@ -34,11 +26,11 @@ export class DashboardPage {
 
   trackByIndex = (i: number) => i;
 
-  widgetConfigs: {[key in DisplayType]: any} = {
-    count: Count,
-    list: List,
-    pie: PieChart,
-    timeSeries: TimeSeries,
+  widgetConfigs: {[key in string]: WidgetConfig} = {
+    count: {id: 'count', label: 'Count', component: Count},
+    list: {id: 'list', label: 'List', component: Count},
+    pie: {id: 'pie', label: 'Pie', component: Count},
+    timeSeries: {id: 'timeSeries', label: 'Time Series', component: Count},
   };
 
   dataSources = new Map<string, DataSource>([

@@ -1,10 +1,18 @@
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {ComponentType} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {take} from 'rxjs/operators';
-import {Column, ColumnGroup, Dashboard, DisplayType, Widget} from './dashboard';
+import {Column, ColumnGroup, Dashboard, Widget} from './dashboard';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
 import {DataSource} from './widget-view/widget-view';
+
+export interface WidgetConfig {
+  id: string;
+  label: string;
+  component: ComponentType<any>;
+  widgetOptions?: any;
+}
 
 @Component({
   selector: 'dashboard-view',
@@ -20,7 +28,7 @@ export class DashboardView {
 
   @Input() dataSources: Map<string, DataSource>;
 
-  @Input() widgetConfigs: {[key in DisplayType]: any};
+  @Input() widgetConfigs: {[key in string]: WidgetConfig};
 
   @Output() dashboardChange = new EventEmitter<Dashboard>();
 
@@ -33,7 +41,7 @@ export class DashboardView {
       this.dashboard.columnGroups = [];
     }
 
-    this.dashboard.columnGroups.push({columns: [{widgets: []}]});
+    this.dashboard.columnGroups.push({columns: [{widgets: []}, {widgets: []}, {widgets: []}]});
     this.save();
   }
 

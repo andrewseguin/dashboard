@@ -11,6 +11,7 @@ import {
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 
 import {Widget} from '../dashboard';
+import {WidgetConfig} from '../dashboard-view';
 
 import {WIDGET_DATA, WidgetData} from './list/list';
 
@@ -32,7 +33,7 @@ export interface DataSource {
   },
 })
 export class WidgetView {
-  @Input() widgetConfig: any;
+  @Input() widgetConfig: WidgetConfig;
 
   @Input() widget: Widget;
 
@@ -71,6 +72,7 @@ export class WidgetView {
 
     const injectionTokens = new WeakMap<any, any>([[WIDGET_DATA, widgetData]]);
     const widgetInjector = new PortalInjector(this.injector, injectionTokens);
-    this.widgetComponentPortal = new ComponentPortal(this.widgetConfig, null, widgetInjector);
+    this.widgetComponentPortal =
+        new ComponentPortal(this.widgetConfig.component, null, widgetInjector);
   }
 }
