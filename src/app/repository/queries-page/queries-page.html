@@ -14,9 +14,14 @@
             ({{(query.count | async) || '..'}})
           </div>
 
-          <query-menu [query]="query" icon="more_vert"
-                      (click)="$event.stopPropagation()">
-          </query-menu>
+          <div class="end">
+            <div class="query-type theme-secondary-text">
+              {{dataSources.get(query.type).label}}
+            </div>
+            <query-menu [query]="query" icon="more_vert"
+                        (click)="$event.stopPropagation()">
+            </query-menu>
+          </div>
         </div>
         <mat-divider></mat-divider>
       </ng-container>

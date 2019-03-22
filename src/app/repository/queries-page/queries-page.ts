@@ -11,8 +11,15 @@ import {Recommendation} from '../services/dao/config/recommendation';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
 
+interface QueryListItem {
+  id: string;
+  name: string;
+  type: string;
+  count: Observable<number>;
+}
+
 interface QueryGroup {
-  queries: {id: string, name: string, count: Observable<number>}[];
+  queries: QueryListItem[];
   name: string;
 }
 
@@ -105,14 +112,19 @@ export class QueriesPage {
   }
 
   private getSortedGroups(queries: Query[]) {
-    const groups = new Map<string, {id: string, name: string, count: Observable<number>}[]>();
+    const groups = new Map<string, QueryListItem[]>();
     queries.forEach(query => {
       const group = query.group || 'Other';
       if (!groups.has(group)) {
         groups.set(group, []);
       }
 
-      groups.get(group)!.push({id: query.id!, name: query.name!, count: this.getQueryCount(query)});
+      groups.get(group)!.push({
+        id: query.id!,
+        name: query.name!,
+        count: this.getQueryCount(query),
+        type: query.dataSourceType!,
+      });
     });
 
     const sortedGroups: QueryGroup[] = [];

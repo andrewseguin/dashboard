@@ -3,7 +3,7 @@ import {LoadedRepos} from 'app/service/loaded-repos';
 import {Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {ActiveStore} from '../services/active-repo';
-import {RepoDaoType, DataStore} from '../services/dao/data/data-dao';
+import {DataStore, RepoDaoType} from '../services/dao/data/data-dao';
 import {Remover} from '../services/remover';
 import {isRepoStoreEmpty} from '../utility/is-repo-store-empty';
 
@@ -17,8 +17,7 @@ import {isRepoStoreEmpty} from '../utility/is-repo-store-empty';
 export class DatabasePage {
   isEmpty = this.activeRepo.data.pipe(mergeMap(store => isRepoStoreEmpty(store)));
 
-  isLoaded =
-      this.activeRepo.name.pipe(map(activeRepo => this.loadedRepos.isLoaded(activeRepo)));
+  isLoaded = this.activeRepo.name.pipe(map(activeRepo => this.loadedRepos.isLoaded(activeRepo)));
 
   repoLabels = this.activeRepo.data.pipe(
       mergeMap(store => store.labels.list), map(labels => labels.map(l => l.id)));

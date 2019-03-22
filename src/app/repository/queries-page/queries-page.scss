@@ -40,24 +40,16 @@
   }
 }
 
-.new-buttons {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  margin: 32px;
-  z-index: 1;
+.end {
   display: flex;
-  flex-direction: column;
-  flex-direction: column;
   align-items: center;
 
-  button {
-    margin-top: 16px;
-
-    ::ng-deep .mat-button-wrapper {
-      padding: 0;
-      line-height: 0;
-    }
+  .query-type {
+    border-width: 1px;
+    border-style: solid;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 8px;
   }
 }
 
