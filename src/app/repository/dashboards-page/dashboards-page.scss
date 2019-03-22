@@ -39,14 +39,11 @@
 
 loading {
   width: 100%;
+  margin-top: 64px;
 }
 
-button[mat-fab] {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  margin: 32px;
-  z-index: 1;
+button.create {
+  margin-right: 16px;
 }
 
 .settings {
