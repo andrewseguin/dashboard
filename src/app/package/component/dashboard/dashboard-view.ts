@@ -1,17 +1,10 @@
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {take} from 'rxjs/operators';
 import {Column, ColumnGroup, Dashboard, Widget} from './dashboard';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
-import { DataSource } from './widget-view/widget-view';
+import {DataSource} from './widget-view/widget-view';
 
 @Component({
   selector: 'dashboard-view',
@@ -29,7 +22,9 @@ export class DashboardView {
 
   @Output() dashboardChange = new EventEmitter<Dashboard>();
 
-  constructor(private dialog: MatDialog, private cd: ChangeDetectorRef) {}
+  @Output() openWidget = new EventEmitter<Widget>();
+
+  constructor(private dialog: MatDialog) {}
 
   addColumnGroup() {
     if (!this.dashboard.columnGroups) {
@@ -92,7 +87,6 @@ export class DashboardView {
 
   private save() {
     this.dashboardChange.emit(this.dashboard);
-    this.cd.markForCheck();
   }
 
   dropWidget(event: CdkDragDrop<Widget[]>) {

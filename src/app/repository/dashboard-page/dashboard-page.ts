@@ -2,11 +2,12 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Column, Dashboard, hasWidgets} from 'app/package/component/dashboard/dashboard';
+import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
 import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
+import * as Chart from 'chart.js';
 import {Subject, Subscription} from 'rxjs';
 import {delay, takeUntil} from 'rxjs/operators';
-import {Header} from '../services';
+import {Header, Theme} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
 import {ItemRecommendations} from '../services/item-recommendations';
@@ -60,9 +61,12 @@ export class DashboardPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private router: Router, private activatedRoute: ActivatedRoute,
+      private router: Router, private activatedRoute: ActivatedRoute, private theme: Theme,
       private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
       private header: Header, private cd: ChangeDetectorRef) {
+    // TODO: Needs to listen for theme changes to know when this should change
+    Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
+
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
 
@@ -121,5 +125,11 @@ export class DashboardPage {
     }
 
     this.header.goBack = true;
+  }
+
+  openQuery(widget: Widget) {
+    this.router.navigate(
+        [`../../query/new`],
+        {queryParams: {'widget': JSON.stringify(widget)}, relativeTo: this.activatedRoute.parent});
   }
 }

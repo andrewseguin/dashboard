@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigOption} from '../../edit-widget/widget-type-options/widget-type-options';
@@ -36,8 +36,8 @@ export function getCountConfigOptions(options: CountDisplayTypeOptions): ConfigO
     'class': 'theme-text',
   }
 })
-export class Count {
-  @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
+export class Count<T> {
+  @Input() itemGroupsDataSource: ItemGroupsDataSource<T>;
 
   @Input() options: CountDisplayTypeOptions;
 

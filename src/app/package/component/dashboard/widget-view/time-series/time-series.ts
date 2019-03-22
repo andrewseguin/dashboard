@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
-import {Item} from 'app/repository/services/dao';
-import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -72,10 +71,10 @@ export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions
   styleUrls: ['time-series.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimeSeries {
+export class TimeSeries<T> {
   chart: Chart;
 
-  @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
+  @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
 
   @Input() options: TimeSeriesDisplayTypeOptions;
 
@@ -143,10 +142,12 @@ export class TimeSeries {
     return '';
   }
 
-  getData(items: Item[]):
+  getData(items: T[]):
       {open: TimeSeriesData[], created: TimeSeriesData[], closed: TimeSeriesData[]} {
+    // TODO: This shouldn't be any - can we use a metadata file for this? Viewer? Grouper?
     const dates: CreatedAndClosedDate[] = items.map(
-        item => ({created: this.roundDate(item.created), closed: this.roundDate(item.closed)}));
+        (item: any) =>
+            ({created: this.roundDate(item.created), closed: this.roundDate(item.closed)}));
     const dateCounts = this.getDateCounts(dates);
 
     let open = 0;
@@ -163,13 +164,13 @@ export class TimeSeries {
     return {created: createdData, closed: closedData, open: openData};
   }
 
-  getDatasets(items: Item[]): Chart.ChartDataSets[] {
+  getDatasets(items: T[]): Chart.ChartDataSets[] {
     const data = this.getData(items);
 
     const datasets = [];
     const enabledDatasets = new Set<string>(
         this.options.datasets instanceof Array ? this.options.datasets : [this.options.datasets]);
-    if (true) {
+    if (enabledDatasets.has('created')) {
       datasets.push({
         label: 'Created',
         data: data.created,
@@ -177,7 +178,7 @@ export class TimeSeries {
         borderColor: 'rgba(33, 150, 243, 0.75)'
       });
     }
-    if (true) {
+    if (enabledDatasets.has('closed')) {
       datasets.push({
         label: 'Closed',
         data: data.closed,
@@ -185,7 +186,7 @@ export class TimeSeries {
         borderColor: 'rgba(244, 67, 54, 0.75)'
       });
     }
-    if (true) {
+    if (enabledDatasets.has('open')) {
       datasets.push(
           {label: 'Open', data: data.open, fill: false, borderColor: 'rgba(76, 175, 80, 0.75)'});
     }
@@ -193,8 +194,8 @@ export class TimeSeries {
     return datasets;
   }
 
-  render(groups: ItemGroup<Item>[]) {
-    const items: Item[] = [];
+  render(groups: ItemGroup<T>[]) {
+    const items: T[] = [];
     groups.forEach(g => items.push(...g.items));
     const datasets = this.getDatasets(items);
 

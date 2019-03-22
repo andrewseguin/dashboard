@@ -1,5 +1,5 @@
 <ng-container
-              *ngFor="let item of (items | async)?.slice(0, options.listLength); trackBy: trackById; let last = last">
+              *ngFor="let item of (items | async)?.slice(0, options.listLength); trackBy: trackByIndex; let last = last">
   <item-summary [item]="item"
                 [enabledViews]="(itemViewer.state | async)?.views || []"
                 (select)="openItemModal($event)">

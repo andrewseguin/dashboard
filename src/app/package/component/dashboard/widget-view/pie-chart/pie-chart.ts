@@ -7,9 +7,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {ItemGroup, ItemGrouperState} from 'app/package/items-renderer/item-grouper';
-import {Theme} from 'app/repository/services';
-import {Item} from 'app/repository/services/dao';
-import {GithubItemGroupsDataSource} from 'app/repository/services/github-item-groups-data-source';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -45,10 +43,10 @@ export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any
   styleUrls: ['pie-chart.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PieChart<G> {
+export class PieChart<T, G> {
   chart: Chart;
 
-  @Input() itemGroupsDataSource: GithubItemGroupsDataSource;
+  @Input() itemGroupsDataSource: ItemGroupsDataSource<T>;
 
   @Input() options: PieChartDisplayTypeOptions<G>;
 
@@ -56,7 +54,7 @@ export class PieChart<G> {
 
   private destroyed = new Subject();
 
-  constructor(private theme: Theme) {}
+  constructor() {}
 
   ngOnInit() {
     this.itemGroupsDataSource.connect()
@@ -75,7 +73,7 @@ export class PieChart<G> {
     this.destroyed.complete();
   }
 
-  private getInfo(groups: ItemGroup<Item>[]): {data: number[], labels: string[]} {
+  private getInfo(groups: ItemGroup<T>[]): {data: number[], labels: string[]} {
     const data: number[] = [];
     const labels: string[] = [];
     groups.forEach((group, index) => {
@@ -91,7 +89,7 @@ export class PieChart<G> {
     return {data, labels};
   }
 
-  render(groups: ItemGroup<Item>[]) {
+  render(groups: ItemGroup<T>[]) {
     if (this.options.filteredGroups) {
       const filteredGroupsSet =
           new Set<string>(this.options.filteredGroups.split(',').map(v => v.trim()));
@@ -109,10 +107,7 @@ export class PieChart<G> {
         datasets: [{data: info.data, backgroundColor: MaterialColors, borderColor: 'transparent'}],
         labels: info.labels
       };
-      const options: Chart.ChartOptions = {
-        cutoutPercentage: 50,
-        legend: {labels: {fontColor: this.theme.isLight ? 'black' : 'white'}, position: 'bottom'}
-      };
+      const options: Chart.ChartOptions = {cutoutPercentage: 50, legend: {position: 'bottom'}};
 
       this.chart = new Chart(this.canvas.nativeElement, {type: 'pie', data: chartData, options});
       this.chart.render();

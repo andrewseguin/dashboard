@@ -6,15 +6,10 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {Router} from '@angular/router';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
-import {Theme} from 'app/repository/services';
-import {ActiveStore} from 'app/repository/services/active-repo';
-import * as Chart from 'chart.js';
 import {Widget} from '../dashboard';
 
 export type DataSourceFactory = () => ItemGroupsDataSource<any>;
-
 export interface DataSource {
   id: string;
   label: string;
@@ -45,11 +40,9 @@ export class WidgetView {
 
   @Output() remove = new EventEmitter<void>();
 
-  public itemGroupsDataSource: ItemGroupsDataSource<any>;
+  @Output() openWidget = new EventEmitter<Widget>();
 
-  constructor(private router: Router, private theme: Theme, private activeRepo: ActiveStore) {
-    Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
-  }
+  public itemGroupsDataSource: ItemGroupsDataSource<any>;
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['widget'] && this.widget) {
@@ -58,11 +51,5 @@ export class WidgetView {
         this.itemGroupsDataSource.filterer.setState(this.widget.filtererState);
       }
     }
-  }
-
-  openQuery() {
-    this.router.navigate(
-        [`${this.activeRepo.activeName}/query/new`],
-        {queryParams: {'widget': JSON.stringify(this.widget)}});
   }
 }
