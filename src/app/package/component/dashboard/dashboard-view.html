@@ -27,7 +27,7 @@
             <widget-view *ngFor="let widget of column.widgets; let widgetIndex = index; trackBy: trackByIndex"
                          cdkDrag [cdkDragDisabled]="!edit" [widget]="widget"
                          [dataSourceFactory]="dataSources.get(widget.dataSourceType).factory"
-                         [widgetTypes]="widgetTypes"
+                         [widgetConfig]="widgetConfigs[widget.displayType]"
                          (duplicate)="duplicateWidget(column, widget, widgetIndex)"
                          (edit)="editWidget(column, widget, widgetIndex)"
                          (open)="openWidget.emit(widget)" [editMode]="edit"

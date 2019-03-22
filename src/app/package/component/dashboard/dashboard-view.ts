@@ -4,10 +4,6 @@ import {MatDialog, MatDialogConfig} from '@angular/material';
 import {take} from 'rxjs/operators';
 import {Column, ColumnGroup, Dashboard, DisplayType, Widget} from './dashboard';
 import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
-import {Count} from './widget-view/count/count';
-import {List} from './widget-view/list/list';
-import {PieChart} from './widget-view/pie-chart/pie-chart';
-import {TimeSeries} from './widget-view/time-series/time-series';
 import {DataSource} from './widget-view/widget-view';
 
 @Component({
@@ -24,16 +20,11 @@ export class DashboardView {
 
   @Input() dataSources: Map<string, DataSource>;
 
+  @Input() widgetConfigs: {[key in DisplayType]: any};
+
   @Output() dashboardChange = new EventEmitter<Dashboard>();
 
   @Output() openWidget = new EventEmitter<Widget>();
-
-  widgetTypes: {[key in DisplayType]: any} = {
-    count: Count,
-    list: List,
-    pie: PieChart,
-    timeSeries: TimeSeries,
-  };
 
   constructor(private dialog: MatDialog) {}
 

@@ -1,7 +1,17 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
+import {
+  Column,
+  Dashboard,
+  DisplayType,
+  hasWidgets,
+  Widget
+} from 'app/package/component/dashboard/dashboard';
+import {Count} from 'app/package/component/dashboard/widget-view/count/count';
+import {List} from 'app/package/component/dashboard/widget-view/list/list';
+import {PieChart} from 'app/package/component/dashboard/widget-view/pie-chart/pie-chart';
+import {TimeSeries} from 'app/package/component/dashboard/widget-view/time-series/time-series';
 import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, Subject, Subscription} from 'rxjs';
@@ -23,6 +33,13 @@ export class DashboardPage {
   edit = new BehaviorSubject<boolean>(false);
 
   trackByIndex = (i: number) => i;
+
+  widgetConfigs: {[key in DisplayType]: any} = {
+    count: Count,
+    list: List,
+    pie: PieChart,
+    timeSeries: TimeSeries,
+  };
 
   dataSources = new Map<string, DataSource>([
     [

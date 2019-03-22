@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 
-import {DisplayType, Widget} from '../dashboard';
+import {Widget} from '../dashboard';
 
 import {WIDGET_DATA, WidgetData} from './list/list';
 
@@ -32,7 +32,7 @@ export interface DataSource {
   },
 })
 export class WidgetView {
-  @Input() widgetTypes: {[key in DisplayType]: any};
+  @Input() widgetConfig: any;
 
   @Input() widget: Widget;
 
@@ -71,7 +71,6 @@ export class WidgetView {
 
     const injectionTokens = new WeakMap<any, any>([[WIDGET_DATA, widgetData]]);
     const widgetInjector = new PortalInjector(this.injector, injectionTokens);
-    this.widgetComponentPortal =
-        new ComponentPortal(this.widgetTypes[this.widget.displayType!], null, widgetInjector);
+    this.widgetComponentPortal = new ComponentPortal(this.widgetConfig, null, widgetInjector);
   }
 }
