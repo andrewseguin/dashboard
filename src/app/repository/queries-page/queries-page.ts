@@ -2,8 +2,8 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, Component, Inject, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
-import {Observable} from 'rxjs';
-import {delay, map, mergeMap} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {DATA_SOURCES} from '../repository';
 import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
@@ -44,6 +44,8 @@ export class QueriesPage {
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
+  private destroyed = new Subject();
+
   constructor(
       @Inject(DATA_SOURCES) private dataSources: Map<string, DataSource>, private header: Header,
       private router: Router, private issueRecommendations: ItemRecommendations,
@@ -52,7 +54,19 @@ export class QueriesPage {
   }
 
   ngOnInit() {
-    this.header.toolbarOutlet.next(this.toolbarActions);
+    this.queries.pipe(takeUntil(this.destroyed)).subscribe(list => {
+      if (list.length) {
+        this.header.toolbarOutlet.next(this.toolbarActions);
+      } else {
+        this.header.toolbarOutlet.next(null);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.header.toolbarOutlet.next(null);
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
   createQuery(type: string) {
@@ -67,10 +81,6 @@ export class QueriesPage {
 
   navigateToQuery(id: string) {
     this.router.navigate([`${this.activeRepo.activeName}/query/${id}`]);
-  }
-
-  ngOnDestroy() {
-    this.header.toolbarOutlet.next(null);
   }
 
   private getQueryCount(query: Query): Observable<number> {

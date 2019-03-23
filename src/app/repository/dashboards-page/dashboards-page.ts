@@ -2,6 +2,8 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {Dashboard} from 'app/package/component/dashboard/dashboard';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
@@ -20,16 +22,26 @@ export class DashboardsPage {
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
+  private destroyed = new Subject();
+
   constructor(
       private header: Header, private router: Router, public dashboardDialog: DashboardDialog,
       private activeRepo: ActiveStore) {}
 
   ngOnInit() {
-    this.header.toolbarOutlet.next(this.toolbarActions);
+    this.list.pipe(takeUntil(this.destroyed)).subscribe(list => {
+      if (list.length) {
+        this.header.toolbarOutlet.next(this.toolbarActions);
+      } else {
+        this.header.toolbarOutlet.next(null);
+      }
+    });
   }
 
   ngOnDestroy() {
     this.header.toolbarOutlet.next(null);
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
   createDashboard() {

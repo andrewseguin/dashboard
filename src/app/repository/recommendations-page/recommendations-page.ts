@@ -7,8 +7,8 @@ import {
   ViewChildren
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {combineLatest} from 'rxjs';
-import {map, mergeMap, startWith} from 'rxjs/operators';
+import {combineLatest, Subject} from 'rxjs';
+import {map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
 import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {Recommendation} from '../services/dao';
@@ -27,6 +27,8 @@ export class RecommendationsPage {
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
+  private destroyed = new Subject();
+
   sortedRecommendations = this.activeRepo.config.pipe(
       mergeMap(
           store => combineLatest(
@@ -40,10 +42,18 @@ export class RecommendationsPage {
   constructor(private header: Header, private activeRepo: ActiveStore) {}
 
   ngOnInit() {
-    this.header.toolbarOutlet.next(this.toolbarActions);
+    this.sortedRecommendations.pipe(takeUntil(this.destroyed)).subscribe(list => {
+      if (list.length) {
+        this.header.toolbarOutlet.next(this.toolbarActions);
+      } else {
+        this.header.toolbarOutlet.next(null);
+      }
+    });
   }
 
   ngOnDestroy() {
+    this.destroyed.next();
+    this.destroyed.complete();
     this.header.toolbarOutlet.next(null);
   }
 
