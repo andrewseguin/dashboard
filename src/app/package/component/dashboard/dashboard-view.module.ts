@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
 import {WidgetViewModule} from '../widget/widget-view/widget-view.module';
 import {DashboardView} from './dashboard-view';
-import {EditWidgetModule} from './edit-widget/edit-widget.module';
+import { EditWidgetModule } from '../widget/edit-widget/edit-widget.module';
 
 @NgModule({
   imports: [CommonModule, MaterialModule, EditWidgetModule, WidgetViewModule],

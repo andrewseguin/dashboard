@@ -4,8 +4,8 @@ import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
+import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 import {WIDGET_DATA, WidgetData} from '../list/list';
-import { WidgetDataOption } from 'app/package/component/dashboard/edit-widget/widget-type-options/widget-type-options';
 
 
 interface CreatedAndClosedDate {

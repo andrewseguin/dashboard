@@ -1,12 +1,10 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {
-  WidgetDataOption
-} from 'app/package/component/dashboard/edit-widget/widget-type-options/widget-type-options';
 import {ItemGroup, ItemGrouperState} from 'app/package/items-renderer/item-grouper';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
+import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 import {WIDGET_DATA, WidgetData} from '../list/list';
 
 

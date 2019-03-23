@@ -1,10 +1,8 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {
-  WidgetDataOption
-} from 'app/package/component/dashboard/edit-widget/widget-type-options/widget-type-options';
 import {map} from 'rxjs/operators';
 
 import {WIDGET_DATA, WidgetData} from '../list/list';
+import { WidgetDataOption } from '../../edit-widget/widget-type-options/widget-type-options';
 
 
 export interface CountDisplayTypeOptions {

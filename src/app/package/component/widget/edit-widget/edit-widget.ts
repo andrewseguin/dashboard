@@ -7,8 +7,8 @@ import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import {filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
+import {SavedFiltererState, WidgetConfig} from '../../dashboard/dashboard-view';
 import {Widget} from '../../widget/widget';
-import {SavedFiltererState, WidgetConfig} from '../dashboard-view';
 
 
 export interface EditWidgetData {

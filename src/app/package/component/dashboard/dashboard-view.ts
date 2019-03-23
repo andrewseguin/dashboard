@@ -5,10 +5,12 @@ import {MatDialog, MatDialogConfig} from '@angular/material';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
 import {take} from 'rxjs/operators';
+import {EditWidget, EditWidgetData} from '../widget/edit-widget/edit-widget';
+import {
+  WidgetDataOptionsProvider
+} from '../widget/edit-widget/widget-type-options/widget-type-options';
+import {Widget} from '../widget/widget';
 import {Column, ColumnGroup, Dashboard} from './dashboard';
-import {EditWidget, EditWidgetData} from './edit-widget/edit-widget';
-import {WidgetDataOptionsProvider} from './edit-widget/widget-type-options/widget-type-options';
-import { Widget } from '../widget/widget';
 
 export interface WidgetConfig {
   id: string;
