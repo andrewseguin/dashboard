@@ -30,13 +30,20 @@
   }
 }
 
-.column-group .mat-button {
-  height: 64px;
+button {
   margin: 8px;
-}
 
-.column-group .columns > .mat-button {
-  align-self: center;
+  &.add-widget, &.remove-column {
+    height: 64px;
+  }
+
+  &.add-column {
+    align-self: center;
+  }
+
+  &.add-column-group {
+    height: 200px;
+  }
 }
 
 widget-view + widget-view {
@@ -74,8 +81,4 @@ widget-view:not(.cdk-drag-disabled) {
 
 .widgets:not(.cdk-drop-list-dragging):not(.cdk-drop-list-receiving) {
   background: inherit;
-}
-
-.add-column-group {
-  height: 200px;
 }

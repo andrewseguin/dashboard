@@ -96,7 +96,10 @@ export function getGroupByValue<T>(items: T[], property: string): ItemGroup<T>[]
 export function getGroupByListValues<T>(items: T[], key: string): ItemGroup<T>[] {
   const map: Map<string, T[]> = new Map();
   items.forEach((item: any) => {
-    const values: any[] = item[key] ? item[key] : [];
+    let values: any[] = item[key];
+    if (!values || !values.length) {
+      values = [null];
+    }
     values.forEach((value: any) => {
       if (!map.get(value)) {
         map.set(value, []);

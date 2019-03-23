@@ -11,7 +11,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemGroupsRenderer, RenderState} from 'app/package/items-renderer/item-groups-renderer';
-import {combineLatest, fromEvent, Observable, Subject} from 'rxjs';
+import {fromEvent, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
@@ -45,7 +45,7 @@ export class ItemsList<T> {
 
   renderState = new Subject<RenderState<T>>();
 
-  hasMore: Observable<boolean>;
+  hasMore = this.renderState.pipe(map(state => state.count < state.total));
 
   constructor(
       public ngZone: NgZone, private activatedRoute: ActivatedRoute,
@@ -58,11 +58,6 @@ export class ItemsList<T> {
     });
 
     this.itemCount = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
-
-    this.hasMore =
-        combineLatest(this.renderState, this.itemGroupsDataSource.connect()).pipe(map(result => {
-          return result[0].count < result[1].count;
-        }));
   }
 
   ngOnDestroy() {

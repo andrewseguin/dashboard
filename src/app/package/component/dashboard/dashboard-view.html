@@ -14,10 +14,10 @@
         <!-- Column -->
         <div *ngFor="let column of columnGroup.columns; let columnIndex = index; let first = first; trackBy: trackByIndex"
              class="column" [class.theme-border]="edit">
-          <button mat-button *ngIf="edit"
+          <button mat-button *ngIf="edit" class="remove-column"
                   [style.visibility]="first ? 'hidden' : ''"
                   (click)="removeColumn(columnGroup, columnIndex)">
-            <mat-icon> delete </mat-icon> Remove Column
+            <mat-icon> delete </mat-icon> Column
           </button>
 
           <div class="widgets theme-background-hover" cdkDropList
@@ -36,13 +36,15 @@
           </div>
 
 
-          <button mat-button *ngIf="edit" (click)="addWidget(column)"
+          <button mat-raised-button *ngIf="edit" (click)="addWidget(column)"
                   class="add-widget">
             <mat-icon> add </mat-icon> Widget
           </button>
         </div>
-        <button mat-button *ngIf="edit" (click)="addColumn(columnGroup)">
+        <button mat-button class="add-column" *ngIf="edit"
+                (click)="addColumn(columnGroup)">
           <mat-icon> add </mat-icon>
+          <div> Column </div>
         </button>
       </div>
     </div>

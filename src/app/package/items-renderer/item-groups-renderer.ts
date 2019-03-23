@@ -6,6 +6,7 @@ import {ItemGroupsDataSource} from './item-groups-data-source';
 export interface RenderState<T> {
   groups: ItemGroup<T>[];
   count: number;
+  total: number;
 }
 
 export class ItemGroupsRenderer<T> {
@@ -54,6 +55,13 @@ export class ItemGroupsRenderer<T> {
   }
 
   getRenderState(): RenderState<T> {
+    let total = 0;
+    this.itemGroups.forEach(g => total += g.items.length);
+
+    if (!this.itemGroups.length) {
+      return {groups: [], count: 0, total};
+    }
+
     const itemGroups = [];
     let count = 0;
 
@@ -68,6 +76,6 @@ export class ItemGroupsRenderer<T> {
       index++;
     } while (itemsToRender > 0 && itemGroups.length !== this.itemGroups.length);
 
-    return {groups: itemGroups, count};
+    return {groups: itemGroups, count, total};
   }
 }
