@@ -1,6 +1,6 @@
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {DataStore} from '../services/dao/data/data-dao';
+import {DataStore} from '../services/dao/data-dao';
 
 /** Whether the store contains repo data (labels, items, contributors) */
 export function isRepoStoreEmpty(store: DataStore) {

@@ -7,7 +7,7 @@ import {LoadedRepos} from 'app/service/loaded-repos';
 import {of} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {ConfigDaoType, ConfigStore} from './dao/config/config-dao';
-import {RepoDaoType, DataStore} from './dao/data/data-dao';
+import {RepoDaoType, DataStore} from './dao/data-dao';
 
 @Injectable()
 export class Remover {

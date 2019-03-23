@@ -4,7 +4,7 @@ import * as hljs from 'highlight.js';
 import * as Remarkable from 'remarkable';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {DataStore} from './dao/data/data-dao';
+import {DataStore} from './dao/data-dao';
 
 @Injectable()
 export class Markdown {

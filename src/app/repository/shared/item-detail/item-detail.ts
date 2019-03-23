@@ -3,7 +3,7 @@ import {SafeHtml} from '@angular/platform-browser';
 import {ActiveStore} from 'app/repository/services/active-store';
 import {Item} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
-import {Dao} from 'app/repository/services/dao/data/data-dao';
+import {Dao} from 'app/repository/services/dao/data-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';

@@ -3,7 +3,7 @@ import {ActivatedRoute, Params} from '@angular/router';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 import {ConfigDao, ConfigStore} from './dao/config/config-dao';
-import {Dao, DataStore} from './dao/data/data-dao';
+import {Dao, DataStore} from './dao/data-dao';
 
 @Injectable()
 export class ActiveStore {

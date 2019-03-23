@@ -3,7 +3,7 @@ import {Github} from 'app/service/github';
 import {Observable, of} from 'rxjs';
 import {filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Contributor, Item, Label} from './dao';
-import {RepoDaoType, DataStore} from './dao/data/data-dao';
+import {RepoDaoType, DataStore} from './dao/data-dao';
 import {compareLocalToRemote, ListDao} from './dao/list-dao';
 
 export interface StaleIssuesState {

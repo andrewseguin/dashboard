@@ -5,7 +5,7 @@ import {MaterialModule} from 'app/material.module';
 import {Repository} from './repository';
 import {ActiveStore} from './services/active-store';
 import {ConfigDao} from './services/dao/config/config-dao';
-import {Dao} from './services/dao/data/data-dao';
+import {Dao} from './services/dao/data-dao';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Markdown} from './services/markdown';
 import {Remover} from './services/remover';

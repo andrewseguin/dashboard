@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {AppIndexedDb} from '../../../utility/app-indexed-db';
-import {Contributor} from './contributor';
-import {Item} from './item';
-import {Label} from './label';
-import {ListDao} from '../list-dao';
+import {AppIndexedDb} from '../../utility/app-indexed-db';
+import {Contributor} from '../../../github/app-types/contributor';
+import {Item} from '../../../github/app-types/item';
+import {Label} from '../../../github/app-types/label';
+import {ListDao} from './list-dao';
 
 export interface DataStore {
   name: string;

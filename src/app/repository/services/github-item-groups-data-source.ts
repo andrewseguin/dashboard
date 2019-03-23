@@ -9,27 +9,26 @@ import {
   AutocompleteContext,
   ItemsFilterMetadata,
   MatcherContext
-} from '../utility/github-data-source/item-filter-metadata';
+} from '../../github/data-source/item-filter-metadata';
 import {
   GithubItemGroupingMetadata,
   Group,
   TitleTransformContext
-} from '../utility/github-data-source/item-grouper-metadata';
-import {GithubItemSortingMetadata, Sort} from '../utility/github-data-source/item-sorter-metadata';
+} from '../../github/data-source/item-grouper-metadata';
+import {GithubItemSortingMetadata, Sort} from '../../github/data-source/item-sorter-metadata';
 import {
   GithubItemView,
   GithubItemViewerMetadata,
   ViewContext
-} from '../utility/github-data-source/item-viewer-metadata';
+} from '../../github/data-source/item-viewer-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
 import {ActiveStore} from './active-store';
 import {Item, Label} from './dao';
-import {DataStore} from './dao/data/data-dao';
+import {DataStore} from './dao/data-dao';
 import {ListDao} from './dao/list-dao';
 import {ItemRecommendations} from './item-recommendations';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
-
   constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {
     super();
 
