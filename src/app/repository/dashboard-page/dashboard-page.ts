@@ -1,5 +1,11 @@
 import {CdkPortal} from '@angular/cdk/portal';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  ViewChild
+} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
 import {WidgetConfig} from 'app/package/component/dashboard/dashboard-view';
@@ -20,10 +26,9 @@ import {DataSource} from 'app/package/component/dashboard/widget-view/widget-vie
 import * as Chart from 'chart.js';
 import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 import {delay, takeUntil} from 'rxjs/operators';
+import {DATA_SOURCES} from '../repository';
 import {Header, Theme} from '../services';
 import {ActiveStore} from '../services/active-repo';
-import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
-import {ItemRecommendations} from '../services/item-recommendations';
 
 @Component({
   selector: 'dashboard-page',
@@ -65,35 +70,6 @@ export class DashboardPage {
     },
   };
 
-  dataSources = new Map<string, DataSource>([
-    [
-      'issue', {
-        id: 'issue',
-        label: 'Issues',
-        factory:
-            () => {
-              const datasource =
-                  new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
-              datasource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');
-              return datasource;
-            }
-      }
-    ],
-    [
-      'pr', {
-        id: 'pr',
-        label: 'Pull Requests',
-        factory:
-            () => {
-              const datasource =
-                  new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
-              datasource.dataProvider = getItemsList(this.activeRepo.activeData, 'pr');
-              return datasource;
-            }
-      }
-    ],
-  ]);
-
   private destroyed = new Subject();
 
   private getSubscription: Subscription;
@@ -101,8 +77,8 @@ export class DashboardPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private router: Router, private activatedRoute: ActivatedRoute, private theme: Theme,
-      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
+      @Inject(DATA_SOURCES) public dataSources: Map<string, DataSource>, private router: Router,
+      private activatedRoute: ActivatedRoute, private theme: Theme, private activeRepo: ActiveStore,
       private header: Header, private cd: ChangeDetectorRef) {
     // TODO: Needs to listen for theme changes to know when this should change
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';

@@ -33,6 +33,7 @@ export class ActiveStore {
       private activatedRoute: ActivatedRoute, private dao: Dao, private configDao: ConfigDao) {
     this.activatedRoute.firstChild!.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       this.data.next(this.getStoreFromParams(params));
+      this.config.next(this.getConfigStoreFromParams(params));
     });
   }
 

@@ -1,9 +1,10 @@
 import {CdkPortal} from '@angular/cdk/portal';
-import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
 import {Observable} from 'rxjs';
 import {delay, map, mergeMap} from 'rxjs/operators';
+import {DATA_SOURCES} from '../repository';
 import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {Query} from '../services/dao/config/query';
@@ -29,35 +30,6 @@ interface QueryGroup {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class QueriesPage {
-  dataSources = new Map<string, DataSource>([
-    [
-      'issue', {
-        id: 'issue',
-        label: 'Issues',
-        factory:
-            () => {
-              const datasource =
-                  new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
-              datasource.dataProvider = getItemsList(this.activeRepo.activeData, 'issue');
-              return datasource;
-            }
-      }
-    ],
-    [
-      'pr', {
-        id: 'pr',
-        label: 'Pull Requests',
-        factory:
-            () => {
-              const datasource =
-                  new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
-              datasource.dataProvider = getItemsList(this.activeRepo.activeData, 'pr');
-              return datasource;
-            }
-      }
-    ],
-  ]);
-
   dataSourceTypes: string[] = [];
 
   recommendationsList =
@@ -73,7 +45,7 @@ export class QueriesPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private itemRecommendations: ItemRecommendations, private header: Header,
+      @Inject(DATA_SOURCES) private dataSources: Map<string, DataSource>, private header: Header,
       private router: Router, private issueRecommendations: ItemRecommendations,
       private activeRepo: ActiveStore) {
     this.dataSources.forEach(dataSource => this.dataSourceTypes.push(dataSource.id));
