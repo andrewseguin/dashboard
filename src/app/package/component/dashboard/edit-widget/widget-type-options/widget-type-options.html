@@ -1,11 +1,12 @@
-<div class="config-option" *ngFor="let option of widgetDataOptions" [formGroup]="formGroup"
-     [ngSwitch]="option.type">
+<div class="config-option" *ngFor="let option of widgetDataOptions"
+     [formGroup]="formGroup" [ngSwitch]="option.type">
 
   <div class="label"> {{option.label}} </div>
 
   <div class="option" *ngSwitchCase="'buttonToggle'">
     <mat-button-toggle-group [formControlName]="option.id">
-      <mat-button-toggle *ngFor="let option of option.options" [value]="option.id">
+      <mat-button-toggle *ngFor="let option of option.options"
+                         [value]="option.id">
         {{option.label}}
       </mat-button-toggle>
     </mat-button-toggle-group>
@@ -13,14 +14,15 @@
 
 
   <div class="option" *ngSwitchCase="'datepicker'">
-    <input class="theme-border" [formControlName]="option.id" [matDatepicker]="picker"
-           (click)="picker.open()">
+    <input class="theme-border" [formControlName]="option.id"
+           [matDatepicker]="picker" (click)="picker.open()">
     <mat-datepicker #picker></mat-datepicker>
   </div>
 
 
   <div class="option" *ngSwitchCase="'grouperState'">
-    <mat-select class="theme-border" [value]="formGroup.get(option.id).value.group"
+    <mat-select class="theme-border"
+                [value]="formGroup.get(option.id).value.group"
                 (valueChange)="setGrouperStateFormValue(option.id, $event)">
       <mat-option *ngFor="let groupId of groupIds" [value]="groupId">
         {{itemGroupsDataSource.grouper.metadata.get(groupId)?.label}}
@@ -36,13 +38,15 @@
 
 
   <div class="option" *ngSwitchCase="'sorterState'">
-    <mat-select class="theme-border auto-width" #sortIdSelect [value]="formGroup.get(option.id).value.sort"
+    <mat-select class="theme-border auto-width" #sortIdSelect
+                [value]="formGroup.get(option.id).value.sort"
                 (valueChange)="setSorterStateFormValue(option.id, $event, sortDirSelect.value)">
       <mat-option *ngFor="let sortId of sortIds" [value]="sortId">
         {{itemGroupsDataSource.sorter.metadata.get(sortId)?.label}}
       </mat-option>
     </mat-select>
-    <mat-select class="theme-border auto-width" #sortDirSelect [value]="formGroup.get(option.id).value.reverse"
+    <mat-select class="theme-border auto-width" #sortDirSelect
+                [value]="formGroup.get(option.id).value.reverse"
                 (valueChange)="setSorterStateFormValue(option.id, sortIdSelect.value, $event)">
       <mat-option [value]="false"> Ascending </mat-option>
       <mat-option [value]="true"> Descending </mat-option>
@@ -52,7 +56,8 @@
 
   <div class="option" *ngSwitchCase="'viewerState'">
     <editable-chip-list [values]="formGroup.get(option.id).value.views"
-                        [autocomplete]="viewLabels" (listChange)="setViewerStateFormValues(option.id, $event)">
+                        [options]="viewLabelOptions"
+                        (valuesChange)="setViewerStateFormValues(option.id, $event)">
     </editable-chip-list>
   </div>
 </div>

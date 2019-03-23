@@ -7,6 +7,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
+import {EditableChipListOption} from 'app/package/component/editable-chip-list/editable-chip-list';
 import {ItemGrouperState} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
@@ -48,7 +49,7 @@ export type WidgetDataOptionsProvider = (o: any) => WidgetDataOption[];
 export class WidgetTypeOptions<G, S, V> {
   groupIds: G[] = [];
   sortIds: S[] = [];
-  viewLabels: string[] = [];
+  viewLabelOptions: EditableChipListOption[] = [];
 
   widgetDataOptions: WidgetDataOption[];
 
@@ -70,7 +71,8 @@ export class WidgetTypeOptions<G, S, V> {
     if (simpleChanges['itemGroupsDataSource'] && this.itemGroupsDataSource) {
       this.groupIds = this.itemGroupsDataSource.grouper.getGroups().map(value => value.id);
       this.sortIds = this.itemGroupsDataSource.sorter.getSorts().map(value => value.id);
-      this.viewLabels = this.itemGroupsDataSource.viewer.getViews().map(value => value.label);
+      this.viewLabelOptions =
+          this.itemGroupsDataSource.viewer.getViews().map(v => ({id: v.id, label: v.label}));
     }
     if (simpleChanges['optionsProvider'] && this.optionsProvider) {
       this.setupForm();
