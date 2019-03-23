@@ -48,7 +48,7 @@ export class EditWidget<S, V, G> {
   itemCount = this.itemGroupsDataSource.pipe(
       mergeMap(dataSource => dataSource.connect().pipe(map(result => result.count))));
 
-  private _destroyed = new Subject();
+  private destroyed = new Subject();
 
   widgetConfigs: WidgetConfig[] = [];
 
@@ -65,7 +65,7 @@ export class EditWidget<S, V, G> {
     this.dataSourceType
         .pipe(
             map(type => this.data.dataSources.get(type)), filter(v => !!v),
-            takeUntil(this._destroyed))
+            takeUntil(this.destroyed))
         .subscribe(dataSource => {
           this.itemGroupsDataSource.next(dataSource!.factory());
         });
@@ -92,8 +92,8 @@ export class EditWidget<S, V, G> {
   }
 
   ngOnDestroy() {
-    this._destroyed.next();
-    this._destroyed.complete();
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
   edit() {
