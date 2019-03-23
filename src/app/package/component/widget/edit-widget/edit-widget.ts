@@ -12,15 +12,6 @@ import {Widget} from '../../widget/widget';
 
 import {WidgetDataOptionsProvider} from './widget-type-options/widget-type-options';
 
-
-export interface WidgetConfig {
-  id: string;
-  label: string;
-  component: ComponentType<any>;
-  optionsProvider: WidgetDataOptionsProvider;
-  config?: any;
-}
-
 export interface SavedFiltererState {
   state: ItemFiltererState;
   group: string;
