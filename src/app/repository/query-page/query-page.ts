@@ -52,12 +52,10 @@ export class QueryPage {
   public itemGroupsDataSource =
       new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
 
-  public itemViewer = this.itemGroupsDataSource.viewer;
-
   public canSave =
       combineLatest(
           this.itemGroupsDataSource.filterer.state, this.itemGroupsDataSource.grouper.state,
-          this.itemGroupsDataSource.sorter.state, this.itemViewer.state)
+          this.itemGroupsDataSource.sorter.state, this.itemGroupsDataSource.viewer.state)
           .pipe(map(() => !this.areStatesEquivalent()));
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
@@ -130,7 +128,7 @@ export class QueryPage {
       filtererState: this.itemGroupsDataSource.filterer.getState(),
       grouperState: this.itemGroupsDataSource.grouper.getState(),
       sorterState: this.itemGroupsDataSource.sorter.getState(),
-      viewerState: this.itemViewer.getState(),
+      viewerState: this.itemGroupsDataSource.viewer.getState(),
     };
 
     this.activeRepo.activeConfig.queries.update({...this.query, ...queryState});
@@ -193,7 +191,7 @@ export class QueryPage {
 
     const viewerState = this.query.viewerState;
     if (viewerState) {
-      this.itemViewer.setState(viewerState);
+      this.itemGroupsDataSource.viewer.setState(viewerState);
     }
   }
 
@@ -204,8 +202,8 @@ export class QueryPage {
         this.itemGroupsDataSource.grouper.isEquivalent(this.query.grouperState);
     const sorterStatesEquivalent = this.query.sorterState &&
         this.itemGroupsDataSource.sorter.isEquivalent(this.query.sorterState);
-    const viewerStatesEquivalent =
-        this.query.viewerState && this.itemViewer.isEquivalent(this.query.viewerState);
+    const viewerStatesEquivalent = this.query.viewerState &&
+        this.itemGroupsDataSource.viewer.isEquivalent(this.query.viewerState);
 
     return filtererStatesEquivalent && grouperStatesEquivalent && sorterStatesEquivalent &&
         viewerStatesEquivalent;
