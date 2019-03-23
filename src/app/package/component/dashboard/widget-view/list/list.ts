@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, Inject, InjectionToken} from '@angul
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
 import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 
@@ -60,12 +61,14 @@ export class List<S, V> {
 
   options: ListDisplayTypeOptions<S, V>;
 
-  items = this.data.itemGroupsDataSource.connect().pipe(map(result => result.groups[0].items));
+  items: Observable<any[]>;
 
   constructor(@Inject(WIDGET_DATA) public data:
                   WidgetData<ListDisplayTypeOptions<S, V>, ListWidgetConfig>) {
     this.options = data.options;
     data.itemGroupsDataSource.sorter.setState(this.options.sorterState);
     data.itemGroupsDataSource.viewer.setState(this.options.viewerState);
+    this.items =
+        this.data.itemGroupsDataSource.connect().pipe(map(result => result.groups[0].items));
   }
 }

@@ -51,10 +51,10 @@ export class PieChart<T, G> {
   }
 
   ngOnInit() {
+    this.data.itemGroupsDataSource.grouper.setState(this.data.options.grouperState);
     this.data.itemGroupsDataSource.connect()
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result.groups));
-    this.data.itemGroupsDataSource.grouper.setState(this.data.options.grouperState);
   }
 
   ngOnDestroy() {
