@@ -1,19 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Inject,
-  Input,
-  ViewChild
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 import {WIDGET_DATA, WidgetData} from '../list/list';
+
 
 interface CreatedAndClosedDate {
   created: string;
@@ -39,7 +32,8 @@ export interface TimeSeriesDisplayTypeOptions {
   datasets: string|string[];
 }
 
-export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions): WidgetDataOption[] {
+export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions):
+    WidgetDataOption[] {
   return [
     {
       id: 'start',
@@ -76,28 +70,21 @@ export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions
 
 @Component({
   selector: 'time-series',
-  templateUrl: 'time-series.html',
+  template: `<canvas #canvas></canvas>`,
   styleUrls: ['time-series.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeSeries<T> {
   chart: Chart;
 
-  @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
-
-  @Input() options: TimeSeriesDisplayTypeOptions;
-
   @ViewChild('canvas') canvas: ElementRef;
 
   private destroyed = new Subject();
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions>) {
-    this.itemGroupsDataSource = data.itemGroupsDataSource;
-    this.options = data.options;
-  }
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions>) {}
 
   ngOnInit() {
-    this.itemGroupsDataSource.connect()
+    this.data.itemGroupsDataSource.connect()
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result.groups));
   }
@@ -140,7 +127,7 @@ export class TimeSeries<T> {
       return '';
     }
 
-    switch (this.options.group) {
+    switch (this.data.options.group) {
       case 'day':
         return dateStr.substring(0, 10);
       case 'month':
@@ -181,7 +168,8 @@ export class TimeSeries<T> {
 
     const datasets = [];
     const enabledDatasets = new Set<string>(
-        this.options.datasets instanceof Array ? this.options.datasets : [this.options.datasets]);
+        this.data.options.datasets instanceof Array ? this.data.options.datasets :
+                                                      [this.data.options.datasets]);
     if (enabledDatasets.has('created')) {
       datasets.push({
         label: 'Created',
@@ -211,8 +199,11 @@ export class TimeSeries<T> {
     groups.forEach(g => items.push(...g.items));
     const datasets = this.getDatasets(items);
 
-    const time:
-        Chart.TimeScale = {min: this.options.start, max: this.options.end, tooltipFormat: 'll'};
+    const time: Chart.TimeScale = {
+      min: this.data.options.start,
+      max: this.data.options.end,
+      tooltipFormat: 'll'
+    };
 
     if (this.chart) {
       // Remove animations since dataset changes can cause weird glitching

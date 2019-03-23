@@ -1,26 +1,20 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  SimpleChanges,
-  ViewChild,
-  Inject
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
 import {ItemGroup, ItemGrouperState} from 'app/package/items-renderer/item-grouper';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+
 import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
-import { WIDGET_DATA, WidgetData } from '../list/list';
+import {WIDGET_DATA, WidgetData} from '../list/list';
+
 
 export interface PieChartDisplayTypeOptions<G> {
   grouperState: ItemGrouperState<G>;
   filteredGroups: string;
 }
 
-export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>): WidgetDataOption[] {
+export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>):
+    WidgetDataOption[] {
   return [
     {
       id: 'grouperState',
@@ -41,36 +35,26 @@ export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any
 
 @Component({
   selector: 'pie-chart',
-  templateUrl: 'pie-chart.html',
+  template: `<canvas #canvas></canvas>`,
   styleUrls: ['pie-chart.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PieChart<T, G> {
   chart: Chart;
 
-  @Input() itemGroupsDataSource: ItemGroupsDataSource<T>;
-
-  @Input() options: PieChartDisplayTypeOptions<G>;
-
   @ViewChild('canvas') canvas: ElementRef;
 
   private destroyed = new Subject();
 
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<PieChartDisplayTypeOptions<G>>) {
-    this.itemGroupsDataSource = data.itemGroupsDataSource;
-    this.options = data.options;
+    data.itemGroupsDataSource = data.itemGroupsDataSource;
   }
 
   ngOnInit() {
-    this.itemGroupsDataSource.connect()
+    this.data.itemGroupsDataSource.connect()
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result.groups));
-  }
-
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['options'] && this.options) {
-      this.itemGroupsDataSource.grouper.setState(this.options.grouperState);
-    }
+    this.data.itemGroupsDataSource.grouper.setState(this.data.options.grouperState);
   }
 
   ngOnDestroy() {
@@ -95,9 +79,9 @@ export class PieChart<T, G> {
   }
 
   render(groups: ItemGroup<T>[]) {
-    if (this.options.filteredGroups) {
+    if (this.data.options.filteredGroups) {
       const filteredGroupsSet =
-          new Set<string>(this.options.filteredGroups.split(',').map(v => v.trim()));
+          new Set<string>(this.data.options.filteredGroups.split(',').map(v => v.trim()));
       groups = groups.filter(g => filteredGroupsSet.has(g.title));
     }
 
