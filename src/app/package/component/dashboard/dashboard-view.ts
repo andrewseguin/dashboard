@@ -3,13 +3,8 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {take} from 'rxjs/operators';
-import {
-  EditWidget,
-  EditWidgetData,
-  SavedFiltererState,
-  WidgetConfig
-} from '../widget/edit-widget/edit-widget';
-import {Widget} from '../widget/widget';
+import {EditWidget, EditWidgetData, SavedFiltererState} from '../widget/edit-widget/edit-widget';
+import {Widget, WidgetConfig} from '../widget/widget';
 import {Column, ColumnGroup, Dashboard} from './dashboard';
 
 @Component({

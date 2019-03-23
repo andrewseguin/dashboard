@@ -1,4 +1,3 @@
-import {ComponentType} from '@angular/cdk/overlay/index';
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
@@ -8,9 +7,8 @@ import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import {filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
-import {Widget} from '../../widget/widget';
+import {Widget, WidgetConfig} from '../../widget/widget';
 
-import {WidgetDataOptionsProvider} from './widget-type-options/widget-type-options';
 
 export interface SavedFiltererState {
   state: ItemFiltererState;
