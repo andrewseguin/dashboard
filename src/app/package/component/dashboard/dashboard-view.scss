@@ -33,6 +33,12 @@
 button {
   margin: 8px;
 
+  &.add-widget {
+    margin: 16px 0;
+    border-width: 1px;
+    border-style: solid;
+  }
+
   &.add-widget, &.remove-column {
     height: 64px;
   }
@@ -48,6 +54,15 @@ button {
 
 widget-view + widget-view {
   margin-top: 16px;
+}
+
+.widgets-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.widgets {
+  flex: 1;
 }
 
 :host.edit-mode .widgets {
