@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular
 import {SafeHtml} from '@angular/platform-browser';
 import {ActiveStore} from 'app/repository/services/active-repo';
 import {Item} from 'app/repository/services/dao';
-import {Dao} from 'app/repository/services/dao/data/data-dao';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
+import {Dao} from 'app/repository/services/dao/data/data-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';
@@ -42,17 +42,18 @@ export class ItemDetail {
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
+      this.itemId = `${this.itemId}`;  // Make sure its a string since maps are string-ID based
       const store = this.dao.get(this.activeRepo.activeName);
       this.item = store.items.get(this.itemId);
       this.bodyMarkdown = this.markdown.getItemBodyMarkdown(store, this.itemId);
       this.recommendations = this.itemRecommendations.allRecommendations.pipe(
           map(recommendations => recommendations.get(this.itemId) || []));
 
-      this.activities = this.activeRepo.name.pipe(
-          mergeMap(repository => {
+      this.activities = this.activeRepo.data.pipe(
+          mergeMap(dataStore => {
             return combineLatest(
-                this.github.getComments(repository!, this.itemId),
-                this.github.getTimeline(repository!, this.itemId));
+                this.github.getComments(dataStore.name!, this.itemId),
+                this.github.getTimeline(dataStore.name!, this.itemId));
           }),
           filter(result => {
             const commentsResult = result[0];

@@ -2,13 +2,13 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MaterialModule} from 'app/material.module';
 import {
-  IssueDetailDialogModule
+  ItemDetailDialogModule
 } from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog.module';
 import {ItemSummaryModule} from 'app/repository/shared/items-list/item-summary/item-summary.module';
 import {List} from './list';
 
 @NgModule({
-  imports: [CommonModule, MaterialModule, ItemSummaryModule, IssueDetailDialogModule],
+  imports: [CommonModule, MaterialModule, ItemSummaryModule, ItemDetailDialogModule],
   declarations: [List],
   exports: [List],
   entryComponents: [List]

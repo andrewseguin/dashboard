@@ -15,5 +15,5 @@ import {ItemDetailDialog} from './item-detail-dialog';
   exports: [ItemDetailDialog],
   entryComponents: [ItemDetailDialog]
 })
-export class IssueDetailDialogModule {
+export class ItemDetailDialogModule {
 }

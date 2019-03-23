@@ -145,16 +145,16 @@ export class QueryPage {
         {replaceUrl: true, queryParamsHandling: 'merge'});
   }
 
-  navigateToItem(item: number) {
+  navigateToItem(itemId: number) {
     if (!isMobile()) {
       this.router.navigate([], {
         relativeTo: this.activatedRoute.parent,
-        queryParams: {item: item},
+        queryParams: {item: itemId},
         replaceUrl: true,
         queryParamsHandling: 'merge',
       });
     } else {
-      this.dialog.open(ItemDetailDialog, {data: {item}});
+      this.dialog.open(ItemDetailDialog, {data: {itemId}});
     }
   }
 

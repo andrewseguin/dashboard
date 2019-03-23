@@ -2,13 +2,14 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
-
+import {
+  ItemDetailDialogModule
+} from '../shared/dialog/item-detail-dialog/item-detail-dialog.module';
 import {QueryDialogModule} from '../shared/dialog/query/query-dialog.module';
+import {ItemDetailModule} from '../shared/item-detail/item-detail.module';
 import {IssuesListModule} from '../shared/items-list/items-list.module';
 import {QueryMenuModule} from '../shared/query-menu/query-menu.module';
-
 import {QueryPage} from './query-page';
-import { ItemDetailModule } from '../shared/item-detail/item-detail.module';
 
 
 const routes: Routes = [{
@@ -27,6 +28,7 @@ export class QueryPageRoutingModule {
     MaterialModule,
     ItemDetailModule,
     IssuesListModule,
+    ItemDetailDialogModule,
     QueryMenuModule,
     QueryDialogModule,
   ],
