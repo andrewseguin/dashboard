@@ -46,7 +46,7 @@ export class PieChart<T, G> {
 
   private destroyed = new Subject();
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<PieChartDisplayTypeOptions<G>>) {
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<PieChartDisplayTypeOptions<G>, null>) {
     data.itemGroupsDataSource = data.itemGroupsDataSource;
   }
 

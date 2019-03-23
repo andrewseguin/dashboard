@@ -81,7 +81,7 @@ export class TimeSeries<T> {
 
   private destroyed = new Subject();
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions>) {}
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions, null>) {}
 
   ngOnInit() {
     this.data.itemGroupsDataSource.connect()

@@ -1,15 +1,18 @@
 import {ChangeDetectionStrategy, Component, Inject, InjectionToken} from '@angular/core';
-import {MatDialog} from '@angular/material';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
 import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
-import {ItemDetailDialog} from 'app/repository/shared/dialog/item-detail-dialog/item-detail-dialog';
 import {map} from 'rxjs/operators';
 import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 
-export interface WidgetData<O> {
+export interface ListWidgetConfig {
+  onSelect: (item: any) => void;
+}
+
+export interface WidgetData<O, C> {
   itemGroupsDataSource: ItemGroupsDataSource<any>;
   options: O;
+  config?: C;
 }
 
 /** Injection token that can be used to access the data that was passed in to a dialog. */
@@ -21,7 +24,8 @@ export interface ListDisplayTypeOptions<S, V> {
   viewerState: ItemViewerState<V>;
 }
 
-export function getListConfigOptions(options: ListDisplayTypeOptions<any, any>): WidgetDataOption[] {
+export function getListConfigOptions(options: ListDisplayTypeOptions<any, any>):
+    WidgetDataOption[] {
   return [
     {
       id: 'listLength',
@@ -58,15 +62,10 @@ export class List<S, V> {
 
   items = this.data.itemGroupsDataSource.connect().pipe(map(result => result.groups[0].items));
 
-  constructor(
-      @Inject(WIDGET_DATA) public data: WidgetData<ListDisplayTypeOptions<S, V>>,
-      private dialog: MatDialog) {
+  constructor(@Inject(WIDGET_DATA) public data:
+                  WidgetData<ListDisplayTypeOptions<S, V>, ListWidgetConfig>) {
     this.options = data.options;
     data.itemGroupsDataSource.sorter.setState(this.options.sorterState);
     data.itemGroupsDataSource.viewer.setState(this.options.viewerState);
-  }
-
-  openItemModal(itemId: number) {
-    this.dialog.open(ItemDetailDialog, {data: {itemId: `${itemId}`}, width: '80vw'});
   }
 }

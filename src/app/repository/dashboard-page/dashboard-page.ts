@@ -6,6 +6,7 @@ import {
   Inject,
   ViewChild
 } from '@angular/core';
+import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
 import {WidgetConfig} from 'app/package/component/dashboard/dashboard-view';
@@ -29,6 +30,8 @@ import {delay, takeUntil} from 'rxjs/operators';
 import {DATA_SOURCES} from '../repository';
 import {Header, Theme} from '../services';
 import {ActiveStore} from '../services/active-repo';
+import {Item} from '../services/dao';
+import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
 
 @Component({
   selector: 'dashboard-page',
@@ -55,6 +58,12 @@ export class DashboardPage {
       label: 'List',
       component: List,
       optionsProvider: getListConfigOptions,
+      config: {
+        onSelect:
+            (item: Item) => {
+              this.dialog.open(ItemDetailDialog, {data: {itemId: item.id}, width: '80vw'});
+            }
+      }
     },
     pie: {
       id: 'pie',
@@ -77,9 +86,9 @@ export class DashboardPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      @Inject(DATA_SOURCES) public dataSources: Map<string, DataSource>, private router: Router,
-      private activatedRoute: ActivatedRoute, private theme: Theme, private activeRepo: ActiveStore,
-      private header: Header, private cd: ChangeDetectorRef) {
+      private dialog: MatDialog, @Inject(DATA_SOURCES) public dataSources: Map<string, DataSource>,
+      private router: Router, private activatedRoute: ActivatedRoute, private theme: Theme,
+      private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
     // TODO: Needs to listen for theme changes to know when this should change
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
 

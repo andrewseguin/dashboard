@@ -65,9 +65,10 @@ export class WidgetView {
       itemGroupsDataSource.filterer.setState(this.widget.filtererState);
     }
 
-    const widgetData: WidgetData<any> = {
+    const widgetData: WidgetData<any, any> = {
       options: this.widget.displayTypeOptions,
       itemGroupsDataSource: itemGroupsDataSource,
+      config: this.widgetConfig.config,
     };
 
     const injectionTokens = new WeakMap<any, any>([[WIDGET_DATA, widgetData]]);

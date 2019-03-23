@@ -26,7 +26,7 @@ export class ItemSummary<T, V> {
 
   @Input() viewer: ItemViewer<T, V, any>;
 
-  @Output() select = new EventEmitter<number>();
+  @Output() select = new EventEmitter<T>();
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['viewer'] && this.viewer) {

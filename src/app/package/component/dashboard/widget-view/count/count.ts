@@ -40,5 +40,5 @@ export function getCountConfigOptions(options: CountDisplayTypeOptions): WidgetD
 export class Count {
   count = this.data.itemGroupsDataSource.connect().pipe(map(result => result.count));
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions>) {}
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions, null>) {}
 }
