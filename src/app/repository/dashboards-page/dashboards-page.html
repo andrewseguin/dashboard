@@ -1,4 +1,4 @@
-<ng-container *ngIf="list | async; let dashboards; else loading">
+<ng-container *ngIf="list | async; let dashboards">
 
   <div *ngIf="!dashboards.length" class="empty-state theme-secondary-text">
     <mat-icon class="page-icon"> dashboard </mat-icon>

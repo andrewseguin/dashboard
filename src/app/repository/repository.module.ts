@@ -3,7 +3,6 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {MaterialModule} from 'app/material.module';
 import {Repository} from './repository';
-import {Header} from './services';
 import {ActiveStore} from './services/active-repo';
 import {ConfigDao} from './services/dao/config/config-dao';
 import {Dao} from './services/dao/data/data-dao';
@@ -20,6 +19,7 @@ import {
 } from './shared/dialog/delete-confirmation/delete-confirmation.module';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
+import { Header } from './services/header';
 
 
 const routes: Routes = [{

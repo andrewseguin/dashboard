@@ -9,9 +9,9 @@ import {
 import {FormControl} from '@angular/forms';
 import {combineLatest, Subject} from 'rxjs';
 import {map, mergeMap, startWith, takeUntil} from 'rxjs/operators';
-import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {Recommendation} from '../services/dao';
+import {Header} from '../services/header';
 import {EditableRecommendation} from './editable-recommendation/editable-recommendation';
 
 @Component({

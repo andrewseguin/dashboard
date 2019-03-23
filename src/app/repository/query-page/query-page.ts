@@ -6,7 +6,6 @@ import {Widget} from 'app/package/component/dashboard/dashboard';
 import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
-import {Header} from '../services';
 import {ActiveStore} from '../services/active-repo';
 import {ConfigStore} from '../services/dao/config/config-dao';
 import {Query} from '../services/dao/config/query';
@@ -14,6 +13,7 @@ import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-
 import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
+import { Header } from '../services/header';
 
 @Component({
   styleUrls: ['query-page.scss'],
