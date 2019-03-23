@@ -1,15 +1,15 @@
-<div class="heading" *ngIf="(sortedRecommendations | async)?.length > 3">
-  <input [formControl]="filter" class="theme-border"
-         placeholder="Filter recommendations">
-  <button mat-button (click)="expandAll()"> Expand All </button>
-</div>
+<div class="recommendations" *ngIf="sortedRecommendations | async; let list">
+  <div class="heading" *ngIf="list?.length > 3">
+    <input [formControl]="filter" class="theme-border"
+           placeholder="Filter recommendations">
+    <button mat-button (click)="expandAll()"> Expand All </button>
+  </div>
 
-<ng-container *ngIf="sortedRecommendations | async; let list; else loading">
   <div *ngFor="let recommendation of list; trackBy: trackById">
     <editable-recommendation [recommendation]="recommendation">
     </editable-recommendation>
   </div>
-</ng-container>
+</div>
 
 <ng-template cdkPortal>
   <button mat-raised-button color="primary" class="create" (click)="add()">

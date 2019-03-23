@@ -1,17 +1,23 @@
 @import '../../constants';
 
 :host {
-  display: block;
-  margin: auto;
-  max-width: 650px;
+  display: flex;
+  align-items: center;
+  padding-bottom: 32px;
+  flex-direction: column;
+  flex: 1;
+}
+
+.group {
   width: 100%;
-  height: 100%;
+  max-width: 650px;
+  padding: 16px;
 }
 
 .empty-state {
   margin: auto;
   display: flex;
-  height: 100%;
+  padding: 32px;
   align-items: center;
   justify-content: center;
   max-width: 500px;
@@ -37,7 +43,7 @@
 .group-title {
   font-size: 22px;
   font-weight: lighter;
-  margin: 48px 16px 8px 16px;
+  margin: 8px 16px;
 }
 
 .group:last-child {

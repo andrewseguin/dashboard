@@ -15,7 +15,6 @@ import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
 
-
 @Component({
   styleUrls: ['query-page.scss'],
   templateUrl: 'query-page.html',

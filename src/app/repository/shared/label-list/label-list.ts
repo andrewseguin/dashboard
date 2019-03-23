@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ActiveStore} from 'app/repository/services/active-repo';
 import {Label} from 'app/repository/services/dao';
+import {getBorderColor, getTextColor} from 'app/repository/utility/label-colors';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import { getTextColor, getBorderColor } from 'app/repository/utility/label-colors';
 
 interface DisplayedLabel {
   id: string;
