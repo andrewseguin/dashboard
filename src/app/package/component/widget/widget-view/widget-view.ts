@@ -8,20 +8,13 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
+import {DataSourceFactory} from 'app/package/items-renderer/data-source-provider';
 
-import {Widget} from '../dashboard';
-import {WidgetConfig} from '../dashboard-view';
+import {Widget} from '../../dashboard/dashboard';
+import {WidgetConfig} from '../../dashboard/dashboard-view';
 
 import {WIDGET_DATA, WidgetData} from './list/list';
 
-
-export type DataSourceFactory = () => ItemGroupsDataSource<any>;
-export interface DataSource {
-  id: string;
-  label: string;
-  factory: DataSourceFactory;
-}
 
 @Component({
   selector: 'widget-view',

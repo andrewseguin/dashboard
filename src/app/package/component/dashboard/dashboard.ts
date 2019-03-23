@@ -1,8 +1,8 @@
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {CountDisplayTypeOptions} from './widget-view/count/count';
-import {ListDisplayTypeOptions} from './widget-view/list/list';
-import {PieChartDisplayTypeOptions} from './widget-view/pie-chart/pie-chart';
-import {TimeSeriesDisplayTypeOptions} from './widget-view/time-series/time-series';
+import {CountDisplayTypeOptions} from '../widget/widget-view/count/count';
+import {ListDisplayTypeOptions} from '../widget/widget-view/list/list';
+import {PieChartDisplayTypeOptions} from '../widget/widget-view/pie-chart/pie-chart';
+import {TimeSeriesDisplayTypeOptions} from '../widget/widget-view/time-series/time-series';
 
 export type DisplayType = 'list'|'count'|'pie'|'timeSeries';
 

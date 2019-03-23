@@ -1,7 +1,7 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, Component, Inject, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
+import {DataSource} from 'app/package/items-renderer/data-source-provider';
 import {Observable, Subject} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {DATA_SOURCES} from '../repository';
@@ -9,8 +9,8 @@ import {ActiveStore} from '../services/active-store';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
+import {Header} from '../services/header';
 import {ItemRecommendations} from '../services/item-recommendations';
-import { Header } from '../services/header';
 
 interface QueryListItem {
   id: string;

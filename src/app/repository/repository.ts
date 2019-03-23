@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
-import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
+import {DataSource} from 'app/package/items-renderer/data-source-provider';
 import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval, Subject} from 'rxjs';
@@ -13,7 +13,7 @@ import {Remover} from './services/remover';
 import {Updater} from './services/updater';
 import {isRepoStoreEmpty} from './utility/is-repo-store-empty';
 
-export const DATA_SOURCES = new InjectionToken<any>('data-sources');
+export const DATA_SOURCES = new InjectionToken<Map<string, DataSource>>('data-sources');
 
 export const provideDataSources =
     (itemRecommendations: ItemRecommendations, activeStore: ActiveStore) => {

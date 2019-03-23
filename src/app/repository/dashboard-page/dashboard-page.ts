@@ -10,20 +10,17 @@ import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
 import {SavedFiltererState, WidgetConfig} from 'app/package/component/dashboard/dashboard-view';
-import {
-  Count,
-  getCountConfigOptions
-} from 'app/package/component/dashboard/widget-view/count/count';
-import {getListConfigOptions, List} from 'app/package/component/dashboard/widget-view/list/list';
+import {Count, getCountConfigOptions} from 'app/package/component/widget/widget-view/count/count';
+import {getListConfigOptions, List} from 'app/package/component/widget/widget-view/list/list';
 import {
   getPieChartConfigOptions,
   PieChart
-} from 'app/package/component/dashboard/widget-view/pie-chart/pie-chart';
+} from 'app/package/component/widget/widget-view/pie-chart/pie-chart';
 import {
   getTimeSeriesConfigOptions,
   TimeSeries
-} from 'app/package/component/dashboard/widget-view/time-series/time-series';
-import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
+} from 'app/package/component/widget/widget-view/time-series/time-series';
+import {DataSource} from 'app/package/items-renderer/data-source-provider';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';

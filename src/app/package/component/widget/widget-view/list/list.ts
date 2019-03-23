@@ -1,10 +1,12 @@
 import {ChangeDetectionStrategy, Component, Inject, InjectionToken} from '@angular/core';
+import {
+  WidgetDataOption
+} from 'app/package/component/dashboard/edit-widget/widget-type-options/widget-type-options';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
 import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
 
 export interface ListWidgetConfig {
   onSelect: (item: any) => void;
