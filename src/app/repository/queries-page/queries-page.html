@@ -4,7 +4,7 @@
     <div>Create and save queries that filter, group, and sort your data.</div>
 
     <div class="create-new">
-      <ng-container *ngTemplateOutlet="test"></ng-container>
+      <ng-container *ngTemplateOutlet="newButton"></ng-container>
     </div>
   </div>
 
@@ -35,7 +35,7 @@
   </div>
 </ng-container>
 
-<ng-template cdkPortal #test>
+<ng-template cdkPortal #newButton>
   <ng-container *ngIf="dataSourceTypes.length === 1; else createMenu">
     <button mat-raised-button color="primary" class="create" (click)="createQuery(queryTypes[0])">
       Create New Query

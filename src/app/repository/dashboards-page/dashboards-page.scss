@@ -1,6 +1,10 @@
 :host {
   display: flex;
   width: 100%;
+}
+
+.dashboards {
+  display: flex;
   flex-wrap: wrap;
 }
 

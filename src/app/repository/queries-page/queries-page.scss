@@ -14,32 +14,6 @@
   padding: 16px;
 }
 
-.empty-state {
-  margin: auto;
-  display: flex;
-  padding: 32px;
-  align-items: center;
-  justify-content: center;
-  max-width: 500px;
-  font-size: 32px;
-  text-align: center;
-  flex-direction: column;
-  font-weight: lighter;
-
-  mat-icon.page-icon {
-    height: 196px;
-    width: 196px;
-    line-height:196px;
-    font-size: 196px;
-    opacity: .2;
-    margin-bottom: 32px;
-  }
-
-  .create-new {
-    margin-top: 32px;
-  }
-}
-
 .group-title {
   font-size: 22px;
   font-weight: lighter;
