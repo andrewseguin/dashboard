@@ -67,8 +67,8 @@ export class RecommendationsPage {
     });
   }
 
-  expandAll() {
-    this.editableRecommendations.forEach(v => v.expand());
+  collapseAll() {
+    this.editableRecommendations.forEach(v => v.collapse());
   }
 
   matchesFilter(recommendation: Recommendation) {

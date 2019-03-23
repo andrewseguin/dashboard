@@ -22,15 +22,13 @@ import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
   host: {
     '[class.theme-background-card]': 'expanded',
     '[class.theme-border]': 'expanded',
-    '[style.margin-bottom.px]': 'expanded ? 8 : 0',
+    '[style.margin-bottom.px]': 'expanded ? 24 : 0',
     '[style.padding]': `expanded ? '16px' : '4px 16px'`
   },
   animations: EXPANSION_ANIMATION
 })
 export class EditableRecommendation {
-  hasExpanded = false;
-
-  expanded = false;
+  expanded = true;
 
   itemsFilterer = createItemsFilterer(this.itemRecommendations, this.activeRepo.activeData);
 
@@ -121,9 +119,8 @@ export class EditableRecommendation {
     this.form.get('action')!.setValue({assignees: name});
   }
 
-  expand() {
-    this.hasExpanded = true;
-    this.expanded = true;
+  collapse() {
+    this.expanded = false;
     this.cd.markForCheck();
   }
 }
