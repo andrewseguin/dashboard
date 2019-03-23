@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Item, Label} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Github} from 'app/service/github';

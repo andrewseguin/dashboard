@@ -6,7 +6,7 @@ import {Widget} from 'app/package/component/dashboard/dashboard';
 import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
-import {ActiveStore} from '../services/active-repo';
+import {ActiveStore} from '../services/active-store';
 import {ConfigStore} from '../services/dao/config/config-dao';
 import {Query} from '../services/dao/config/query';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';

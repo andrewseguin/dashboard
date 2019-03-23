@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import {Dashboard} from 'app/package/component/dashboard/dashboard';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {ActiveStore} from '../services/active-repo';
+import {ActiveStore} from '../services/active-store';
 import {Header} from '../services/header';
 import {DashboardDialog} from '../shared/dialog/dashboard/dashboard-dialog';
 

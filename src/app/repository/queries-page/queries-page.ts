@@ -5,7 +5,7 @@ import {DataSource} from 'app/package/component/dashboard/widget-view/widget-vie
 import {Observable, Subject} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {DATA_SOURCES} from '../repository';
-import {ActiveStore} from '../services/active-repo';
+import {ActiveStore} from '../services/active-store';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
 import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';

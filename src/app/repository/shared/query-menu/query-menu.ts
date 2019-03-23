@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Query} from 'app/repository/services/dao/config/query';
 import {QueryDialog} from '../dialog/query/query-dialog';
 

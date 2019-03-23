@@ -28,7 +28,7 @@ import * as Chart from 'chart.js';
 import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {DATA_SOURCES} from '../repository';
-import {ActiveStore} from '../services/active-repo';
+import {ActiveStore} from '../services/active-store';
 import {Item} from '../services/dao';
 import {Header} from '../services/header';
 import {Theme} from '../services/theme';

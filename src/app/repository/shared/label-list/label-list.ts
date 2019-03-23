@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Label} from 'app/repository/services/dao';
 import {getBorderColor, getTextColor} from 'app/repository/utility/label-colors';
 import {BehaviorSubject, combineLatest} from 'rxjs';

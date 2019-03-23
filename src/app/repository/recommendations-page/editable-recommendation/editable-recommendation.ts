@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {createItemsFilterer} from 'app/repository/services/github-item-groups-data-source';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';

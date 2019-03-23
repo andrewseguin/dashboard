@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Item} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Dao} from 'app/repository/services/dao/data/data-dao';

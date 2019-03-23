@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Contributor, Item, Label} from 'app/repository/services/dao';
 import {isRepoStoreEmpty} from 'app/repository/utility/is-repo-store-empty';
 import {Github} from 'app/service/github';

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {ActiveStore} from '../services/active-repo';
+import {ActiveStore} from '../services/active-store';
 import {DataStore, RepoDaoType} from '../services/dao/data/data-dao';
 import {Remover} from '../services/remover';
 import {isRepoStoreEmpty} from '../utility/is-repo-store-empty';

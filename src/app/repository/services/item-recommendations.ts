@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Subject} from 'rxjs';
 import {map, mergeMap, takeUntil} from 'rxjs/operators';
 import {getRecommendations} from '../utility/get-recommendations';
-import {ActiveStore} from './active-repo';
+import {ActiveStore} from './active-store';
 import {Recommendation} from './dao/config/recommendation';
 
 

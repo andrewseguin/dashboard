@@ -5,7 +5,7 @@ import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval, Subject} from 'rxjs';
 import {filter, mergeMap, take} from 'rxjs/operators';
-import {ActiveStore} from './services/active-repo';
+import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data/data-dao';
 import {getItemsList, GithubItemGroupsDataSource} from './services/github-item-groups-data-source';
 import {ItemRecommendations} from './services/item-recommendations';

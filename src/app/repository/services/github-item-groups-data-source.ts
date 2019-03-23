@@ -22,7 +22,7 @@ import {
   ViewContext
 } from '../utility/github-data-source/item-viewer-metadata';
 import {tokenizeItem} from '../utility/tokenize-item';
-import {ActiveStore} from './active-repo';
+import {ActiveStore} from './active-store';
 import {Item, Label} from './dao';
 import {DataStore} from './dao/data/data-dao';
 import {ListDao} from './dao/list-dao';

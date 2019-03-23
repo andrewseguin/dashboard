@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {MatSidenav} from '@angular/material';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Header} from 'app/repository/services/header';
 import {isRepoStoreEmpty} from 'app/repository/utility/is-repo-store-empty';
 import {mergeMap} from 'rxjs/operators';

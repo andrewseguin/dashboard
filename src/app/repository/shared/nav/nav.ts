@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {MatSidenav} from '@angular/material';
 import {Router} from '@angular/router';
-import {ActiveStore} from 'app/repository/services/active-repo';
+import {ActiveStore} from 'app/repository/services/active-store';
 import {Theme} from 'app/repository/services/theme';
 import {Updater} from 'app/repository/services/updater';
 import {Auth} from 'app/service/auth';
