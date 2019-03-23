@@ -39,12 +39,12 @@ button {
     border-style: solid;
   }
 
-  &.add-widget, &.remove-column {
+  &.add-widget, &.remove-column, &.add-column {
     height: 64px;
   }
 
   &.add-column {
-    align-self: center;
+    align-self: start;
   }
 
   &.add-column-group {
