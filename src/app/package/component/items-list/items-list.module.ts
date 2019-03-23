@@ -20,5 +20,5 @@ import {ItemsList} from './items-list';
   declarations: [ItemsList],
   exports: [ItemsList],
 })
-export class IssuesListModule {
+export class ItemsListModule {
 }
