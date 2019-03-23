@@ -1,14 +1,21 @@
 <ng-container *ngIf="queryGroups | async; let queryGroups; else loading">
+  <div *ngIf="!queryGroups.length" class="empty-state theme-secondary-text">
+    <mat-icon class="page-icon"> find_in_page </mat-icon>
+    <div>Create and save queries that filter, group, and sort your data.</div>
+
+    <div class="create-new">
+      <ng-container *ngTemplateOutlet="test"></ng-container>
+    </div>
+  </div>
+
   <div class="group" *ngFor="let queryGroup of queryGroups">
     <div class="group-title">
       {{queryGroup.name}}
     </div>
 
     <div class="queries">
-      <ng-container
-                    *ngFor="let query of queryGroup.queries; trackBy: queryKeyTrackBy">
-        <div class="query theme-hover" mat-ripple
-             (click)="navigateToQuery(query.id)">
+      <ng-container *ngFor="let query of queryGroup.queries; trackBy: queryKeyTrackBy">
+        <div class="query theme-hover" mat-ripple (click)="navigateToQuery(query.id)">
           <div class="name">
             {{query.name}}
             ({{(query.count | async) || '..'}})
@@ -18,8 +25,7 @@
             <div class="query-type theme-secondary-text">
               {{dataSources.get(query.type).label}}
             </div>
-            <query-menu [query]="query" icon="more_vert"
-                        (click)="$event.stopPropagation()">
+            <query-menu [query]="query" icon="more_vert" (click)="$event.stopPropagation()">
             </query-menu>
           </div>
         </div>
@@ -29,10 +35,9 @@
   </div>
 </ng-container>
 
-<ng-template cdkPortal>
+<ng-template cdkPortal #test>
   <ng-container *ngIf="dataSourceTypes.length === 1; else createMenu">
-    <button mat-raised-button color="primary" class="create"
-            (click)="createQuery(queryTypes[0])">
+    <button mat-raised-button color="primary" class="create" (click)="createQuery(queryTypes[0])">
       Create New Query
     </button>
   </ng-container>
@@ -47,8 +52,7 @@
     </button>
 
     <mat-menu #createQueryMenu="matMenu" xPosition="before">
-      <button mat-menu-item (click)="createQuery(queryType)"
-              *ngFor="let queryType of dataSourceTypes">{{dataSources.get(queryType).label}}</button>
+      <button mat-menu-item (click)="createQuery(queryType)" *ngFor="let queryType of dataSourceTypes">{{dataSources.get(queryType).label}}</button>
       <button mat-menu-item [matMenuTriggerFor]="recommendations">
         From recommendations
       </button>
@@ -59,8 +63,7 @@
 
 
 <mat-menu #recommendations="matMenu" class="recommendations-menu">
-  <button mat-menu-item
-          *ngFor="let recommendation of recommendationsList | async"
+  <button mat-menu-item *ngFor="let recommendation of recommendationsList | async"
           (click)="createQueryFromRecommendation(recommendation)">
     {{recommendation.message}}
   </button>

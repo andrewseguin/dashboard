@@ -5,6 +5,33 @@
   margin: auto;
   max-width: 650px;
   width: 100%;
+  height: 100%;
+}
+
+.empty-state {
+  margin: auto;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  max-width: 500px;
+  font-size: 32px;
+  text-align: center;
+  flex-direction: column;
+  font-weight: lighter;
+
+  mat-icon.page-icon {
+    height: 196px;
+    width: 196px;
+    line-height:196px;
+    font-size: 196px;
+    opacity: .2;
+    margin-bottom: 32px;
+  }
+
+  .create-new {
+    margin-top: 32px;
+  }
 }
 
 .group-title {
