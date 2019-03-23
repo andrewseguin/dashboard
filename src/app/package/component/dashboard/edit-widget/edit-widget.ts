@@ -8,11 +8,11 @@ import {filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
 import {Widget, WidgetDisplayTypeOptions} from '../dashboard';
 import {SavedFiltererState, WidgetConfig} from '../dashboard-view';
-import { DataSource } from 'app/package/items-renderer/data-source-provider';
+import { DataSourceProvider } from 'app/package/items-renderer/data-source-provider';
 
 export interface EditWidgetData {
   widget: Widget;
-  dataSources: Map<string, DataSource>;
+  dataSources: Map<string, DataSourceProvider>;
   widgetConfigs: {[key in string]: WidgetConfig};
   savedFiltererStates: SavedFiltererState[];
 }

@@ -1,7 +1,7 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, Component, Inject, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {DataSource} from 'app/package/items-renderer/data-source-provider';
+import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {Observable, Subject} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {DATA_SOURCES} from '../repository';
@@ -47,7 +47,7 @@ export class QueriesPage {
   private destroyed = new Subject();
 
   constructor(
-      @Inject(DATA_SOURCES) private dataSources: Map<string, DataSource>, private header: Header,
+      @Inject(DATA_SOURCES) private dataSources: Map<string, DataSourceProvider>, private header: Header,
       private router: Router, private issueRecommendations: ItemRecommendations,
       private activeRepo: ActiveStore) {
     this.dataSources.forEach(dataSource => this.dataSourceTypes.push(dataSource.id));

@@ -20,7 +20,7 @@ import {
   getTimeSeriesConfigOptions,
   TimeSeries
 } from 'app/package/component/widget/widget-view/time-series/time-series';
-import {DataSource} from 'app/package/items-renderer/data-source-provider';
+import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
@@ -101,7 +101,7 @@ export class DashboardPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private dialog: MatDialog, @Inject(DATA_SOURCES) public dataSources: Map<string, DataSource>,
+      private dialog: MatDialog, @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
       private router: Router, private activatedRoute: ActivatedRoute, private theme: Theme,
       private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
     // TODO: Needs to listen for theme changes to know when this should change

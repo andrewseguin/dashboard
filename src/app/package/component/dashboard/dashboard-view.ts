@@ -2,7 +2,7 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
 import {ComponentType} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material';
-import {DataSource} from 'app/package/items-renderer/data-source-provider';
+import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
 import {take} from 'rxjs/operators';
 import {Column, ColumnGroup, Dashboard, Widget} from './dashboard';
@@ -35,7 +35,7 @@ export class DashboardView {
 
   @Input() edit: boolean;
 
-  @Input() dataSources: Map<string, DataSource>;
+  @Input() dataSources: Map<string, DataSourceProvider>;
 
   @Input() widgetConfigs: {[key in string]: WidgetConfig};
 
