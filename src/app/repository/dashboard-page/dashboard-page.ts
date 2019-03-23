@@ -1,37 +1,22 @@
-import {CdkPortal} from '@angular/cdk/portal';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  ViewChild
-} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
-import {WidgetConfig} from 'app/package/component/dashboard/dashboard-view';
-import {
-  Count,
-  getCountConfigOptions
-} from 'app/package/component/dashboard/widget-view/count/count';
-import {getListConfigOptions, List} from 'app/package/component/dashboard/widget-view/list/list';
-import {
-  getPieChartConfigOptions,
-  PieChart
-} from 'app/package/component/dashboard/widget-view/pie-chart/pie-chart';
-import {
-  getTimeSeriesConfigOptions,
-  TimeSeries
-} from 'app/package/component/dashboard/widget-view/time-series/time-series';
-import {DataSource} from 'app/package/component/dashboard/widget-view/widget-view';
+import { CdkPortal } from '@angular/cdk/portal';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Column, Dashboard, hasWidgets, Widget } from 'app/package/component/dashboard/dashboard';
+import { SavedFiltererState, WidgetConfig } from 'app/package/component/dashboard/dashboard-view';
+import { Count, getCountConfigOptions } from 'app/package/component/dashboard/widget-view/count/count';
+import { getListConfigOptions, List } from 'app/package/component/dashboard/widget-view/list/list';
+import { getPieChartConfigOptions, PieChart } from 'app/package/component/dashboard/widget-view/pie-chart/pie-chart';
+import { getTimeSeriesConfigOptions, TimeSeries } from 'app/package/component/dashboard/widget-view/time-series/time-series';
+import { DataSource } from 'app/package/component/dashboard/widget-view/widget-view';
 import * as Chart from 'chart.js';
-import {BehaviorSubject, Subject, Subscription} from 'rxjs';
-import {delay, takeUntil} from 'rxjs/operators';
-import {DATA_SOURCES} from '../repository';
-import {Header, Theme} from '../services';
-import {ActiveStore} from '../services/active-repo';
-import {Item} from '../services/dao';
-import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
+import { BehaviorSubject, combineLatest, Subject, Subscription } from 'rxjs';
+import { delay, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { DATA_SOURCES } from '../repository';
+import { Header, Theme } from '../services';
+import { ActiveStore } from '../services/active-repo';
+import { Item } from '../services/dao';
+import { ItemDetailDialog } from '../shared/dialog/item-detail-dialog/item-detail-dialog';
 
 @Component({
   selector: 'dashboard-page',
@@ -45,6 +30,23 @@ export class DashboardPage {
   edit = new BehaviorSubject<boolean>(false);
 
   trackByIndex = (i: number) => i;
+
+  savedFiltererStates = this.activeRepo.config.pipe(
+    mergeMap(config => combineLatest(config.queries.list, config.recommendations.list)),
+    map(result => {
+      const savedFiltererStates: SavedFiltererState[] = [];
+      result[0].forEach(query => savedFiltererStates.push({
+        state: query.filtererState!,
+        label: query.name!,
+        group: 'Queries',
+      }));
+      result[1].forEach(recommendation => savedFiltererStates.push({
+        state: recommendation.filtererState!,
+        label: recommendation.message!,
+        group: 'Recommendations',
+      }));
+      return savedFiltererStates;
+    }));
 
   widgetConfigs: {[key in string]: WidgetConfig} = {
     count: {
@@ -91,6 +93,8 @@ export class DashboardPage {
       private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
     // TODO: Needs to listen for theme changes to know when this should change
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
+
+
 
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];

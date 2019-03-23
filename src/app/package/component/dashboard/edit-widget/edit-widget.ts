@@ -1,13 +1,13 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
-import {ActiveStore} from 'app/repository/services/active-repo';
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import {filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
 import {Widget, WidgetDisplayTypeOptions} from '../dashboard';
-import {WidgetConfig} from '../dashboard-view';
+import {SavedFiltererState, WidgetConfig} from '../dashboard-view';
 import {DataSource} from '../widget-view/widget-view';
 
 
@@ -15,6 +15,12 @@ export interface EditWidgetData {
   widget: Widget;
   dataSources: Map<string, DataSource>;
   widgetConfigs: {[key in string]: WidgetConfig};
+  savedFiltererStates: SavedFiltererState[];
+}
+
+interface SavedFiltererStateGroup {
+  name: string;
+  savedFiltererStates: SavedFiltererState[];
 }
 
 @Component({
@@ -30,23 +36,12 @@ export class EditWidget<S, V, G> {
 
   dataSourceType = new ReplaySubject<string>();
 
-  recommendationsList =
-      this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
-
-  recommendations =
-      this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
-
-  issueQueries = this.activeRepo.config.pipe(
-      mergeMap(store => store.queries.list),
-      map(queries => queries.filter(q => q.dataSourceType === 'issue')));
-  prQueries = this.activeRepo.config.pipe(
-      mergeMap(store => store.queries.list),
-      map(queries => queries.filter(q => q.dataSourceType === 'pr')));
-
   itemGroupsDataSource = new ReplaySubject<ItemGroupsDataSource<any>>();
 
   itemCount = this.itemGroupsDataSource.pipe(
       mergeMap(dataSource => dataSource.connect().pipe(map(result => result.count))));
+
+  savedFiltererStateGroups: SavedFiltererStateGroup[] = [];
 
   private destroyed = new Subject();
 
@@ -55,8 +50,10 @@ export class EditWidget<S, V, G> {
   displayTypeOptions: WidgetDisplayTypeOptions;
 
   constructor(
-      private activeRepo: ActiveStore, private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
+      private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+    this.savedFiltererStateGroups = this.getSavedFiltererStateGroups();
+
     for (let id of Object.keys(data.widgetConfigs)) {
       this.widgetConfigs.push(data.widgetConfigs[id]);
     }
@@ -110,5 +107,24 @@ export class EditWidget<S, V, G> {
 
           this.dialogRef.close(widget);
         });
+  }
+
+  loadFromFiltererState(state: ItemFiltererState) {
+    this.itemGroupsDataSource.pipe(take(1)).subscribe(d => d.filterer.setState(state));
+  }
+
+  private getSavedFiltererStateGroups(): SavedFiltererStateGroup[] {
+    const groupsMap = new Map<string, SavedFiltererState[]>();
+    this.data.savedFiltererStates.forEach(savedFiltererState => {
+      if (!groupsMap.has(savedFiltererState.group)) {
+        groupsMap.set(savedFiltererState.group, []);
+      }
+
+      groupsMap.get(savedFiltererState.group)!.push(savedFiltererState);
+    });
+
+    const groupsList: SavedFiltererStateGroup[] = [];
+    groupsMap.forEach((savedFiltererStates, name) => groupsList.push({name, savedFiltererStates}));
+    return groupsList;
   }
 }

@@ -3,13 +3,8 @@
   width: 100%;
 }
 
-.dashboards {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 .dashboard {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   width: 350px;
   height: 150px;
