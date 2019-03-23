@@ -1,30 +1,16 @@
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {ComponentType} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
 import {take} from 'rxjs/operators';
-import {EditWidget, EditWidgetData} from '../widget/edit-widget/edit-widget';
 import {
-  WidgetDataOptionsProvider
-} from '../widget/edit-widget/widget-type-options/widget-type-options';
+  EditWidget,
+  EditWidgetData,
+  SavedFiltererState,
+  WidgetConfig
+} from '../widget/edit-widget/edit-widget';
 import {Widget} from '../widget/widget';
 import {Column, ColumnGroup, Dashboard} from './dashboard';
-
-export interface WidgetConfig {
-  id: string;
-  label: string;
-  component: ComponentType<any>;
-  optionsProvider: WidgetDataOptionsProvider;
-  config?: any;
-}
-
-export interface SavedFiltererState {
-  state: ItemFiltererState;
-  group: string;
-  label: string;
-}
 
 @Component({
   selector: 'dashboard-view',

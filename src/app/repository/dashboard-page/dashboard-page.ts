@@ -9,7 +9,10 @@ import {
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Column, Dashboard, hasWidgets} from 'app/package/component/dashboard/dashboard';
-import {SavedFiltererState, WidgetConfig} from 'app/package/component/dashboard/dashboard-view';
+import {
+  SavedFiltererState,
+  WidgetConfig
+} from 'app/package/component/widget/edit-widget/edit-widget';
 import {Widget} from 'app/package/component/widget/widget';
 import {Count, getCountConfigOptions} from 'app/package/component/widget/widget-view/count/count';
 import {getListConfigOptions, List} from 'app/package/component/widget/widget-view/list/list';
