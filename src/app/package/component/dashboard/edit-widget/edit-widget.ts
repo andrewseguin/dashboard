@@ -1,12 +1,15 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { ActiveStore } from 'app/repository/services/active-repo';
-import { combineLatest, ReplaySubject, Subject } from 'rxjs';
-import { filter, map, mergeMap, take } from 'rxjs/operators';
-import { Widget, WidgetDisplayTypeOptions } from '../dashboard';
-import { WidgetConfig } from '../dashboard-view';
-import { DataSource } from '../widget-view/widget-view';
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
+import {ActiveStore} from 'app/repository/services/active-repo';
+import {combineLatest, ReplaySubject, Subject} from 'rxjs';
+import {filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
+
+import {Widget, WidgetDisplayTypeOptions} from '../dashboard';
+import {WidgetConfig} from '../dashboard-view';
+import {DataSource} from '../widget-view/widget-view';
+
 
 export interface EditWidgetData {
   widget: Widget;
@@ -40,9 +43,7 @@ export class EditWidget<S, V, G> {
       mergeMap(store => store.queries.list),
       map(queries => queries.filter(q => q.dataSourceType === 'pr')));
 
-  itemGroupsDataSource = this.dataSourceType.pipe(
-      map(type => this.data.dataSources.get(type)), filter(v => !!v),
-      map(dataSource => dataSource!.factory()));
+  itemGroupsDataSource = new ReplaySubject<ItemGroupsDataSource<any>>();
 
   itemCount = this.itemGroupsDataSource.pipe(
       mergeMap(dataSource => dataSource.connect().pipe(map(result => result.count))));
@@ -59,6 +60,15 @@ export class EditWidget<S, V, G> {
     for (let id of Object.keys(data.widgetConfigs)) {
       this.widgetConfigs.push(data.widgetConfigs[id]);
     }
+
+    // TODO: Figure out how to multicast and publish rather than doing this
+    this.dataSourceType
+        .pipe(
+            map(type => this.data.dataSources.get(type)), filter(v => !!v),
+            takeUntil(this._destroyed))
+        .subscribe(dataSource => {
+          this.itemGroupsDataSource.next(dataSource!.factory());
+        });
   }
 
   ngOnInit() {
