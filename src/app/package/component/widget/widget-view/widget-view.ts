@@ -10,8 +10,8 @@ import {
 } from '@angular/core';
 import {DataSourceFactory} from 'app/package/items-renderer/data-source-provider';
 
-import {Widget} from '../../dashboard/dashboard';
 import {WidgetConfig} from '../../dashboard/dashboard-view';
+import {Widget} from '../widget';
 
 import {WIDGET_DATA, WidgetData} from './list/list';
 

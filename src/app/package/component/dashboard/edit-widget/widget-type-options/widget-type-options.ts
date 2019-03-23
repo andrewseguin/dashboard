@@ -14,7 +14,6 @@ import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
 import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
 import {Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
-import {WidgetDisplayTypeOptions} from '../../dashboard';
 
 export type ConfigOptionType =
     'buttonToggle'|'datepicker'|'grouperState'|'input'|'sorterState'|'viewerState';
@@ -57,11 +56,11 @@ export class WidgetTypeOptions<G, S, V> {
 
   @Input() optionsProvider: WidgetDataOptionsProvider;
 
-  @Input() options: WidgetDisplayTypeOptions;
+  @Input() options: any;
 
   @Input() itemGroupsDataSource: ItemGroupsDataSource<any>;
 
-  @Output() optionsChanged = new EventEmitter<WidgetDisplayTypeOptions>();
+  @Output() optionsChanged = new EventEmitter<any>();
 
   private valueChangeSubscription: Subscription;
 

@@ -1,14 +1,15 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import {filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
-import {Widget, WidgetDisplayTypeOptions} from '../dashboard';
+import {Widget} from '../../widget/widget';
 import {SavedFiltererState, WidgetConfig} from '../dashboard-view';
-import { DataSourceProvider } from 'app/package/items-renderer/data-source-provider';
+
 
 export interface EditWidgetData {
   widget: Widget;
@@ -46,7 +47,7 @@ export class EditWidget<S, V, G> {
 
   widgetConfigs: WidgetConfig[] = [];
 
-  displayTypeOptions: WidgetDisplayTypeOptions;
+  displayTypeOptions: any;
 
   constructor(
       private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,

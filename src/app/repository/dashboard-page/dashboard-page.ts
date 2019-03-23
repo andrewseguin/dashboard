@@ -8,8 +8,9 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Column, Dashboard, hasWidgets, Widget} from 'app/package/component/dashboard/dashboard';
+import {Column, Dashboard, hasWidgets} from 'app/package/component/dashboard/dashboard';
 import {SavedFiltererState, WidgetConfig} from 'app/package/component/dashboard/dashboard-view';
+import {Widget} from 'app/package/component/widget/widget';
 import {Count, getCountConfigOptions} from 'app/package/component/widget/widget-view/count/count';
 import {getListConfigOptions, List} from 'app/package/component/widget/widget-view/list/list';
 import {
@@ -101,7 +102,8 @@ export class DashboardPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private dialog: MatDialog, @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
+      private dialog: MatDialog,
+      @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
       private router: Router, private activatedRoute: ActivatedRoute, private theme: Theme,
       private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
     // TODO: Needs to listen for theme changes to know when this should change
