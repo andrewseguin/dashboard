@@ -50,7 +50,7 @@ export class LoginDialog {
           });
         })
         .catch(e => {
-          console.log(e);
+          throw Error('Problem logging in');
         });
   }
 }

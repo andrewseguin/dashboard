@@ -46,20 +46,11 @@ export class ItemGroupsRenderer<T> {
     const scrollHeight = el.scrollHeight;
 
     const distanceFromBottom = scrollHeight - scrollTop - viewHeight;
-
-    if (distanceFromBottom <= 1000) {
-      console.log('near bottom');
-    }
     return distanceFromBottom <= 1000;
   }
 
   private isNearTop(el: HTMLElement) {
-    const scrollTop = el.scrollTop;
-
-    if (scrollTop <= 200) {
-      console.log('near top');
-    }
-    return scrollTop <= 200;
+    return el.scrollTop <= 200;
   }
 
   getRenderState(): RenderState<T> {
