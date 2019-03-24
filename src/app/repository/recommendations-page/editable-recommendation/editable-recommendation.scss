@@ -32,6 +32,7 @@ mat-button-toggle-group {
 .heading {
   display: flex;
   align-items: center;
+  margin-left: 16px;
 
   .message {
     flex: 1;
@@ -53,9 +54,8 @@ mat-button-toggle-group {
 
 .action {
   display: flex;
-  align-items: center;
-  margin-bottom: 24px;
-  padding-top: 24px;
+  margin: 16px;
+  line-height: 34px;
 
   mat-select {
     width: inherit;

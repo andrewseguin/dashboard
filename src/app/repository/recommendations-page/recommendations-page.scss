@@ -22,7 +22,13 @@ button.create {
 
 .heading {
   display: flex;
-  margin: 16px 16px 48px 16px;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+
+.collapse {
+  align-self: flex-end;
+  margin: 8px 0;
 }
 
 input {
