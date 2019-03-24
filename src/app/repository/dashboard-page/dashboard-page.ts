@@ -3,11 +3,13 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   Inject,
   ViewChild
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Item} from 'app/github/app-types/item';
 import {Column, Dashboard, hasWidgets} from 'app/package/component/dashboard/dashboard';
 import {SavedFiltererState} from 'app/package/component/widget/edit-widget/edit-widget';
 import {Widget, WidgetConfig} from 'app/package/component/widget/widget';
@@ -30,7 +32,6 @@ import {ActiveStore} from '../services/active-store';
 import {Header} from '../services/header';
 import {Theme} from '../services/theme';
 import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
-import { Item } from 'app/github/app-types/item';
 
 @Component({
   selector: 'dashboard-page',
@@ -102,7 +103,7 @@ export class DashboardPage {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      private dialog: MatDialog,
+      private dialog: MatDialog, private elementRef: ElementRef,
       @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
       private router: Router, private activatedRoute: ActivatedRoute, private theme: Theme,
       private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
@@ -174,5 +175,9 @@ export class DashboardPage {
     this.router.navigate(
         [`../../query/new`],
         {queryParams: {'widget': JSON.stringify(widget)}, relativeTo: this.activatedRoute.parent});
+  }
+
+  fullscreen() {
+    this.elementRef.nativeElement.requestFullscreen();
   }
 }

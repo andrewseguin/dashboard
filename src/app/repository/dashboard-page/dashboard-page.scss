@@ -1,5 +1,6 @@
 :host {
   flex: 1;
+  overflow: auto;
 }
 
 .settings {
@@ -7,5 +8,9 @@
 }
 
 .view {
+  margin-right: 16px;
+}
+
+.fullscreen {
   margin-right: 16px;
 }

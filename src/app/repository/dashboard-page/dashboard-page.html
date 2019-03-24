@@ -10,6 +10,9 @@
     View </button>
 
   <ng-template #editButton>
+    <button mat-icon-button (click)="fullscreen()" class="fullscreen">
+      <mat-icon> fullscreen </mat-icon>
+    </button>
     <button mat-stroked-button class="view theme-background-card"
             (click)="edit.next(true)">
       Edit
