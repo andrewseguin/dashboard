@@ -29,14 +29,14 @@ export class RecommendationsPage {
 
   private destroyed = new Subject();
 
-  sortedRecommendations = this.activeRepo.config.pipe(
-      mergeMap(
-          store => combineLatest(
-              store.recommendations.list, this.filter.valueChanges.pipe(startWith('')))),
-      map(result => {
-        const filtered = result[0].filter(r => this.matchesFilter(r));
-        return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
-      }));
+  recommendations = this.activeRepo.config.pipe(mergeMap(store => store.recommendations.list));
+
+  sortedRecommendations =
+      combineLatest(this.recommendations, this.filter.valueChanges.pipe(startWith('')))
+          .pipe(map(result => {
+            const filtered = result[0].filter(r => this.matchesFilter(r));
+            return filtered.sort((a, b) => (a.dbAdded! > b.dbAdded!) ? -1 : 1);
+          }));
   trackById = (_i: number, r: Recommendation) => r.id;
 
   constructor(private header: Header, private activeRepo: ActiveStore) {}

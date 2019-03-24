@@ -12,10 +12,11 @@
   </div>
 
 
-  <div class="heading" *ngIf="list?.length > 3">
+  <div class="heading" *ngIf="(recommendations | async)?.length > 3">
     <input [formControl]="filter" class="theme-border"
            placeholder="Filter recommendations">
-    <button mat-button class="collapse" (click)="collapseAll()"> Collapse All </button>
+    <button mat-button class="collapse" (click)="collapseAll()"> Collapse All
+    </button>
   </div>
 
   <div *ngFor="let recommendation of list; trackBy: trackById">
