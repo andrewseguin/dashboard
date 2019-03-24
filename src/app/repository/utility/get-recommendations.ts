@@ -1,9 +1,9 @@
-import {filterItems, searchItems} from 'app/package/items-renderer/item-filterer';
-import {ItemsFilterMetadata, MatcherContext} from '../../github/data-source/item-filter-metadata';
-import {tokenizeItem} from '../../github/utility/tokenize-item';
-import {Recommendation} from '../services/dao/config/recommendation';
 import { Item } from 'app/github/app-types/item';
 import { Label } from 'app/github/app-types/label';
+import { filterItems, searchItems } from 'app/package/items-renderer/item-filterer';
+import { ItemsFilterMetadata, MatcherContext } from '../../github/data-source/item-filter-metadata';
+import { tokenizeItem } from '../../github/utility/tokenize-item';
+import { Recommendation } from '../services/dao/config/recommendation';
 
 export function getRecommendations(
     itemId: string, itemsMap: Map<string, Item>, recommendations: Recommendation[],
@@ -16,6 +16,7 @@ export function getRecommendations(
   return recommendations.filter(recommendation => {
     const contextProvider = (item: Item) => {
       // Add name to labels map for filtering
+      labelsMap = new Map(labelsMap);  // Do not make changes to the provided map
       labelsMap.forEach(label => labelsMap.set(label.name, label));
 
       return {

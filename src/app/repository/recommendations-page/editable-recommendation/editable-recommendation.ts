@@ -9,7 +9,6 @@ import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
-import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {merge, of, Subject} from 'rxjs';
 import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
@@ -46,11 +45,21 @@ export class EditableRecommendation {
   actionLabels = [];
   actionAssignees = [];
 
-  addLabelsAutocomplete = this.activeRepo.data.pipe(
-      mergeMap(store => store.labels.list), map(labels => labels.map(l => l.name).sort()));
+  addLabelsAutocomplete =
+      this.activeRepo.data.pipe(mergeMap(store => store.labels.list), map(labels => {
+                                  const labelNames = labels.map(l => l.name);
+                                  labelNames.sort();
+                                  return labelNames.map(name => ({id: name, label: name}));
+                                }));
 
-  addAssigneesAutocomplete = this.activeRepo.data.pipe(
-      mergeMap(store => store.items.list), map(items => getAssignees(items)));
+  addAssigneesAutocomplete =
+      this.activeRepo.data.pipe(mergeMap(store => store.items.list), map(items => {
+                                  const assigneesSet = new Set<string>();
+                                  items.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
+                                  const assigneesList: string[] = [];
+                                  assigneesSet.forEach(a => assigneesList.push(a));
+                                  return assigneesList.sort().map(a => ({id: a, label: a}));
+                                }));
 
   private _destroyed = new Subject();
 
