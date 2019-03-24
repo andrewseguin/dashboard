@@ -5,8 +5,9 @@ import {Config, RepoConfig} from 'app/service/config';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {map, mergeMap, take, tap} from 'rxjs/operators';
 import {ConfirmConfigUpdates} from '../shared/dialog/confirm-config-updates/confirm-config-updates';
-import {Query, Recommendation} from './dao';
 import {ConfigStore} from './dao/config/config-dao';
+import {Query} from './dao/config/query';
+import {Recommendation} from './dao/config/recommendation';
 import {compareLocalToRemote, IdentifiedObject, LocalToRemoteComparison} from './dao/list-dao';
 
 @Injectable()

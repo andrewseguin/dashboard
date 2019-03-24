@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Item} from 'app/github/app-types/item';
+import {Label} from 'app/github/app-types/label';
 import {ActiveStore} from 'app/repository/services/active-store';
-import {Item, Label} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Github} from 'app/service/github';
 import {take} from 'rxjs/operators';

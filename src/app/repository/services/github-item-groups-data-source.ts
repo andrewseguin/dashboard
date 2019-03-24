@@ -23,10 +23,11 @@ import {
 } from '../../github/data-source/item-viewer-metadata';
 import {tokenizeItem} from '../../github/utility/tokenize-item';
 import {ActiveStore} from './active-store';
-import {Item, Label} from './dao';
 import {DataStore} from './dao/data-dao';
 import {ListDao} from './dao/list-dao';
 import {ItemRecommendations} from './item-recommendations';
+import { Item } from 'app/github/app-types/item';
+import { Label } from 'app/github/app-types/label';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
   constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {

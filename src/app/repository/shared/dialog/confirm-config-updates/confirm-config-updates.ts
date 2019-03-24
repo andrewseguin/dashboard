@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, Query} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material';
 import {Dashboard} from 'app/package/component/dashboard/dashboard';
-import {Query, Recommendation} from 'app/repository/services/dao';
+import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {LocalToRemoteComparison} from 'app/repository/services/dao/list-dao';
 
 export interface ConfirmConfigUpdatesData {

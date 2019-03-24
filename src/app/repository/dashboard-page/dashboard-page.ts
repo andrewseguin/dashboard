@@ -27,10 +27,10 @@ import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {DATA_SOURCES} from '../repository';
 import {ActiveStore} from '../services/active-store';
-import {Item} from '../services/dao';
 import {Header} from '../services/header';
 import {Theme} from '../services/theme';
 import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
+import { Item } from 'app/github/app-types/item';
 
 @Component({
   selector: 'dashboard-page',

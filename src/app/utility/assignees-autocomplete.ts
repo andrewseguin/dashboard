@@ -1,4 +1,4 @@
-import {Item} from 'app/repository/services/dao';
+import {Item} from 'app/github/app-types/item';
 
 export function getAssignees(items: Item[]): string[] {
   const assigneesSet = new Set<string>();

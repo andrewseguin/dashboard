@@ -2,12 +2,14 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/co
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
 import {ActiveStore} from 'app/repository/services/active-store';
-import {Contributor, Item, Label} from 'app/repository/services/dao';
 import {isRepoStoreEmpty} from 'app/repository/utility/is-repo-store-empty';
 import {Github} from 'app/service/github';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {filter, map, mergeMap, startWith, takeUntil, tap} from 'rxjs/operators';
+import { Label } from 'app/github/app-types/label';
+import { Item } from 'app/github/app-types/item';
+import { Contributor } from 'app/github/app-types/contributor';
 
 
 interface StorageState {
@@ -34,11 +36,11 @@ export class LoadData {
 
   totalLabelsCount =
       this.activeRepo.name.pipe(filter(v => !!v), mergeMap((repository => {
-                                        return this.github.getLabels(repository!)
-                                            .pipe(
-                                                filter(result => result.completed === result.total),
-                                                map(result => result.accumulated.length));
-                                      })));
+                                  return this.github.getLabels(repository!)
+                                      .pipe(
+                                          filter(result => result.completed === result.total),
+                                          map(result => result.accumulated.length));
+                                })));
 
   totalItemCount =
       combineLatest(this.activeRepo.name, this.formGroup.valueChanges.pipe(startWith(null)))

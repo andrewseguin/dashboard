@@ -3,7 +3,8 @@ import {
   getGroupByValue,
   GroupingMetadata
 } from 'app/package/items-renderer/item-grouper';
-import {Item, Label} from 'app/repository/services/dao';
+import {Item} from '../app-types/item';
+import {Label} from '../app-types/label';
 
 export type Group = 'all'|'reporter'|'label'|'assignee';
 

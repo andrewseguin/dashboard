@@ -1,5 +1,5 @@
 import {SortingMetadata} from 'app/package/items-renderer/item-sorter';
-import {Item} from 'app/repository/services/dao';
+import {Item} from '../app-types/item';
 
 export type Sort = 'created'|'title';
 

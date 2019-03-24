@@ -1,8 +1,9 @@
 import {filterItems, searchItems} from 'app/package/items-renderer/item-filterer';
-import {Item, Label} from '../services/dao';
-import {Recommendation} from '../services/dao/config/recommendation';
 import {ItemsFilterMetadata, MatcherContext} from '../../github/data-source/item-filter-metadata';
 import {tokenizeItem} from '../../github/utility/tokenize-item';
+import {Recommendation} from '../services/dao/config/recommendation';
+import { Item } from 'app/github/app-types/item';
+import { Label } from 'app/github/app-types/label';
 
 export function getRecommendations(
     itemId: string, itemsMap: Map<string, Item>, recommendations: Recommendation[],

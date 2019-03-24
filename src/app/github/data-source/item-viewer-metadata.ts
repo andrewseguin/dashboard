@@ -1,6 +1,8 @@
 import {ViewingMetadata} from 'app/package/items-renderer/item-viewer';
-import {Item, Label, Recommendation} from 'app/repository/services/dao';
 import {getBorderColor, getTextColor} from '../utility/label-colors';
+import { Item } from '../app-types/item';
+import { Label } from '../app-types/label';
+import { Recommendation } from 'app/repository/services/dao/config/recommendation';
 
 export type GithubItemView = 'title'|'reporter'|'assignees'|'labels'|'warnings'|'suggestions';
 

@@ -1,5 +1,3 @@
-
-
 export function getTextColor(color: string) {
   const R = parseInt(color.slice(0, 2), 16);
   const G = parseInt(color.slice(2, 4), 16);

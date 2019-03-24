@@ -13,10 +13,12 @@ import {
   stateMatchesEquality,
   stringContainsQuery
 } from 'app/package/items-renderer/search-utility/query-matcher';
-import {Item, Label, Recommendation} from 'app/repository/services/dao';
+import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {ListDao} from 'app/repository/services/dao/list-dao';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
 import {map} from 'rxjs/operators';
+import {Item} from '../app-types/item';
+import {Label} from '../app-types/label';
 
 export interface MatcherContext {
   item: Item;

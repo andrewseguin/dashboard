@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
 import {ActiveStore} from 'app/repository/services/active-store';
-import {Item} from 'app/repository/services/dao';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Dao} from 'app/repository/services/dao/data-dao';
 import {ItemRecommendations} from 'app/repository/services/item-recommendations';
@@ -9,6 +8,7 @@ import {Markdown} from 'app/repository/services/markdown';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap} from 'rxjs/operators';
+import { Item } from 'app/github/app-types/item';
 
 export interface Activity {
   type: 'comment'|'timeline';

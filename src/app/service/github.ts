@@ -1,13 +1,9 @@
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MatSnackBar} from '@angular/material';
+import {Contributor, githubContributorToContributor} from 'app/github/app-types/contributor';
+import {githubIssueToIssue, Item} from 'app/github/app-types/item';
 import {githubLabelToLabel, Label} from 'app/github/app-types/label';
-import {
-  Contributor,
-  githubContributorToContributor,
-  githubIssueToIssue,
-  Item
-} from 'app/repository/services/dao';
 import {BehaviorSubject, empty, merge, Observable, of, timer} from 'rxjs';
 import {expand, filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {GithubComment} from '../github/github-types/comment';
