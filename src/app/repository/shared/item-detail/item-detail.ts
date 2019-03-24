@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Input, SimpleChanges} from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
+import {Item} from 'app/github/app-types/item';
 import {ActiveStore} from 'app/repository/services/active-store';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Dao} from 'app/repository/services/dao/data-dao';
@@ -8,7 +9,6 @@ import {Markdown} from 'app/repository/services/markdown';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap} from 'rxjs/operators';
-import { Item } from 'app/github/app-types/item';
 
 export interface Activity {
   type: 'comment'|'timeline';
@@ -37,11 +37,12 @@ export class ItemDetail {
   private destroyed = new Subject();
 
   constructor(
-      private markdown: Markdown, public activeRepo: ActiveStore, public github: Github,
-      private itemRecommendations: ItemRecommendations, public dao: Dao) {}
+      private elementRef: ElementRef, private markdown: Markdown, public activeRepo: ActiveStore,
+      public github: Github, private itemRecommendations: ItemRecommendations, public dao: Dao) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
+      this.elementRef.nativeElement.scrollTop = 0;  // Scroll up in case prev item was scrolled
       this.itemId = `${this.itemId}`;  // Make sure its a string since maps are string-ID based
       const store = this.dao.get(this.activeRepo.activeName);
       this.item = store.items.get(this.itemId);

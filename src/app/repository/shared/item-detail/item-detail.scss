@@ -1,5 +1,9 @@
 :host {
   font-size: 14px;
+  display: block;
+  overflow: auto;
+  padding: 8px 24px;
+  flex: 1;
 }
 
 .header {
