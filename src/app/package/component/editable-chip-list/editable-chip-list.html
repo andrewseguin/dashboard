@@ -1,6 +1,6 @@
 <span class="chip theme-border" *ngFor="let value of values; let index = index">
   <div class="value">
-    {{value}}
+    {{labels.get(value)}}
   </div>
 
   <button mat-icon-button class="remove theme-hover" type="button"

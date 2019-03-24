@@ -32,6 +32,7 @@ export interface InputWidgetDataOption extends BaseWidgetDataOption {
 
 export interface ButtonToggleWidgetDataOption extends BaseWidgetDataOption {
   options?: {id: string, label: string}[];
+  multiple?: boolean;
 }
 
 export type WidgetDataOption =

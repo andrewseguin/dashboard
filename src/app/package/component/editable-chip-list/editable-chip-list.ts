@@ -25,6 +25,8 @@ export class EditableChipList {
 
   displayedOptions: EditableChipListOption[];
 
+  labels: Map<string, string>;
+
   @Input() options: EditableChipListOption[];
 
   @Input()
@@ -41,10 +43,14 @@ export class EditableChipList {
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['options'] || simpleChanges['values']) {
       this.displayedOptions = [];
+      this.labels = new Map<string, string>();
+
       this.options.forEach(o => {
         if (this.values.indexOf(o.id) === -1) {
           this.displayedOptions.push(o);
         }
+
+        this.labels.set(o.id, o.label);
       });
     }
   }

@@ -4,7 +4,8 @@
   <div class="label"> {{option.label}} </div>
 
   <div class="option" *ngSwitchCase="'buttonToggle'">
-    <mat-button-toggle-group [formControlName]="option.id">
+    <mat-button-toggle-group [formControlName]="option.id"
+                             [multiple]="option.multiple">
       <mat-button-toggle *ngFor="let option of option.options"
                          [value]="option.id">
         {{option.label}}

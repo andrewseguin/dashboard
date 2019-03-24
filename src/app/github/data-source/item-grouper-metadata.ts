@@ -49,6 +49,7 @@ export const GithubItemGroupingMetadata =
           id: 'assignee',
           label: 'Assignee',
           groupingFunction: (items: Item[]) => getGroupByListValues(items, 'assignees'),
+          titleTransform: (title: string) => title != 'null' ? title : 'No assignee'
         }
       ],
     ]);

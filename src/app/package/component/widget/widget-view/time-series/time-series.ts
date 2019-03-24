@@ -63,6 +63,7 @@ export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions
         {id: 'created', label: 'Created'}, {id: 'closed', label: 'Closed'},
         {id: 'open', label: 'Open'}
       ],
+      multiple: true,
       initialValue: options && options.datasets ? options.datasets : 'open',
     },
   ];

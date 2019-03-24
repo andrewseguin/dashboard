@@ -1,10 +1,12 @@
+import {DatePipe} from '@angular/common';
 import {ViewingMetadata} from 'app/package/items-renderer/item-viewer';
+import {Recommendation} from 'app/repository/services/dao/config/recommendation';
+import {Item} from '../app-types/item';
+import {Label} from '../app-types/label';
 import {getBorderColor, getTextColor} from '../utility/label-colors';
-import { Item } from '../app-types/item';
-import { Label } from '../app-types/label';
-import { Recommendation } from 'app/repository/services/dao/config/recommendation';
 
-export type GithubItemView = 'title'|'reporter'|'assignees'|'labels'|'warnings'|'suggestions';
+export type GithubItemView =
+    'title'|'reporter'|'assignees'|'labels'|'warnings'|'suggestions'|'creationDate'|'updatedDate';
 
 export interface ViewContext {
   item: Item;
@@ -36,6 +38,34 @@ export const GithubItemViewerMetadata =
           containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
           render: (c: ViewContext) => [{text: `Reporter: ${c.item.reporter}`}],
+        },
+      ],
+
+      [
+        'creationDate',
+        {
+          id: 'creationDate',
+          label: 'Date Created',
+          containerStyles: {fontSize: '13px'},
+          containerClassList: 'theme-secondary-text',
+          render: (c: ViewContext) => {
+            const datePipe = new DatePipe('en-us');
+            return [{text: `Created: ${datePipe.transform(c.item.created)}`}];
+          },
+        },
+      ],
+
+      [
+        'updatedDate',
+        {
+          id: 'updatedDate',
+          label: 'Date Last Updated',
+          containerStyles: {fontSize: '13px'},
+          containerClassList: 'theme-secondary-text',
+          render: (c: ViewContext) => {
+            const datePipe = new DatePipe('en-us');
+            return [{text: `Last updated: ${datePipe.transform(c.item.updated)}`}];
+          },
         },
       ],
 
