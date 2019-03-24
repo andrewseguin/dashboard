@@ -21,9 +21,12 @@
     renamed this from "{{timelineEvent.rename.from}}" to
     "{{timelineEvent.rename.to}}"
   </ng-container>
+
+  <!-- For now, hiding unknown types
   <ng-container *ngSwitchDefault>
     Unknown type: {{timelineEvent | json}}
   </ng-container>
+  -->
 </span>
 
 <span>{{timelineEvent.created | timeAgo}}</span>
