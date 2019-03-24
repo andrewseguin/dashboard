@@ -1,4 +1,4 @@
-import {GithubContributor} from 'app/service/github-types/contributor';
+import {GithubContributor} from 'app/github/github-types/contributor';
 
 export interface Contributor {
   login: string;

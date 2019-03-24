@@ -8,7 +8,7 @@ export interface File {
 }
 
 export interface Files {
-  [key: string]:  File;
+  [key: string]: File;
 }
 
 export interface Owner {
@@ -42,6 +42,7 @@ export interface Gist {
   git_push_url: string;
   html_url: string;
   files: Files;
+
   public: boolean;
   created_at: Date;
   updated_at: Date;

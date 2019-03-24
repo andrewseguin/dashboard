@@ -1,4 +1,4 @@
-import {GithubLabel} from 'app/service/github-types/label';
+import {GithubLabel} from 'app/github/github-types/label';
 
 export interface Label {
   id: string;

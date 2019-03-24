@@ -1,5 +1,5 @@
-import {GithubIssue} from 'app/service/github-types/issue';
-import {Reactions} from 'app/service/github-types/reactions';
+import {GithubIssue} from 'app/github/github-types/issue';
+import {Reactions} from 'app/github/github-types/reactions';
 
 export interface Item {
   id: string;

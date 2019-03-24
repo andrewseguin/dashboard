@@ -1,5 +1,5 @@
-import { User } from "./user";
-import { Reactions } from "./reactions";
+import {Reactions} from './reactions';
+import {User} from './user';
 
 export interface GithubIssue {
   url: string;

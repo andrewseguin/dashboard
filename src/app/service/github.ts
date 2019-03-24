@@ -12,13 +12,13 @@ import {getLinkMap} from 'app/utility/link-map';
 import {BehaviorSubject, empty, merge, Observable, of, timer} from 'rxjs';
 import {expand, filter, map, mergeMap, take, tap} from 'rxjs/operators';
 import {Auth} from './auth';
-import {GithubComment} from './github-types/comment';
-import {GithubContributor} from './github-types/contributor';
-import {Gist} from './github-types/gist';
-import {GithubIssue} from './github-types/issue';
-import {GithubLabel} from './github-types/label';
-import {GithubRateLimit, GithubRateLimitResponse} from './github-types/rate-limit';
-import {GithubTimelineEvent} from './github-types/timeline';
+import {GithubComment} from '../github/github-types/comment';
+import {GithubContributor} from '../github/github-types/contributor';
+import {Gist} from '../github/github-types/gist';
+import {GithubIssue} from '../github/github-types/issue';
+import {GithubLabel} from '../github/github-types/label';
+import {GithubRateLimit, GithubRateLimitResponse} from '../github/github-types/rate-limit';
+import {GithubTimelineEvent} from '../github/github-types/timeline';
 import {RateLimitReached} from './rate-limit-reached/rate-limit.reached';
 
 export interface CombinedPagedResults<T> {
