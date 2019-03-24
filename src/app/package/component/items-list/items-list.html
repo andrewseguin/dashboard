@@ -23,6 +23,6 @@
   </div>
 </div>
 
-<div *ngIf="hasMore | async" class="loading-more">
+<div *ngIf="!(renderState | async) || (hasMore | async)" class="loading-more">
   <mat-spinner diameter="48"></mat-spinner>
 </div>

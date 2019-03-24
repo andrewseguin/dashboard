@@ -1,6 +1,8 @@
 <div class="buttons">
   <div class="length theme-secondary-text">
-    {{itemCount}} results
+    <ng-container *ngIf="itemCount !== undefined && itemCount !== null">
+      {{itemCount}} results
+    </ng-container>
   </div>
   <button mat-button [mat-menu-trigger-for]="rootMenu">
     <div class="options-menu-trigger"> Display Options </div>
