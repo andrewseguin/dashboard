@@ -39,7 +39,7 @@ export class EditWidget<S, V, G> {
     displayType: new FormControl('count'),
   });
 
-  dataSourceType = new ReplaySubject<string>();
+  dataSourceType = new ReplaySubject<string>(1);
 
   itemGroupsDataSource = new ReplaySubject<ItemGroupsDataSource<any>>();
 
@@ -75,7 +75,8 @@ export class EditWidget<S, V, G> {
 
   ngOnInit() {
     if (this.data && this.data.widget) {
-      this.dataSourceType.next('issue');
+      this.dataSourceType.next(
+          this.data.widget.dataSourceType || this.data.dataSources.keys().next().value);
       this.form.setValue({
         title: this.data.widget.title || '',
         displayType: this.data.widget.displayType || 'count',
