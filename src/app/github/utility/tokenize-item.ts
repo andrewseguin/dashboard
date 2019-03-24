@@ -1,4 +1,4 @@
-import {Item} from '../services/dao';
+import {Item} from '../../repository/services/dao';
 
 /**
  * Returns a lower-cased string that contains the searchable tokens of Item.

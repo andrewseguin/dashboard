@@ -21,7 +21,7 @@ import {
   GithubItemViewerMetadata,
   ViewContext
 } from '../../github/data-source/item-viewer-metadata';
-import {tokenizeItem} from '../utility/tokenize-item';
+import {tokenizeItem} from '../../github/utility/tokenize-item';
 import {ActiveStore} from './active-store';
 import {Item, Label} from './dao';
 import {DataStore} from './dao/data-dao';
