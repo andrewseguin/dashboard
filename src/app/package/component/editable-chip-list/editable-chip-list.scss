@@ -24,3 +24,7 @@ button.remove, button.add {
 :host mat-icon {
   font-size: 16px;
 }
+
+::ng-deep .option-menu {
+  max-height: 500px;
+}

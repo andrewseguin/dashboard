@@ -15,7 +15,7 @@
   </button>
 </span>
 
-<mat-menu #addOptionMenu="matMenu">
+<mat-menu #addOptionMenu="matMenu" class="option-menu">
   <button mat-menu-item *ngFor="let option of displayedOptions"
           (click)="add(option.id)">
     {{option.label}}
