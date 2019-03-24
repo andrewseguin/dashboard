@@ -20,7 +20,7 @@ export class ItemGroupsRenderer<T> {
       itemGroupsDataSource: ItemGroupsDataSource<T>, scroll: Observable<Event>, resetCount = 20,
       incrementCount = 20) {
     this.renderedItemGroups = combineLatest(
-                                  itemGroupsDataSource.connect().pipe(debounceTime(200)),
+                                  itemGroupsDataSource.connect().pipe(debounceTime(50)),
                                   scroll.pipe(auditTime(200), startWith(null)))
                                   .pipe(map(result => {
                                     this.itemGroups = result[0].groups;
