@@ -1,17 +1,15 @@
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MatSnackBar} from '@angular/material';
+import {githubLabelToLabel, Label} from 'app/github/app-types/label';
 import {
   Contributor,
   githubContributorToContributor,
   githubIssueToIssue,
   Item
 } from 'app/repository/services/dao';
-import {githubLabelToLabel, Label} from 'app/github/app-types/label';
-import {getLinkMap} from 'app/utility/link-map';
 import {BehaviorSubject, empty, merge, Observable, of, timer} from 'rxjs';
 import {expand, filter, map, mergeMap, take, tap} from 'rxjs/operators';
-import {Auth} from './auth';
 import {GithubComment} from '../github/github-types/comment';
 import {GithubContributor} from '../github/github-types/contributor';
 import {Gist} from '../github/github-types/gist';
@@ -19,6 +17,7 @@ import {GithubIssue} from '../github/github-types/issue';
 import {GithubLabel} from '../github/github-types/label';
 import {GithubRateLimit, GithubRateLimitResponse} from '../github/github-types/rate-limit';
 import {GithubTimelineEvent} from '../github/github-types/timeline';
+import {Auth} from './auth';
 import {RateLimitReached} from './rate-limit-reached/rate-limit.reached';
 
 export interface CombinedPagedResults<T> {
@@ -405,4 +404,20 @@ function githubTimelineEventtoTimelineEvent(o: GithubTimelineEvent): TimelineEve
     requestedReviewers: o.requested_reviewers,
     reviewRequester: o.review_requester,
   };
+}
+
+
+export function getLinkMap(headers: any) {
+  const links = new Map<string, string>();
+  const link = headers.get('link');
+
+  if (link) {
+    link.split(',').forEach((v: string) => {
+      const rawUrl = v.split(';')[0].replace('<', '').replace('>', '');
+      const rawRel = v.split(';')[1].split('=')[1].replace('"', '').replace('"', '');
+      links.set(rawRel, rawUrl);
+    });
+  }
+
+  return links;
 }
