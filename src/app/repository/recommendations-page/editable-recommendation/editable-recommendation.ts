@@ -45,14 +45,14 @@ export class EditableRecommendation {
   actionLabels = [];
   actionAssignees = [];
 
-  addLabelsAutocomplete =
+  addLabelsOptions =
       this.activeRepo.data.pipe(mergeMap(store => store.labels.list), map(labels => {
                                   const labelNames = labels.map(l => l.name);
                                   labelNames.sort();
                                   return labelNames.map(name => ({id: name, label: name}));
                                 }));
 
-  addAssigneesAutocomplete =
+  addAssigneesOptions =
       this.activeRepo.data.pipe(mergeMap(store => store.items.list), map(items => {
                                   const assigneesSet = new Set<string>();
                                   items.forEach(i => i.assignees.forEach(a => assigneesSet.add(a)));
