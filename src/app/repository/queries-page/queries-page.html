@@ -58,7 +58,8 @@
     <mat-menu #createQueryMenu="matMenu" xPosition="before">
       <button mat-menu-item (click)="createQuery(queryType)"
               *ngFor="let queryType of dataSourceTypes">{{dataSources.get(queryType).label}}</button>
-      <button mat-menu-item [matMenuTriggerFor]="recommendations">
+      <button mat-menu-item [matMenuTriggerFor]="recommendations"
+              *ngIf="(recommendationsList | async).length">
         From recommendations
       </button>
     </mat-menu>

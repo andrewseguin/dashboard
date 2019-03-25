@@ -1,7 +1,7 @@
-import {SortingMetadata} from 'app/package/items-renderer/item-sorter';
-import {Item} from '../app-types/item';
+import { SortingMetadata } from 'app/package/items-renderer/item-sorter';
+import { Item } from '../app-types/item';
 
-export type Sort = 'created'|'updated'|'title';
+export type Sort = 'created'|'updated'|'title'|'plusOneReactions'|'minusOneReactions';
 
 export const GithubItemSortingMetadata = new Map<Sort, SortingMetadata<Item, Sort, null>>([
   [
@@ -26,6 +26,14 @@ export const GithubItemSortingMetadata = new Map<Sort, SortingMetadata<Item, Sor
       label: 'Title',
       comparator: () => (a: Item, b: Item) =>
           a.title.toLowerCase() < b.title.toLowerCase() ? -1 : 1,
+    }
+  ],
+
+  [
+    'plusOneReactions', {
+      id: 'plusOneReactions',
+      label: '+1 Reactions',
+      comparator: () => (a: Item, b: Item) => a.reactions['+1'] < b.reactions['+1'] ? -1 : 1,
     }
   ],
 ]);
