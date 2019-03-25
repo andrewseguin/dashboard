@@ -65,13 +65,14 @@ export class PieChart<T, G> {
   private getInfo(groups: ItemGroup<T>[]): {data: number[], labels: string[]} {
     const data: number[] = [];
     const labels: string[] = [];
+    const LIMIT = 20;
     groups.forEach((group, index) => {
-      if (index < 10) {
+      if (index < LIMIT) {
         data[index] = group.items.length;
         labels[index] = group.title;
       } else {
-        data[10] = (data[10] || 0) + group.items.length;
-        labels[10] = 'Others';
+        data[LIMIT] = (data[LIMIT] || 0) + group.items.length;
+        labels[LIMIT] = 'Others';
       }
     });
 
