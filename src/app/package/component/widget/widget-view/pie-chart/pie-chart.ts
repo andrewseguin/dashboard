@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {ItemGroup, ItemGrouperState} from 'app/package/items-renderer/item-grouper';
+import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { ItemGroup, ItemGrouperState } from 'app/package/items-renderer/item-grouper';
 import * as Chart from 'chart.js';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { WidgetDataOption } from '../../edit-widget/widget-type-options/widget-type-options';
+import { WidgetData, WIDGET_DATA } from '../list/list';
 
-import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
-import {WIDGET_DATA, WidgetData} from '../list/list';
 
 
 export interface PieChartDisplayTypeOptions<G> {
@@ -65,7 +65,7 @@ export class PieChart<T, G> {
   private getInfo(groups: ItemGroup<T>[]): {data: number[], labels: string[]} {
     const data: number[] = [];
     const labels: string[] = [];
-    const LIMIT = 20;
+    const LIMIT = 10;
     groups.forEach((group, index) => {
       if (index < LIMIT) {
         data[index] = group.items.length;
