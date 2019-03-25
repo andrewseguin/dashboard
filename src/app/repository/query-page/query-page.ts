@@ -9,7 +9,7 @@ import {map, take, takeUntil} from 'rxjs/operators';
 import {ActiveStore} from '../services/active-store';
 import {ConfigStore} from '../services/dao/config/config-dao';
 import {Query} from '../services/dao/config/query';
-import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
+import {getItemsList, GithubItemGroupsDataSource} from '../../github/data-source/github-item-groups-data-source';
 import {Header} from '../services/header';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';

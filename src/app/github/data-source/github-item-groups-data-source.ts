@@ -1,3 +1,5 @@
+import {Item} from 'app/github/app-types/item';
+import {Label} from 'app/github/app-types/label';
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
@@ -5,29 +7,15 @@ import {ItemSorter} from 'app/package/items-renderer/item-sorter';
 import {ItemViewer, ItemViewerContextProvider} from 'app/package/items-renderer/item-viewer';
 import {combineLatest, of} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {
-  AutocompleteContext,
-  ItemsFilterMetadata,
-  MatcherContext
-} from '../../github/data-source/item-filter-metadata';
-import {
-  GithubItemGroupingMetadata,
-  Group,
-  TitleTransformContext
-} from '../../github/data-source/item-grouper-metadata';
-import {GithubItemSortingMetadata, Sort} from '../../github/data-source/item-sorter-metadata';
-import {
-  GithubItemView,
-  GithubItemViewerMetadata,
-  ViewContext
-} from '../../github/data-source/item-viewer-metadata';
-import {tokenizeItem} from '../../github/utility/tokenize-item';
-import {ActiveStore} from './active-store';
-import {DataStore} from './dao/data-dao';
-import {ListDao} from './dao/list-dao';
-import {ItemRecommendations} from './item-recommendations';
-import { Item } from 'app/github/app-types/item';
-import { Label } from 'app/github/app-types/label';
+import {ActiveStore} from '../../repository/services/active-store';
+import {DataStore} from '../../repository/services/dao/data-dao';
+import {ListDao} from '../../repository/services/dao/list-dao';
+import {ItemRecommendations} from '../../repository/services/item-recommendations';
+import {tokenizeItem} from '../utility/tokenize-item';
+import {AutocompleteContext, ItemsFilterMetadata, MatcherContext} from './item-filter-metadata';
+import {GithubItemGroupingMetadata, Group, TitleTransformContext} from './item-grouper-metadata';
+import {GithubItemSortingMetadata, Sort} from './item-sorter-metadata';
+import {GithubItemView, GithubItemViewerMetadata, ViewContext} from './item-viewer-metadata';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
   constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {

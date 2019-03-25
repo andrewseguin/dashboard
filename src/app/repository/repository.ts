@@ -7,7 +7,7 @@ import {interval, Subject} from 'rxjs';
 import {filter, mergeMap, take} from 'rxjs/operators';
 import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data-dao';
-import {getItemsList, GithubItemGroupsDataSource} from './services/github-item-groups-data-source';
+import {getItemsList, GithubItemGroupsDataSource} from '../github/data-source/github-item-groups-data-source';
 import {ItemRecommendations} from './services/item-recommendations';
 import {Remover} from './services/remover';
 import {Updater} from './services/updater';

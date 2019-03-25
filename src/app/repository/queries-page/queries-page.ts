@@ -8,7 +8,7 @@ import {DATA_SOURCES} from '../repository';
 import {ActiveStore} from '../services/active-store';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
-import {getItemsList, GithubItemGroupsDataSource} from '../services/github-item-groups-data-source';
+import {getItemsList, GithubItemGroupsDataSource} from '../../github/data-source/github-item-groups-data-source';
 import {Header} from '../services/header';
 import {ItemRecommendations} from '../services/item-recommendations';
 
