@@ -8,11 +8,9 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {DataSourceFactory} from 'app/package/items-renderer/data-source-provider';
+import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 
-import {Widget, WidgetConfig} from '../widget';
-
-import {WIDGET_DATA, WidgetData} from './list/list';
+import {Widget, WIDGET_DATA, WidgetConfig, WidgetData} from '../widget';
 
 
 @Component({
@@ -31,7 +29,7 @@ export class WidgetView {
 
   @Input() editMode: boolean;
 
-  @Input() dataSourceFactory: DataSourceFactory;
+  @Input() dataSources: Map<string, DataSourceProvider>;
 
   @Output() edit = new EventEmitter<void>();
 
@@ -52,14 +50,9 @@ export class WidgetView {
   }
 
   private createWidget() {
-    const itemGroupsDataSource = this.dataSourceFactory();
-    if (this.widget.filtererState) {
-      itemGroupsDataSource.filterer.setState(this.widget.filtererState);
-    }
-
     const widgetData: WidgetData<any, any> = {
       options: this.widget.displayTypeOptions,
-      itemGroupsDataSource: itemGroupsDataSource,
+      dataSources: this.dataSources,
       config: this.widgetConfig.config,
     };
 

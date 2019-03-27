@@ -1,33 +1,28 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ComponentPortal, PortalInjector} from '@angular/cdk/portal';
+import {ChangeDetectionStrategy, Component, Inject, Injector} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
-import {combineLatest, ReplaySubject, Subject} from 'rxjs';
-import {filter, map, mergeMap, take, takeUntil} from 'rxjs/operators';
+import {ReplaySubject} from 'rxjs';
+import {startWith, take} from 'rxjs/operators';
 
-import {Widget, WidgetConfig} from '../../widget/widget';
+import {EDIT_WIDGET_DATA, EditWidgetData2, Widget, WidgetConfig} from '../../widget/widget';
 
 
 export interface SavedFiltererState {
   state: ItemFiltererState;
   group: string;
   label: string;
+  dataSourceType: string;
 }
 
 export interface EditWidgetData {
-  widget: Widget;
+  widget?: Widget;
   dataSources: Map<string, DataSourceProvider>;
   widgetConfigs: {[key in string]: WidgetConfig};
   savedFiltererStates: SavedFiltererState[];
 }
-
-interface SavedFiltererStateGroup {
-  name: string;
-  savedFiltererStates: SavedFiltererState[];
-}
-
 @Component({
   templateUrl: 'edit-widget.html',
   styleUrls: ['edit-widget.scss'],
@@ -36,101 +31,60 @@ interface SavedFiltererStateGroup {
 export class EditWidget<S, V, G> {
   form = new FormGroup({
     title: new FormControl(''),
-    displayType: new FormControl('count'),
+    displayType: new FormControl(''),
   });
-
-  dataSourceType = new ReplaySubject<string>(1);
-
-  itemGroupsDataSource = new ReplaySubject<ItemGroupsDataSource<any>>();
-
-  itemCount = this.itemGroupsDataSource.pipe(
-      mergeMap(dataSource => dataSource.connect().pipe(map(result => result.count))));
-
-  savedFiltererStateGroups: SavedFiltererStateGroup[] = [];
-
-  private destroyed = new Subject();
 
   widgetConfigs: WidgetConfig[] = [];
 
-  displayTypeOptions: any;
+  optionsPortal: ComponentPortal<any>;
+
+  options = new ReplaySubject(1);
 
   constructor(
       private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
       @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
-    this.savedFiltererStateGroups = this.getSavedFiltererStateGroups();
-
     for (let id of Object.keys(data.widgetConfigs)) {
       this.widgetConfigs.push(data.widgetConfigs[id]);
     }
 
-    // TODO: Figure out how to multicast and publish rather than doing this
-    this.dataSourceType
-        .pipe(
-            map(type => this.data.dataSources.get(type)), filter(v => !!v),
-            takeUntil(this.destroyed))
-        .subscribe(dataSource => {
-          this.itemGroupsDataSource.next(dataSource!.factory());
-        });
-  }
-
-  ngOnInit() {
-    if (this.data && this.data.widget) {
-      this.dataSourceType.next(
-          this.data.widget.dataSourceType || this.data.dataSources.keys().next().value);
+    if (data.widget) {
       this.form.setValue({
-        title: this.data.widget.title || '',
-        displayType: this.data.widget.displayType || 'count',
+        title: data.widget.title || '',
+        displayType: data.widget.displayType,
       });
-
-      if (this.data.widget.displayTypeOptions) {
-        this.displayTypeOptions = this.data.widget.displayTypeOptions;
-      }
-
-      this.itemGroupsDataSource.pipe(take(1)).subscribe(itemGroupsDataSource => {
-        if (this.data.widget.filtererState) {
-          itemGroupsDataSource.filterer.setState(this.data.widget.filtererState);
-        }
-      });
+    } else {
+      this.form.get('displayType')!.setValue(this.widgetConfigs[0].id);
     }
-  }
 
-  ngOnDestroy() {
-    this.destroyed.next();
-    this.destroyed.complete();
-  }
-
-  edit() {
-    combineLatest(this.itemGroupsDataSource, this.dataSourceType)
-        .pipe(take(1))
-        .subscribe(results => {
-          const widget: Widget = {
-            title: this.form.value.title,
-            dataSourceType: results[1],
-            filtererState: results[0].filterer.getState(),
-            displayType: this.form.value.displayType,
-            displayTypeOptions: this.displayTypeOptions
-          };
-
-          this.dialogRef.close(widget);
+    this.form.get('displayType')!.valueChanges.pipe(startWith(this.form.value.displayType))
+        .subscribe(value => {
+          return this.createEditWidget(value);
         });
   }
 
-  loadFromFiltererState(state: ItemFiltererState) {
-    this.itemGroupsDataSource.pipe(take(1)).subscribe(d => d.filterer.setState(state));
+  save() {
+    this.options.pipe(take(1)).subscribe(options => {
+      const widget: Widget = {
+        title: this.form.value.title,
+        displayType: this.form.value.displayType,
+        displayTypeOptions: options
+      };
+
+      this.dialogRef.close(widget);
+    });
   }
 
-  private getSavedFiltererStateGroups(): SavedFiltererStateGroup[] {
-    const groupsMap = new Map<string, SavedFiltererState[]>();
-    this.data.savedFiltererStates.forEach(savedFiltererState => {
-      if (!groupsMap.has(savedFiltererState.group)) {
-        groupsMap.set(savedFiltererState.group, []);
-      }
+  private createEditWidget(type: string) {
+    this.options.next(this.data.widget ? this.data.widget.displayTypeOptions : null);
+    const widgetData: EditWidgetData2<any> = {
+      options: this.options,
+      dataSources: this.data.dataSources,
+      savedFiltererStates: this.data.savedFiltererStates,
+    };
 
-      groupsMap.get(savedFiltererState.group)!.push(savedFiltererState);
-    });
-
-    const groupsList: SavedFiltererStateGroup[] = [];
-    groupsMap.forEach((savedFiltererStates, name) => groupsList.push({name, savedFiltererStates}));
-    return groupsList;
+    const injectionTokens = new WeakMap<any, any>([[EDIT_WIDGET_DATA, widgetData]]);
+    const widgetInjector = new PortalInjector(Injector.NULL, injectionTokens);
+    this.optionsPortal =
+        new ComponentPortal(this.data.widgetConfigs[type].editComponent, null, widgetInjector);
   }
 }

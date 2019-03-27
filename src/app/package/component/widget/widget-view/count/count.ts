@@ -1,25 +1,11 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {WIDGET_DATA, WidgetData} from '../list/list';
-import { WidgetDataOption } from '../../edit-widget/widget-type-options/widget-type-options';
+import {WIDGET_DATA, WidgetData} from '../../widget';
 
-
-export interface CountDisplayTypeOptions {
-  fontSize: 'small'|'normal'|'large';
-}
-
-export function getCountConfigOptions(options: CountDisplayTypeOptions): WidgetDataOption[] {
-  return [
-    {
-      id: 'fontSize',
-      type: 'input',
-      label: 'Font Size (px)',
-      inputType: 'number',
-      initialValue: options && options.fontSize ? options.fontSize : '48',
-    },
-  ];
-}
+import {EditCount} from './count-edit';
+import {CountDisplayTypeOptions} from './count.module';
 
 @Component({
   selector: 'count',
@@ -38,7 +24,13 @@ export function getCountConfigOptions(options: CountDisplayTypeOptions): WidgetD
   }
 })
 export class Count {
-  count = this.data.itemGroupsDataSource.connect().pipe(map(result => result.count));
+  static editComponent = EditCount;
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions, null>) {}
+  count: Observable<number>;
+
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions, null>) {
+    const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
+    dataSource.filterer.setState(this.data.options.filtererState);
+    this.count = dataSource.connect().pipe(map(result => result.count));
+  }
 }

@@ -13,16 +13,16 @@ import {Item} from 'app/github/app-types/item';
 import {Column, Dashboard, hasWidgets} from 'app/package/component/dashboard/dashboard';
 import {SavedFiltererState} from 'app/package/component/widget/edit-widget/edit-widget';
 import {Widget, WidgetConfig} from 'app/package/component/widget/widget';
-import {Count, getCountConfigOptions} from 'app/package/component/widget/widget-view/count/count';
-import {getListConfigOptions, List} from 'app/package/component/widget/widget-view/list/list';
+import {Count} from 'app/package/component/widget/widget-view/count/count';
+import {EditCount} from 'app/package/component/widget/widget-view/count/count-edit';
+import {List} from 'app/package/component/widget/widget-view/list/list';
+import {ListEdit} from 'app/package/component/widget/widget-view/list/list-edit';
+import {PieChart} from 'app/package/component/widget/widget-view/pie-chart/pie-chart';
+import {PieChartEdit} from 'app/package/component/widget/widget-view/pie-chart/pie-chart-edit';
+import {TimeSeries} from 'app/package/component/widget/widget-view/time-series/time-series';
 import {
-  getPieChartConfigOptions,
-  PieChart
-} from 'app/package/component/widget/widget-view/pie-chart/pie-chart';
-import {
-  getTimeSeriesConfigOptions,
-  TimeSeries
-} from 'app/package/component/widget/widget-view/time-series/time-series';
+  TimeSeriesEdit
+} from 'app/package/component/widget/widget-view/time-series/time-series-edit';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
@@ -54,11 +54,13 @@ export class DashboardPage {
           state: query.filtererState!,
           label: query.name!,
           group: 'Queries',
+          dataSourceType: query.dataSourceType!,
         }));
         result[1].forEach(recommendation => savedFiltererStates.push({
           state: recommendation.filtererState!,
           label: recommendation.message!,
           group: 'Recommendations',
+          dataSourceType: ''  // TODO: Needs to be provided by the recommendation
         }));
         return savedFiltererStates;
       }));
@@ -68,13 +70,13 @@ export class DashboardPage {
       id: 'count',
       label: 'Count',
       component: Count,
-      optionsProvider: getCountConfigOptions,
+      editComponent: EditCount,
     },
     list: {
       id: 'list',
       label: 'List',
       component: List,
-      optionsProvider: getListConfigOptions,
+      editComponent: ListEdit,
       config: {
         onSelect:
             (item: Item) => {
@@ -86,13 +88,13 @@ export class DashboardPage {
       id: 'pie',
       label: 'Pie',
       component: PieChart,
-      optionsProvider: getPieChartConfigOptions,
+      editComponent: PieChartEdit,
     },
     timeSeries: {
       id: 'timeSeries',
       label: 'Time Series',
       component: TimeSeries,
-      optionsProvider: getTimeSeriesConfigOptions,
+      editComponent: TimeSeriesEdit,
     },
   };
 

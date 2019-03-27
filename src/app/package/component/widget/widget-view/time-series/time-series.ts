@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
+import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
-import {WidgetDataOption} from '../../edit-widget/widget-type-options/widget-type-options';
-import {WIDGET_DATA, WidgetData} from '../list/list';
+import {WIDGET_DATA, WidgetData} from '../../widget';
 
 
 interface CreatedAndClosedDate {
@@ -26,47 +26,12 @@ interface TimeSeriesData {
 }
 
 export interface TimeSeriesDisplayTypeOptions {
+  dataSourceType: string;
   start: string;
   end: string;
   group: 'day'|'week'|'month';
   datasets: string|string[];
-}
-
-export function getTimeSeriesConfigOptions(options: TimeSeriesDisplayTypeOptions):
-    WidgetDataOption[] {
-  return [
-    {
-      id: 'start',
-      type: 'datepicker',
-      label: 'Start date',
-      initialValue: options ? options.start : null,
-    },
-    {
-      id: 'end',
-      type: 'datepicker',
-      label: 'End date',
-      initialValue: options ? options.end : null,
-    },
-    {
-      id: 'group',
-      type: 'buttonToggle',
-      label: 'Group',
-      options:
-          [{id: 'day', label: 'Day'}, {id: 'week', label: 'Week'}, {id: 'month', label: 'Month'}],
-      initialValue: options && options.group ? options.group : 'week',
-    },
-    {
-      id: 'datasets',
-      type: 'buttonToggle',
-      label: 'Datasets',
-      options: [
-        {id: 'created', label: 'Created'}, {id: 'closed', label: 'Closed'},
-        {id: 'open', label: 'Open'}
-      ],
-      multiple: true,
-      initialValue: options && options.datasets ? options.datasets : 'open',
-    },
-  ];
+  filtererState: ItemFiltererState;
 }
 
 @Component({
@@ -85,7 +50,9 @@ export class TimeSeries<T> {
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions, null>) {}
 
   ngOnInit() {
-    this.data.itemGroupsDataSource.connect()
+    const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
+    dataSource.filterer.setState(this.data.options.filtererState);
+    dataSource.connect()
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result.groups));
   }

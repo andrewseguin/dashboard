@@ -1,36 +1,18 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { ItemGroup, ItemGrouperState } from 'app/package/items-renderer/item-grouper';
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
+import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
+import {ItemGroup, ItemGrouperState} from 'app/package/items-renderer/item-grouper';
 import * as Chart from 'chart.js';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { WidgetDataOption } from '../../edit-widget/widget-type-options/widget-type-options';
-import { WidgetData, WIDGET_DATA } from '../list/list';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
+import {WIDGET_DATA, WidgetData} from '../../widget';
 
 
 export interface PieChartDisplayTypeOptions<G> {
+  dataSourceType: string;
   grouperState: ItemGrouperState<G>;
   filteredGroups: string;
-}
-
-export function getPieChartConfigOptions(options: PieChartDisplayTypeOptions<any>):
-    WidgetDataOption[] {
-  return [
-    {
-      id: 'grouperState',
-      type: 'grouperState',
-      label: 'Grouping',
-      initialValue: options ? options.grouperState : null,
-    },
-    {
-      id: 'filteredGroups',
-      type: 'input',
-      inputType: 'text',
-      label: 'Filter (optional)',
-      placeholder: 'Filter by group title, e.g. "Group A, Group B"',
-      initialValue: options ? options.filteredGroups : null,
-    },
-  ];
+  filtererState: ItemFiltererState;
 }
 
 @Component({
@@ -46,13 +28,13 @@ export class PieChart<T, G> {
 
   private destroyed = new Subject();
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<PieChartDisplayTypeOptions<G>, null>) {
-    data.itemGroupsDataSource = data.itemGroupsDataSource;
-  }
+  constructor(@Inject(WIDGET_DATA) public data: WidgetData<PieChartDisplayTypeOptions<G>, null>) {}
 
   ngOnInit() {
-    this.data.itemGroupsDataSource.grouper.setState(this.data.options.grouperState);
-    this.data.itemGroupsDataSource.connect()
+    const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
+    dataSource.grouper.setState(this.data.options.grouperState);
+    dataSource.filterer.setState(this.data.options.filtererState);
+    dataSource.connect()
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result.groups));
   }

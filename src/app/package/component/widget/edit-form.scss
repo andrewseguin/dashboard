@@ -4,11 +4,6 @@ form {
   padding: 0 16px;
 }
 
-input.title {
-  font-size: 20px;
-  margin-bottom: 24px;
-}
-
 .config-option {
   display: flex;
   margin-bottom: 16px;
@@ -72,4 +67,26 @@ advanced-search {
   align-items: center;
   flex: 1;
   min-height: 32px;
+}
+
+mat-select {
+  height: 16px;
+  display: block;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  padding: 6px 0 8px 0;
+
+  &.auto-width {
+    flex: 0;
+
+    ::ng-deep .mat-select-value {
+      max-width: 100%;
+      width: auto;
+      padding-right: 8px;
+    }
+  }
+}
+
+mat-select + mat-select {
+  margin-left: 16px;
 }

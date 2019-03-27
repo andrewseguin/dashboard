@@ -5,12 +5,12 @@ import {MaterialModule} from 'app/material.module';
 import {
   EditableChipListModule
 } from 'app/package/component/editable-chip-list/editable-chip-list.module';
-import {WidgetTypeOptions} from './widget-type-options';
+import {ViewStateOption} from './view-state-option';
 
 @NgModule({
-  imports: [CommonModule, MaterialModule, EditableChipListModule, ReactiveFormsModule],
-  declarations: [WidgetTypeOptions],
-  exports: [WidgetTypeOptions],
+  imports: [CommonModule, MaterialModule, ReactiveFormsModule, EditableChipListModule],
+  declarations: [ViewStateOption],
+  exports: [ViewStateOption],
 })
-export class WidgetTypeOptionsModule {
+export class ViewStateOptionModule {
 }

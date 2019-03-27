@@ -46,17 +46,17 @@ export class DashboardView {
   }
 
   addWidget(column: Column) {
-    this.editWidget(column, {}, column.widgets.length);
+    this.editWidget(column, column.widgets.length);
   }
 
-  duplicateWidget(column: Column, widget: Widget, index: number) {
+  duplicateWidget(column: Column, index: number, widget: Widget) {
     const newWidget = {...widget};
     column.widgets.splice(index, 0, newWidget);
   }
 
-  editWidget(column: Column, widget: Widget, index: number) {
+  editWidget(column: Column, index: number, widget?: Widget) {
     const data: EditWidgetData = {
-      widget,
+      widget: widget,
       dataSources: this.dataSources,
       widgetConfigs: this.widgetConfigs,
       savedFiltererStates: this.savedFiltererStates,

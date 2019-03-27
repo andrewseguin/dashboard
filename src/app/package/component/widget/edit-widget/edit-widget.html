@@ -1,79 +1,19 @@
-<h1 mat-dialog-title> Edit Widget </h1>
-
 <form [formGroup]="form">
-  <div mat-dialog-content *ngIf="itemGroupsDataSource | async; let dataSource">
-    <div class="config-option">
-      <div class="label"> Title </div>
-      <div class="option">
-        <input class="theme-border" matInput formControlName="title">
-      </div>
-    </div>
+  <div mat-dialog-content>
+    <input class="theme-border title" matInput
+           placeholder="(Optional) Widget Title" autocomplete="off"
+           formControlName="title">
 
-    <div class="config-option">
-      <div class="label"> Type </div>
-      <div class="option">
-        <mat-button-toggle-group formControlName="displayType">
-          <mat-button-toggle *ngFor="let widgetConfig of widgetConfigs"
-                             [value]="widgetConfig.id">
-            {{widgetConfig.label}}
-          </mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
-    </div>
+    <button-toggle-group-option formControlName="displayType" label="Type"
+                                [options]="widgetConfigs">
+    </button-toggle-group-option>
 
-    <widget-type-options [optionsProvider]="data.widgetConfigs[form.value.displayType].optionsProvider"
-                         [options]="displayTypeOptions"
-                         [itemGroupsDataSource]="dataSource"
-                         (optionsChanged)="displayTypeOptions = $event">
-    </widget-type-options>
-
-    <div class="config-option">
-      <div class="label"> Query Type </div>
-      <div class="option">
-        <mat-button-toggle-group [value]="dataSourceType | async"
-                                 (change)="dataSourceType.next($event.value)">
-          <mat-button-toggle value="issue"> Issue </mat-button-toggle>
-          <mat-button-toggle value="pr">Pull Request</mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
-    </div>
-
-    <div class="config-option">
-      <div class="label query">
-        Query
-        <button mat-icon-button *ngIf="savedFiltererStateGroups.length"
-                [matMenuTriggerFor]="loadFiltererStates" type="button"
-                matTooltip="Load from saved searches">
-          <mat-icon> save_alt </mat-icon>
-        </button>
-      </div>
-      <div class="option">
-        <advanced-search [filterer]="dataSource?.filterer">
-        </advanced-search>
-      </div>
-    </div>
+    <div [cdkPortalOutlet]="optionsPortal"></div>
   </div>
 
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close> Cancel </button>
-    <button mat-raised-button (click)="edit()" color="primary" cdkFocusInitial>
+    <button mat-raised-button (click)="save()" color="primary" cdkFocusInitial>
       Save </button>
   </div>
 </form>
-
-<mat-menu #loadFiltererStates="matMenu">
-  <ng-container *ngFor="let group of savedFiltererStateGroups">
-    <button mat-menu-item [matMenuTriggerFor]="statesMenu">
-      {{group.name}}
-    </button>
-
-    <mat-menu #statesMenu="matMenu">
-      <button mat-menu-item
-              *ngFor="let savedFiltererState of group.savedFiltererStates"
-              (click)="loadFromFiltererState(savedFiltererState.state)">
-        {{savedFiltererState.label}}
-      </button>
-    </mat-menu>
-
-  </ng-container>
-</mat-menu>
