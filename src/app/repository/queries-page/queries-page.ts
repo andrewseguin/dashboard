@@ -4,11 +4,14 @@ import {Router} from '@angular/router';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {Observable, Subject} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
+import {
+  getItemsList,
+  GithubItemGroupsDataSource
+} from '../../github/data-source/github-item-groups-data-source';
 import {DATA_SOURCES} from '../repository';
 import {ActiveStore} from '../services/active-store';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
-import {getItemsList, GithubItemGroupsDataSource} from '../../github/data-source/github-item-groups-data-source';
 import {Header} from '../services/header';
 import {ItemRecommendations} from '../services/item-recommendations';
 
@@ -47,9 +50,9 @@ export class QueriesPage {
   private destroyed = new Subject();
 
   constructor(
-      @Inject(DATA_SOURCES) private dataSources: Map<string, DataSourceProvider>, private header: Header,
-      private router: Router, private issueRecommendations: ItemRecommendations,
-      private activeRepo: ActiveStore) {
+      @Inject(DATA_SOURCES) private dataSources: Map<string, DataSourceProvider>,
+      private header: Header, private router: Router,
+      private issueRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {
     this.dataSources.forEach(dataSource => this.dataSourceTypes.push(dataSource.id));
   }
 

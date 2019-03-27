@@ -5,26 +5,14 @@ import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
 import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
 
 import {PieChartDisplayTypeOptions} from './pie-chart';
-import { SavedFiltererState } from '../../edit-widget/edit-widget';
 
 
 @Component({
-  template: `
-    <ng-container [formGroup]="form">
-      <button-toggle-group-option formControlName="dataSourceType" label="Data"
-                                  [options]="dataOptions">
-      </button-toggle-group-option>
-      <input-option formControlName="filteredGroups" label="Filter"
-                    placeholder="(Optional) Filter by group title, e.g. 'Group A, Group B'">
-      </input-option>
-      <group-state-option formControlName="grouperState"
-                          label="Grouping" [grouper]="grouper"></group-state-option>
-      <filter-state-option formControlName="filtererState" [filterer]="filterer" [savedFiltererStates]="savedFiltererStates"></filter-state-option>
-    </ng-container>
-  `,
+  templateUrl: 'pie-chart-edit.html',
   styleUrls: ['../../edit-form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -45,8 +33,8 @@ export class PieChartEdit {
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
                   EditWidgetData2<PieChartDisplayTypeOptions<any>>) {
-                    // TODO: Filter based on datasource type
-                    this.savedFiltererStates = data.savedFiltererStates;
+    // TODO: Filter based on datasource type
+    this.savedFiltererStates = data.savedFiltererStates;
     this.data.dataSources.forEach(
         dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;

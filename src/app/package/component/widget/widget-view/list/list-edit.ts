@@ -1,31 +1,19 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {ItemSorter} from 'app/package/items-renderer/item-sorter';
-import {ItemViewer} from 'app/package/items-renderer/item-viewer';
-import {take} from 'rxjs/operators';
-
-import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
-import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
-
-import {ListDisplayTypeOptions} from './list';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ItemFilterer } from 'app/package/items-renderer/item-filterer';
+import { ItemSorter } from 'app/package/items-renderer/item-sorter';
+import { ItemViewer } from 'app/package/items-renderer/item-viewer';
+import { take } from 'rxjs/operators';
+import { ButtonToggleOption } from '../../edit-widget/button-toggle-option/button-toggle-option';
 import { SavedFiltererState } from '../../edit-widget/edit-widget';
+import { EditWidgetData2, EDIT_WIDGET_DATA } from '../../widget';
+import { ListDisplayTypeOptions } from './list';
+
+
 
 
 @Component({
-  template: `
-    <ng-container [formGroup]="form">
-      <button-toggle-group-option formControlName="dataSourceType" label="Data"
-                                  [options]="dataOptions">
-      </button-toggle-group-option>
-      <input-option formControlName="listLength" label="List length" type="number"></input-option>
-      <sort-state-option formControlName="sorterState"
-                         label="Sort state" [sorter]="sorter"></sort-state-option>
-      <view-state-option formControlName="viewerState"
-                         label="Views" [viewer]="viewer"></view-state-option>
-      <filter-state-option formControlName="filtererState" [filterer]="filterer" [savedFiltererStates]="savedFiltererStates"></filter-state-option>
-    </ng-container>
-  `,
+  templateUrl: 'list-edit.html',
   styleUrls: ['../../edit-form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

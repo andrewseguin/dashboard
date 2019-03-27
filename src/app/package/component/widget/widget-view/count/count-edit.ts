@@ -9,17 +9,8 @@ import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
 
 import {CountDisplayTypeOptions} from './count.module';
 
-
 @Component({
-  template: `
-    <ng-container [formGroup]="form">
-      <button-toggle-group-option formControlName="dataSourceType" label="Data"
-                                  [options]="dataOptions">
-      </button-toggle-group-option>
-      <input-option formControlName="fontSize" label="Font size" type="number"></input-option>
-      <filter-state-option formControlName="filtererState" [filterer]="filterer" [savedFiltererStates]="savedFiltererStates"></filter-state-option>
-    </ng-container>
-  `,
+  templateUrl: 'count-edit.html',
   styleUrls: ['../../edit-form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

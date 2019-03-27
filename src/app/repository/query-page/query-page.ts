@@ -6,10 +6,13 @@ import {Widget} from 'app/package/component/widget/widget';
 import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
+import {
+  getItemsList,
+  GithubItemGroupsDataSource
+} from '../../github/data-source/github-item-groups-data-source';
 import {ActiveStore} from '../services/active-store';
 import {ConfigStore} from '../services/dao/config/config-dao';
 import {Query} from '../services/dao/config/query';
-import {getItemsList, GithubItemGroupsDataSource} from '../../github/data-source/github-item-groups-data-source';
 import {Header} from '../services/header';
 import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';

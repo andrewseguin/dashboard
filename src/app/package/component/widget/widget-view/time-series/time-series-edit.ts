@@ -4,29 +4,14 @@ import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
 
 import {TimeSeriesDisplayTypeOptions} from './time-series';
-import { SavedFiltererState } from '../../edit-widget/edit-widget';
 
 
 @Component({
-  template: `
-    <ng-container [formGroup]="form">
-      <button-toggle-group-option formControlName="dataSourceType" label="Data"
-                                  [options]="dataOptions">
-      </button-toggle-group-option>
-      <date-option formControlName="start" label="Start date"></date-option>
-      <date-option formControlName="end" label="End date"></date-option>
-      <button-toggle-group-option formControlName="group" label="Group"
-                                  [options]="groupOptions">
-      </button-toggle-group-option>
-      <button-toggle-group-option formControlName="datasets" label="Datasets" multiple="true"
-                                  [options]="datasetOptions">
-      </button-toggle-group-option>
-      <filter-state-option formControlName="filtererState" [filterer]="filterer" [savedFiltererStates]="savedFiltererStates"></filter-state-option>
-    </ng-container>
-  `,
+  templateUrl: 'time-series-edit.html',
   styleUrls: ['../../edit-form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
