@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -8,21 +7,34 @@ import {takeUntil} from 'rxjs/operators';
 import {WIDGET_DATA, WidgetData} from '../../widget';
 
 
-interface CreatedAndClosedDate {
-  created: string;
-  closed: string;
-}
-
 interface DateCount {
   date: string;
-  open: number;
-  created: number;
-  closed: number;
+  count: number;
 }
 
 interface TimeSeriesData {
   x: string;
   y: number;
+}
+
+
+type ActionType = 'increment'|'decrement';
+
+interface DateActionPair {
+  date: string;
+  actionType: ActionType;
+}
+
+export interface DatasetConfigAction {
+  dataPropertyId: string;
+  type: ActionType;
+}
+
+export interface DatasetConfig {
+  label: string;
+  color: string;
+  accumulate: boolean;
+  actions: DatasetConfigAction[];
 }
 
 export interface TimeSeriesDisplayTypeOptions {
@@ -34,6 +46,13 @@ export interface TimeSeriesDisplayTypeOptions {
   filtererState: ItemFiltererState;
 }
 
+interface DataMetadata {
+  id: string;
+  label: string;
+  type: string;
+  accessor: (item: any) => any;
+}
+
 @Component({
   selector: 'time-series',
   template: `<canvas #canvas></canvas>`,
@@ -41,6 +60,38 @@ export interface TimeSeriesDisplayTypeOptions {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeSeries<T> {
+  datasetsConfigs: DatasetConfig[] = [{
+    label: 'Created',
+    accumulate: true,
+    color: 'rgba(33, 150, 243, 0.75)',
+    actions:
+        [
+          {
+            dataPropertyId: 'opened',
+            type: 'increment',
+          },
+          {
+            dataPropertyId: 'closed',
+            type: 'decrement',
+          },
+        ]
+  }];
+
+  dates: {[key in string]: DataMetadata} = {
+    'opened': {
+      id: 'opened',
+      label: 'Opened',
+      type: 'date',
+      accessor: (item: any) => item.created,
+    },
+    'closed': {
+      id: 'closed',
+      label: 'Closed',
+      type: 'date',
+      accessor: (item: any) => item.closed,
+    },
+  };
+
   chart: Chart;
 
   @ViewChild('canvas') canvas: ElementRef;
@@ -52,9 +103,11 @@ export class TimeSeries<T> {
   ngOnInit() {
     const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
     dataSource.filterer.setState(this.data.options.filtererState);
-    dataSource.connect()
-        .pipe(takeUntil(this.destroyed))
-        .subscribe(result => this.render(result.groups));
+    dataSource.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
+      const items: T[] = [];
+      result.groups.forEach(g => items.push(...g.items));
+      return this.render(items);
+    });
   }
 
   ngOnDestroy() {
@@ -62,35 +115,85 @@ export class TimeSeries<T> {
     this.destroyed.complete();
   }
 
-  getDateCounts(dates: CreatedAndClosedDate[]): DateCount[] {
-    const dateCountsMap = new Map<string, {created: number, closed: number, open: number}>();
+  private render(items: T[]) {
+    const datasets: Chart.ChartDataSets[] = this.datasetsConfigs.map(datasetConfig => {
+      return {
+        label: datasetConfig.label,
+        data: this.createData(items, datasetConfig),
+        fill: false,
+        borderColor: datasetConfig.color,
+      };
+    });
 
-    dates.forEach(date => {
-      if (date.created) {
-        if (!dateCountsMap.has(date.created)) {
-          dateCountsMap.set(date.created, {created: 0, closed: 0, open: 0});
+    const time: Chart.TimeScale = {
+      min: this.data.options.start,
+      max: this.data.options.end,
+      tooltipFormat: 'll'
+    };
+
+    if (!this.chart) {
+      this.createChart(datasets, time);
+    } else {
+      this.updateChart(datasets, time);
+    }
+  }
+
+  private createChart(datasets: Chart.ChartDataSets[], time: Chart.TimeScale) {
+    const config: Chart.ChartConfiguration = {
+      type: 'line',
+      data: {datasets},
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {display: false},
+        elements: {point: {radius: 2}, line: {tension: 0}},
+        scales: {
+          xAxes: [{type: 'time', time, scaleLabel: {display: true, labelString: 'Date'}}],
+          yAxes: [{scaleLabel: {display: true, labelString: 'value'}}]
         }
-        const count = dateCountsMap.get(date.created)!;
-        dateCountsMap.set(
-            date.created, {...count, created: count.created + 1, open: count.open + 1});
+      }
+    };
+    this.chart = new Chart(this.canvas.nativeElement, config);
+    this.chart.render();
+  }
+
+  private updateChart(datasets: Chart.ChartDataSets[], time: Chart.TimeScale) {
+    // Remove animations since dataset changes can cause weird glitching
+    this.chart.config.options!.animation!.duration = 0;
+    this.chart.data.datasets = datasets;
+    this.chart.config.options!.scales!.xAxes![0].time = time;
+    this.chart.update();
+  }
+
+  private getDateCounts(dateActionPairs: DateActionPair[]): DateCount[] {
+    const dateCountsMap = new Map<string, number>();
+
+    dateActionPairs.forEach(pair => {
+      const date = pair.date;
+      const actionType = pair.actionType;
+
+      if (!dateCountsMap.has(date)) {
+        dateCountsMap.set(date, 0);
       }
 
-      if (date.closed) {
-        if (!dateCountsMap.has(date.closed)) {
-          dateCountsMap.set(date.closed, {created: 0, closed: 0, open: 0});
-        }
-        const count = dateCountsMap.get(date.closed)!;
-        dateCountsMap.set(date.closed, {...count, closed: count.closed + 1, open: count.open - 1});
+      let count = dateCountsMap.get(date)!;
+      switch (actionType) {
+        case 'increment':
+          dateCountsMap.set(date, count + 1);
+          break;
+        case 'decrement':
+          dateCountsMap.set(date, count - 1);
+          break;
       }
     });
 
     const dateCounts: DateCount[] = [];
-    dateCountsMap.forEach((dateCount, date) => dateCounts.push({...dateCount, date}));
+    dateCountsMap.forEach((count, date) => dateCounts.push({count, date}));
     dateCounts.sort((a, b) => a.date < b.date ? -1 : 1);
     return dateCounts;
   }
 
-  roundDate(dateStr = ''): string {
+  private roundDate(dateStr = ''): string {
     if (!dateStr) {
       return '';
     }
@@ -109,93 +212,28 @@ export class TimeSeries<T> {
     return '';
   }
 
-  getData(items: T[]):
-      {open: TimeSeriesData[], created: TimeSeriesData[], closed: TimeSeriesData[]} {
-    // TODO: This shouldn't be any - can we use a metadata file for this? Viewer? Grouper?
-    const dates: CreatedAndClosedDate[] = items.map(
-        (item: any) =>
-            ({created: this.roundDate(item.created), closed: this.roundDate(item.closed)}));
-    const dateCounts = this.getDateCounts(dates);
+  private createData(items: T[], datasetConfig: DatasetConfig) {
+    const dateActions: DateActionPair[] = [];
+    items.forEach(item => {
+      datasetConfig.actions.forEach(action => {
+        const date = this.dates[action.dataPropertyId].accessor(item);
+        if (date) {
+          dateActions.push({date: this.roundDate(date), actionType: action.type});
+        }
+      });
+    });
+    const dateCounts = this.getDateCounts(dateActions);
 
-    let open = 0;
-    let openData: {x: string, y: number}[] = [];
-    let createdData: {x: string, y: number}[] = [];
-    let closedData: {x: string, y: number}[] = [];
+    let accumulatedCount = 0;
+    let data: TimeSeriesData[] = [];
     dateCounts.forEach((dateCount => {
-      open += dateCount.open;
-      openData.push({x: dateCount.date, y: open});
-      createdData.push({x: dateCount.date, y: dateCount.created});
-      closedData.push({x: dateCount.date, y: dateCount.closed});
+      accumulatedCount += dateCount.count;
+      data.push({
+        x: dateCount.date,
+        y: datasetConfig.accumulate ? accumulatedCount : dateCount.count,
+      });
     }));
 
-    return {created: createdData, closed: closedData, open: openData};
-  }
-
-  getDatasets(items: T[]): Chart.ChartDataSets[] {
-    const data = this.getData(items);
-
-    const datasets = [];
-    const enabledDatasets = new Set<string>(
-        this.data.options.datasets instanceof Array ? this.data.options.datasets :
-                                                      [this.data.options.datasets]);
-    if (enabledDatasets.has('created')) {
-      datasets.push({
-        label: 'Created',
-        data: data.created,
-        fill: false,
-        borderColor: 'rgba(33, 150, 243, 0.75)'
-      });
-    }
-    if (enabledDatasets.has('closed')) {
-      datasets.push({
-        label: 'Closed',
-        data: data.closed,
-        fill: false,
-        borderColor: 'rgba(244, 67, 54, 0.75)'
-      });
-    }
-    if (enabledDatasets.has('open')) {
-      datasets.push(
-          {label: 'Open', data: data.open, fill: false, borderColor: 'rgba(76, 175, 80, 0.75)'});
-    }
-
-    return datasets;
-  }
-
-  render(groups: ItemGroup<T>[]) {
-    const items: T[] = [];
-    groups.forEach(g => items.push(...g.items));
-    const datasets = this.getDatasets(items);
-
-    const time: Chart.TimeScale = {
-      min: this.data.options.start,
-      max: this.data.options.end,
-      tooltipFormat: 'll'
-    };
-
-    if (this.chart) {
-      // Remove animations since dataset changes can cause weird glitching
-      this.chart.config.options!.animation!.duration = 0;
-      this.chart.data.datasets = datasets;
-      this.chart.config.options!.scales!.xAxes![0].time = time;
-      this.chart.update();
-    } else {
-      const config: Chart.ChartConfiguration = {
-        type: 'line',
-        data: {datasets},
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          legend: {display: false},
-          elements: {point: {radius: 2}, line: {tension: 0}},
-          scales: {
-            xAxes: [{type: 'time', time, scaleLabel: {display: true, labelString: 'Date'}}],
-            yAxes: [{scaleLabel: {display: true, labelString: 'value'}}]
-          }
-        }
-      };
-      this.chart = new Chart(this.canvas.nativeElement, config);
-      this.chart.render();
-    }
+    return data;
   }
 }
