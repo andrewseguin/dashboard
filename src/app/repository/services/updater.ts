@@ -73,7 +73,9 @@ export class Updater {
               }),
               take(1))
           .subscribe((result) => {
-            store.items.update(result);
+            if (result.length) {
+              store.items.update(result);
+            }
             resolve();
           });
     });

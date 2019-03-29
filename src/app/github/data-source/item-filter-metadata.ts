@@ -147,6 +147,23 @@ export const ItemsFilterMetadata =
         }
       ],
 
+      [
+        'days-open', {
+          label: 'Days Open',
+          queryType: 'number',
+          matcher: (c: MatcherContext, q: Query) => {
+            const dayInMs = 1000 * 60 * 60 * 24;
+
+            // If item has not yet been closed, use current time
+            const closedDateMs = new Date(c.item.closed).getTime() || new Date().getTime();
+            const createdDateMs = new Date(c.item.created).getTime();
+            const days = Math.round(Math.abs(closedDateMs - createdDateMs) / dayInMs);
+
+            return numberMatchesEquality(days, q as NumberQuery);
+          }
+        }
+      ],
+
       /** DateQuery Filters */
 
       [
