@@ -7,7 +7,6 @@ import {
   NgZone,
   Output
 } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
 import {ItemGroup} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {ItemGroupsRenderer, RenderState} from 'app/package/items-renderer/item-groups-renderer';
@@ -29,13 +28,9 @@ export class ItemsList<T> {
                     .pipe(takeUntil(this.destroyed))
                     .subscribe(observer)));
 
-
-  activeItem = this.activatedRoute.queryParamMap.pipe(map(queryParamMap => {
-    const item = queryParamMap.get('item');
-    return item ? +item : '';
-  }));
-
   itemCount: Observable<number>;
+
+  @Input() activeItem: T;
 
   @Input() itemGroupsDataSource: ItemGroupsDataSource<T>;
 
@@ -47,9 +42,7 @@ export class ItemsList<T> {
 
   hasMore = this.renderState.pipe(map(state => state.count < state.total));
 
-  constructor(
-      public ngZone: NgZone, private activatedRoute: ActivatedRoute,
-      public elementRef: ElementRef) {}
+  constructor(public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
     const renderer = new ItemGroupsRenderer(this.itemGroupsDataSource, this.elementScrolled);

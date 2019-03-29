@@ -1,5 +1,6 @@
 <div class="master theme-border">
   <items-list [itemGroupsDataSource]="itemGroupsDataSource"
+              [activeItem]="activeItem | async"
               (itemSelected)="navigateToItem($event.number)">
   </items-list>
 </div>

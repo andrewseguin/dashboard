@@ -15,7 +15,7 @@
     <ng-container *ngFor="let item of itemGroup.items; trackBy:trackByIndex">
       <mat-divider></mat-divider>
       <item-summary [item]="item"
-                    [active]="(activeItem | async) === item.number"
+                    [active]="activeItem === item"
                     [viewer]="itemGroupsDataSource.viewer"
                     (select)="itemSelected.emit($event)">
       </item-summary>

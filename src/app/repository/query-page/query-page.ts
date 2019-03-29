@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Item} from 'app/github/app-types/item';
 import {Widget} from 'app/package/component/widget/widget';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
@@ -43,6 +44,17 @@ export class QueryPage {
             this.itemGroupsDataSource.filterer.state, this.itemGroupsDataSource.grouper.state,
             this.itemGroupsDataSource.sorter.state, this.itemGroupsDataSource.viewer.state)
             .pipe(map(() => !this.areStatesEquivalent()));
+    this.activeItem =
+        combineLatest(this.itemGroupsDataSource.connect(), this.itemId).pipe(map(results => {
+          for (let group of results[0].groups) {
+            for (let item of group.items) {
+              if (item.id === results[1]) {
+                return item;
+              }
+            }
+          }
+          return null;
+        }));
 
     this.updateQueryStates();
 
@@ -60,9 +72,11 @@ export class QueryPage {
   private destroyed = new Subject();
   private getSubscription: Subscription;
 
-  public itemGroupsDataSource: ItemGroupsDataSource<any>;
+  public itemGroupsDataSource: ItemGroupsDataSource<Item>;
 
   public canSave: Observable<boolean>;
+
+  public activeItem: Observable<Item|null>;
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
