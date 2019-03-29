@@ -4,16 +4,11 @@ import {Router} from '@angular/router';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {Observable, Subject} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
-import {
-  getItemsList,
-  GithubItemGroupsDataSource
-} from '../../github/data-source/github-item-groups-data-source';
 import {DATA_SOURCES} from '../repository';
 import {ActiveStore} from '../services/active-store';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
 import {Header} from '../services/header';
-import {ItemRecommendations} from '../services/item-recommendations';
 
 interface QueryListItem {
   id: string;
@@ -51,8 +46,7 @@ export class QueriesPage {
 
   constructor(
       @Inject(DATA_SOURCES) private dataSources: Map<string, DataSourceProvider>,
-      private header: Header, private router: Router,
-      private issueRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {
+      private header: Header, private router: Router, private activeRepo: ActiveStore) {
     this.dataSources.forEach(dataSource => this.dataSourceTypes.push(dataSource.id));
   }
 
@@ -87,8 +81,7 @@ export class QueriesPage {
   }
 
   private getQueryCount(query: Query): Observable<number> {
-    const dataSource = new GithubItemGroupsDataSource(this.issueRecommendations, this.activeRepo);
-    dataSource.dataProvider = getItemsList(this.activeRepo.activeData, query.dataSourceType!);
+    const dataSource = this.dataSources.get(query.dataSourceType!)!.factory();
 
     if (query.filtererState) {
       dataSource.filterer.setState(query.filtererState!);

@@ -1,13 +1,12 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
 import {ItemFilterer} from './item-filterer';
 import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouper';
+import {ItemProvider} from './item-provider';
 import {ItemSorter} from './item-sorter';
 import {ItemViewer} from './item-viewer';
 import {IFilterMetadata} from './search-utility/filter';
-
-type DataProvider<T> = Observable<T[]>;
 
 export interface ItemGroupsResult<T> {
   groups: ItemGroup<T>[];
@@ -30,13 +29,7 @@ const DefaultGroupMetadata = new Map<'all', GroupingMetadata<any, 'all', null>>(
 @Injectable()
 export class ItemGroupsDataSource<T> {
   /** Provider for the items to be filtered, grouped, and sorted. */
-  get dataProvider() {
-    return this._dataProvider.value;
-  }
-  set dataProvider(dataProvider: Observable<T[]>) {
-    this._dataProvider.next(dataProvider);
-  }
-  private readonly _dataProvider = new BehaviorSubject<DataProvider<T>>(of([]));
+  provider = new ItemProvider<T>(new Map(), of([]));
 
   // TODO: Implement a reasonable default filterer, at least with basic search
   /** Provider for the grouper which will group items together. */
@@ -80,9 +73,8 @@ export class ItemGroupsDataSource<T> {
   private initialize() {
     let filteredDataCount: number;
     this._renderChangesSubscription =
-        this._dataProvider
+        this.provider.getData()
             .pipe(
-                mergeMap(dataProvider => dataProvider),
                 mergeMap(data => this.filterer.filterItems(data)),
                 tap(filteredData => filteredDataCount = filteredData.length),
                 mergeMap(filteredItems => this.grouper.groupItems(filteredItems)),

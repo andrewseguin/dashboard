@@ -5,10 +5,7 @@ import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval, Subject} from 'rxjs';
 import {filter, mergeMap, take} from 'rxjs/operators';
-import {
-  getItemsList,
-  GithubItemGroupsDataSource
-} from '../github/data-source/github-item-groups-data-source';
+import {GithubItemGroupsDataSource} from '../github/data-source/github-item-groups-data-source';
 import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data-dao';
 import {ItemRecommendations} from './services/item-recommendations';
@@ -25,22 +22,14 @@ export const provideDataSources =
           'issue', {
             id: 'issue',
             label: 'Issues',
-            factory: () => {
-              const datasource = new GithubItemGroupsDataSource(itemRecommendations, activeStore);
-              datasource.dataProvider = getItemsList(activeStore.activeData, 'issue');
-              return datasource;
-            }
+            factory: () => new GithubItemGroupsDataSource(itemRecommendations, activeStore, 'issue')
           }
         ],
         [
           'pr', {
             id: 'pr',
             label: 'Pull Requests',
-            factory: () => {
-              const datasource = new GithubItemGroupsDataSource(itemRecommendations, activeStore);
-              datasource.dataProvider = getItemsList(activeStore.activeData, 'pr');
-              return datasource;
-            }
+            factory: () => new GithubItemGroupsDataSource(itemRecommendations, activeStore, 'pr')
           }
         ],
       ]);

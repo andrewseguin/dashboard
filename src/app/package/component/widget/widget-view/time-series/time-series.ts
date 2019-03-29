@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import * as Chart from 'chart.js';
 import {combineLatest, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -47,13 +48,6 @@ export interface TimeSeriesDisplayTypeOptions {
   datasets: DatasetConfig[];
 }
 
-interface DataMetadata {
-  id: string;
-  label: string;
-  type: string;
-  accessor: (item: any) => any;
-}
-
 @Component({
   selector: 'time-series',
   template: `<canvas #canvas></canvas>`,
@@ -61,24 +55,11 @@ interface DataMetadata {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeSeries<T> {
-  dates: {[key in string]: DataMetadata} = {
-    'opened': {
-      id: 'opened',
-      label: 'Opened',
-      type: 'date',
-      accessor: (item: any) => item.created,
-    },
-    'closed': {
-      id: 'closed',
-      label: 'Closed',
-      type: 'date',
-      accessor: (item: any) => item.closed,
-    },
-  };
-
   chart: Chart;
 
   @ViewChild('canvas') canvas: ElementRef;
+
+  dataSources = new Map<DatasetConfig, ItemGroupsDataSource<any>>();
 
   private destroyed = new Subject();
 
@@ -87,6 +68,7 @@ export class TimeSeries<T> {
   ngOnInit() {
     const dataSourceConnects = this.data.options.datasets.map(datasetConfig => {
       const dataSource = this.data.dataSources.get(datasetConfig.dataSourceType)!.factory();
+      this.dataSources.set(datasetConfig, dataSource);
       dataSource.filterer.setState(datasetConfig.filtererState);
       return dataSource.connect();
     });
@@ -208,7 +190,9 @@ export class TimeSeries<T> {
     const dateActions: DateActionPair[] = [];
     items.forEach(item => {
       datasetConfig.actions.forEach(action => {
-        const date = this.dates[action.datePropertyId].accessor(item);
+        const dates = this.dataSources.get(datasetConfig)!.provider.getMetadataMapForType('date');
+        // TODO: Error handling if the property does not exist
+        const date = dates.get(action.datePropertyId)!.accessor(item);
         if (date) {
           dateActions.push({date: this.roundDate(date), actionType: action.type});
         }

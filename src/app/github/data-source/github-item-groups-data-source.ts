@@ -3,6 +3,7 @@ import {Label} from 'app/github/app-types/label';
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
+import {ItemProvider} from 'app/package/items-renderer/item-provider';
 import {ItemSorter} from 'app/package/items-renderer/item-sorter';
 import {ItemViewer, ItemViewerContextProvider} from 'app/package/items-renderer/item-viewer';
 import {combineLatest, of} from 'rxjs';
@@ -14,20 +15,27 @@ import {ItemRecommendations} from '../../repository/services/item-recommendation
 import {tokenizeItem} from '../utility/tokenize-item';
 import {AutocompleteContext, ItemsFilterMetadata, MatcherContext} from './item-filter-metadata';
 import {GithubItemGroupingMetadata, Group, TitleTransformContext} from './item-grouper-metadata';
+import {GithubItemDataMetadata} from './item-provider-metadata';
 import {GithubItemSortingMetadata, Sort} from './item-sorter-metadata';
 import {GithubItemView, GithubItemViewerMetadata, ViewContext} from './item-viewer-metadata';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
-  constructor(private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore) {
+  constructor(
+      itemRecommendations: ItemRecommendations, activeRepo: ActiveStore, type: 'issue'|'pr') {
     super();
 
-    const store = this.activeRepo.activeData;
+    const store = activeRepo.activeData;
 
-    this.filterer = createItemsFilterer(this.itemRecommendations, store);
+    this.provider = createProvider(store, type);
+    this.filterer = createItemsFilterer(itemRecommendations, store);
     this.grouper = createItemsGrouper(store.labels);
     this.sorter = createItemSorter();
-    this.viewer = createItemViewer(this.itemRecommendations, store);
+    this.viewer = createItemViewer(itemRecommendations, store);
   }
+}
+
+function createProvider(store: DataStore, type: 'issue'|'pr') {
+  return new ItemProvider(GithubItemDataMetadata, getItemsList(store, type));
 }
 
 function createItemViewer(itemRecommendations: ItemRecommendations, store: DataStore):

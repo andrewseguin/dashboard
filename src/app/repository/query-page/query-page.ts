@@ -1,20 +1,24 @@
 import {CdkPortal} from '@angular/cdk/portal';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  ViewChild
+} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Widget} from 'app/package/component/widget/widget';
+import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
 import {isMobile} from 'app/utility/media-matcher';
-import {combineLatest, Subject, Subscription} from 'rxjs';
+import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
-import {
-  getItemsList,
-  GithubItemGroupsDataSource
-} from '../../github/data-source/github-item-groups-data-source';
+import {DATA_SOURCES} from '../repository';
 import {ActiveStore} from '../services/active-store';
 import {ConfigStore} from '../services/dao/config/config-dao';
 import {Query} from '../services/dao/config/query';
 import {Header} from '../services/header';
-import {ItemRecommendations} from '../services/item-recommendations';
 import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
 
@@ -30,10 +34,15 @@ export class QueryPage {
   set query(query: Query) {
     this._query = query;
 
-    const type = this._query.dataSourceType;
-    if (type) {
-      this.itemGroupsDataSource.dataProvider = getItemsList(this.activeRepo.activeData, type);
-    }
+    const type = this._query.dataSourceType!;
+    this.itemGroupsDataSource = this.dataSources.get(type)!.factory();
+
+    // TODO: Needs to be unsubscribed when query switches
+    this.canSave =
+        combineLatest(
+            this.itemGroupsDataSource.filterer.state, this.itemGroupsDataSource.grouper.state,
+            this.itemGroupsDataSource.sorter.state, this.itemGroupsDataSource.viewer.state)
+            .pipe(map(() => !this.areStatesEquivalent()));
 
     this.updateQueryStates();
 
@@ -51,21 +60,17 @@ export class QueryPage {
   private destroyed = new Subject();
   private getSubscription: Subscription;
 
-  public itemGroupsDataSource =
-      new GithubItemGroupsDataSource(this.itemRecommendations, this.activeRepo);
+  public itemGroupsDataSource: ItemGroupsDataSource<any>;
 
-  public canSave =
-      combineLatest(
-          this.itemGroupsDataSource.filterer.state, this.itemGroupsDataSource.grouper.state,
-          this.itemGroupsDataSource.sorter.state, this.itemGroupsDataSource.viewer.state)
-          .pipe(map(() => !this.areStatesEquivalent()));
+  public canSave: Observable<boolean>;
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
+      @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
       private dialog: MatDialog, private router: Router, private activatedRoute: ActivatedRoute,
-      private itemRecommendations: ItemRecommendations, private activeRepo: ActiveStore,
-      private header: Header, private queryDialog: QueryDialog, private cd: ChangeDetectorRef) {
+      private activeRepo: ActiveStore, private header: Header, private queryDialog: QueryDialog,
+      private cd: ChangeDetectorRef) {
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];
 

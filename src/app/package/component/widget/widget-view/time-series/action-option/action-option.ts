@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ControlContainer} from '@angular/forms';
+import {ProviderMetadata} from 'app/package/items-renderer/item-provider';
 import {ButtonToggleOption} from '../../../edit-widget/button-toggle-option/button-toggle-option';
 
 @Component({
@@ -11,16 +12,14 @@ import {ButtonToggleOption} from '../../../edit-widget/button-toggle-option/butt
 export class ActionOption {
   dataOptions: ButtonToggleOption[] = [];
 
-  // TODO: Should be determined by data source
-  datePropertyIdOptions: ButtonToggleOption[] = [
-    {id: 'opened', label: 'Opened'},
-    {id: 'closed', label: 'Closed'},
-  ];
+  datePropertyIdOptions: ButtonToggleOption[] = [];
 
   actionTypeOptions: ButtonToggleOption[] = [
     {id: 'increment', label: 'Increment'},
     {id: 'decrement', label: 'Decrement'},
   ];
+
+  @Input() providerMetadata: Map<string, ProviderMetadata<any>>;
 
   @Input() canRemove: boolean;
 
@@ -29,6 +28,13 @@ export class ActionOption {
   constructor(public controlContainer: ControlContainer) {}
 
   ngOnInit() {
+    this.providerMetadata.forEach(metadata => {
+      this.datePropertyIdOptions.push({
+        id: metadata.id,
+        label: metadata.label,
+      });
+    });
+
     const typeFormControl = this.controlContainer.control!.get('type')!;
     if (!typeFormControl.value) {
       typeFormControl.setValue(this.actionTypeOptions[0].id);
