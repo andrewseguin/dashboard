@@ -3,6 +3,7 @@ import {ControlContainer, FormArray} from '@angular/forms';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
 import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
 import {Subject} from 'rxjs';
+import {startWith, takeUntil} from 'rxjs/operators';
 import {ButtonToggleOption} from '../../../edit-widget/button-toggle-option/button-toggle-option';
 import {SavedFiltererState} from '../../../edit-widget/edit-widget';
 
@@ -13,7 +14,7 @@ import {SavedFiltererState} from '../../../edit-widget/edit-widget';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatasetOption {
-  dataOptions: ButtonToggleOption[] = [];
+  dataSourceTypeOptions: ButtonToggleOption[] = [];
 
   // TODO: Should be determined by data source
   datePropertyIdOptions: ButtonToggleOption[] = [
@@ -41,18 +42,28 @@ export class DatasetOption {
 
   @Output() remove = new EventEmitter();
 
+  @Output() duplicate = new EventEmitter();
+
   @Output() addAction = new EventEmitter();
 
   constructor(public controlContainer: ControlContainer) {}
 
   ngOnInit() {
     this.dataSources.forEach(
-        dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
-    const initialDataSourceType = this.dataOptions[0].id;
-    this.controlContainer.control!.get('dataSourceType')!.setValue(initialDataSourceType);
+        dataSource =>
+            this.dataSourceTypeOptions.push({id: dataSource.id, label: dataSource.label}));
 
-    const datasource = this.dataSources.get(initialDataSourceType)!.factory();
-    this.filterer = datasource.filterer;
+    const dataSourceTypeControl = this.controlContainer.control!.get('dataSourceType')!;
+    if (!dataSourceTypeControl.value) {
+      dataSourceTypeControl.setValue(this.dataSourceTypeOptions[0].id);
+    }
+
+    dataSourceTypeControl.valueChanges
+        .pipe(takeUntil(this.destroyed), startWith(dataSourceTypeControl.value))
+        .subscribe(value => {
+          const datasource = this.dataSources.get(value)!.factory();
+          this.filterer = datasource.filterer;
+        });
   }
 
   ngOnDestroy() {

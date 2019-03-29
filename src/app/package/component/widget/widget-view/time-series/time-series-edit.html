@@ -15,6 +15,7 @@
                     [savedFiltererStates]="data.savedFiltererStates"
                     [dataSources]="data.dataSources"
                     (remove)="removeDataset(index)"
+                    (duplicate)="duplicateDataset(dataset)"
                     (addAction)="addAction(dataset)">
     </dataset-option>
   </div>

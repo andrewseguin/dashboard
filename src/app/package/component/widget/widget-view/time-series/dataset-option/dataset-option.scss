@@ -3,11 +3,6 @@
   flex-direction: column;
 }
 
-button.remove-dataset {
-  align-self: flex-end;
-  margin-top: 16px;
-}
-
 .actions {
   display: flex;
   flex-direction: column;
@@ -26,4 +21,10 @@ action-option + action-option {
   mat-icon {
     font-size: 18px;
   }
+}
+
+.buttons {
+  display: flex;
+  margin-top: 32px;
+  justify-content: flex-end;
 }
