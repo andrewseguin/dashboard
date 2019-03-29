@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
   selector: 'input-option',
@@ -9,6 +9,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       <div class="option">
         <input class="theme-border" #input matInput
                (input)="onChange($event.target.value)"
+               autocomplete="off"
                (blur)="onTouched()"
                [placeholder]="placeholder" [type]="type">
       </div>

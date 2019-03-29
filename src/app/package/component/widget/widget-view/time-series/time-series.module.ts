@@ -9,6 +9,8 @@ import {DateOptionModule} from '../../edit-widget/date-option/date-option.module
 import {
   FilterStateOptionModule
 } from '../../edit-widget/filter-state-option/filter-state-option.module';
+import {InputOptionModule} from '../../edit-widget/input-option/input-option.module';
+import {DatasetOptionModule} from './dataset-option/dataset-option.module';
 import {TimeSeries} from './time-series';
 import {TimeSeriesEdit} from './time-series-edit';
 
@@ -20,6 +22,8 @@ import {TimeSeriesEdit} from './time-series-edit';
     DateOptionModule,
     ButtonToggleGroupOptionModule,
     FilterStateOptionModule,
+    InputOptionModule,
+    DatasetOptionModule,
   ],
   declarations: [TimeSeries, TimeSeriesEdit],
   exports: [TimeSeries, TimeSeriesEdit],

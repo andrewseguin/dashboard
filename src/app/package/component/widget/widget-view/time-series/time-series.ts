@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
 import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
 import * as Chart from 'chart.js';
-import {Subject} from 'rxjs';
+import {combineLatest, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {WIDGET_DATA, WidgetData} from '../../widget';
+import {MaterialColors} from '../widget-view';
 
 
 interface DateCount {
@@ -26,24 +27,24 @@ interface DateActionPair {
 }
 
 export interface DatasetConfigAction {
-  dataPropertyId: string;
+  datePropertyId: string;
   type: ActionType;
 }
 
 export interface DatasetConfig {
   label: string;
   color: string;
-  accumulate: boolean;
+  seriesType: 'count'|'accumulate';
   actions: DatasetConfigAction[];
+  dataSourceType: string;
+  filtererState: ItemFiltererState;
 }
 
 export interface TimeSeriesDisplayTypeOptions {
-  dataSourceType: string;
   start: string;
   end: string;
   group: 'day'|'week'|'month';
-  datasets: string|string[];
-  filtererState: ItemFiltererState;
+  datasets: DatasetConfig[];
 }
 
 interface DataMetadata {
@@ -60,23 +61,6 @@ interface DataMetadata {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeSeries<T> {
-  datasetsConfigs: DatasetConfig[] = [{
-    label: 'Created',
-    accumulate: true,
-    color: 'rgba(33, 150, 243, 0.75)',
-    actions:
-        [
-          {
-            dataPropertyId: 'opened',
-            type: 'increment',
-          },
-          {
-            dataPropertyId: 'closed',
-            type: 'decrement',
-          },
-        ]
-  }];
-
   dates: {[key in string]: DataMetadata} = {
     'opened': {
       id: 'opened',
@@ -101,12 +85,19 @@ export class TimeSeries<T> {
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions, null>) {}
 
   ngOnInit() {
-    const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
-    dataSource.filterer.setState(this.data.options.filtererState);
-    dataSource.connect().pipe(takeUntil(this.destroyed)).subscribe(result => {
-      const items: T[] = [];
-      result.groups.forEach(g => items.push(...g.items));
-      return this.render(items);
+    const dataSourceConnects = this.data.options.datasets.map(datasetConfig => {
+      const dataSource = this.data.dataSources.get(datasetConfig.dataSourceType)!.factory();
+      dataSource.filterer.setState(datasetConfig.filtererState);
+      return dataSource.connect();
+    });
+
+    combineLatest(dataSourceConnects).pipe(takeUntil(this.destroyed)).subscribe(results => {
+      const itemsResults = results.map(result => {
+        const items: T[] = [];
+        result.groups.forEach(g => items.push(...g.items));
+        return items;
+      });
+      return this.render(itemsResults);
     });
   }
 
@@ -115,15 +106,16 @@ export class TimeSeries<T> {
     this.destroyed.complete();
   }
 
-  private render(items: T[]) {
-    const datasets: Chart.ChartDataSets[] = this.datasetsConfigs.map(datasetConfig => {
-      return {
-        label: datasetConfig.label,
-        data: this.createData(items, datasetConfig),
-        fill: false,
-        borderColor: datasetConfig.color,
-      };
-    });
+  private render(items: T[][]) {
+    const datasets: Chart.ChartDataSets[] =
+        this.data.options.datasets.map((datasetConfig, index: number) => {
+          return {
+            label: datasetConfig.label,
+            data: this.createData(items[index], datasetConfig),
+            fill: false,
+            borderColor: datasetConfig.color || MaterialColors[index],
+          };
+        });
 
     const time: Chart.TimeScale = {
       min: this.data.options.start,
@@ -145,7 +137,7 @@ export class TimeSeries<T> {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        legend: {display: false},
+        legend: {display: datasets.length > 1},
         elements: {point: {radius: 2}, line: {tension: 0}},
         scales: {
           xAxes: [{type: 'time', time, scaleLabel: {display: true, labelString: 'Date'}}],
@@ -216,7 +208,7 @@ export class TimeSeries<T> {
     const dateActions: DateActionPair[] = [];
     items.forEach(item => {
       datasetConfig.actions.forEach(action => {
-        const date = this.dates[action.dataPropertyId].accessor(item);
+        const date = this.dates[action.datePropertyId].accessor(item);
         if (date) {
           dateActions.push({date: this.roundDate(date), actionType: action.type});
         }
@@ -230,7 +222,7 @@ export class TimeSeries<T> {
       accumulatedCount += dateCount.count;
       data.push({
         x: dateCount.date,
-        y: datasetConfig.accumulate ? accumulatedCount : dateCount.count,
+        y: datasetConfig.seriesType === 'accumulate' ? accumulatedCount : dateCount.count,
       });
     }));
 

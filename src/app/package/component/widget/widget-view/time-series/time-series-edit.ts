@@ -1,32 +1,21 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
-import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
 
 import {TimeSeriesDisplayTypeOptions} from './time-series';
 
 
 @Component({
+  selector: 'time-series-edit',
   templateUrl: 'time-series-edit.html',
-  styleUrls: ['../../edit-form.scss'],
+  styleUrls: ['time-series-edit.scss', '../../edit-form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeSeriesEdit {
-  filterer: ItemFilterer<any, any, any>;
-
-  dataOptions: ButtonToggleOption[] = [];
-
-  datasetOptions = [
-    {id: 'created', label: 'Created'},
-    {id: 'closed', label: 'Closed'},
-    {id: 'open', label: 'Open'},
-  ];
-
-  groupOptions = [
+  groupOptions: ButtonToggleOption[] = [
     {id: 'day', label: 'Day'},
     {id: 'week', label: 'Week'},
     {id: 'month', label: 'Month'},
@@ -37,48 +26,56 @@ export class TimeSeriesEdit {
     start: new FormControl(null),
     end: new FormControl(null),
     group: new FormControl('week'),
-    datasets: new FormControl(['open']),
-    filtererState: new FormControl(null),
+    datasets: new FormArray([]),
   });
-
-  savedFiltererStates: SavedFiltererState[];
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
                   EditWidgetData2<TimeSeriesDisplayTypeOptions>) {
-    // TODO: Filter based on datasource type
-    this.savedFiltererStates = data.savedFiltererStates;
-    this.data.dataSources.forEach(
-        dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
-    const initialDataSourceType = this.dataOptions[0].id;
-    this.form.get('dataSourceType')!.setValue(initialDataSourceType);
+    data.options.pipe(take(1)).subscribe(value => this.initializeForm(value));
+    this.form.valueChanges.subscribe(value => data.options.next(value));
+  }
 
-    const datasource = data.dataSources.get(initialDataSourceType)!.factory();
-    this.filterer = datasource.filterer;
+  removeDataset(index: number) {
+    const datasetsFormArray = this.form.get('datasets') as FormArray;
+    datasetsFormArray.removeAt(index);
+  }
 
-    data.options.pipe(take(1)).subscribe(value => {
-      if (value) {
-        if (value.dataSourceType) {
-          this.form.get('dataSourceType')!.setValue(value.dataSourceType);
-        }
-        if (value.start) {
-          this.form.get('start')!.setValue(value.start);
-        }
-        if (value.end) {
-          this.form.get('end')!.setValue(value.end);
-        }
-        if (value.group) {
-          this.form.get('group')!.setValue(value.group);
-        }
-        if (value.datasets) {
-          this.form.get('datasets')!.setValue(value.datasets);
-        }
-        if (value.filtererState) {
-          this.form.get('filtererState')!.setValue(value.filtererState);
-        }
-      }
+  addDataset() {
+    const newDataset = this.createSeries();
+    const datasetsFormArray = this.form.get('datasets') as FormArray;
+    datasetsFormArray.push(newDataset);
+    this.addAction(newDataset);
+    return newDataset;
+  }
+
+  addAction(dataset: FormGroup) {
+    (dataset.get('actions') as FormArray).push(new FormGroup({
+      datePropertyId: new FormControl(),
+      type: new FormControl(),
+    }));
+  }
+
+  private initializeForm(value: TimeSeriesDisplayTypeOptions) {
+    const datasetsFormArray = this.form.get('datasets') as FormArray;
+    value.datasets.forEach(dataset => {
+      const datasetFormGroup = this.createSeries();
+      dataset.actions.forEach(() => {
+        this.addAction(datasetFormGroup);
+      });
+      datasetsFormArray.push(datasetFormGroup);
     });
-    this.form.valueChanges.subscribe(value => {
-      data.options.next(value);
+
+    this.form.setValue(value);
+  }
+
+  private createSeries() {
+    return new FormGroup({
+      label: new FormControl('New Series'),
+      color: new FormControl(''),
+      seriesType: new FormControl('count'),
+      actions: new FormArray([]),
+      dataSourceType: new FormControl(''),
+      filtererState: new FormControl(null),
     });
   }
 }

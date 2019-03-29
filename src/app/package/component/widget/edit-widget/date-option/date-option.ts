@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {MatDatepickerInput} from '@angular/material';
 
 @Component({
   selector: 'date-option',
@@ -7,7 +8,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
     <div class="config-option">
       <div class="label"> {{label}} </div>
       <div class="option">
-        <input class="theme-border" #input matInput
+        <input class="theme-border" matInput
                (dateInput)="onChange($event.target.value)"
                (blur)="onTouched()" autocomplete="off"
                [placeholder]="placeholder"
@@ -25,14 +26,14 @@ export class DateOption implements ControlValueAccessor {
 
   onTouched = () => {};
 
-  @ViewChild('input') input: ElementRef;
+  @ViewChild(MatDatepickerInput) input: MatDatepickerInput<any>;
 
   @Input() label: string;
 
   @Input() placeholder: string;
 
   writeValue(value: any): void {
-    this.input.nativeElement.value = value == null ? '' : value;
+    this.input.value = value == null ? '' : value;
   }
 
   registerOnChange(fn: any): void {
@@ -44,6 +45,6 @@ export class DateOption implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.input.nativeElement.disabled = isDisabled;
+    this.input.disabled = isDisabled;
   }
 }

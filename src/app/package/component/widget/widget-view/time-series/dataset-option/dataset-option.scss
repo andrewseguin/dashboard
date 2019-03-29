@@ -1,0 +1,29 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+button.remove-dataset {
+  align-self: flex-end;
+  margin-top: 16px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+action-option + action-option {
+  margin-top: 16px;
+}
+
+.date-values button {
+  height: 32px;
+  line-height: 32px;
+  width: 32px;
+
+  mat-icon {
+    font-size: 18px;
+  }
+}
