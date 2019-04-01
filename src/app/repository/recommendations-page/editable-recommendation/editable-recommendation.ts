@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
+import {createItemsFilterer} from 'app/github/data-source/github-item-groups-data-source';
 import {ActiveStore} from 'app/repository/services/active-store';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
-import {createItemsFilterer} from 'app/github/data-source/github-item-groups-data-source';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
@@ -29,7 +28,7 @@ import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 export class EditableRecommendation {
   expanded = true;
 
-  itemsFilterer = createItemsFilterer(this.itemRecommendations, this.activeRepo.activeData);
+  itemsFilterer = createItemsFilterer(this.activeRepo.activeConfig, this.activeRepo.activeData);
 
   queryChanged = new Subject<void>();
 
@@ -64,8 +63,8 @@ export class EditableRecommendation {
   private _destroyed = new Subject();
 
   constructor(
-      private itemRecommendations: ItemRecommendations, private cd: ChangeDetectorRef,
-      private activeRepo: ActiveStore, private snackbar: MatSnackBar, private dialog: MatDialog) {}
+      private cd: ChangeDetectorRef, private activeRepo: ActiveStore, private snackbar: MatSnackBar,
+      private dialog: MatDialog) {}
 
   ngOnInit() {
     this.form = new FormGroup({

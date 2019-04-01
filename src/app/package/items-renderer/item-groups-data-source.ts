@@ -8,7 +8,7 @@ import {ItemSorter} from './item-sorter';
 import {ItemViewer} from './item-viewer';
 import {IFilterMetadata} from './search-utility/filter';
 
-export interface ItemGroupsResult<T> {
+export interface GroupedResults<T> {
   groups: ItemGroup<T>[];
   count: number;
 }
@@ -45,44 +45,43 @@ export class ItemGroupsDataSource<T> {
   /** The viewer carries information to render the items to the view. */
   viewer: ItemViewer<T, any, any> = new ItemViewer<T, null, any>(new Map(), of(() => null));
 
-  /** Stream emitting render data to the table (depends on ordered data changes). */
-  private readonly _renderData = new ReplaySubject<ItemGroupsResult<T>>();
+  /** Stream emitting the  data to the table (depends on ordered data changes). */
+  private readonly groupedResults = new ReplaySubject<GroupedResults<T>>(1);
 
   /**
    * Subscription to the changes that should trigger an update to the table's rendered rows, such
    * as filtering, sorting, pagination, or base data changes.
    */
-  _renderChangesSubscription: Subscription;
+  private subscription: Subscription;
 
   constructor() {}
 
   ngOnDestroy() {
-    if (this._renderChangesSubscription) {
-      this._renderChangesSubscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
   }
 
-  connect(): Observable<ItemGroupsResult<T>> {
-    if (!this._renderChangesSubscription) {
+  connect(): Observable<GroupedResults<T>> {
+    if (!this.subscription) {
       this.initialize();
     }
 
-    return this._renderData;
+    return this.groupedResults;
   }
 
   private initialize() {
     let filteredDataCount: number;
-    this._renderChangesSubscription =
-        this.provider.getData()
-            .pipe(
-                mergeMap(data => this.filterer.filterItems(data)),
-                tap(filteredData => filteredDataCount = filteredData.length),
-                mergeMap(filteredItems => this.grouper.groupItems(filteredItems)),
-                mergeMap(groupedItems => this.sorter.performSort(groupedItems)))
-            .subscribe(sortedItems => {
-              const count = filteredDataCount;
-              const groups = sortedItems;
-              this._renderData.next({groups, count});
-            });
+    this.subscription = this.provider.getData()
+                            .pipe(
+                                mergeMap(data => this.filterer.filter(data)),
+                                tap(data => filteredDataCount = data.length),
+                                mergeMap(data => this.grouper.group(data)),
+                                mergeMap(data => this.sorter.sort(data)))
+                            .subscribe(sortedItems => {
+                              const count = filteredDataCount;
+                              const groups = sortedItems;
+                              this.groupedResults.next({groups, count});
+                            });
   }
 }

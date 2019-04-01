@@ -15,12 +15,15 @@ export class ItemFilterer<T, M, A> {
    */
   autocompleteContext: A;
 
+  // TODO: Needs to be noted somewhere that the context provider should not have a dependency that
+  // listens for the data given by the provider, else the context will fire simultaneously with the
+  // data provider and way too many events will emit
   constructor(
       private contextProvider: Observable<(item: T) => M>, public tokenizeItem: (item: T) => string,
       public metadata: Map<string, IFilterMetadata<M, any>>) {}
 
   /** Gets a stream that returns the items and updates whenever the filters or search changes. */
-  filterItems(items: T[]): Observable<T[]> {
+  filter(items: T[]): Observable<T[]> {
     return combineLatest(this.state, this.contextProvider).pipe(map(results => {
       const filters = results[0].filters;
       const search = results[0].search;

@@ -50,7 +50,10 @@ export class ItemsList<T> {
       this.ngZone.run(() => this.renderState.next(result));
     });
 
-    this.itemCount = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
+    this.itemCount = this.itemGroupsDataSource.connect().pipe(map(result => {
+      console.log('new count')
+      return result.count;
+    }));
   }
 
   ngOnDestroy() {

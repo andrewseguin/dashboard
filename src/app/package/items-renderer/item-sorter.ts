@@ -18,7 +18,7 @@ export class ItemSorter<T, S, C> {
 
   constructor(private context: Observable<C>, public metadata: Map<S, SortingMetadata<T, S, C>>) {}
 
-  performSort(itemGroups: ItemGroup<T>[]): Observable<ItemGroup<T>[]> {
+  sort(itemGroups: ItemGroup<T>[]): Observable<ItemGroup<T>[]> {
     return combineLatest(this.state, this.context).pipe(map(results => {
       const sort = results[0].sort;
       const reverse = results[0].reverse;

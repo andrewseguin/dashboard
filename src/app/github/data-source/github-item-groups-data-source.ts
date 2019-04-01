@@ -6,12 +6,13 @@ import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-
 import {ItemProvider} from 'app/package/items-renderer/item-provider';
 import {ItemSorter} from 'app/package/items-renderer/item-sorter';
 import {ItemViewer, ItemViewerContextProvider} from 'app/package/items-renderer/item-viewer';
+import {ConfigStore} from 'app/repository/services/dao/config/config-dao';
+import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {combineLatest, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ActiveStore} from '../../repository/services/active-store';
 import {DataStore} from '../../repository/services/dao/data-dao';
 import {ListDao} from '../../repository/services/dao/list-dao';
-import {ItemRecommendations} from '../../repository/services/item-recommendations';
 import {tokenizeItem} from '../utility/tokenize-item';
 import {AutocompleteContext, ItemsFilterMetadata, MatcherContext} from './item-filter-metadata';
 import {GithubItemGroupingMetadata, Group, TitleTransformContext} from './item-grouper-metadata';
@@ -20,17 +21,17 @@ import {GithubItemSortingMetadata, Sort} from './item-sorter-metadata';
 import {GithubItemView, GithubItemViewerMetadata, ViewContext} from './item-viewer-metadata';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
-  constructor(
-      itemRecommendations: ItemRecommendations, activeRepo: ActiveStore, type: 'issue'|'pr') {
+  constructor(activeRepo: ActiveStore, type: 'issue'|'pr') {
     super();
 
-    const store = activeRepo.activeData;
+    const dataStore = activeRepo.activeData;
+    const configStore = activeRepo.activeConfig;
 
-    this.provider = createProvider(store, type);
-    this.filterer = createItemsFilterer(itemRecommendations, store);
-    this.grouper = createItemsGrouper(store.labels);
+    this.provider = createProvider(dataStore, type);
+    this.filterer = createItemsFilterer(configStore, dataStore);
+    this.grouper = createItemsGrouper(dataStore.labels);
     this.sorter = createItemSorter();
-    this.viewer = createItemViewer(itemRecommendations, store);
+    this.viewer = createItemViewer(configStore, dataStore);
   }
 }
 
@@ -38,12 +39,12 @@ function createProvider(store: DataStore, type: 'issue'|'pr') {
   return new ItemProvider(GithubItemDataMetadata, getItemsList(store, type));
 }
 
-function createItemViewer(itemRecommendations: ItemRecommendations, store: DataStore):
-    ItemViewer<Item, GithubItemView, ViewContext> {
+function createItemViewer(
+    configStore: ConfigStore, dataStore: DataStore): ItemViewer<Item, GithubItemView, ViewContext> {
   const viewContextProvider: ItemViewerContextProvider<Item, ViewContext> =
-      combineLatest(itemRecommendations.allRecommendations, store.labels.map).pipe(map(results => {
-        const recommendationsByItem = results[0]!;
-        const labelsMap = results[1]!;
+      combineLatest(configStore.recommendations.list, dataStore.labels.map).pipe(map(results => {
+        const recommendations = results[0];
+        const labelsMap = results[1];
 
         // Add name to labels map for filtering
         labelsMap.forEach(label => labelsMap.set(label.name, label));
@@ -52,7 +53,7 @@ function createItemViewer(itemRecommendations: ItemRecommendations, store: DataS
           return {
             item,
             labelsMap,
-            recommendations: recommendationsByItem.get(item.id) || [],
+            recommendations: getRecommendations(item, recommendations, labelsMap),
           };
         };
       }));
@@ -92,28 +93,29 @@ export function getItemsList(store: DataStore, type: string) {
   }));
 }
 
-export function createItemsFilterer(itemRecommendations: ItemRecommendations, store: DataStore):
+export function createItemsFilterer(configStore: ConfigStore, dataStore: DataStore):
     ItemFilterer<Item, MatcherContext, AutocompleteContext> {
   const filterContextProvider =
-      combineLatest(itemRecommendations.allRecommendations, store.labels.map).pipe(map(results => {
-        const recommendationsByItem = results[0]!;
-        const labelsMap = results[1]!;
+      combineLatest(configStore.recommendations.list, dataStore.labels.map).pipe(map(results => {
+        const recommendations = results[0];
+        const labelsMap = results[1];
 
         // Add name to labels map for filtering
         labelsMap.forEach(label => labelsMap.set(label.name, label));
+
 
         return (item: Item) => {
           return {
             item,
             labelsMap,
-            recommendations: recommendationsByItem.get(item.id) || [],
+            recommendations: getRecommendations(item, recommendations, labelsMap),
           };
         };
       }));
 
   const filterer = new ItemFilterer<Item, MatcherContext, AutocompleteContext>(
       filterContextProvider, tokenizeItem, ItemsFilterMetadata);
-  filterer.autocompleteContext = ({items: store.items, labels: store.labels});
+  filterer.autocompleteContext = ({items: dataStore.items, labels: dataStore.labels});
 
   return filterer;
 }

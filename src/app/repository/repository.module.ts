@@ -6,7 +6,7 @@ import {Repository} from './repository';
 import {ActiveStore} from './services/active-store';
 import {ConfigDao} from './services/dao/config/config-dao';
 import {Dao} from './services/dao/data-dao';
-import {ItemRecommendations} from './services/item-recommendations';
+import {Header} from './services/header';
 import {Markdown} from './services/markdown';
 import {Remover} from './services/remover';
 import {RepoGist} from './services/repo-gist';
@@ -19,7 +19,6 @@ import {
 } from './shared/dialog/delete-confirmation/delete-confirmation.module';
 import {HeaderModule} from './shared/header/header.module';
 import {NavModule} from './shared/nav/nav.module';
-import { Header } from './services/header';
 
 
 const routes: Routes = [{
@@ -74,9 +73,7 @@ export class RepositoryRoutingModule {
   ],
   declarations: [Repository],
   exports: [Repository],
-  providers: [
-    Dao, ConfigDao, Header, Updater, Remover, ItemRecommendations, Markdown, ActiveStore, RepoGist
-  ]
+  providers: [Dao, ConfigDao, Header, Updater, Remover, Markdown, ActiveStore, RepoGist]
 })
 export class RepositoryModule {
 }

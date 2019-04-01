@@ -25,7 +25,7 @@ export class ItemGrouper<T, G, C> {
       private titleTransformContextProvider: Observable<C>,
       public metadata: Map<G, GroupingMetadata<T, G, C>>) {}
 
-  groupItems(items: T[]): Observable<ItemGroup<T>[]> {
+  group(items: T[]): Observable<ItemGroup<T>[]> {
     let config: GroupingMetadata<T, G, C>|null;
     return this.state.pipe(
         map(state => {

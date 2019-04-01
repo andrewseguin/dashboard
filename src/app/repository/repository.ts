@@ -8,42 +8,36 @@ import {filter, mergeMap, take} from 'rxjs/operators';
 import {GithubItemGroupsDataSource} from '../github/data-source/github-item-groups-data-source';
 import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data-dao';
-import {ItemRecommendations} from './services/item-recommendations';
 import {Remover} from './services/remover';
 import {Updater} from './services/updater';
 import {isRepoStoreEmpty} from './utility/is-repo-store-empty';
 
 export const DATA_SOURCES = new InjectionToken<Map<string, DataSourceProvider>>('data-sources');
 
-export const provideDataSources =
-    (itemRecommendations: ItemRecommendations, activeStore: ActiveStore) => {
-      return new Map<string, DataSourceProvider>([
-        [
-          'issue', {
-            id: 'issue',
-            label: 'Issues',
-            factory: () => new GithubItemGroupsDataSource(itemRecommendations, activeStore, 'issue')
-          }
-        ],
-        [
-          'pr', {
-            id: 'pr',
-            label: 'Pull Requests',
-            factory: () => new GithubItemGroupsDataSource(itemRecommendations, activeStore, 'pr')
-          }
-        ],
-      ]);
-    };
+export const provideDataSources = (activeStore: ActiveStore) => {
+  return new Map<string, DataSourceProvider>([
+    [
+      'issue', {
+        id: 'issue',
+        label: 'Issues',
+        factory: () => new GithubItemGroupsDataSource(activeStore, 'issue')
+      }
+    ],
+    [
+      'pr', {
+        id: 'pr',
+        label: 'Pull Requests',
+        factory: () => new GithubItemGroupsDataSource(activeStore, 'pr')
+      }
+    ],
+  ]);
+};
 
 @Component({
   templateUrl: 'repository.html',
   styleUrls: ['repository.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [{
-    provide: DATA_SOURCES,
-    useFactory: provideDataSources,
-    deps: [ItemRecommendations, ActiveStore]
-  }]
+  providers: [{provide: DATA_SOURCES, useFactory: provideDataSources, deps: [ActiveStore]}]
 })
 export class Repository {
   destroyed = new Subject();

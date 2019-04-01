@@ -4,8 +4,8 @@ import {Item} from 'app/github/app-types/item';
 import {ActiveStore} from 'app/repository/services/active-store';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Dao} from 'app/repository/services/dao/data-dao';
-import {ItemRecommendations} from 'app/repository/services/item-recommendations';
 import {Markdown} from 'app/repository/services/markdown';
+import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {Github, TimelineEvent, UserComment} from 'app/service/github';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap} from 'rxjs/operators';
@@ -38,7 +38,7 @@ export class ItemDetail {
 
   constructor(
       private elementRef: ElementRef, private markdown: Markdown, public activeRepo: ActiveStore,
-      public github: Github, private itemRecommendations: ItemRecommendations, public dao: Dao) {}
+      public github: Github, public dao: Dao) {}
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges['itemId'] && this.itemId) {
@@ -47,8 +47,16 @@ export class ItemDetail {
       const store = this.dao.get(this.activeRepo.activeName);
       this.item = store.items.get(this.itemId);
       this.bodyMarkdown = this.markdown.getItemBodyMarkdown(store, this.itemId);
-      this.recommendations = this.itemRecommendations.allRecommendations.pipe(
-          map(recommendations => recommendations.get(this.itemId) || []));
+
+      this.recommendations =
+          combineLatest(this.activeRepo.config, this.activeRepo.data)
+              .pipe(
+                  mergeMap(
+                      results => combineLatest(
+                          this.item, results[0].recommendations.list, results[1].labels.map)),
+                  map(results => results[0] ?
+                          getRecommendations(results[0], results[1], results[2]) :
+                          []));
 
       this.activities = this.activeRepo.data.pipe(
           mergeMap(dataStore => {
