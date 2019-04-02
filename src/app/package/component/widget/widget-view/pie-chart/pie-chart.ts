@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {ItemFiltererState} from 'app/package/items-renderer/filterer';
-import {ItemGroup, ItemGrouperState} from 'app/package/items-renderer/grouper';
+import {FiltererState} from 'app/package/items-renderer/filterer';
+import {Group, GrouperState} from 'app/package/items-renderer/grouper';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -11,9 +11,9 @@ import { MaterialColors } from '../widget-view';
 
 export interface PieChartDisplayTypeOptions<G> {
   dataSourceType: string;
-  grouperState: ItemGrouperState<G>;
+  grouperState: GrouperState<G>;
   filteredGroups: string;
-  filtererState: ItemFiltererState;
+  filtererState: FiltererState;
 }
 
 @Component({
@@ -45,7 +45,7 @@ export class PieChart<T, G> {
     this.destroyed.complete();
   }
 
-  private getInfo(groups: ItemGroup<T>[]): {data: number[], labels: string[]} {
+  private getInfo(groups: Group<T>[]): {data: number[], labels: string[]} {
     const data: number[] = [];
     const labels: string[] = [];
     const LIMIT = 10;
@@ -62,7 +62,7 @@ export class PieChart<T, G> {
     return {data, labels};
   }
 
-  render(groups: ItemGroup<T>[]) {
+  render(groups: Group<T>[]) {
     if (this.data.options.filteredGroups) {
       const filteredGroupsSet =
           new Set<string>(this.data.options.filteredGroups.split(',').map(v => v.trim()));

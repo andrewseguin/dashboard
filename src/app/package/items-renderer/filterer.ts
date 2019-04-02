@@ -2,13 +2,13 @@ import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-export interface ItemFiltererState {
+export interface FiltererState {
   filters: Filter[];
   search: string;
 }
 
-export class ItemFilterer<T, M, A> {
-  state = new BehaviorSubject<ItemFiltererState>({filters: [], search: ''});
+export class Filterer<T, M, A> {
+  state = new BehaviorSubject<FiltererState>({filters: [], search: ''});
 
   /**
    * Context given to a filters to provide autocomplete suggestions. Probably should be a stream?
@@ -34,15 +34,15 @@ export class ItemFilterer<T, M, A> {
     }));
   }
 
-  getState(): ItemFiltererState {
+  getState(): FiltererState {
     return this.state.value;
   }
 
-  setState(state: ItemFiltererState) {
+  setState(state: FiltererState) {
     this.state.next({...state});
   }
 
-  isEquivalent(otherState: ItemFiltererState) {
+  isEquivalent(otherState: FiltererState) {
     const thisState = this.getState();
 
     const filtersEquivalent =

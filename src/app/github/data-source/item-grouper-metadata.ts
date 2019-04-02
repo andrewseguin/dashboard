@@ -1,7 +1,7 @@
 import {
   getGroupByListValues,
   getGroupByValue,
-  GroupingMetadata
+  GrouperMetadata
 } from 'app/package/items-renderer/grouper';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
@@ -13,7 +13,7 @@ export interface TitleTransformContext {
 }
 
 export const GithubItemGroupingMetadata =
-    new Map<Group, GroupingMetadata<Item, Group, TitleTransformContext>>([
+    new Map<Group, GrouperMetadata<Item, Group, TitleTransformContext>>([
       [
         'all', {
           id: 'all',

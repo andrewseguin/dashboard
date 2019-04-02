@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, Component, Inject, Injector} from '@angular/cor
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {ItemFiltererState} from 'app/package/items-renderer/filterer';
+import {FiltererState} from 'app/package/items-renderer/filterer';
 import {ReplaySubject} from 'rxjs';
 import {startWith, take} from 'rxjs/operators';
 
@@ -11,7 +11,7 @@ import {EDIT_WIDGET_DATA, EditWidgetData2, Widget, WidgetConfig} from '../../wid
 
 
 export interface SavedFiltererState {
-  state: ItemFiltererState;
+  state: FiltererState;
   group: string;
   label: string;
   dataSourceType: string;

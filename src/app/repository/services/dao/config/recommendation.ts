@@ -1,4 +1,4 @@
-import {ItemFiltererState} from 'app/package/items-renderer/filterer';
+import {FiltererState} from 'app/package/items-renderer/filterer';
 
 export interface AddLabelAction {
   labels: string[];
@@ -19,7 +19,7 @@ export interface Recommendation {
   type?: RecommendationType;
   actionType?: ActionType;
   action?: Action;
-  filtererState?: ItemFiltererState;
+  filtererState?: FiltererState;
   dbAdded?: string;
   dbModified?: string;
 }

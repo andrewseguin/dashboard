@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {ItemFilterer} from 'app/package/items-renderer/filterer';
-import {ItemGrouper} from 'app/package/items-renderer/grouper';
+import {Filterer} from 'app/package/items-renderer/filterer';
+import {Grouper} from 'app/package/items-renderer/grouper';
 import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
@@ -19,8 +19,8 @@ import {PieChartDisplayTypeOptions} from './pie-chart';
 export class PieChartEdit {
   dataOptions: ButtonToggleOption[] = [];
 
-  grouper: ItemGrouper<any, any, any>;
-  filterer: ItemFilterer<any, any, any>;
+  grouper: Grouper<any, any, any>;
+  filterer: Filterer<any, any, any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),

@@ -1,11 +1,11 @@
 import {Item} from 'app/github/app-types/item';
 import {Label} from 'app/github/app-types/label';
-import {ItemFilterer} from 'app/package/items-renderer/filterer';
-import {ItemGrouper} from 'app/package/items-renderer/grouper';
 import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
-import {ItemProvider} from 'app/package/items-renderer/provider';
-import {ItemSorter} from 'app/package/items-renderer/sorter';
-import {ItemViewer, ItemViewerContextProvider} from 'app/package/items-renderer/viewer';
+import {Filterer} from 'app/package/items-renderer/filterer';
+import {Grouper} from 'app/package/items-renderer/grouper';
+import {Provider} from 'app/package/items-renderer/provider';
+import {Sorter} from 'app/package/items-renderer/sorter';
+import {Viewer, ViewerContextProvider} from 'app/package/items-renderer/viewer';
 import {ConfigStore} from 'app/repository/services/dao/config/config-dao';
 import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {combineLatest, of} from 'rxjs';
@@ -36,12 +36,12 @@ export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
 }
 
 function createProvider(store: DataStore, type: 'issue'|'pr') {
-  return new ItemProvider(GithubItemDataMetadata, getItemsList(store, type));
+  return new Provider(GithubItemDataMetadata, getItemsList(store, type));
 }
 
 function createItemViewer(
-    configStore: ConfigStore, dataStore: DataStore): ItemViewer<Item, GithubItemView, ViewContext> {
-  const viewContextProvider: ItemViewerContextProvider<Item, ViewContext> =
+    configStore: ConfigStore, dataStore: DataStore): Viewer<Item, GithubItemView, ViewContext> {
+  const viewContextProvider: ViewerContextProvider<Item, ViewContext> =
       combineLatest(configStore.recommendations.list, dataStore.labels.map).pipe(map(results => {
         const recommendations = results[0];
         const labelsMap = results[1];
@@ -58,25 +58,25 @@ function createItemViewer(
         };
       }));
 
-  const viewer = new ItemViewer<Item, GithubItemView, ViewContext>(
-      GithubItemViewerMetadata, viewContextProvider);
+  const viewer =
+      new Viewer<Item, GithubItemView, ViewContext>(GithubItemViewerMetadata, viewContextProvider);
   viewer.setState({views: viewer.getViews().map(v => v.id)});
 
   return viewer;
 }
 
-function createItemSorter(): ItemSorter<Item, Sort, null> {
-  const sorter = new ItemSorter(of(null), GithubItemSortingMetadata);
+function createItemSorter(): Sorter<Item, Sort, null> {
+  const sorter = new Sorter(of(null), GithubItemSortingMetadata);
   sorter.setState({sort: 'created', reverse: true});
   return sorter;
 }
 
 function createItemsGrouper(labelsDao: ListDao<Label>):
-    ItemGrouper<Item, Group, TitleTransformContext> {
+    Grouper<Item, Group, TitleTransformContext> {
   const titleTransformContextProvider =
       labelsDao.map.pipe(map(labelsMap => ({labelsMap: labelsMap})));
 
-  const grouper = new ItemGrouper<Item, Group, TitleTransformContext>(
+  const grouper = new Grouper<Item, Group, TitleTransformContext>(
       titleTransformContextProvider, GithubItemGroupingMetadata);
   grouper.setState({group: 'all'});
   return grouper;
@@ -94,7 +94,7 @@ export function getItemsList(store: DataStore, type: string) {
 }
 
 export function createItemsFilterer(configStore: ConfigStore, dataStore: DataStore):
-    ItemFilterer<Item, MatcherContext, AutocompleteContext> {
+    Filterer<Item, MatcherContext, AutocompleteContext> {
   const filterContextProvider =
       combineLatest(configStore.recommendations.list, dataStore.labels.map).pipe(map(results => {
         const recommendations = results[0];
@@ -113,7 +113,7 @@ export function createItemsFilterer(configStore: ConfigStore, dataStore: DataSto
         };
       }));
 
-  const filterer = new ItemFilterer<Item, MatcherContext, AutocompleteContext>(
+  const filterer = new Filterer<Item, MatcherContext, AutocompleteContext>(
       filterContextProvider, tokenizeItem, ItemsFilterMetadata);
   filterer.autocompleteContext = ({items: dataStore.items, labels: dataStore.labels});
 

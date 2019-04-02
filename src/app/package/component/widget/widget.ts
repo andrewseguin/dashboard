@@ -1,7 +1,7 @@
 import {ComponentType} from '@angular/cdk/overlay/index';
 import {InjectionToken} from '@angular/core';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {ItemFiltererState} from 'app/package/items-renderer/filterer';
+import {FiltererState} from 'app/package/items-renderer/filterer';
 import {Subject} from 'rxjs';
 import {SavedFiltererState} from './edit-widget/edit-widget';
 
@@ -24,7 +24,7 @@ export interface EditWidgetData2<O> {
 export interface Widget {
   title?: string;
   dataSourceType?: string;
-  filtererState?: ItemFiltererState;
+  filtererState?: FiltererState;
   displayType?: string;
   displayTypeOptions?: any;
 }

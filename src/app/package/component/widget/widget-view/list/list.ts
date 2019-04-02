@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {ItemFiltererState} from 'app/package/items-renderer/filterer';
-import {ItemSorterState} from 'app/package/items-renderer/sorter';
-import {ItemViewerState} from 'app/package/items-renderer/viewer';
+import {FiltererState} from 'app/package/items-renderer/filterer';
+import {SorterState} from 'app/package/items-renderer/sorter';
+import {ViewerState} from 'app/package/items-renderer/viewer';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -15,9 +15,9 @@ export interface ListWidgetConfig {
 export interface ListDisplayTypeOptions<S, V> {
   dataSourceType: string;
   listLength: number;
-  sorterState: ItemSorterState<S>;
-  viewerState: ItemViewerState<V>;
-  filtererState: ItemFiltererState;
+  sorterState: SorterState<S>;
+  viewerState: ViewerState<V>;
+  filtererState: FiltererState;
 }
 
 @Component({

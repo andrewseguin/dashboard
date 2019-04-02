@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {ItemFilterer} from 'app/package/items-renderer/filterer';
+import {Filterer} from 'app/package/items-renderer/filterer';
 import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
@@ -17,7 +17,7 @@ import {CountDisplayTypeOptions} from './count.module';
 export class EditCount {
   dataOptions: ButtonToggleOption[] = [];
 
-  filterer: ItemFilterer<any, any, any>;
+  filterer: Filterer<any, any, any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),

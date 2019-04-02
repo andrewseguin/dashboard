@@ -1,11 +1,11 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-export interface ItemViewerState<V> {
+export interface ViewerState<V> {
   views: V[];
 }
 
-export interface ViewingMetadata<V, C> {
+export interface ViewerMetadata<V, C> {
   id: V;
   label: string;
   containerClassList?: string;
@@ -17,17 +17,17 @@ export interface ViewingMetadata<V, C> {
   }[]);
 }
 
-export type ItemViewerContextProvider<T, C> = Observable<(item: T) => C>;
+export type ViewerContextProvider<T, C> = Observable<(item: T) => C>;
 
-export class ItemViewer<T, V, C> {
-  state = new BehaviorSubject<ItemViewerState<V>>({views: []});
+export class Viewer<T, V, C> {
+  state = new BehaviorSubject<ViewerState<V>>({views: []});
 
   constructor(
-      public metadata: Map<V, ViewingMetadata<V, C>>,
-      private contextProvider: ItemViewerContextProvider<T, C>) {}
+      public metadata: Map<V, ViewerMetadata<V, C>>,
+      private contextProvider: ViewerContextProvider<T, C>) {}
 
-  getViews(): ViewingMetadata<V, C>[] {
-    const views: ViewingMetadata<V, C>[] = [];
+  getViews(): ViewerMetadata<V, C>[] {
+    const views: ViewerMetadata<V, C>[] = [];
     this.metadata.forEach(view => views.push(view));
     return views;
   }
@@ -46,22 +46,22 @@ export class ItemViewer<T, V, C> {
     this.setState({views: newViews});
   }
 
-  getState(): ItemViewerState<V> {
+  getState(): ViewerState<V> {
     return this.state.value;
   }
 
-  setState(state: ItemViewerState<V>) {
+  setState(state: ViewerState<V>) {
     this.state.next({...state});
   }
 
-  isEquivalent(otherState: ItemViewerState<V>) {
+  isEquivalent(otherState: ViewerState<V>) {
     const thisViews = this.getState().views.slice().sort();
     const otherViews = otherState.views.slice().sort();
 
     return thisViews.length === otherViews.length && thisViews.every((v, i) => otherViews[i] === v);
   }
 
-  render(item: T, view: ViewingMetadata<V, C>) {
+  render(item: T, view: ViewerMetadata<V, C>) {
     return this.contextProvider.pipe(map(c => view.render(c(item))));
   }
 }

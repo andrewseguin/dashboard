@@ -1,8 +1,8 @@
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ItemGroup} from './grouper';
+import {Group} from './grouper';
 
-export interface ItemSorterState<S> {
+export interface SorterState<S> {
   sort: S|null;
   reverse: boolean;
 }
@@ -13,12 +13,12 @@ export interface SortingMetadata<T, S, C> {
   comparator: (context: C) => ((a: T, b: T) => number);
 }
 
-export class ItemSorter<T, S, C> {
-  state = new BehaviorSubject<ItemSorterState<S>>({sort: null, reverse: false});
+export class Sorter<T, S, C> {
+  state = new BehaviorSubject<SorterState<S>>({sort: null, reverse: false});
 
   constructor(private context: Observable<C>, public metadata: Map<S, SortingMetadata<T, S, C>>) {}
 
-  sort(itemGroups: ItemGroup<T>[]): Observable<ItemGroup<T>[]> {
+  sort(itemGroups: Group<T>[]): Observable<Group<T>[]> {
     return combineLatest(this.state, this.context).pipe(map(results => {
       const sort = results[0].sort;
       const reverse = results[0].reverse;
@@ -53,15 +53,15 @@ export class ItemSorter<T, S, C> {
     return sorts;
   }
 
-  getState(): ItemSorterState<S> {
+  getState(): SorterState<S> {
     return this.state.value;
   }
 
-  setState(state: ItemSorterState<S>) {
+  setState(state: SorterState<S>) {
     this.state.next({...state});
   }
 
-  isEquivalent(otherState: ItemSorterState<S>) {
+  isEquivalent(otherState: SorterState<S>) {
     const thisState = this.getState();
     return thisState.sort === otherState.sort && thisState.reverse === otherState.reverse;
   }

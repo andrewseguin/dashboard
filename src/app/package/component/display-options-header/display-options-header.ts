@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {GroupingMetadata, ItemGrouper} from 'app/package/items-renderer/grouper';
-import {ItemSorter, SortingMetadata} from 'app/package/items-renderer/sorter';
-import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/viewer';
+import {GrouperMetadata, Grouper} from 'app/package/items-renderer/grouper';
+import {Sorter, SortingMetadata} from 'app/package/items-renderer/sorter';
+import {Viewer, ViewerMetadata} from 'app/package/items-renderer/viewer';
 
 @Component({
   selector: 'display-options-header',
@@ -10,13 +10,13 @@ import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/viewer';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DisplayOptionsHeader<G, S, V> {
-  groups: Map<G, GroupingMetadata<any, G, any>>;
+  groups: Map<G, GrouperMetadata<any, G, any>>;
   groupIds: G[] = [];
 
   sorts: Map<S, SortingMetadata<any, S, null>>;
   sortIds: S[] = [];
 
-  views: Map<V, ViewingMetadata<V, any>>;
+  views: Map<V, ViewerMetadata<V, any>>;
   viewIds: V[] = [];
 
   @Input() hideGrouping: boolean;
@@ -24,43 +24,43 @@ export class DisplayOptionsHeader<G, S, V> {
   @Input() itemCount: number;
 
   @Input()
-  set grouper(grouper: ItemGrouper<any, G, any>) {
+  set grouper(grouper: Grouper<any, G, any>) {
     this._grouper = grouper;
     if (this.grouper) {
       this.groups = this.grouper.metadata;
       this.groupIds = this.grouper.getGroups().map(value => value.id);
     }
   }
-  get grouper(): ItemGrouper<any, G, any> {
+  get grouper(): Grouper<any, G, any> {
     return this._grouper;
   }
-  _grouper: ItemGrouper<any, G, any>;
+  _grouper: Grouper<any, G, any>;
 
   @Input()
-  set sorter(sorter: ItemSorter<any, S, any>) {
+  set sorter(sorter: Sorter<any, S, any>) {
     this._sorter = sorter;
     if (this.sorter) {
       this.sorts = this.sorter.metadata;
       this.sortIds = this.sorter.getSorts().map(value => value.id);
     }
   }
-  get sorter(): ItemSorter<any, S, any> {
+  get sorter(): Sorter<any, S, any> {
     return this._sorter;
   }
-  _sorter: ItemSorter<any, S, any>;
+  _sorter: Sorter<any, S, any>;
 
   @Input()
-  set viewer(viewer: ItemViewer<V, any, any>) {
+  set viewer(viewer: Viewer<V, any, any>) {
     this._viewer = viewer;
     if (this.viewer) {
       this.views = this.viewer.metadata;
       this.viewIds = this.viewer.getViews().map(value => value.id);
     }
   }
-  get viewer(): ItemViewer<V, any, any> {
+  get viewer(): Viewer<V, any, any> {
     return this._viewer;
   }
-  _viewer: ItemViewer<V, any, any>;
+  _viewer: Viewer<V, any, any>;
 
   setGroup(group: G) {
     const grouperState = this.grouper.getState();

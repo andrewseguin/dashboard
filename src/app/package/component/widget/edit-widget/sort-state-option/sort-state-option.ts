@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MatSelect} from '@angular/material';
-import {ItemSorter} from 'app/package/items-renderer/sorter';
+import {Sorter} from 'app/package/items-renderer/sorter';
 
 @Component({
   selector: 'sort-state-option',
@@ -40,7 +40,7 @@ export class SortStateOption<S> implements ControlValueAccessor {
 
   @Input() label: string;
 
-  @Input() sorter: ItemSorter<any, S, any>;
+  @Input() sorter: Sorter<any, S, any>;
 
   @Input() placeholder: string;
 

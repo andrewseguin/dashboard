@@ -1,10 +1,10 @@
 import {combineLatest, Observable} from 'rxjs';
 import {auditTime, debounceTime, map, startWith} from 'rxjs/operators';
-import {ItemGroup} from './grouper';
+import {Group} from './grouper';
 import {ItemGroupsDataSource} from './data-source';
 
-export interface RenderState<T> {
-  groups: ItemGroup<T>[];
+export interface RendererState<T> {
+  groups: Group<T>[];
   count: number;
   total: number;
 }
@@ -12,9 +12,9 @@ export interface RenderState<T> {
 export class ItemGroupsRenderer<T> {
   issuesToDisplay: number;
 
-  itemGroups: ItemGroup<T>[];
+  itemGroups: Group<T>[];
 
-  renderedItemGroups: Observable<RenderState<T>>;
+  renderedItemGroups: Observable<RendererState<T>>;
 
   constructor(
       itemGroupsDataSource: ItemGroupsDataSource<T>, scroll: Observable<Event>, resetCount = 20,
@@ -54,7 +54,7 @@ export class ItemGroupsRenderer<T> {
     return el.scrollTop <= 200;
   }
 
-  getRenderState(): RenderState<T> {
+  getRenderState(): RendererState<T> {
     let total = 0;
     this.itemGroups.forEach(g => total += g.items.length);
 

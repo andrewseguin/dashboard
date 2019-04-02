@@ -6,7 +6,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/viewer';
+import {Viewer, ViewerMetadata} from 'app/package/items-renderer/viewer';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -18,13 +18,13 @@ import {map} from 'rxjs/operators';
   host: {'(click)': 'select.emit(item)'}
 })
 export class ItemSummary<T, V> {
-  views: Observable<ViewingMetadata<V, any>[]>;
+  views: Observable<ViewerMetadata<V, any>[]>;
 
   @Input() item: T;
 
   @Input() active: boolean;
 
-  @Input() viewer: ItemViewer<T, V, any>;
+  @Input() viewer: Viewer<T, V, any>;
 
   @Output() select = new EventEmitter<T>();
 

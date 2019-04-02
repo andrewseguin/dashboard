@@ -7,7 +7,7 @@ export interface ProviderMetadata<T> {
   accessor: (item: T) => any;
 }
 
-export class ItemProvider<T> {
+export class Provider<T> {
   constructor(public metadata: Map<string, ProviderMetadata<T>>, private data: Observable<T[]>) {}
 
   /** Gets a stream that provides the list of items. */

@@ -8,7 +8,7 @@ import {
   OnInit
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {ItemFilterer} from 'app/package/items-renderer/filterer';
+import {Filterer} from 'app/package/items-renderer/filterer';
 import {Query} from 'app/package/items-renderer/search-utility/query';
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, takeUntil} from 'rxjs/operators';
@@ -54,7 +54,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = (i: number) => i;
 
-  @Input() filterer: ItemFilterer<any, any, any>;
+  @Input() filterer: Filterer<any, any, any>;
 
   hasDisplayedFilters: boolean;
 

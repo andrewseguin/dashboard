@@ -1,5 +1,5 @@
 import {DatePipe} from '@angular/common';
-import {ViewingMetadata} from 'app/package/items-renderer/viewer';
+import {ViewerMetadata} from 'app/package/items-renderer/viewer';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
@@ -15,7 +15,7 @@ export interface ViewContext {
 }
 
 export const GithubItemViewerMetadata =
-    new Map<GithubItemView, ViewingMetadata<GithubItemView, ViewContext>>([
+    new Map<GithubItemView, ViewerMetadata<GithubItemView, ViewContext>>([
       [
         'title',
         {

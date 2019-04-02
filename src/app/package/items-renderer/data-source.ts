@@ -1,21 +1,21 @@
 import {Injectable} from '@angular/core';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
-import {ItemFilterer} from './filterer';
-import {GroupingMetadata, ItemGroup, ItemGrouper} from './grouper';
-import {ItemProvider} from './provider';
-import {ItemSorter} from './sorter';
-import {ItemViewer} from './viewer';
+import {Filterer} from './filterer';
+import {GrouperMetadata, Group, Grouper} from './grouper';
+import {Sorter} from './sorter';
+import {Viewer} from './viewer';
 import {IFilterMetadata} from './search-utility/filter';
+import { Provider } from './provider';
 
 export interface GroupedResults<T> {
-  groups: ItemGroup<T>[];
+  groups: Group<T>[];
   count: number;
 }
 
 const DefaultFilterMetadata = new Map<string, IFilterMetadata<null, null>>([]);
 
-const DefaultGroupMetadata = new Map<'all', GroupingMetadata<any, 'all', null>>([
+const DefaultGroupMetadata = new Map<'all', GrouperMetadata<any, 'all', null>>([
   [
     'all', {
       id: 'all',
@@ -29,21 +29,21 @@ const DefaultGroupMetadata = new Map<'all', GroupingMetadata<any, 'all', null>>(
 @Injectable()
 export class ItemGroupsDataSource<T> {
   /** Provider for the items to be filtered, grouped, and sorted. */
-  provider = new ItemProvider<T>(new Map(), of([]));
+  provider = new Provider<T>(new Map(), of([]));
 
   // TODO: Implement a reasonable default filterer, at least with basic search
   /** Provider for the grouper which will group items together. */
-  filterer: ItemFilterer<T, any, any> =
-      new ItemFilterer(of((_item: T) => null), (_item: T) => '', DefaultFilterMetadata);
+  filterer: Filterer<T, any, any> =
+      new Filterer(of((_item: T) => null), (_item: T) => '', DefaultFilterMetadata);
 
   /** The grouper is responsible for grouping the filtered data into ItemGroups */
-  grouper: ItemGrouper<T, any, any> = new ItemGrouper(of(null), DefaultGroupMetadata);
+  grouper: Grouper<T, any, any> = new Grouper(of(null), DefaultGroupMetadata);
 
   /** The sorter handles the sorting of items within each group. */
-  sorter: ItemSorter<T, any, any> = new ItemSorter<T, '', null>(of(null), new Map());
+  sorter: Sorter<T, any, any> = new Sorter<T, '', null>(of(null), new Map());
 
   /** The viewer carries information to render the items to the view. */
-  viewer: ItemViewer<T, any, any> = new ItemViewer<T, null, any>(new Map(), of(() => null));
+  viewer: Viewer<T, any, any> = new Viewer<T, null, any>(new Map(), of(() => null));
 
   /** Stream emitting the  data to the table (depends on ordered data changes). */
   private readonly groupedResults = new ReplaySubject<GroupedResults<T>>(1);

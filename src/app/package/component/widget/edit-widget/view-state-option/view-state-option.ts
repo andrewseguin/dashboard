@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {EditableChipListOption} from 'app/package/component/editable-chip-list/editable-chip-list';
-import {ItemViewer, ItemViewerState} from 'app/package/items-renderer/viewer';
+import {Viewer, ViewerState} from 'app/package/items-renderer/viewer';
 
 @Component({
   selector: 'view-state-option',
@@ -31,7 +31,7 @@ export class ViewStateOption implements ControlValueAccessor {
 
   @Input() label: string;
 
-  @Input() viewer: ItemViewer<any, any, any>;
+  @Input() viewer: Viewer<any, any, any>;
 
   @Input() placeholder: string;
 
@@ -44,7 +44,7 @@ export class ViewStateOption implements ControlValueAccessor {
     }
   }
 
-  writeValue(value: ItemViewerState<any>): void {
+  writeValue(value: ViewerState<any>): void {
     if (value) {
       this.views = value.views;
     }

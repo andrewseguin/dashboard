@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from 'app/material.module';
-import {ItemFiltererState} from 'app/package/items-renderer/filterer';
+import {FiltererState} from 'app/package/items-renderer/filterer';
 import {
   ButtonToggleGroupOptionModule
 } from '../../edit-widget/button-toggle-option/button-toggle-option.module';
@@ -16,7 +16,7 @@ import {EditCount} from './count-edit';
 export interface CountDisplayTypeOptions {
   dataSourceType: string;
   fontSize: 'small'|'normal'|'large';
-  filtererState: ItemFiltererState;
+  filtererState: FiltererState;
 }
 
 @NgModule({

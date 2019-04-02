@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ItemFilterer } from 'app/package/items-renderer/filterer';
-import { ItemSorter } from 'app/package/items-renderer/sorter';
-import { ItemViewer } from 'app/package/items-renderer/viewer';
+import { Filterer } from 'app/package/items-renderer/filterer';
+import { Sorter } from 'app/package/items-renderer/sorter';
+import { Viewer } from 'app/package/items-renderer/viewer';
 import { take } from 'rxjs/operators';
 import { ButtonToggleOption } from '../../edit-widget/button-toggle-option/button-toggle-option';
 import { SavedFiltererState } from '../../edit-widget/edit-widget';
@@ -20,9 +20,9 @@ import { ListDisplayTypeOptions } from './list';
 export class ListEdit {
   dataOptions: ButtonToggleOption[] = [];
 
-  viewer: ItemViewer<any, any, any>;
-  sorter: ItemSorter<any, any, any>;
-  filterer: ItemFilterer<any, any, any>;
+  viewer: Viewer<any, any, any>;
+  sorter: Sorter<any, any, any>;
+  filterer: Filterer<any, any, any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),

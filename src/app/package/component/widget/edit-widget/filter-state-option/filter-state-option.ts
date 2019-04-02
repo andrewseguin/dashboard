@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {ItemFilterer} from 'app/package/items-renderer/filterer';
+import {Filterer} from 'app/package/items-renderer/filterer';
 import {Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {SavedFiltererState} from '../edit-widget';
@@ -22,7 +22,7 @@ export class FilterStateOption implements ControlValueAccessor {
 
   onTouched = () => {};
 
-  @Input() filterer: ItemFilterer<any, any, any>;
+  @Input() filterer: Filterer<any, any, any>;
 
   @Input() savedFiltererStates: SavedFiltererState[];
 

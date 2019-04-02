@@ -1,32 +1,32 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
-export interface ItemGrouperState<G> {
+export interface GrouperState<G> {
   group: G|null;
 }
 
-export class ItemGroup<T> {
+export class Group<T> {
   id: string;
   title: string;
   items: T[];
 }
 
-export interface GroupingMetadata<T, G, C> {
+export interface GrouperMetadata<T, G, C> {
   id: G;
   label: string;
-  groupingFunction: (items: T[]) => ItemGroup<T>[];
+  groupingFunction: (items: T[]) => Group<T>[];
   titleTransform?: (title: string, c: C) => string;
 }
 
-export class ItemGrouper<T, G, C> {
-  state = new BehaviorSubject<ItemGrouperState<G>>({group: null});
+export class Grouper<T, G, C> {
+  state = new BehaviorSubject<GrouperState<G>>({group: null});
 
   constructor(
       private titleTransformContextProvider: Observable<C>,
-      public metadata: Map<G, GroupingMetadata<T, G, C>>) {}
+      public metadata: Map<G, GrouperMetadata<T, G, C>>) {}
 
-  group(items: T[]): Observable<ItemGroup<T>[]> {
-    let config: GroupingMetadata<T, G, C>|null;
+  group(items: T[]): Observable<Group<T>[]> {
+    let config: GrouperMetadata<T, G, C>|null;
     return this.state.pipe(
         map(state => {
           const group = state.group!;
@@ -57,27 +57,27 @@ export class ItemGrouper<T, G, C> {
         }));
   }
 
-  getGroups(): GroupingMetadata<T, G, C>[] {
-    const groups: GroupingMetadata<T, G, C>[] = [];
+  getGroups(): GrouperMetadata<T, G, C>[] {
+    const groups: GrouperMetadata<T, G, C>[] = [];
     this.metadata.forEach(group => groups.push(group));
     return groups;
   }
 
-  getState(): ItemGrouperState<G> {
+  getState(): GrouperState<G> {
     return this.state.value;
   }
 
-  setState(state: ItemGrouperState<G>) {
+  setState(state: GrouperState<G>) {
     this.state.next({...state});
   }
 
-  isEquivalent(otherState: ItemGrouperState<G>) {
+  isEquivalent(otherState: GrouperState<G>) {
     return this.getState().group === otherState.group;
   }
 }
 
 /** Utility function that creates a group based on the value of the item's property. */
-export function getGroupByValue<T>(items: T[], property: string): ItemGroup<T>[] {
+export function getGroupByValue<T>(items: T[], property: string): Group<T>[] {
   const map: Map<string, T[]> = new Map();
 
   items.forEach((item: any) => {
@@ -93,7 +93,7 @@ export function getGroupByValue<T>(items: T[], property: string): ItemGroup<T>[]
 }
 
 /** Utility function that creates a group based on the list of values of the item's property. */
-export function getGroupByListValues<T>(items: T[], key: string): ItemGroup<T>[] {
+export function getGroupByListValues<T>(items: T[], key: string): Group<T>[] {
   const map: Map<string, T[]> = new Map();
   items.forEach((item: any) => {
     let values: any[] = item[key];
@@ -112,8 +112,8 @@ export function getGroupByListValues<T>(items: T[], key: string): ItemGroup<T>[]
 }
 
 /** Utility function that transforms a map of groups into a list. */
-export function getGroupsFromMap<T>(groupsMap: Map<string, T[]>): ItemGroup<T>[] {
-  const groups: ItemGroup<T>[] = [];
+export function getGroupsFromMap<T>(groupsMap: Map<string, T[]>): Group<T>[] {
+  const groups: Group<T>[] = [];
   groupsMap.forEach((items, title) => {
     title = `${title}`;  // TItle should always be a string, even if the ID is something else.
     groups.push({id: title, title, items});

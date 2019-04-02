@@ -1,9 +1,17 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
-import { ItemGroupsDataSource } from 'app/package/items-renderer/data-source';
-import { ItemGroup } from 'app/package/items-renderer/grouper';
-import { ItemGroupsRenderer, RenderState } from 'app/package/items-renderer/renderer';
-import { fromEvent, Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  Output
+} from '@angular/core';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
+import {Group} from 'app/package/items-renderer/grouper';
+import {ItemGroupsRenderer, RendererState} from 'app/package/items-renderer/renderer';
+import {fromEvent, Observable, Subject} from 'rxjs';
+import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'items-list',
@@ -30,7 +38,7 @@ export class ItemsList<T> {
 
   trackByIndex = (i: number) => i;
 
-  renderState = new Subject<RenderState<T>>();
+  renderState = new Subject<RendererState<T>>();
 
   hasMore = this.renderState.pipe(map(state => state.count < state.total));
 
@@ -50,7 +58,7 @@ export class ItemsList<T> {
     this.destroyed.complete();
   }
 
-  getItemGroupKey(_i: number, itemGroup: ItemGroup<T>) {
+  getItemGroupKey(_i: number, itemGroup: Group<T>) {
     return itemGroup.id;
   }
 }

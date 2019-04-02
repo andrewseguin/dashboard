@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MatSelect} from '@angular/material';
-import {ItemGrouper} from 'app/package/items-renderer/grouper';
+import {Grouper} from 'app/package/items-renderer/grouper';
 
 @Component({
   selector: 'group-state-option',
@@ -34,7 +34,7 @@ export class GroupStateOption<G> implements ControlValueAccessor {
 
   @Input() label: string;
 
-  @Input() grouper: ItemGrouper<any, G, any>;
+  @Input() grouper: Grouper<any, G, any>;
 
   @Input() placeholder: string;
 
