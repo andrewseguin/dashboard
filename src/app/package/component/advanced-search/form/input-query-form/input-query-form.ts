@@ -12,7 +12,7 @@ import {
 import {FormControl, FormGroup} from '@angular/forms';
 import {InputEquality, InputQuery} from 'app/package/data-source/query';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {map, startWith, takeUntil} from 'rxjs/operators';
+import {debounceTime, map, startWith, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'input-query-form',
@@ -54,7 +54,7 @@ export class InputQueryForm implements AfterViewInit, OnChanges {
     this.form.valueChanges.pipe(takeUntil(this.destroyed))
         .subscribe(value => this.queryChange.next(value));
 
-    const inputChanges = this.form.valueChanges.pipe(startWith(null));
+    const inputChanges = this.form.valueChanges.pipe(startWith(null), debounceTime(100));
     this.filteredOptions = combineLatest([this._options, inputChanges]).pipe(map(result => {
       const options = result[0];
       const input = this.form.value.input as string;

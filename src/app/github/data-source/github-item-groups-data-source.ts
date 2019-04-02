@@ -26,7 +26,7 @@ export class GithubItemDataSource extends DataSource<Item> {
       private labels: Observable<Label[]>) {
     super();
 
-    // Create data source facet components
+    // Create data source components
     this.provider = new Provider(GithubItemDataMetadata, items);
     this.grouper = new Grouper(GithubItemGroupingMetadata, this.createGrouperContextProvider());
     this.sorter = new Sorter(GithubItemSortingMetadata, of(null));

@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
-import {interval, Subject} from 'rxjs';
+import {interval} from 'rxjs';
 import {filter, map, mergeMap, take} from 'rxjs/operators';
 import {GithubItemDataSource} from '../github/data-source/github-item-groups-data-source';
 import {ActiveStore} from './services/active-store';
@@ -51,8 +51,6 @@ export const provideDataSources = (activeStore: ActiveStore) => {
   providers: [{provide: DATA_SOURCES, useFactory: provideDataSources, deps: [ActiveStore]}]
 })
 export class Repository {
-  destroyed = new Subject();
-
   constructor(
       private router: Router, private updater: Updater, private loadedRepos: LoadedRepos,
       private remover: Remover, private activeRepo: ActiveStore, private auth: Auth) {
@@ -71,11 +69,6 @@ export class Repository {
             this.initializeAutoIssueUpdates(this.activeRepo.activeData);
           }
         });
-  }
-
-  ngOnDestroy() {
-    this.destroyed.next();
-    this.destroyed.complete();
   }
 
   private initializeAutoIssueUpdates(store: DataStore) {
