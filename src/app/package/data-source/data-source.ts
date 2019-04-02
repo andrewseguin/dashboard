@@ -29,9 +29,8 @@ export class ItemGroupsDataSource<T> {
   provider = new Provider<T>(new Map(), of([]));
 
   // TODO: Implement a reasonable default filterer, at least with basic search
-  /** Provider for the grouper which will group items together. */
-  filterer: Filterer<T, any, any> =
-      new Filterer(new Map(), (_item: T) => '', of((_item: T) => null));
+  /** The filterer takes filter and search query information to filter items. */
+  filterer: Filterer<T> = new Filterer(new Map(), of((_item: T) => null));
 
   /** The grouper is responsible for grouping the filtered data into ItemGroups */
   grouper: Grouper<T, any, any> = new Grouper(DefaultGrouperMetadata, of(null));
@@ -42,7 +41,7 @@ export class ItemGroupsDataSource<T> {
   /** The viewer carries information to render the items to the view. */
   viewer: Viewer<T, any, any> = new Viewer<T, null, any>(new Map(), of(() => null));
 
-  /** Stream emitting the  data to the table (depends on ordered data changes). */
+  /** Stream emitting the grouped data. */
   private readonly groupedResults = new ReplaySubject<GroupedResults<T>>(1);
 
   /**
@@ -50,8 +49,6 @@ export class ItemGroupsDataSource<T> {
    * as filtering, sorting, pagination, or base data changes.
    */
   private subscription: Subscription;
-
-  constructor() {}
 
   ngOnDestroy() {
     if (this.subscription) {

@@ -21,9 +21,9 @@ export interface FiltererState {
   search: string;
 }
 
-export type MatcherContextProvider<T, M> = Observable<(item: T) => M>;
+export type FiltererContextProvider<T, M> = Observable<(item: T) => M>;
 
-export class Filterer<T, M, A> {
+export class Filterer<T, M = any, A = any> {
   state = new BehaviorSubject<FiltererState>({filters: [], search: ''});
 
   /**
@@ -31,17 +31,28 @@ export class Filterer<T, M, A> {
    */
   autocompleteContext: A;
 
+  /** Default and naive tokenize function that combines the item's property values into a string. */
+  tokenizeItem =
+      (data: T) => {
+        return Object.keys(data)
+            .reduce(
+                (currentTerm: string, key: string) => {
+                  return currentTerm + (data as {[key: string]: any})[key] + '☺';
+                },
+                '')
+            .toLowerCase();
+      }
+
   // TODO: Needs to be noted somewhere that the context provider should not have a dependency that
   // listens for the data given by the provider, else the context will fire simultaneously with the
   // data provider and way too many events will emit
   constructor(
       public metadata: Map<string, FiltererMetadata<M, any>>,
-      public tokenizeItem: (item: T) => string,
-      private matcherContextProvider: MatcherContextProvider<T, M>) {}
+      private contextProvider: FiltererContextProvider<T, M>) {}
 
   /** Gets a stream that returns the items and updates whenever the filters or search changes. */
   filter(items: T[]): Observable<T[]> {
-    return combineLatest(this.state, this.matcherContextProvider).pipe(map(results => {
+    return combineLatest(this.state, this.contextProvider).pipe(map(results => {
       const filters = results[0].filters;
       const search = results[0].search;
       const contextProvider = results[1];

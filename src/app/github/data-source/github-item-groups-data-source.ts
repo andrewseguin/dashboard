@@ -5,7 +5,7 @@ import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
 import {Provider} from 'app/package/data-source/provider';
 import {Sorter} from 'app/package/data-source/sorter';
-import {RenderContextProvider, Viewer} from 'app/package/data-source/viewer';
+import {ViewerContextProvider, Viewer} from 'app/package/data-source/viewer';
 import {ConfigStore} from 'app/repository/services/dao/config/config-dao';
 import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {combineLatest, of} from 'rxjs';
@@ -41,7 +41,7 @@ function createProvider(store: DataStore, type: 'issue'|'pr') {
 
 function createItemViewer(
     configStore: ConfigStore, dataStore: DataStore): Viewer<Item, GithubItemView, ViewContext> {
-  const viewContextProvider: RenderContextProvider<Item, ViewContext> =
+  const contextProvider: ViewerContextProvider<Item, ViewContext> =
       combineLatest(configStore.recommendations.list, dataStore.labels.map).pipe(map(results => {
         const recommendations = results[0];
         const labelsMap = results[1];
@@ -58,8 +58,7 @@ function createItemViewer(
         };
       }));
 
-  const viewer =
-      new Viewer<Item, GithubItemView, ViewContext>(GithubItemViewerMetadata, viewContextProvider);
+  const viewer = new Viewer(GithubItemViewerMetadata, contextProvider);
   viewer.setState({views: viewer.getViews().map(v => v.id)});
 
   return viewer;
@@ -73,11 +72,9 @@ function createItemSorter(): Sorter<Item, Sort, null> {
 
 function createItemsGrouper(labelsDao: ListDao<Label>):
     Grouper<Item, Group, TitleTransformContext> {
-  const titleTransformContextProvider =
-      labelsDao.map.pipe(map(labelsMap => ({labelsMap: labelsMap})));
+  const contextProvider = labelsDao.map.pipe(map(labelsMap => ({labelsMap: labelsMap})));
 
-  const grouper = new Grouper<Item, Group, TitleTransformContext>(
-      GithubItemGroupingMetadata, titleTransformContextProvider);
+  const grouper = new Grouper(GithubItemGroupingMetadata, contextProvider);
   grouper.setState({group: 'all'});
   return grouper;
 }
@@ -95,7 +92,7 @@ export function getItemsList(store: DataStore, type: string) {
 
 export function createItemsFilterer(configStore: ConfigStore, dataStore: DataStore):
     Filterer<Item, MatcherContext, AutocompleteContext> {
-  const filterContextProvider =
+  const contextProvider =
       combineLatest(configStore.recommendations.list, dataStore.labels.map).pipe(map(results => {
         const recommendations = results[0];
         const labelsMap = results[1];
@@ -113,8 +110,8 @@ export function createItemsFilterer(configStore: ConfigStore, dataStore: DataSto
         };
       }));
 
-  const filterer = new Filterer<Item, MatcherContext, AutocompleteContext>(
-      ItemsFilterMetadata, tokenizeItem, filterContextProvider);
+  const filterer = new Filterer(ItemsFilterMetadata, contextProvider);
+  filterer.tokenizeItem = tokenizeItem;
   filterer.autocompleteContext = ({items: dataStore.items, labels: dataStore.labels});
 
   return filterer;

@@ -17,14 +17,14 @@ export interface ViewerMetadata<V, C> {
   }[]);
 }
 
-export type RenderContextProvider<T, C> = Observable<(item: T) => C>;
+export type ViewerContextProvider<T, C> = Observable<(item: T) => C>;
 
 export class Viewer<T, V, C> {
   state = new BehaviorSubject<ViewerState<V>>({views: []});
 
   constructor(
       public metadata: Map<V, ViewerMetadata<V, C>>,
-      private renderContextProvider: RenderContextProvider<T, C>) {}
+      private contextProvider: ViewerContextProvider<T, C>) {}
 
   getViews(): ViewerMetadata<V, C>[] {
     const views: ViewerMetadata<V, C>[] = [];
@@ -62,6 +62,6 @@ export class Viewer<T, V, C> {
   }
 
   render(item: T, view: ViewerMetadata<V, C>) {
-    return this.renderContextProvider.pipe(map(c => view.render(c(item))));
+    return this.contextProvider.pipe(map(c => view.render(c(item))));
   }
 }
