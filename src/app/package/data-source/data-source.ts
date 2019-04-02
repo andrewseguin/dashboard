@@ -1,16 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {mergeMap, tap} from 'rxjs/operators';
+import {mergeMap} from 'rxjs/operators';
 import {Filterer} from './filterer';
 import {Group, Grouper, GrouperMetadata} from './grouper';
 import {Provider} from './provider';
 import {Sorter} from './sorter';
 import {Viewer} from './viewer';
-
-export interface GroupedResults<T> {
-  groups: Group<T>[];
-  count: number;
-}
 
 const DefaultGrouperMetadata = new Map<'all', GrouperMetadata<any, 'all', null>>([
   [
@@ -24,11 +19,10 @@ const DefaultGrouperMetadata = new Map<'all', GrouperMetadata<any, 'all', null>>
 ]);
 
 @Injectable()
-export class ItemGroupsDataSource<T> {
+export class DataSource<T> {
   /** Provider for the items to be filtered, grouped, and sorted. */
   provider = new Provider<T>(new Map(), of([]));
 
-  // TODO: Implement a reasonable default filterer, at least with basic search
   /** The filterer takes filter and search query information to filter items. */
   filterer: Filterer<T> = new Filterer(new Map(), of((_item: T) => null));
 
@@ -42,7 +36,7 @@ export class ItemGroupsDataSource<T> {
   viewer: Viewer<T, any, any> = new Viewer<T, null, any>(new Map(), of(() => null));
 
   /** Stream emitting the grouped data. */
-  private readonly groupedResults = new ReplaySubject<GroupedResults<T>>(1);
+  private readonly results = new ReplaySubject<Group<T>[]>(1);
 
   /**
    * Subscription to the changes that should trigger an update to the table's rendered rows, such
@@ -56,26 +50,20 @@ export class ItemGroupsDataSource<T> {
     }
   }
 
-  connect(): Observable<GroupedResults<T>> {
+  connect(): Observable<Group<T>[]> {
     if (!this.subscription) {
       this.initialize();
     }
 
-    return this.groupedResults;
+    return this.results;
   }
 
   private initialize() {
-    let filteredDataCount: number;
     this.subscription = this.provider.getData()
                             .pipe(
                                 mergeMap(data => this.filterer.filter(data)),
-                                tap(data => filteredDataCount = data.length),
                                 mergeMap(data => this.grouper.group(data)),
                                 mergeMap(data => this.sorter.sort(data)))
-                            .subscribe(sortedItems => {
-                              const count = filteredDataCount;
-                              const groups = sortedItems;
-                              this.groupedResults.next({groups, count});
-                            });
+                            .subscribe(data => this.results.next(data));
   }
 }

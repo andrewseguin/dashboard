@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input} fr
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Item} from 'app/github/app-types/item';
-import {GithubItemGroupsDataSource} from 'app/github/data-source/github-item-groups-data-source';
+import {GithubItemDataSource} from 'app/github/data-source/github-item-groups-data-source';
 import {Filterer} from 'app/package/data-source/filterer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {DATA_SOURCES} from 'app/repository/repository';
@@ -64,7 +64,7 @@ export class EditableRecommendation {
                                   return assigneesList.sort().map(a => ({id: a, label: a}));
                                 }));
 
-  dataSource: GithubItemGroupsDataSource;
+  dataSource: GithubItemDataSource;
 
   private _destroyed = new Subject();
 

@@ -39,6 +39,6 @@ export class List<S, V> {
     dataSource.sorter.setState(this.options.sorterState);
     dataSource.viewer.setState(this.options.viewerState);
     dataSource.filterer.setState(this.options.filtererState);
-    this.items = dataSource.connect().pipe(map(result => result.groups[0].items));
+    this.items = dataSource.connect().pipe(map(result => result[0].items));
   }
 }

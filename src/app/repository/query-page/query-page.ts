@@ -1,21 +1,27 @@
-import { CdkPortal } from '@angular/cdk/portal';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Item } from 'app/github/app-types/item';
-import { Widget } from 'app/package/component/widget/widget';
-import { ItemGroupsDataSource } from 'app/package/data-source/data-source';
-import { DataSourceProvider } from 'app/package/utility/data-source-provider';
-import { isMobile } from 'app/utility/media-matcher';
-import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
-import { map, take, takeUntil } from 'rxjs/operators';
-import { DATA_SOURCES } from '../repository';
-import { ActiveStore } from '../services/active-store';
-import { ConfigStore } from '../services/dao/config/config-dao';
-import { Query } from '../services/dao/config/query';
-import { Header } from '../services/header';
-import { ItemDetailDialog } from '../shared/dialog/item-detail-dialog/item-detail-dialog';
-import { QueryDialog } from '../shared/dialog/query/query-dialog';
+import {CdkPortal} from '@angular/cdk/portal';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  ViewChild
+} from '@angular/core';
+import {MatDialog} from '@angular/material';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Item} from 'app/github/app-types/item';
+import {Widget} from 'app/package/component/widget/widget';
+import {DataSource} from 'app/package/data-source/data-source';
+import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {isMobile} from 'app/utility/media-matcher';
+import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
+import {map, take, takeUntil} from 'rxjs/operators';
+import {DATA_SOURCES} from '../repository';
+import {ActiveStore} from '../services/active-store';
+import {ConfigStore} from '../services/dao/config/config-dao';
+import {Query} from '../services/dao/config/query';
+import {Header} from '../services/header';
+import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
+import {QueryDialog} from '../shared/dialog/query/query-dialog';
 
 @Component({
   styleUrls: ['query-page.scss'],
@@ -30,25 +36,23 @@ export class QueryPage {
     this._query = query;
 
     const type = this._query.dataSourceType!;
-    this.itemGroupsDataSource = this.dataSources.get(type)!.factory();
+    this.dataSource = this.dataSources.get(type)!.factory();
 
     // TODO: Needs to be unsubscribed when query switches
-    this.canSave =
-        combineLatest(
-            this.itemGroupsDataSource.filterer.state, this.itemGroupsDataSource.grouper.state,
-            this.itemGroupsDataSource.sorter.state, this.itemGroupsDataSource.viewer.state)
-            .pipe(map(() => !this.areStatesEquivalent()));
-    this.activeItem =
-        combineLatest(this.itemGroupsDataSource.connect(), this.itemId).pipe(map(results => {
-          for (let group of results[0].groups) {
-            for (let item of group.items) {
-              if (item.id === results[1]) {
-                return item;
-              }
-            }
+    this.canSave = combineLatest(
+                       this.dataSource.filterer.state, this.dataSource.grouper.state,
+                       this.dataSource.sorter.state, this.dataSource.viewer.state)
+                       .pipe(map(() => !this.areStatesEquivalent()));
+    this.activeItem = combineLatest(this.dataSource.connect(), this.itemId).pipe(map(results => {
+      for (let group of results[0]) {
+        for (let item of group.items) {
+          if (item.id === results[1]) {
+            return item;
           }
-          return null;
-        }));
+        }
+      }
+      return null;
+    }));
 
     this.updateQueryStates();
 
@@ -66,7 +70,7 @@ export class QueryPage {
   private destroyed = new Subject();
   private getSubscription: Subscription;
 
-  public itemGroupsDataSource: ItemGroupsDataSource<Item>;
+  public dataSource: DataSource<Item>;
 
   public canSave: Observable<boolean>;
 
@@ -97,7 +101,7 @@ export class QueryPage {
           const widget: Widget = JSON.parse(widgetJson);
           this.query = createNewQuery(widget.title || 'Widget', widget.dataSourceType || 'issue');
           if (widget.filtererState) {
-            this.itemGroupsDataSource.filterer.setState(widget.filtererState);
+            this.dataSource.filterer.setState(widget.filtererState);
           }
         } else {
           const type = queryParamMap.get('type') || '';
@@ -140,10 +144,10 @@ export class QueryPage {
 
   saveState() {
     const queryState = {
-      filtererState: this.itemGroupsDataSource.filterer.getState(),
-      grouperState: this.itemGroupsDataSource.grouper.getState(),
-      sorterState: this.itemGroupsDataSource.sorter.getState(),
-      viewerState: this.itemGroupsDataSource.viewer.getState(),
+      filtererState: this.dataSource.filterer.getState(),
+      grouperState: this.dataSource.grouper.getState(),
+      sorterState: this.dataSource.sorter.getState(),
+      viewerState: this.dataSource.viewer.getState(),
     };
 
     this.activeRepo.activeConfig.queries.update({...this.query, ...queryState});
@@ -180,7 +184,7 @@ export class QueryPage {
         if (r.id === id) {
           this.query = createNewQuery('New Query', 'issue');
           if (r.filtererState) {
-            this.itemGroupsDataSource.filterer.setState(r.filtererState);
+            this.dataSource.filterer.setState(r.filtererState);
           }
           this.cd.markForCheck();
         }
@@ -191,34 +195,34 @@ export class QueryPage {
   private updateQueryStates() {
     const grouperState = this.query.grouperState;
     if (grouperState) {
-      this.itemGroupsDataSource.grouper.setState(grouperState);
+      this.dataSource.grouper.setState(grouperState);
     }
 
     const sorterState = this.query.sorterState;
     if (sorterState) {
-      this.itemGroupsDataSource.sorter.setState(sorterState);
+      this.dataSource.sorter.setState(sorterState);
     }
 
     const filtererState = this.query.filtererState;
     if (filtererState) {
-      this.itemGroupsDataSource.filterer.setState(filtererState);
+      this.dataSource.filterer.setState(filtererState);
     }
 
     const viewerState = this.query.viewerState;
     if (viewerState) {
-      this.itemGroupsDataSource.viewer.setState(viewerState);
+      this.dataSource.viewer.setState(viewerState);
     }
   }
 
   private areStatesEquivalent() {
-    const filtererStatesEquivalent = this.query.filtererState &&
-        this.itemGroupsDataSource.filterer.isEquivalent(this.query.filtererState);
-    const grouperStatesEquivalent = this.query.grouperState &&
-        this.itemGroupsDataSource.grouper.isEquivalent(this.query.grouperState);
-    const sorterStatesEquivalent = this.query.sorterState &&
-        this.itemGroupsDataSource.sorter.isEquivalent(this.query.sorterState);
-    const viewerStatesEquivalent = this.query.viewerState &&
-        this.itemGroupsDataSource.viewer.isEquivalent(this.query.viewerState);
+    const filtererStatesEquivalent =
+        this.query.filtererState && this.dataSource.filterer.isEquivalent(this.query.filtererState);
+    const grouperStatesEquivalent =
+        this.query.grouperState && this.dataSource.grouper.isEquivalent(this.query.grouperState);
+    const sorterStatesEquivalent =
+        this.query.sorterState && this.dataSource.sorter.isEquivalent(this.query.sorterState);
+    const viewerStatesEquivalent =
+        this.query.viewerState && this.dataSource.viewer.isEquivalent(this.query.viewerState);
 
     return filtererStatesEquivalent && grouperStatesEquivalent && sorterStatesEquivalent &&
         viewerStatesEquivalent;

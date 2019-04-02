@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { ItemGroupsDataSource } from 'app/package/data-source/data-source';
-import { FiltererState } from 'app/package/data-source/filterer';
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
+import {DataSource} from 'app/package/data-source/data-source';
+import {FiltererState} from 'app/package/data-source/filterer';
 import * as Chart from 'chart.js';
-import { combineLatest, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { WidgetData, WIDGET_DATA } from '../../widget';
-import { MaterialColors } from '../widget-view';
+import {combineLatest, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
+import {WIDGET_DATA, WidgetData} from '../../widget';
+import {MaterialColors} from '../widget-view';
 
 
 interface DateCount {
@@ -59,7 +59,7 @@ export class TimeSeries<T> {
 
   @ViewChild('canvas') canvas: ElementRef;
 
-  dataSources = new Map<DatasetConfig, ItemGroupsDataSource<any>>();
+  dataSources = new Map<DatasetConfig, DataSource<any>>();
 
   private destroyed = new Subject();
 
@@ -76,7 +76,7 @@ export class TimeSeries<T> {
     combineLatest(dataSourceConnects).pipe(takeUntil(this.destroyed)).subscribe(results => {
       const itemsResults = results.map(result => {
         const items: T[] = [];
-        result.groups.forEach(g => items.push(...g.items));
+        result.forEach(g => items.push(...g.items));
         return items;
       });
       return this.render(itemsResults);

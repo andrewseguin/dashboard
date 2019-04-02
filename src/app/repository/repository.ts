@@ -5,7 +5,7 @@ import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval, Subject} from 'rxjs';
 import {filter, map, mergeMap, take} from 'rxjs/operators';
-import {GithubItemGroupsDataSource} from '../github/data-source/github-item-groups-data-source';
+import {GithubItemDataSource} from '../github/data-source/github-item-groups-data-source';
 import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data-dao';
 import {Remover} from './services/remover';
@@ -26,7 +26,7 @@ export const provideDataSources = (activeStore: ActiveStore) => {
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
-          return new GithubItemGroupsDataSource(data, recommendations, labels);
+          return new GithubItemDataSource(data, recommendations, labels);
         }
       }
     ],
@@ -37,7 +37,7 @@ export const provideDataSources = (activeStore: ActiveStore) => {
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
-          return new GithubItemGroupsDataSource(data, recommendations, labels);
+          return new GithubItemDataSource(data, recommendations, labels);
         }
       }
     ],

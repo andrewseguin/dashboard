@@ -7,7 +7,7 @@ import {
   NgZone,
   Output
 } from '@angular/core';
-import {ItemGroupsDataSource} from 'app/package/data-source/data-source';
+import {DataSource} from 'app/package/data-source/data-source';
 import {Group} from 'app/package/data-source/grouper';
 import {ItemGroupsRenderer, RendererState} from 'app/package/utility/renderer';
 import {fromEvent, Observable, Subject} from 'rxjs';
@@ -32,7 +32,7 @@ export class ItemsList<T> {
 
   @Input() activeItem: T;
 
-  @Input() itemGroupsDataSource: ItemGroupsDataSource<T>;
+  @Input() dataSource: DataSource<T>;
 
   @Output() itemSelected = new EventEmitter<T>();
 
@@ -45,12 +45,14 @@ export class ItemsList<T> {
   constructor(public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    const renderer = new ItemGroupsRenderer(this.itemGroupsDataSource, this.elementScrolled);
+    const renderer = new ItemGroupsRenderer(this.dataSource, this.elementScrolled);
     renderer.renderedItemGroups.pipe(takeUntil(this.destroyed)).subscribe(result => {
       this.ngZone.run(() => this.renderState.next(result));
     });
 
-    this.itemCount = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
+    this.itemCount = this.dataSource.connect().pipe(map(result => {
+      return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
+    }));
   }
 
   ngOnDestroy() {

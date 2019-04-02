@@ -1,5 +1,5 @@
 import {Item} from 'app/github/app-types/item';
-import {ItemGroupsDataSource} from 'app/package/data-source/data-source';
+import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer, FiltererContextProvider} from 'app/package/data-source/filterer';
 import {Grouper, GrouperContextProvider} from 'app/package/data-source/grouper';
 import {Provider} from 'app/package/data-source/provider';
@@ -11,7 +11,7 @@ import {combineLatest, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Label} from '../app-types/label';
 import {tokenizeItem} from '../utility/tokenize-item';
-import {ItemsFilterMetadata, MatcherContext} from './item-filter-metadata';
+import {AutocompleteContext, ItemsFilterMetadata, MatcherContext} from './item-filter-metadata';
 import {
   GithubItemGroupingContextProvider as GithubItemGroupingContext,
   GithubItemGroupingMetadata
@@ -20,7 +20,7 @@ import {GithubItemDataMetadata} from './item-provider-metadata';
 import {GithubItemSortingMetadata} from './item-sorter-metadata';
 import {GithubItemViewerMetadata, ViewContext} from './item-viewer-metadata';
 
-export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
+export class GithubItemDataSource extends DataSource<Item> {
   constructor(
       items: Observable<Item[]>, private recommendations: Observable<Recommendation[]>,
       private labels: Observable<Label[]>) {
@@ -40,7 +40,7 @@ export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
 
     // Customize filterer properties
     this.filterer.tokenizeItem = tokenizeItem;
-    this.filterer.autocompleteContext = ({items, labels});
+    this.filterer.autocompleteContext = ({items, labels} as AutocompleteContext);
   }
 
   private createGrouperContextProvider(): GrouperContextProvider<GithubItemGroupingContext> {
@@ -49,8 +49,8 @@ export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
 
   private createViewerContextProvider(): ViewerContextProvider<Item, ViewContext> {
     return combineLatest(this.recommendations, this.labels).pipe(map(results => {
+      const labelsMap = createLabelsMap(results[1]);
       return (item: Item) => {
-        const labelsMap = createLabelsMap(results[1]);
         const recommendations = getRecommendations(item, results[0], labelsMap);
         return {item, labelsMap, recommendations};
       };
@@ -59,8 +59,8 @@ export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
 
   private createFiltererContextProvider(): FiltererContextProvider<Item, MatcherContext> {
     return combineLatest(this.recommendations, this.labels).pipe(map(results => {
+      const labelsMap = createLabelsMap(results[1]);
       return (item: Item) => {
-        const labelsMap = createLabelsMap(results[1]);
         const recommendations = getRecommendations(item, results[0], labelsMap);
         return {item, labelsMap, recommendations};
       };

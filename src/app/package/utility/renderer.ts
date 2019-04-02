@@ -1,6 +1,6 @@
 import {combineLatest, Observable} from 'rxjs';
 import {auditTime, debounceTime, map, startWith} from 'rxjs/operators';
-import {ItemGroupsDataSource} from '../data-source/data-source';
+import {DataSource} from '../data-source/data-source';
 import {Group} from '../data-source/grouper';
 
 export interface RendererState<T> {
@@ -17,13 +17,12 @@ export class ItemGroupsRenderer<T> {
   renderedItemGroups: Observable<RendererState<T>>;
 
   constructor(
-      itemGroupsDataSource: ItemGroupsDataSource<T>, scroll: Observable<Event>, resetCount = 20,
-      incrementCount = 20) {
+      dataSource: DataSource<T>, scroll: Observable<Event>, resetCount = 20, incrementCount = 20) {
     this.renderedItemGroups = combineLatest(
-                                  itemGroupsDataSource.connect().pipe(debounceTime(50)),
+                                  dataSource.connect().pipe(debounceTime(50)),
                                   scroll.pipe(auditTime(200), startWith(null)))
                                   .pipe(map(result => {
-                                    this.itemGroups = result[0].groups;
+                                    this.itemGroups = result[0];
 
                                     const scrollEvent = result[1];
                                     if (!scrollEvent) {

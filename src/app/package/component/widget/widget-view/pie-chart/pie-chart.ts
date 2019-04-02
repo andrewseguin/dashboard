@@ -37,7 +37,7 @@ export class PieChart<T, G> {
     dataSource.filterer.setState(this.data.options.filtererState);
     dataSource.connect()
         .pipe(takeUntil(this.destroyed))
-        .subscribe(result => this.render(result.groups));
+        .subscribe(result => this.render(result));
   }
 
   ngOnDestroy() {

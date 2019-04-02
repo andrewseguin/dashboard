@@ -8,7 +8,7 @@ import {
   stringContainsQuery
 } from 'app/package/utility/query-matcher';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
-import {ListDao} from 'app/repository/services/dao/list-dao';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
@@ -20,8 +20,8 @@ export interface MatcherContext {
 }
 
 export interface AutocompleteContext {
-  items: ListDao<Item>;
-  labels: ListDao<Label>;
+  items: Observable<Item[]>;
+  labels: Observable<Label[]>;
 }
 
 export const ItemsFilterMetadata =
@@ -37,7 +37,7 @@ export const ItemsFilterMetadata =
             return stringContainsQuery(c.item.title, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.items.list.pipe(map(items => items.map(issue => issue.title)));
+            return c.items.pipe(map(items => items.map(issue => issue.title)));
           }
         }
       ],
@@ -50,7 +50,7 @@ export const ItemsFilterMetadata =
             return arrayContainsQuery(c.item.assignees, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.items.list.pipe(map(items => {
+            return c.items.pipe(map(items => {
               const assigneesSet = new Set<string>();
               items.forEach(item => item.assignees.forEach(a => assigneesSet.add(a)));
 
@@ -92,7 +92,7 @@ export const ItemsFilterMetadata =
                 q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.labels.list.pipe(map(labels => labels.map(issue => issue.name).sort()));
+            return c.labels.pipe(map(labels => labels.map(issue => issue.name).sort()));
           }
         }
       ],

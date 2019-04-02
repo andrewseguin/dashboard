@@ -1,7 +1,7 @@
-<advanced-search [filterer]="itemGroupsDataSource.filterer"></advanced-search>
-<display-options-header [grouper]="itemGroupsDataSource.grouper"
-                        [sorter]="itemGroupsDataSource.sorter"
-                        [viewer]="itemGroupsDataSource.viewer"
+<advanced-search [filterer]="dataSource.filterer"></advanced-search>
+<display-options-header [grouper]="dataSource.grouper"
+                        [sorter]="dataSource.sorter"
+                        [viewer]="dataSource.viewer"
                         [itemCount]="itemCount | async">
 </display-options-header>
 
@@ -16,7 +16,7 @@
       <mat-divider></mat-divider>
       <item-summary [item]="item"
                     [active]="activeItem === item"
-                    [viewer]="itemGroupsDataSource.viewer"
+                    [viewer]="dataSource.viewer"
                     (select)="itemSelected.emit($event)">
       </item-summary>
     </ng-container>

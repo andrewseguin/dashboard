@@ -7,6 +7,7 @@ import {WIDGET_DATA, WidgetData} from '../../widget';
 import {EditCount} from './count-edit';
 import {CountDisplayTypeOptions} from './count.module';
 
+
 @Component({
   selector: 'count',
   template: `{{count | async}}`,
@@ -31,6 +32,8 @@ export class Count {
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions, null>) {
     const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
     dataSource.filterer.setState(this.data.options.filtererState);
-    this.count = dataSource.connect().pipe(map(result => result.count));
+    this.count = dataSource.connect().pipe(map(result => {
+      return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
+    }));
   }
 }
