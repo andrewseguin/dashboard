@@ -1,18 +1,11 @@
-import {FiltererMetadata} from 'app/package/data-source/filterer';
-import {DateQuery, InputQuery, NumberQuery, Query, StateQuery} from 'app/package/data-source/query';
-import {
-  arrayContainsQuery,
-  dateMatchesEquality,
-  numberMatchesEquality,
-  stateMatchesEquality,
-  stringContainsQuery
-} from 'app/package/utility/query-matcher';
-import {Recommendation} from 'app/repository/services/dao/config/recommendation';
-import {ListDao} from 'app/repository/services/dao/list-dao';
-import {getAssignees} from 'app/utility/assignees-autocomplete';
-import {map} from 'rxjs/operators';
-import {Item} from '../app-types/item';
-import {Label} from '../app-types/label';
+import { FiltererMetadata } from 'app/package/data-source/filterer';
+import { DateQuery, InputQuery, NumberQuery, Query, StateQuery } from 'app/package/data-source/query';
+import { arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery } from 'app/package/utility/query-matcher';
+import { Recommendation } from 'app/repository/services/dao/config/recommendation';
+import { ListDao } from 'app/repository/services/dao/list-dao';
+import { map } from 'rxjs/operators';
+import { Item } from '../app-types/item';
+import { Label } from '../app-types/label';
 
 export interface MatcherContext {
   item: Item;
@@ -51,7 +44,15 @@ export const ItemsFilterMetadata =
             return arrayContainsQuery(c.item.assignees, q as InputQuery);
           },
           autocomplete: (c: AutocompleteContext) => {
-            return c.items.list.pipe(map(items => getAssignees(items!)));
+            return c.items.list.pipe(map(items => {
+              const assigneesSet = new Set<string>();
+              items.forEach(item => item.assignees.forEach(a => assigneesSet.add(a)));
+
+              const assignees: string[] = [];
+              assigneesSet.forEach(a => assignees.push(a));
+              assignees.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
+              return assignees;
+            }));
           }
         }
       ],
