@@ -8,12 +8,12 @@ import {Label} from '../app-types/label';
 
 export type Group = 'all'|'reporter'|'label'|'assignee';
 
-export interface TitleTransformContext {
+export interface GithubItemGroupingContextProvider {
   labelsMap: Map<string, Label>;
 }
 
 export const GithubItemGroupingMetadata =
-    new Map<Group, GrouperMetadata<Item, Group, TitleTransformContext>>([
+    new Map<Group, GrouperMetadata<Item, Group, GithubItemGroupingContextProvider>>([
       [
         'all', {
           id: 'all',
@@ -34,7 +34,7 @@ export const GithubItemGroupingMetadata =
           id: 'label',
           label: 'Label',
           groupingFunction: (items: Item[]) => getGroupByListValues(items, 'labels'),
-          titleTransform: (title: string, c: TitleTransformContext) => {
+          titleTransform: (title: string, c: GithubItemGroupingContextProvider) => {
             if (!title) {
               return 'No labels';
             }

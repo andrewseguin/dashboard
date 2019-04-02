@@ -1,11 +1,17 @@
-import { FiltererMetadata } from 'app/package/data-source/filterer';
-import { DateQuery, InputQuery, NumberQuery, Query, StateQuery } from 'app/package/data-source/query';
-import { arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery } from 'app/package/utility/query-matcher';
-import { Recommendation } from 'app/repository/services/dao/config/recommendation';
-import { ListDao } from 'app/repository/services/dao/list-dao';
-import { map } from 'rxjs/operators';
-import { Item } from '../app-types/item';
-import { Label } from '../app-types/label';
+import {FiltererMetadata} from 'app/package/data-source/filterer';
+import {DateQuery, InputQuery, NumberQuery, Query, StateQuery} from 'app/package/data-source/query';
+import {
+  arrayContainsQuery,
+  dateMatchesEquality,
+  numberMatchesEquality,
+  stateMatchesEquality,
+  stringContainsQuery
+} from 'app/package/utility/query-matcher';
+import {Recommendation} from 'app/repository/services/dao/config/recommendation';
+import {ListDao} from 'app/repository/services/dao/list-dao';
+import {map} from 'rxjs/operators';
+import {Item} from '../app-types/item';
+import {Label} from '../app-types/label';
 
 export interface MatcherContext {
   item: Item;

@@ -1,7 +1,11 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
-import {createItemsFilterer} from 'app/github/data-source/github-item-groups-data-source';
+import {Item} from 'app/github/app-types/item';
+import {GithubItemGroupsDataSource} from 'app/github/data-source/github-item-groups-data-source';
+import {Filterer} from 'app/package/data-source/filterer';
+import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {DATA_SOURCES} from 'app/repository/repository';
 import {ActiveStore} from 'app/repository/services/active-store';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {
@@ -28,9 +32,9 @@ import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 export class EditableRecommendation {
   expanded = true;
 
-  itemsFilterer = createItemsFilterer(this.activeRepo.activeConfig, this.activeRepo.activeData);
-
   queryChanged = new Subject<void>();
+
+  itemsFilterer: Filterer<Item>;
 
   @Input() recommendation: Recommendation;
 
@@ -60,9 +64,12 @@ export class EditableRecommendation {
                                   return assigneesList.sort().map(a => ({id: a, label: a}));
                                 }));
 
+  dataSource: GithubItemGroupsDataSource;
+
   private _destroyed = new Subject();
 
   constructor(
+      @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
       private cd: ChangeDetectorRef, private activeRepo: ActiveStore, private snackbar: MatSnackBar,
       private dialog: MatDialog) {}
 
@@ -73,6 +80,9 @@ export class EditableRecommendation {
       actionType: new FormControl(this.recommendation.actionType || 'add-label'),
       action: new FormControl(this.recommendation.action),
     });
+
+    // TODO: This should be set by the recommendation
+    this.itemsFilterer = this.dataSources.get('issue')!.factory().filterer;
 
     const filtererState = this.recommendation.filtererState ||
         {filters: [{query: {equality: 'is', state: 'open'}, type: 'state'}], search: ''};

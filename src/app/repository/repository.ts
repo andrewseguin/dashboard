@@ -1,33 +1,44 @@
-import { ChangeDetectionStrategy, Component, InjectionToken } from '@angular/core';
-import { Router } from '@angular/router';
-import { DataSourceProvider } from 'app/package/utility/data-source-provider';
-import { Auth } from 'app/service/auth';
-import { LoadedRepos } from 'app/service/loaded-repos';
-import { interval, Subject } from 'rxjs';
-import { filter, mergeMap, take } from 'rxjs/operators';
-import { GithubItemGroupsDataSource } from '../github/data-source/github-item-groups-data-source';
-import { ActiveStore } from './services/active-store';
-import { DataStore } from './services/dao/data-dao';
-import { Remover } from './services/remover';
-import { Updater } from './services/updater';
-import { isRepoStoreEmpty } from './utility/is-repo-store-empty';
+import {ChangeDetectionStrategy, Component, InjectionToken} from '@angular/core';
+import {Router} from '@angular/router';
+import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {Auth} from 'app/service/auth';
+import {LoadedRepos} from 'app/service/loaded-repos';
+import {interval, Subject} from 'rxjs';
+import {filter, map, mergeMap, take} from 'rxjs/operators';
+import {GithubItemGroupsDataSource} from '../github/data-source/github-item-groups-data-source';
+import {ActiveStore} from './services/active-store';
+import {DataStore} from './services/dao/data-dao';
+import {Remover} from './services/remover';
+import {Updater} from './services/updater';
+import {isRepoStoreEmpty} from './utility/is-repo-store-empty';
 
 export const DATA_SOURCES = new InjectionToken<Map<string, DataSourceProvider>>('data-sources');
 
 export const provideDataSources = (activeStore: ActiveStore) => {
+  const recommendations = activeStore.activeConfig.recommendations.list;
+  const labels = activeStore.activeData.labels.list;
+
   return new Map<string, DataSourceProvider>([
     [
       'issue', {
         id: 'issue',
         label: 'Issues',
-        factory: () => new GithubItemGroupsDataSource(activeStore, 'issue')
+        factory: () => {
+          const data =
+              activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
+          return new GithubItemGroupsDataSource(data, recommendations, labels);
+        }
       }
     ],
     [
       'pr', {
         id: 'pr',
         label: 'Pull Requests',
-        factory: () => new GithubItemGroupsDataSource(activeStore, 'pr')
+        factory: () => {
+          const data =
+              activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
+          return new GithubItemGroupsDataSource(data, recommendations, labels);
+        }
       }
     ],
   ]);
