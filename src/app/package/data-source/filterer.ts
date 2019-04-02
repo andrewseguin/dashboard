@@ -21,6 +21,8 @@ export interface FiltererState {
   search: string;
 }
 
+export type MatcherContextProvider<T, M> = Observable<(item: T) => M>;
+
 export class Filterer<T, M, A> {
   state = new BehaviorSubject<FiltererState>({filters: [], search: ''});
 
@@ -34,12 +36,12 @@ export class Filterer<T, M, A> {
   // data provider and way too many events will emit
   constructor(
       public metadata: Map<string, FiltererMetadata<M, any>>,
-      private contextProvider: Observable<(item: T) => M>,
-      public tokenizeItem: (item: T) => string) {}
+      public tokenizeItem: (item: T) => string,
+      private matcherContextProvider: MatcherContextProvider<T, M>) {}
 
   /** Gets a stream that returns the items and updates whenever the filters or search changes. */
   filter(items: T[]): Observable<T[]> {
-    return combineLatest(this.state, this.contextProvider).pipe(map(results => {
+    return combineLatest(this.state, this.matcherContextProvider).pipe(map(results => {
       const filters = results[0].filters;
       const search = results[0].search;
       const contextProvider = results[1];

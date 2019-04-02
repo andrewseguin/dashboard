@@ -18,12 +18,14 @@ export interface GrouperMetadata<T, G, C> {
   titleTransform?: (title: string, c: C) => string;
 }
 
+export type TitleTransformContextProvider<C> = Observable<C>;
+
 export class Grouper<T, G, C> {
   state = new BehaviorSubject<GrouperState<G>>({group: null});
 
   constructor(
       public metadata: Map<G, GrouperMetadata<T, G, C>>,
-      private titleTransformContextProvider: Observable<C>) {}
+      private titleTransformContextProvider: TitleTransformContextProvider<C>) {}
 
   group(items: T[]): Observable<Group<T>[]> {
     let config: GrouperMetadata<T, G, C>|null;

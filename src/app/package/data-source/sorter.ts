@@ -13,13 +13,17 @@ export interface SortingMetadata<T, S, C> {
   comparator: (context: C) => ((a: T, b: T) => number);
 }
 
+export type ComparatorContextProvider<C> = Observable<C>;
+
 export class Sorter<T, S, C> {
   state = new BehaviorSubject<SorterState<S>>({sort: null, reverse: false});
 
-  constructor(public metadata: Map<S, SortingMetadata<T, S, C>>, private context: Observable<C>) {}
+  constructor(
+      public metadata: Map<S, SortingMetadata<T, S, C>>,
+      private comparatorContextProvider: ComparatorContextProvider<C>) {}
 
   sort(itemGroups: Group<T>[]): Observable<Group<T>[]> {
-    return combineLatest(this.state, this.context).pipe(map(results => {
+    return combineLatest(this.state, this.comparatorContextProvider).pipe(map(results => {
       const sort = results[0].sort;
       const reverse = results[0].reverse;
       const context = results[1];

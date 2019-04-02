@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
-import {Filterer, FiltererMetadata} from './filterer';
+import {Filterer} from './filterer';
 import {Group, Grouper, GrouperMetadata} from './grouper';
 import {Provider} from './provider';
 import {Sorter} from './sorter';
@@ -11,8 +11,6 @@ export interface GroupedResults<T> {
   groups: Group<T>[];
   count: number;
 }
-
-const DefaultFiltererMetadata = new Map<string, FiltererMetadata<null, null>>([]);
 
 const DefaultGrouperMetadata = new Map<'all', GrouperMetadata<any, 'all', null>>([
   [
@@ -33,7 +31,7 @@ export class ItemGroupsDataSource<T> {
   // TODO: Implement a reasonable default filterer, at least with basic search
   /** Provider for the grouper which will group items together. */
   filterer: Filterer<T, any, any> =
-      new Filterer(DefaultFiltererMetadata, of((_item: T) => null), (_item: T) => '');
+      new Filterer(new Map(), (_item: T) => '', of((_item: T) => null));
 
   /** The grouper is responsible for grouping the filtered data into ItemGroups */
   grouper: Grouper<T, any, any> = new Grouper(DefaultGrouperMetadata, of(null));
