@@ -22,8 +22,8 @@ export class Grouper<T, G, C> {
   state = new BehaviorSubject<GrouperState<G>>({group: null});
 
   constructor(
-      private titleTransformContextProvider: Observable<C>,
-      public metadata: Map<G, GrouperMetadata<T, G, C>>) {}
+      public metadata: Map<G, GrouperMetadata<T, G, C>>,
+      private titleTransformContextProvider: Observable<C>) {}
 
   group(items: T[]): Observable<Group<T>[]> {
     let config: GrouperMetadata<T, G, C>|null;

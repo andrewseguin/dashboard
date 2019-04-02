@@ -16,7 +16,7 @@ export interface SortingMetadata<T, S, C> {
 export class Sorter<T, S, C> {
   state = new BehaviorSubject<SorterState<S>>({sort: null, reverse: false});
 
-  constructor(private context: Observable<C>, public metadata: Map<S, SortingMetadata<T, S, C>>) {}
+  constructor(public metadata: Map<S, SortingMetadata<T, S, C>>, private context: Observable<C>) {}
 
   sort(itemGroups: Group<T>[]): Observable<Group<T>[]> {
     return combineLatest(this.state, this.context).pipe(map(results => {

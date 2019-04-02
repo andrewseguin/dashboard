@@ -2,10 +2,10 @@ import {Injectable} from '@angular/core';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
 import {Filterer, FiltererMetadata} from './filterer';
-import {GrouperMetadata, Group, Grouper} from './grouper';
+import {Group, Grouper, GrouperMetadata} from './grouper';
+import {Provider} from './provider';
 import {Sorter} from './sorter';
 import {Viewer} from './viewer';
-import { Provider } from './provider';
 
 export interface GroupedResults<T> {
   groups: Group<T>[];
@@ -33,13 +33,13 @@ export class ItemGroupsDataSource<T> {
   // TODO: Implement a reasonable default filterer, at least with basic search
   /** Provider for the grouper which will group items together. */
   filterer: Filterer<T, any, any> =
-      new Filterer(of((_item: T) => null), (_item: T) => '', DefaultFiltererMetadata);
+      new Filterer(DefaultFiltererMetadata, of((_item: T) => null), (_item: T) => '');
 
   /** The grouper is responsible for grouping the filtered data into ItemGroups */
-  grouper: Grouper<T, any, any> = new Grouper(of(null), DefaultGrouperMetadata);
+  grouper: Grouper<T, any, any> = new Grouper(DefaultGrouperMetadata, of(null));
 
   /** The sorter handles the sorting of items within each group. */
-  sorter: Sorter<T, any, any> = new Sorter<T, '', null>(of(null), new Map());
+  sorter: Sorter<T, any, any> = new Sorter<T, '', null>(new Map(), of(null));
 
   /** The viewer carries information to render the items to the view. */
   viewer: Viewer<T, any, any> = new Viewer<T, null, any>(new Map(), of(() => null));
