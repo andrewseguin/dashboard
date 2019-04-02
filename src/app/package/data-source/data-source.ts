@@ -12,9 +12,9 @@ export interface GroupedResults<T> {
   count: number;
 }
 
-const DefaultFilterMetadata = new Map<string, FiltererMetadata<null, null>>([]);
+const DefaultFiltererMetadata = new Map<string, FiltererMetadata<null, null>>([]);
 
-const DefaultGroupMetadata = new Map<'all', GrouperMetadata<any, 'all', null>>([
+const DefaultGrouperMetadata = new Map<'all', GrouperMetadata<any, 'all', null>>([
   [
     'all', {
       id: 'all',
@@ -33,10 +33,10 @@ export class ItemGroupsDataSource<T> {
   // TODO: Implement a reasonable default filterer, at least with basic search
   /** Provider for the grouper which will group items together. */
   filterer: Filterer<T, any, any> =
-      new Filterer(of((_item: T) => null), (_item: T) => '', DefaultFilterMetadata);
+      new Filterer(of((_item: T) => null), (_item: T) => '', DefaultFiltererMetadata);
 
   /** The grouper is responsible for grouping the filtered data into ItemGroups */
-  grouper: Grouper<T, any, any> = new Grouper(of(null), DefaultGroupMetadata);
+  grouper: Grouper<T, any, any> = new Grouper(of(null), DefaultGrouperMetadata);
 
   /** The sorter handles the sorting of items within each group. */
   sorter: Sorter<T, any, any> = new Sorter<T, '', null>(of(null), new Map());

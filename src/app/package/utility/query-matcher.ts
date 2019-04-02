@@ -1,4 +1,4 @@
-import {DateQuery, InputQuery, NumberQuery, StateQuery} from './query';
+import {DateQuery, InputQuery, NumberQuery, StateQuery} from '../data-source/query';
 
 const OR = ' OR ';
 const AND = ' AND ';

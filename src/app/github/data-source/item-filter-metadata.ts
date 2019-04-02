@@ -1,5 +1,5 @@
-import { DateQuery, InputQuery, NumberQuery, Query, StateQuery } from 'app/package/data-source/filter-utility/query';
-import { arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery } from 'app/package/data-source/filter-utility/query-matcher';
+import { DateQuery, InputQuery, NumberQuery, Query, StateQuery } from 'app/package/data-source/query';
+import { arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery } from 'app/package/utility/query-matcher';
 import { FiltererMetadata } from 'app/package/data-source/filterer';
 import { Recommendation } from 'app/repository/services/dao/config/recommendation';
 import { ListDao } from 'app/repository/services/dao/list-dao';

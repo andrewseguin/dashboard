@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { NumberEquality, NumberQuery } from 'app/package/data-source/filter-utility/query';
+import { NumberEquality, NumberQuery } from 'app/package/data-source/query';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

@@ -8,7 +8,7 @@ import {
   OnInit
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {Query} from 'app/package/data-source/filter-utility/query';
+import {Query} from 'app/package/data-source/query';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, takeUntil} from 'rxjs/operators';

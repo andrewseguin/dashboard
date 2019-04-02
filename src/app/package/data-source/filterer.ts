@@ -1,6 +1,6 @@
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Query} from './filter-utility/query';
+import {Query} from './query';
 
 export interface Filter {
   type: string;

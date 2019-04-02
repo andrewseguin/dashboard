@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ItemGroupsDataSource} from 'app/package/data-source/data-source';
 import {Group} from 'app/package/data-source/grouper';
-import {ItemGroupsRenderer, RendererState} from 'app/package/data-source/renderer';
+import {ItemGroupsRenderer, RendererState} from 'app/package/utility/renderer';
 import {fromEvent, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
