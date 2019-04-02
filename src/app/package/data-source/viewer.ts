@@ -1,8 +1,21 @@
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 export interface ViewerState<V> {
   views: V[];
+}
+
+export interface RenderedView {
+  label: string;
+  containerClassList?: string;
+  containerStyles?: {[key in string]: string};
+  renderedParts: RenderedPart[];
+}
+
+export interface RenderedPart {
+  text: string;
+  classList?: string;
+  styles?: {[key in string]: string};
 }
 
 export interface ViewerMetadata<V, C> {
@@ -10,11 +23,7 @@ export interface ViewerMetadata<V, C> {
   label: string;
   containerClassList?: string;
   containerStyles?: {[key in string]: string};
-  render: (context: C) => ({
-    text: string,
-    classList?: string,
-    styles?: {[key in string]: string},
-  }[]);
+  renderParts: (context: C) => RenderedPart[];
 }
 
 export type ViewerContextProvider<T, C> = Observable<(item: T) => C>;
@@ -61,7 +70,20 @@ export class Viewer<T, V, C> {
     return thisViews.length === otherViews.length && thisViews.every((v, i) => otherViews[i] === v);
   }
 
-  render(item: T, view: ViewerMetadata<V, C>) {
-    return this.contextProvider.pipe(map(c => view.render(c(item))));
+  getRenderedViews(item: T): Observable<RenderedView[]> {
+    return combineLatest(this.state, this.contextProvider).pipe(map(results => {
+      const views = results[0].views.map(v => this.metadata.get(v)!);
+      const context = results[1](item);
+
+      return views.map(view => {
+        const renderedView: RenderedView = {
+          label: view.label,
+          containerClassList: view.containerClassList,
+          containerStyles: view.containerStyles,
+          renderedParts: view.renderParts(context)
+        };
+        return renderedView;
+      });
+    }));
   }
 }

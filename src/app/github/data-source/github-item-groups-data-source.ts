@@ -49,11 +49,9 @@ export class GithubItemDataSource extends DataSource<Item> {
 
   private createViewerContextProvider(): ViewerContextProvider<Item, ViewContext> {
     return combineLatest(this.recommendations, this.labels).pipe(map(results => {
+      const recommendations = results[0];
       const labelsMap = createLabelsMap(results[1]);
-      return (item: Item) => {
-        const recommendations = getRecommendations(item, results[0], labelsMap);
-        return {item, labelsMap, recommendations};
-      };
+      return (item: Item) => ({item, labelsMap, recommendations});
     }));
   }
 

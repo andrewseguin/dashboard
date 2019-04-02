@@ -49,14 +49,12 @@ export class ItemDetail {
       this.bodyMarkdown = this.markdown.getItemBodyMarkdown(store, this.itemId);
 
       this.recommendations =
-          combineLatest(this.activeRepo.config, this.activeRepo.data)
-              .pipe(
-                  mergeMap(
-                      results => combineLatest(
-                          this.item, results[0].recommendations.list, results[1].labels.map)),
-                  map(results => results[0] ?
-                          getRecommendations(results[0], results[1], results[2]) :
-                          []));
+          combineLatest(
+              this.item, this.activeRepo.activeConfig.recommendations.list,
+              this.activeRepo.activeData.labels.map)
+              .pipe(map(
+                  results =>
+                      results[0] ? getRecommendations(results[0], results[1], results[2]) : []));
 
       this.activities = this.activeRepo.data.pipe(
           mergeMap(dataStore => {

@@ -1,6 +1,7 @@
 import {DatePipe} from '@angular/common';
 import {ViewerMetadata} from 'app/package/data-source/viewer';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
+import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
 import {getBorderColor, getTextColor} from '../utility/label-colors';
@@ -26,7 +27,7 @@ export const GithubItemViewerMetadata =
             marginBottom: '4px',
             fontSize: '15px',
           },
-          render: (c: ViewContext) => [{text: c.item.title}],
+          renderParts: (c: ViewContext) => [{text: c.item.title}],
         },
       ],
 
@@ -37,7 +38,7 @@ export const GithubItemViewerMetadata =
           label: 'Reporter',
           containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
-          render: (c: ViewContext) => [{text: `Reporter: ${c.item.reporter}`}],
+          renderParts: (c: ViewContext) => [{text: `Reporter: ${c.item.reporter}`}],
         },
       ],
 
@@ -48,7 +49,7 @@ export const GithubItemViewerMetadata =
           label: 'Date Created',
           containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
-          render: (c: ViewContext) => {
+          renderParts: (c: ViewContext) => {
             const datePipe = new DatePipe('en-us');
             return [{text: `Created: ${datePipe.transform(c.item.created)}`}];
           },
@@ -62,7 +63,7 @@ export const GithubItemViewerMetadata =
           label: 'Date Last Updated',
           containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
-          render: (c: ViewContext) => {
+          renderParts: (c: ViewContext) => {
             const datePipe = new DatePipe('en-us');
             return [{text: `Last updated: ${datePipe.transform(c.item.updated)}`}];
           },
@@ -76,7 +77,7 @@ export const GithubItemViewerMetadata =
           label: 'Assignees',
           containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
-          render: (c: ViewContext) => {
+          renderParts: (c: ViewContext) => {
             if (!c.item.assignees.length) {
               return [];
             }
@@ -92,9 +93,10 @@ export const GithubItemViewerMetadata =
           label: 'Suggestions',
           containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-secondary-text',
-          render: (c: ViewContext) => {
-            return c.recommendations.filter(r => r.type === 'suggestion')
-                .map(r => ({text: r.message || ''}));
+          renderParts: (c: ViewContext) => {
+            const allSuggestions = c.recommendations.filter(r => r.type === 'suggestion');
+            const suggestions = getRecommendations(c.item, allSuggestions, c.labelsMap);
+            return suggestions.map(r => ({text: r.message || ''}));
           },
         },
       ],
@@ -106,10 +108,10 @@ export const GithubItemViewerMetadata =
           label: 'Warnings',
           containerStyles: {fontSize: '13px'},
           containerClassList: 'theme-warn',
-          render: (c: ViewContext) => {
-            return c.recommendations.filter(r => r.type === 'warning').map(r => ({
-                                                                             text: r.message || ''
-                                                                           }));
+          renderParts: (c: ViewContext) => {
+            const allWarnings = c.recommendations.filter(r => r.type === 'warning');
+            const warnings = getRecommendations(c.item, allWarnings, c.labelsMap);
+            return warnings.map(r => ({text: r.message || ''}));
           },
         },
       ],
@@ -126,7 +128,7 @@ export const GithubItemViewerMetadata =
             fontSize: '13px',
             marginTop: '8px',
           },
-          render: (c: ViewContext) => {
+          renderParts: (c: ViewContext) => {
             return c.item.labels.map(id => {
               const label = c.labelsMap.get(`${id}`);
 
