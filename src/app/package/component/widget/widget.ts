@@ -1,6 +1,6 @@
 import { ComponentType } from '@angular/cdk/overlay/index';
 import { InjectionToken } from '@angular/core';
-import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { DataSourceProvider } from 'app/package/utility/data-source-provider';
 import { FiltererState } from 'app/package/data-source/filterer';
 import { Subject } from 'rxjs';
 import { SavedFiltererState } from './edit-widget/edit-widget';

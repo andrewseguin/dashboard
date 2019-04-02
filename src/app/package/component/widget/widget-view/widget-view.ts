@@ -8,7 +8,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {DataSourceProvider} from 'app/package/data-source/data-source-provider';
+import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 
 import {Widget, WIDGET_DATA, WidgetConfig, WidgetData} from '../widget';
 

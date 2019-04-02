@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material';
-import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { DataSourceProvider } from 'app/package/utility/data-source-provider';
 import { take } from 'rxjs/operators';
 import { EditWidget, EditWidgetData, SavedFiltererState } from '../widget/edit-widget/edit-widget';
 import { Widget, WidgetConfig } from '../widget/widget';

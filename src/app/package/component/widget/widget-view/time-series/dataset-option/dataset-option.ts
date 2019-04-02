@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { ControlContainer, FormArray } from '@angular/forms';
-import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { DataSourceProvider } from 'app/package/utility/data-source-provider';
 import { Filterer } from 'app/package/data-source/filterer';
 import { Subject } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';

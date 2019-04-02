@@ -1,4 +1,4 @@
-import {ItemGroupsDataSource} from './data-source';
+import {ItemGroupsDataSource} from '../data-source/data-source';
 
 export type DataSourceFactory = () => ItemGroupsDataSource<any>;
 export interface DataSourceProvider {

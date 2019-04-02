@@ -2,7 +2,7 @@ import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
 import { ChangeDetectionStrategy, Component, Inject, Injector } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { DataSourceProvider } from 'app/package/utility/data-source-provider';
 import { FiltererState } from 'app/package/data-source/filterer';
 import { ReplaySubject } from 'rxjs';
 import { startWith, take } from 'rxjs/operators';

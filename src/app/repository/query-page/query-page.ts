@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Item } from 'app/github/app-types/item';
 import { Widget } from 'app/package/component/widget/widget';
 import { ItemGroupsDataSource } from 'app/package/data-source/data-source';
-import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { DataSourceProvider } from 'app/package/utility/data-source-provider';
 import { isMobile } from 'app/utility/media-matcher';
 import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { map, take, takeUntil } from 'rxjs/operators';

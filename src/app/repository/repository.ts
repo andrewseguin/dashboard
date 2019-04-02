@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, InjectionToken } from '@angular/core';
 import { Router } from '@angular/router';
-import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { DataSourceProvider } from 'app/package/utility/data-source-provider';
 import { Auth } from 'app/service/auth';
 import { LoadedRepos } from 'app/service/loaded-repos';
 import { interval, Subject } from 'rxjs';

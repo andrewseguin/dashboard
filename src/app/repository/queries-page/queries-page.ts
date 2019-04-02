@@ -1,7 +1,7 @@
 import { CdkPortal } from '@angular/cdk/portal';
 import { ChangeDetectionStrategy, Component, Inject, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { DataSourceProvider } from 'app/package/utility/data-source-provider';
 import { Observable, Subject } from 'rxjs';
 import { delay, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { DATA_SOURCES } from '../repository';

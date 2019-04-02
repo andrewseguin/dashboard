@@ -23,7 +23,7 @@ import {TimeSeries} from 'app/package/component/widget/widget-view/time-series/t
 import {
   TimeSeriesEdit
 } from 'app/package/component/widget/widget-view/time-series/time-series-edit';
-import {DataSourceProvider} from 'app/package/data-source/data-source-provider';
+import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
