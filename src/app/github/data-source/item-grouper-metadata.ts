@@ -2,7 +2,7 @@ import {
   getGroupByListValues,
   getGroupByValue,
   GroupingMetadata
-} from 'app/package/items-renderer/item-grouper';
+} from 'app/package/items-renderer/grouper';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
 

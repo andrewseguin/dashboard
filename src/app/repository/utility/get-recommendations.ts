@@ -1,6 +1,6 @@
 import {Item} from 'app/github/app-types/item';
 import {Label} from 'app/github/app-types/label';
-import {filterItems, searchItems} from 'app/package/items-renderer/item-filterer';
+import {filterItems, searchItems} from 'app/package/items-renderer/filterer';
 import {ItemsFilterMetadata, MatcherContext} from '../../github/data-source/item-filter-metadata';
 import {tokenizeItem} from '../../github/utility/tokenize-item';
 import {Recommendation} from '../services/dao/config/recommendation';

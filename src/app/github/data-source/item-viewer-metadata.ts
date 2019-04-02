@@ -1,5 +1,5 @@
 import {DatePipe} from '@angular/common';
-import {ViewingMetadata} from 'app/package/items-renderer/item-viewer';
+import {ViewingMetadata} from 'app/package/items-renderer/viewer';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';

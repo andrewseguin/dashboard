@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ControlContainer} from '@angular/forms';
-import {ProviderMetadata} from 'app/package/items-renderer/item-provider';
+import {ProviderMetadata} from 'app/package/items-renderer/provider';
 import {ButtonToggleOption} from '../../../edit-widget/button-toggle-option/button-toggle-option';
 
 @Component({

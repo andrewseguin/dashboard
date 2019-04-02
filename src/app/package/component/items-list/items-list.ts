@@ -1,17 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  NgZone,
-  Output
-} from '@angular/core';
-import {ItemGroup} from 'app/package/items-renderer/item-grouper';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
-import {ItemGroupsRenderer, RenderState} from 'app/package/items-renderer/item-groups-renderer';
-import {fromEvent, Observable, Subject} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { ItemGroupsDataSource } from 'app/package/items-renderer/data-source';
+import { ItemGroup } from 'app/package/items-renderer/grouper';
+import { ItemGroupsRenderer, RenderState } from 'app/package/items-renderer/renderer';
+import { fromEvent, Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'items-list',
@@ -50,10 +42,7 @@ export class ItemsList<T> {
       this.ngZone.run(() => this.renderState.next(result));
     });
 
-    this.itemCount = this.itemGroupsDataSource.connect().pipe(map(result => {
-      console.log('new count')
-      return result.count;
-    }));
+    this.itemCount = this.itemGroupsDataSource.connect().pipe(map(result => result.count));
   }
 
   ngOnDestroy() {

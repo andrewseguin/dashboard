@@ -11,7 +11,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Item} from 'app/github/app-types/item';
 import {Widget} from 'app/package/component/widget/widget';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
 import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';

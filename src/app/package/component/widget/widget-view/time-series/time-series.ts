@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
+import {ItemFiltererState} from 'app/package/items-renderer/filterer';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
 import * as Chart from 'chart.js';
 import {combineLatest, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';

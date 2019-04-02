@@ -1,11 +1,11 @@
 import {Item} from 'app/github/app-types/item';
 import {Label} from 'app/github/app-types/label';
-import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
-import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/item-groups-data-source';
-import {ItemProvider} from 'app/package/items-renderer/item-provider';
-import {ItemSorter} from 'app/package/items-renderer/item-sorter';
-import {ItemViewer, ItemViewerContextProvider} from 'app/package/items-renderer/item-viewer';
+import {ItemFilterer} from 'app/package/items-renderer/filterer';
+import {ItemGrouper} from 'app/package/items-renderer/grouper';
+import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
+import {ItemProvider} from 'app/package/items-renderer/provider';
+import {ItemSorter} from 'app/package/items-renderer/sorter';
+import {ItemViewer, ItemViewerContextProvider} from 'app/package/items-renderer/viewer';
 import {ConfigStore} from 'app/repository/services/dao/config/config-dao';
 import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {combineLatest, of} from 'rxjs';

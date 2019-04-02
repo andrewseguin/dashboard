@@ -1,4 +1,4 @@
-import {ProviderMetadata} from 'app/package/items-renderer/item-provider';
+import {ProviderMetadata} from 'app/package/items-renderer/provider';
 import {Item} from '../app-types/item';
 
 export const GithubItemDataMetadata = new Map<string, ProviderMetadata<Item>>([

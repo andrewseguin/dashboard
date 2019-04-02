@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MatSelect} from '@angular/material';
-import {ItemGrouper} from 'app/package/items-renderer/item-grouper';
+import {ItemGrouper} from 'app/package/items-renderer/grouper';
 
 @Component({
   selector: 'group-state-option',

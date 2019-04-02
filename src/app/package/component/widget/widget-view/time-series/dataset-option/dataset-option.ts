@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ControlContainer, FormArray} from '@angular/forms';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
+import {ItemFilterer} from 'app/package/items-renderer/filterer';
 import {Subject} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {ButtonToggleOption} from '../../../edit-widget/button-toggle-option/button-toggle-option';

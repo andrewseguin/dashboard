@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
-import {ItemFilterer} from './item-filterer';
-import {GroupingMetadata, ItemGroup, ItemGrouper} from './item-grouper';
-import {ItemProvider} from './item-provider';
-import {ItemSorter} from './item-sorter';
-import {ItemViewer} from './item-viewer';
+import {ItemFilterer} from './filterer';
+import {GroupingMetadata, ItemGroup, ItemGrouper} from './grouper';
+import {ItemProvider} from './provider';
+import {ItemSorter} from './sorter';
+import {ItemViewer} from './viewer';
 import {IFilterMetadata} from './search-utility/filter';
 
 export interface GroupedResults<T> {

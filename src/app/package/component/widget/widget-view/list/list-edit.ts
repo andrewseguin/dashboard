@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ItemFilterer } from 'app/package/items-renderer/item-filterer';
-import { ItemSorter } from 'app/package/items-renderer/item-sorter';
-import { ItemViewer } from 'app/package/items-renderer/item-viewer';
+import { ItemFilterer } from 'app/package/items-renderer/filterer';
+import { ItemSorter } from 'app/package/items-renderer/sorter';
+import { ItemViewer } from 'app/package/items-renderer/viewer';
 import { take } from 'rxjs/operators';
 import { ButtonToggleOption } from '../../edit-widget/button-toggle-option/button-toggle-option';
 import { SavedFiltererState } from '../../edit-widget/edit-widget';

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
-import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
+import {ItemFiltererState} from 'app/package/items-renderer/filterer';
+import {ItemSorterState} from 'app/package/items-renderer/sorter';
+import {ItemViewerState} from 'app/package/items-renderer/viewer';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 

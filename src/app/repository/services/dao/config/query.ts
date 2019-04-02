@@ -1,7 +1,7 @@
-import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
-import {ItemGrouperState} from 'app/package/items-renderer/item-grouper';
-import {ItemSorterState} from 'app/package/items-renderer/item-sorter';
-import {ItemViewerState} from 'app/package/items-renderer/item-viewer';
+import {ItemFiltererState} from 'app/package/items-renderer/filterer';
+import {ItemGrouperState} from 'app/package/items-renderer/grouper';
+import {ItemSorterState} from 'app/package/items-renderer/sorter';
+import {ItemViewerState} from 'app/package/items-renderer/viewer';
 
 export interface Query {
   id?: string;

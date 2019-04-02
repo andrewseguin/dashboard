@@ -1,4 +1,4 @@
-import { SortingMetadata } from 'app/package/items-renderer/item-sorter';
+import { SortingMetadata } from 'app/package/items-renderer/sorter';
 import { Item } from '../app-types/item';
 
 export type Sort = 'created'|'updated'|'title'|'plusOneReactions'|'minusOneReactions';

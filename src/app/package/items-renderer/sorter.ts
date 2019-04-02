@@ -1,6 +1,6 @@
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ItemGroup} from './item-grouper';
+import {ItemGroup} from './grouper';
 
 export interface ItemSorterState<S> {
   sort: S|null;

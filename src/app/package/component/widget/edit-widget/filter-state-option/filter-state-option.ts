@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {ItemFilterer} from 'app/package/items-renderer/item-filterer';
+import {ItemFilterer} from 'app/package/items-renderer/filterer';
 import {Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {SavedFiltererState} from '../edit-widget';

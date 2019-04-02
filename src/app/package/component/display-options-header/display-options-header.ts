@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {GroupingMetadata, ItemGrouper} from 'app/package/items-renderer/item-grouper';
-import {ItemSorter, SortingMetadata} from 'app/package/items-renderer/item-sorter';
-import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/item-viewer';
+import {GroupingMetadata, ItemGrouper} from 'app/package/items-renderer/grouper';
+import {ItemSorter, SortingMetadata} from 'app/package/items-renderer/sorter';
+import {ItemViewer, ViewingMetadata} from 'app/package/items-renderer/viewer';
 
 @Component({
   selector: 'display-options-header',

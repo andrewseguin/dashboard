@@ -1,4 +1,4 @@
-import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
+import {ItemFiltererState} from 'app/package/items-renderer/filterer';
 
 export interface AddLabelAction {
   labels: string[];

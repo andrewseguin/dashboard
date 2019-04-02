@@ -8,7 +8,7 @@ export interface Filter {
 }
 
 export interface IFilterMetadata<M, A> {
-  label?: string;  // If present, will display as an option to the user
+  label?: string;
   queryType?: string;
   queryTypeData?: any;
   matcher?: (c: M, q: Query) => boolean;

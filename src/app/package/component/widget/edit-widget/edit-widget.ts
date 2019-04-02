@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, Component, Inject, Injector} from '@angular/cor
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {ItemFiltererState} from 'app/package/items-renderer/item-filterer';
+import {ItemFiltererState} from 'app/package/items-renderer/filterer';
 import {ReplaySubject} from 'rxjs';
 import {startWith, take} from 'rxjs/operators';
 
