@@ -1,27 +1,21 @@
-import {CdkPortal} from '@angular/cdk/portal';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  ViewChild
-} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Item} from 'app/github/app-types/item';
-import {Widget} from 'app/package/component/widget/widget';
-import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
-import {isMobile} from 'app/utility/media-matcher';
-import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {map, take, takeUntil} from 'rxjs/operators';
-import {DATA_SOURCES} from '../repository';
-import {ActiveStore} from '../services/active-store';
-import {ConfigStore} from '../services/dao/config/config-dao';
-import {Query} from '../services/dao/config/query';
-import {Header} from '../services/header';
-import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
-import {QueryDialog} from '../shared/dialog/query/query-dialog';
+import { CdkPortal } from '@angular/cdk/portal';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Item } from 'app/github/app-types/item';
+import { Widget } from 'app/package/component/widget/widget';
+import { ItemGroupsDataSource } from 'app/package/data-source/data-source';
+import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { isMobile } from 'app/utility/media-matcher';
+import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
+import { map, take, takeUntil } from 'rxjs/operators';
+import { DATA_SOURCES } from '../repository';
+import { ActiveStore } from '../services/active-store';
+import { ConfigStore } from '../services/dao/config/config-dao';
+import { Query } from '../services/dao/config/query';
+import { Header } from '../services/header';
+import { ItemDetailDialog } from '../shared/dialog/item-detail-dialog/item-detail-dialog';
+import { QueryDialog } from '../shared/dialog/query/query-dialog';
 
 @Component({
   styleUrls: ['query-page.scss'],

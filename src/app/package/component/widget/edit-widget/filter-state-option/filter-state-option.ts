@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component, Input, SimpleChanges} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Filterer} from 'app/package/items-renderer/filterer';
-import {Subject, Subscription} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import {SavedFiltererState} from '../edit-widget';
+import { ChangeDetectionStrategy, Component, Input, SimpleChanges } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Filterer } from 'app/package/data-source/filterer';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { SavedFiltererState } from '../edit-widget';
 
 interface SavedFiltererStateGroup {
   name: string;

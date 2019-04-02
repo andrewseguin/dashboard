@@ -1,9 +1,9 @@
-import {ComponentType} from '@angular/cdk/overlay/index';
-import {InjectionToken} from '@angular/core';
-import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {FiltererState} from 'app/package/items-renderer/filterer';
-import {Subject} from 'rxjs';
-import {SavedFiltererState} from './edit-widget/edit-widget';
+import { ComponentType } from '@angular/cdk/overlay/index';
+import { InjectionToken } from '@angular/core';
+import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { FiltererState } from 'app/package/data-source/filterer';
+import { Subject } from 'rxjs';
+import { SavedFiltererState } from './edit-widget/edit-widget';
 
 export const WIDGET_DATA = new InjectionToken<any>('WidgetData');
 

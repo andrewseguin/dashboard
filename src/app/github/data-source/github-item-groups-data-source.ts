@@ -1,24 +1,24 @@
-import {Item} from 'app/github/app-types/item';
-import {Label} from 'app/github/app-types/label';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
-import {Filterer} from 'app/package/items-renderer/filterer';
-import {Grouper} from 'app/package/items-renderer/grouper';
-import {Provider} from 'app/package/items-renderer/provider';
-import {Sorter} from 'app/package/items-renderer/sorter';
-import {Viewer, ViewerContextProvider} from 'app/package/items-renderer/viewer';
-import {ConfigStore} from 'app/repository/services/dao/config/config-dao';
-import {getRecommendations} from 'app/repository/utility/get-recommendations';
-import {combineLatest, of} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {ActiveStore} from '../../repository/services/active-store';
-import {DataStore} from '../../repository/services/dao/data-dao';
-import {ListDao} from '../../repository/services/dao/list-dao';
-import {tokenizeItem} from '../utility/tokenize-item';
-import {AutocompleteContext, ItemsFilterMetadata, MatcherContext} from './item-filter-metadata';
-import {GithubItemGroupingMetadata, Group, TitleTransformContext} from './item-grouper-metadata';
-import {GithubItemDataMetadata} from './item-provider-metadata';
-import {GithubItemSortingMetadata, Sort} from './item-sorter-metadata';
-import {GithubItemView, GithubItemViewerMetadata, ViewContext} from './item-viewer-metadata';
+import { Item } from 'app/github/app-types/item';
+import { Label } from 'app/github/app-types/label';
+import { ItemGroupsDataSource } from 'app/package/data-source/data-source';
+import { Filterer } from 'app/package/data-source/filterer';
+import { Grouper } from 'app/package/data-source/grouper';
+import { Provider } from 'app/package/data-source/provider';
+import { Sorter } from 'app/package/data-source/sorter';
+import { Viewer, ViewerContextProvider } from 'app/package/data-source/viewer';
+import { ConfigStore } from 'app/repository/services/dao/config/config-dao';
+import { getRecommendations } from 'app/repository/utility/get-recommendations';
+import { combineLatest, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ActiveStore } from '../../repository/services/active-store';
+import { DataStore } from '../../repository/services/dao/data-dao';
+import { ListDao } from '../../repository/services/dao/list-dao';
+import { tokenizeItem } from '../utility/tokenize-item';
+import { AutocompleteContext, ItemsFilterMetadata, MatcherContext } from './item-filter-metadata';
+import { GithubItemGroupingMetadata, Group, TitleTransformContext } from './item-grouper-metadata';
+import { GithubItemDataMetadata } from './item-provider-metadata';
+import { GithubItemSortingMetadata, Sort } from './item-sorter-metadata';
+import { GithubItemView, GithubItemViewerMetadata, ViewContext } from './item-viewer-metadata';
 
 export class GithubItemGroupsDataSource extends ItemGroupsDataSource<Item> {
   constructor(activeRepo: ActiveStore, type: 'issue'|'pr') {

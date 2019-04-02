@@ -1,14 +1,14 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {Filterer} from 'app/package/items-renderer/filterer';
-import {Grouper} from 'app/package/items-renderer/grouper';
-import {take} from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Filterer } from 'app/package/data-source/filterer';
+import { Grouper } from 'app/package/data-source/grouper';
+import { take } from 'rxjs/operators';
+import { ButtonToggleOption } from '../../edit-widget/button-toggle-option/button-toggle-option';
+import { SavedFiltererState } from '../../edit-widget/edit-widget';
+import { EditWidgetData2, EDIT_WIDGET_DATA } from '../../widget';
+import { PieChartDisplayTypeOptions } from './pie-chart';
 
-import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
-import {SavedFiltererState} from '../../edit-widget/edit-widget';
-import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
 
-import {PieChartDisplayTypeOptions} from './pie-chart';
 
 
 @Component({

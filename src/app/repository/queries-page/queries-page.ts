@@ -1,14 +1,14 @@
-import {CdkPortal} from '@angular/cdk/portal';
-import {ChangeDetectionStrategy, Component, Inject, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
-import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {Observable, Subject} from 'rxjs';
-import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
-import {DATA_SOURCES} from '../repository';
-import {ActiveStore} from '../services/active-store';
-import {Query} from '../services/dao/config/query';
-import {Recommendation} from '../services/dao/config/recommendation';
-import {Header} from '../services/header';
+import { CdkPortal } from '@angular/cdk/portal';
+import { ChangeDetectionStrategy, Component, Inject, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { Observable, Subject } from 'rxjs';
+import { delay, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { DATA_SOURCES } from '../repository';
+import { ActiveStore } from '../services/active-store';
+import { Query } from '../services/dao/config/query';
+import { Recommendation } from '../services/dao/config/recommendation';
+import { Header } from '../services/header';
 
 interface QueryListItem {
   id: string;

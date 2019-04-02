@@ -1,12 +1,12 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {FiltererState} from 'app/package/items-renderer/filterer';
-import {Group, GrouperState} from 'app/package/items-renderer/grouper';
+import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { FiltererState } from 'app/package/data-source/filterer';
+import { Group, GrouperState } from 'app/package/data-source/grouper';
 import * as Chart from 'chart.js';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-
-import {WIDGET_DATA, WidgetData} from '../../widget';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { WidgetData, WIDGET_DATA } from '../../widget';
 import { MaterialColors } from '../widget-view';
+
 
 
 export interface PieChartDisplayTypeOptions<G> {

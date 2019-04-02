@@ -1,17 +1,8 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output
-} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {NumberEquality, NumberQuery} from 'app/package/items-renderer/filter-utility/query';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { NumberEquality, NumberQuery } from 'app/package/data-source/filter-utility/query';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'number-query-form',

@@ -1,12 +1,12 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {FiltererState} from 'app/package/items-renderer/filterer';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
+import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { ItemGroupsDataSource } from 'app/package/data-source/data-source';
+import { FiltererState } from 'app/package/data-source/filterer';
 import * as Chart from 'chart.js';
-import {combineLatest, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import { combineLatest, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { WidgetData, WIDGET_DATA } from '../../widget';
+import { MaterialColors } from '../widget-view';
 
-import {WIDGET_DATA, WidgetData} from '../../widget';
-import {MaterialColors} from '../widget-view';
 
 
 interface DateCount {

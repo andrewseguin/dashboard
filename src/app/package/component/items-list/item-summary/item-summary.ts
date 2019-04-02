@@ -6,7 +6,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {Viewer, ViewerMetadata} from 'app/package/items-renderer/viewer';
+import {Viewer, ViewerMetadata} from 'app/package/data-source/viewer';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 

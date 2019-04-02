@@ -1,13 +1,13 @@
-import {ComponentPortal, PortalInjector} from '@angular/cdk/portal';
-import {ChangeDetectionStrategy, Component, Inject, Injector} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {FiltererState} from 'app/package/items-renderer/filterer';
-import {ReplaySubject} from 'rxjs';
-import {startWith, take} from 'rxjs/operators';
+import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
+import { ChangeDetectionStrategy, Component, Inject, Injector } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { FiltererState } from 'app/package/data-source/filterer';
+import { ReplaySubject } from 'rxjs';
+import { startWith, take } from 'rxjs/operators';
+import { EditWidgetData2, EDIT_WIDGET_DATA, Widget, WidgetConfig } from '../../widget/widget';
 
-import {EDIT_WIDGET_DATA, EditWidgetData2, Widget, WidgetConfig} from '../../widget/widget';
 
 
 export interface SavedFiltererState {

@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {ControlContainer, FormArray} from '@angular/forms';
-import {DataSourceProvider} from 'app/package/items-renderer/data-source-provider';
-import {Filterer} from 'app/package/items-renderer/filterer';
-import {Subject} from 'rxjs';
-import {startWith, takeUntil} from 'rxjs/operators';
-import {ButtonToggleOption} from '../../../edit-widget/button-toggle-option/button-toggle-option';
-import {SavedFiltererState} from '../../../edit-widget/edit-widget';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ControlContainer, FormArray } from '@angular/forms';
+import { DataSourceProvider } from 'app/package/data-source/data-source-provider';
+import { Filterer } from 'app/package/data-source/filterer';
+import { Subject } from 'rxjs';
+import { startWith, takeUntil } from 'rxjs/operators';
+import { ButtonToggleOption } from '../../../edit-widget/button-toggle-option/button-toggle-option';
+import { SavedFiltererState } from '../../../edit-widget/edit-widget';
 
 @Component({
   selector: 'dataset-option',

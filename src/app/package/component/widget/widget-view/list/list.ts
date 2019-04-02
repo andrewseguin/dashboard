@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {FiltererState} from 'app/package/items-renderer/filterer';
-import {SorterState} from 'app/package/items-renderer/sorter';
-import {ViewerState} from 'app/package/items-renderer/viewer';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { FiltererState } from 'app/package/data-source/filterer';
+import { SorterState } from 'app/package/data-source/sorter';
+import { ViewerState } from 'app/package/data-source/viewer';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { WidgetData, WIDGET_DATA } from '../../widget';
 
-import {WIDGET_DATA, WidgetData} from '../../widget';
 
 
 export interface ListWidgetConfig {

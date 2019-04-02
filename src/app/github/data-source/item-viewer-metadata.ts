@@ -1,9 +1,9 @@
-import {DatePipe} from '@angular/common';
-import {ViewerMetadata} from 'app/package/items-renderer/viewer';
-import {Recommendation} from 'app/repository/services/dao/config/recommendation';
-import {Item} from '../app-types/item';
-import {Label} from '../app-types/label';
-import {getBorderColor, getTextColor} from '../utility/label-colors';
+import { DatePipe } from '@angular/common';
+import { ViewerMetadata } from 'app/package/data-source/viewer';
+import { Recommendation } from 'app/repository/services/dao/config/recommendation';
+import { Item } from '../app-types/item';
+import { Label } from '../app-types/label';
+import { getBorderColor, getTextColor } from '../utility/label-colors';
 
 export type GithubItemView =
     'title'|'reporter'|'assignees'|'labels'|'warnings'|'suggestions'|'creationDate'|'updatedDate';

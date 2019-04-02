@@ -7,9 +7,9 @@ import {
   NgZone,
   Output
 } from '@angular/core';
-import {ItemGroupsDataSource} from 'app/package/items-renderer/data-source';
-import {Group} from 'app/package/items-renderer/grouper';
-import {ItemGroupsRenderer, RendererState} from 'app/package/items-renderer/renderer';
+import {ItemGroupsDataSource} from 'app/package/data-source/data-source';
+import {Group} from 'app/package/data-source/grouper';
+import {ItemGroupsRenderer, RendererState} from 'app/package/data-source/renderer';
 import {fromEvent, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
