@@ -1,18 +1,18 @@
-import {IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
+import {FiltererMetadata} from 'app/package/items-renderer/filterer';
 import {
   DateQuery,
   InputQuery,
   NumberQuery,
   Query,
   StateQuery
-} from 'app/package/items-renderer/search-utility/query';
+} from 'app/package/items-renderer/filter-utility/query';
 import {
   arrayContainsQuery,
   dateMatchesEquality,
   numberMatchesEquality,
   stateMatchesEquality,
   stringContainsQuery
-} from 'app/package/items-renderer/search-utility/query-matcher';
+} from 'app/package/items-renderer/filter-utility/query-matcher';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {ListDao} from 'app/repository/services/dao/list-dao';
 import {getAssignees} from 'app/utility/assignees-autocomplete';
@@ -32,7 +32,7 @@ export interface AutocompleteContext {
 }
 
 export const ItemsFilterMetadata =
-    new Map<string, IFilterMetadata<MatcherContext, AutocompleteContext>>([
+    new Map<string, FiltererMetadata<MatcherContext, AutocompleteContext>>([
 
       /** InputQuery Filters */
 
@@ -40,14 +40,14 @@ export const ItemsFilterMetadata =
         'title', {
           label: 'Title',
           queryType: 'input',
-          matcher: (c: MatcherContext, q: Query) => {
-            return stringContainsQuery(c.item.title, q as InputQuery);
-          },
-          autocomplete: (c: AutocompleteContext) => {
-            return c.items.list.pipe(map(items => items.map(issue => issue.title)));
+            matcher: (c: MatcherContext, q: Query) => {
+              return stringContainsQuery(c.item.title, q as InputQuery);
+            },
+            autocomplete: (c: AutocompleteContext) => {
+              return c.items.list.pipe(map(items => items.map(issue => issue.title)));
+            }
           }
-        }
-      ],
+        ],
 
       [
         'assignees', {
@@ -182,7 +182,12 @@ export const ItemsFilterMetadata =
         'state', {
           label: 'State',
           queryType: 'state',
-          queryTypeData: {states: ['open', 'closed']},
+          queryTypeData: {
+            states: [
+              'open',
+              'closed',
+            ],
+          },
           matcher: (c: MatcherContext, q: Query) => {
             const values = new Map<string, boolean>([
               ['open', c.item.state === 'open'],
@@ -198,7 +203,13 @@ export const ItemsFilterMetadata =
         'recommendation', {
           label: 'Recommendation',
           queryType: 'state',
-          queryTypeData: {states: ['empty', 'at least one warning', 'at least one suggestion']},
+          queryTypeData: {
+            states: [
+              'empty',
+              'at least one warning',
+              'at least one suggestion',
+            ],
+          },
           matcher: (c: MatcherContext, q: Query) => {
             const values = new Map<string, boolean>([
               ['empty', !c.recommendations.length],

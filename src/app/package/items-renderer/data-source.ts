@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
-import {Filterer} from './filterer';
+import {Filterer, FiltererMetadata} from './filterer';
 import {GrouperMetadata, Group, Grouper} from './grouper';
 import {Sorter} from './sorter';
 import {Viewer} from './viewer';
-import {IFilterMetadata} from './search-utility/filter';
 import { Provider } from './provider';
 
 export interface GroupedResults<T> {
@@ -13,7 +12,7 @@ export interface GroupedResults<T> {
   count: number;
 }
 
-const DefaultFilterMetadata = new Map<string, IFilterMetadata<null, null>>([]);
+const DefaultFilterMetadata = new Map<string, FiltererMetadata<null, null>>([]);
 
 const DefaultGroupMetadata = new Map<'all', GrouperMetadata<any, 'all', null>>([
   [

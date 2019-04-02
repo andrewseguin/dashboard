@@ -10,7 +10,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {InputEquality, InputQuery} from 'app/package/items-renderer/search-utility/query';
+import {InputEquality, InputQuery} from 'app/package/items-renderer/filter-utility/query';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, takeUntil} from 'rxjs/operators';
 

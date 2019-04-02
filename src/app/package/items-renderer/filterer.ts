@@ -1,6 +1,20 @@
-import {Filter, IFilterMetadata} from 'app/package/items-renderer/search-utility/filter';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {Query} from './filter-utility/query';
+
+export interface Filter {
+  type: string;
+  query?: Query;
+  isImplicit?: boolean;
+}
+
+export interface FiltererMetadata<M, A> {
+  label?: string;
+  queryType?: string;
+  queryTypeData?: any;
+  matcher?: (c: M, q: Query) => boolean;
+  autocomplete?: (c: A) => Observable<string[]>;
+}
 
 export interface FiltererState {
   filters: Filter[];
@@ -20,7 +34,7 @@ export class Filterer<T, M, A> {
   // data provider and way too many events will emit
   constructor(
       private contextProvider: Observable<(item: T) => M>, public tokenizeItem: (item: T) => string,
-      public metadata: Map<string, IFilterMetadata<M, any>>) {}
+      public metadata: Map<string, FiltererMetadata<M, any>>) {}
 
   /** Gets a stream that returns the items and updates whenever the filters or search changes. */
   filter(items: T[]): Observable<T[]> {
@@ -57,7 +71,7 @@ export class Filterer<T, M, A> {
 /** Utility function to filter the items. May be used to synchronously filter items. */
 export function filterItems<T, M>(
     items: T[], filters: Filter[] = [], contextProvider: (item: T) => M,
-    metadata: Map<string, IFilterMetadata<M, any>>) {
+    metadata: Map<string, FiltererMetadata<M, any>>) {
   return items.filter(item => {
     return filters.every(filter => {
       if (!filter.query) {

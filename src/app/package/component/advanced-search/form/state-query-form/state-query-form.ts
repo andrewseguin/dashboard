@@ -8,7 +8,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {InputEquality, StateQuery} from 'app/package/items-renderer/search-utility/query';
+import {InputEquality, StateQuery} from 'app/package/items-renderer/filter-utility/query';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
