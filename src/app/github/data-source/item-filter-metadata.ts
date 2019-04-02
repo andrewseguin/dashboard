@@ -1,12 +1,18 @@
-import { DateQuery, InputQuery, NumberQuery, Query, StateQuery } from 'app/package/data-source/query';
-import { arrayContainsQuery, dateMatchesEquality, numberMatchesEquality, stateMatchesEquality, stringContainsQuery } from 'app/package/utility/query-matcher';
-import { FiltererMetadata } from 'app/package/data-source/filterer';
-import { Recommendation } from 'app/repository/services/dao/config/recommendation';
-import { ListDao } from 'app/repository/services/dao/list-dao';
-import { getAssignees } from 'app/utility/assignees-autocomplete';
-import { map } from 'rxjs/operators';
-import { Item } from '../app-types/item';
-import { Label } from '../app-types/label';
+import {FiltererMetadata} from 'app/package/data-source/filterer';
+import {DateQuery, InputQuery, NumberQuery, Query, StateQuery} from 'app/package/data-source/query';
+import {
+  arrayContainsQuery,
+  dateMatchesEquality,
+  numberMatchesEquality,
+  stateMatchesEquality,
+  stringContainsQuery
+} from 'app/package/utility/query-matcher';
+import {Recommendation} from 'app/repository/services/dao/config/recommendation';
+import {ListDao} from 'app/repository/services/dao/list-dao';
+import {getAssignees} from 'app/utility/assignees-autocomplete';
+import {map} from 'rxjs/operators';
+import {Item} from '../app-types/item';
+import {Label} from '../app-types/label';
 
 export interface MatcherContext {
   item: Item;
@@ -28,14 +34,14 @@ export const ItemsFilterMetadata =
         'title', {
           label: 'Title',
           queryType: 'input',
-            matcher: (c: MatcherContext, q: Query) => {
-              return stringContainsQuery(c.item.title, q as InputQuery);
-            },
-            autocomplete: (c: AutocompleteContext) => {
-              return c.items.list.pipe(map(items => items.map(issue => issue.title)));
-            }
+          matcher: (c: MatcherContext, q: Query) => {
+            return stringContainsQuery(c.item.title, q as InputQuery);
+          },
+          autocomplete: (c: AutocompleteContext) => {
+            return c.items.list.pipe(map(items => items.map(issue => issue.title)));
           }
-        ],
+        }
+      ],
 
       [
         'assignees', {

@@ -1,8 +1,18 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { InputEquality, InputQuery } from 'app/package/data-source/query';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { map, startWith, takeUntil } from 'rxjs/operators';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {InputEquality, InputQuery} from 'app/package/data-source/query';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {map, startWith, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'input-query-form',
