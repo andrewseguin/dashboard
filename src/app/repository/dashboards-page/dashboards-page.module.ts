@@ -1,7 +1,8 @@
+import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {MatButtonModule, MatIconModule, MatMenuModule} from '@angular/material';
 import {RouterModule, Routes} from '@angular/router';
-import {MaterialModule} from 'app/material.module';
 import {DashboardDialogModule} from '../shared/dialog/dashboard/dashboard-dialog.module';
 import {DashboardsPage} from './dashboards-page';
 
@@ -16,7 +17,10 @@ export class DashboardsPageRoutingModule {
   imports: [
     CommonModule,
     DashboardsPageRoutingModule,
-    MaterialModule,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    PortalModule,
     DashboardDialogModule,
   ],
   declarations: [DashboardsPage],

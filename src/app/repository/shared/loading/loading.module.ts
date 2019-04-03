@@ -1,10 +1,11 @@
 import {NgModule} from '@angular/core';
+import {MatProgressSpinnerModule} from '@angular/material';
 import {Loading} from './loading';
-import {MaterialModule} from 'app/material.module';
 
 @NgModule({
-  imports: [MaterialModule],
+  imports: [MatProgressSpinnerModule],
   declarations: [Loading],
   exports: [Loading],
 })
-export class LoadingModule { }
+export class LoadingModule {
+}

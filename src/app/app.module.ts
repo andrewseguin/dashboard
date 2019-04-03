@@ -4,7 +4,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {AngularFireModule} from '@angular/fire';
 import {AngularFireAuthModule} from '@angular/fire/auth';
-import {MatIconRegistry} from '@angular/material';
+import {MatIconRegistry, MatSnackBarModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
 import {HomePage} from 'app/home-page/home-page';
@@ -28,9 +28,9 @@ export class TimeAgoPipeModule {
 @NgModule({
   declarations: [App],
   imports: [
-    AngularFireModule.initializeApp(FIREBASE_CONFIG), AngularFireAuthModule, RateLimitReachedModule,
-    LoginDialogModule, BrowserAnimationsModule, LoginModule, HttpClientModule,
-    RouterModule.forRoot([
+    MatSnackBarModule, AngularFireModule.initializeApp(FIREBASE_CONFIG), AngularFireAuthModule,
+    RateLimitReachedModule, LoginDialogModule, BrowserAnimationsModule, LoginModule,
+    HttpClientModule, RouterModule.forRoot([
       {path: '', component: HomePage},
       {
         path: ':org/:name',

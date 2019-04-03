@@ -1,7 +1,13 @@
+import {TextFieldModule} from '@angular/cdk/text-field';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from 'app/material.module';
+import {
+  MatButtonModule,
+  MatIconModule,
+  MatSelectModule,
+  MatSnackBarModule
+} from '@angular/material';
 import {AdvancedSearchModule} from 'app/package/component/advanced-search/advanced-search.module';
 import {
   EditableChipListModule
@@ -14,8 +20,16 @@ import {EditableRecommendation} from './editable-recommendation';
 
 @NgModule({
   imports: [
-    CommonModule, MaterialModule, ReactiveFormsModule, DeleteConfirmationModule,
-    AdvancedSearchModule, EditableChipListModule
+    CommonModule,
+    MatSelectModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    TextFieldModule,
+    ReactiveFormsModule,
+    DeleteConfirmationModule,
+    AdvancedSearchModule,
+    EditableChipListModule,
   ],
   declarations: [EditableRecommendation],
   exports: [EditableRecommendation],

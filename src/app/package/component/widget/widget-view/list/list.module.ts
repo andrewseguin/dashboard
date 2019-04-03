@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from 'app/material.module';
+import {MatDividerModule} from '@angular/material';
 import {ItemSummaryModule} from 'app/package/component/items-list/item-summary/item-summary.module';
 import {
   ItemDetailDialogModule
@@ -21,7 +21,7 @@ import {ListEdit} from './list-edit';
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatDividerModule,
     ReactiveFormsModule,
     ItemSummaryModule,
     ItemDetailDialogModule,

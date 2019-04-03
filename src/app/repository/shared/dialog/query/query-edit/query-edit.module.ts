@@ -1,14 +1,23 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from 'app/material.module';
-
+import {
+  MatAutocompleteModule,
+  MatButtonModule,
+  MatDialogModule,
+  MatFormFieldModule,
+  MatInputModule
+} from '@angular/material';
 import {QueryEdit} from './query-edit';
 
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
     ReactiveFormsModule,
   ],
   declarations: [QueryEdit],

@@ -1,13 +1,14 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MaterialModule} from 'app/material.module';
+import {MatIconModule, MatRippleModule} from '@angular/material';
 import {ItemSummary} from './item-summary';
 
 
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatIconModule,
+    MatRippleModule,
   ],
   declarations: [ItemSummary],
   exports: [ItemSummary],

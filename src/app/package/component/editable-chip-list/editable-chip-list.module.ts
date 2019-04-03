@@ -1,12 +1,14 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MaterialModule} from 'app/material.module';
+import {MatButtonModule, MatIconModule, MatMenuModule} from '@angular/material';
 import {EditableChipList} from './editable-chip-list';
 
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
   ],
   declarations: [EditableChipList],
   exports: [EditableChipList]

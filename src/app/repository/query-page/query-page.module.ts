@@ -1,7 +1,8 @@
+import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {MatButtonModule} from '@angular/material';
 import {RouterModule, Routes} from '@angular/router';
-import {MaterialModule} from 'app/material.module';
 import {ItemsListModule} from 'app/package/component/items-list/items-list.module';
 import {
   ItemDetailDialogModule
@@ -25,7 +26,8 @@ export class QueryPageRoutingModule {
   imports: [
     CommonModule,
     QueryPageRoutingModule,
-    MaterialModule,
+    MatButtonModule,
+    PortalModule,
     ItemDetailModule,
     ItemsListModule,
     ItemDetailDialogModule,

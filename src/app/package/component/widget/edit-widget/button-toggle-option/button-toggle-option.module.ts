@@ -1,11 +1,11 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from 'app/material.module';
+import {MatButtonToggleModule} from '@angular/material';
 import {ButtonToggleGroupOption} from './button-toggle-option';
 
 @NgModule({
-  imports: [CommonModule, MaterialModule, ReactiveFormsModule],
+  imports: [CommonModule, MatButtonToggleModule, ReactiveFormsModule],
   declarations: [ButtonToggleGroupOption],
   exports: [ButtonToggleGroupOption],
 })

@@ -1,12 +1,12 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from 'app/material.module';
+import {MatButtonModule, MatIconModule} from '@angular/material';
 import {TypeActions} from './type-actions';
 
 
 @NgModule({
-  imports: [CommonModule, MaterialModule, ReactiveFormsModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, ReactiveFormsModule],
   declarations: [TypeActions],
   exports: [TypeActions],
 })

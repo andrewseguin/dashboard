@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {MatSidenavModule, MatSnackBarModule} from '@angular/material';
 import {RouterModule, Routes} from '@angular/router';
-import {MaterialModule} from 'app/material.module';
 import {Repository} from './repository';
 import {ActiveStore} from './services/active-store';
 import {ConfigDao} from './services/dao/config/config-dao';
@@ -63,7 +63,8 @@ export class RepositoryRoutingModule {
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatSidenavModule,
+    MatSnackBarModule,
     NavModule,
     HeaderModule,
     RouterModule,

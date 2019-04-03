@@ -1,12 +1,20 @@
+import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MaterialModule} from 'app/material.module';
+import {MatButtonModule, MatIconModule} from '@angular/material';
+import {EditWidgetModule} from '../widget/edit-widget/edit-widget.module';
 import {WidgetViewModule} from '../widget/widget-view/widget-view.module';
 import {DashboardView} from './dashboard-view';
-import { EditWidgetModule } from '../widget/edit-widget/edit-widget.module';
 
 @NgModule({
-  imports: [CommonModule, MaterialModule, EditWidgetModule, WidgetViewModule],
+  imports: [
+    CommonModule,
+    DragDropModule,
+    MatButtonModule,
+    MatIconModule,
+    EditWidgetModule,
+    WidgetViewModule,
+  ],
   declarations: [DashboardView],
   exports: [DashboardView],
 })

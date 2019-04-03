@@ -1,14 +1,17 @@
+import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from 'app/material.module';
+import {MatButtonModule, MatDialogModule} from '@angular/material';
 import {ButtonToggleGroupOptionModule} from './button-toggle-option/button-toggle-option.module';
 import {EditWidget} from './edit-widget';
 
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatDialogModule,
+    MatButtonModule,
+    PortalModule,
     ReactiveFormsModule,
     ButtonToggleGroupOptionModule,
   ],

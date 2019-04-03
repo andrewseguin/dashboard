@@ -1,13 +1,15 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from 'app/material.module';
+import {MatButtonModule, MatCheckboxModule, MatDialogModule} from '@angular/material';
 import {LoginDialog} from './login-dialog';
 
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatButtonModule,
     ReactiveFormsModule,
   ],
   declarations: [LoginDialog],

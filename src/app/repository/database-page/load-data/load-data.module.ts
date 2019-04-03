@@ -1,14 +1,26 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MaterialModule} from 'app/material.module';
+import {ReactiveFormsModule} from '@angular/forms';
+import {
+  MatButtonModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
+  MatProgressBarModule,
+  MatSelectModule,
+  MatSnackBarModule
+} from '@angular/material';
 import {LoadData} from './load-data';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
-    ReactiveFormsModule
+    MatButtonModule,
+    MatSelectModule,
+    MatSnackBarModule,
+    MatProgressBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    ReactiveFormsModule,
   ],
   declarations: [LoadData],
   exports: [LoadData],

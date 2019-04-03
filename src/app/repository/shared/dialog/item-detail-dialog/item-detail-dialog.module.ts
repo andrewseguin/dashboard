@@ -1,14 +1,12 @@
 import {NgModule} from '@angular/core';
-import {MaterialModule} from 'app/material.module';
-
+import {MatButtonModule, MatIconModule} from '@angular/material';
 import {ItemDetailModule} from '../../item-detail/item-detail.module';
-
 import {ItemDetailDialog} from './item-detail-dialog';
-
 
 @NgModule({
   imports: [
-    MaterialModule,
+    MatIconModule,
+    MatButtonModule,
     ItemDetailModule,
   ],
   declarations: [ItemDetailDialog],

@@ -1,10 +1,10 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MaterialModule} from 'app/material.module';
+import {MatChipsModule} from '@angular/material';
 import {LabelList} from './label-list';
 
 @NgModule({
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MatChipsModule],
   declarations: [LabelList],
   exports: [LabelList],
 })

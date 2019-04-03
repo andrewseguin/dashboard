@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ControlContainer, FormArray } from '@angular/forms';
-import { DataSourceProvider } from 'app/package/utility/data-source-provider';
-import { Filterer } from 'app/package/data-source/filterer';
-import { Subject } from 'rxjs';
-import { startWith, takeUntil } from 'rxjs/operators';
-import { ButtonToggleOption } from '../../../edit-widget/button-toggle-option/button-toggle-option';
-import { SavedFiltererState } from '../../../edit-widget/edit-widget';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ControlContainer, FormArray} from '@angular/forms';
+import {Filterer} from 'app/package/data-source/filterer';
+import {Provider} from 'app/package/data-source/provider';
+import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {Subject} from 'rxjs';
+import {startWith, takeUntil} from 'rxjs/operators';
+import {ButtonToggleOption} from '../../../edit-widget/button-toggle-option/button-toggle-option';
+import {SavedFiltererState} from '../../../edit-widget/edit-widget';
 
 @Component({
   selector: 'dataset-option',
@@ -33,6 +34,8 @@ export class DatasetOption {
   ];
 
   filterer: Filterer<any, any, any>;
+
+  provider: Provider<any>;
 
   private destroyed = new Subject();
 
@@ -62,6 +65,7 @@ export class DatasetOption {
         .pipe(takeUntil(this.destroyed), startWith(dataSourceTypeControl.value))
         .subscribe(value => {
           const datasource = this.dataSources.get(value)!.factory();
+          this.provider = datasource.provider;
           this.filterer = datasource.filterer;
         });
   }

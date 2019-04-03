@@ -1,8 +1,9 @@
+import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
+import {MatButtonModule, MatIconModule} from '@angular/material';
 import {RouterModule, Routes} from '@angular/router';
-import {MaterialModule} from 'app/material.module';
 import {DashboardViewModule} from 'app/package/component/dashboard/dashboard-view.module';
 import {CountModule} from 'app/package/component/widget/widget-view/count/count.module';
 import {ListModule} from 'app/package/component/widget/widget-view/list/list.module';
@@ -24,7 +25,9 @@ export class DashboardPageRoutingModule {
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatButtonModule,
+    MatIconModule,
+    PortalModule,
     ReactiveFormsModule,
     DashboardViewModule,
     DashboardPageRoutingModule,

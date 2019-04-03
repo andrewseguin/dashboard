@@ -29,6 +29,7 @@
       <ng-container *ngFor="let action of controlContainer.control.get('actions').controls; let index = index"
                     formArrayName="actions">
         <action-option [formGroupName]="index" [canRemove]="index > 0"
+                       [providerMetadata]="provider.metadata"
                        (remove)="removeAction(index)"></action-option>
       </ng-container>
     </div>

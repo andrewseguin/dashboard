@@ -1,7 +1,8 @@
+import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {MatButtonModule, MatDividerModule, MatIconModule, MatMenuModule} from '@angular/material';
 import {RouterModule, Routes} from '@angular/router';
-import {MaterialModule} from 'app/material.module';
 import {QueryEditModule} from '../shared/dialog/query/query-edit/query-edit.module';
 import {QueryMenuModule} from '../shared/query-menu/query-menu.module';
 import {QueriesPage} from './queries-page';
@@ -17,7 +18,11 @@ export class QueriesPageRoutingModule {
   imports: [
     CommonModule,
     QueriesPageRoutingModule,
-    MaterialModule,
+    MatIconModule,
+    MatDividerModule,
+    MatMenuModule,
+    MatButtonModule,
+    PortalModule,
     QueryEditModule,
     QueryMenuModule,
   ],

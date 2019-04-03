@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from 'app/material.module';
+import {MatButtonModule} from '@angular/material';
 import {
   ButtonToggleGroupOptionModule
 } from '../../edit-widget/button-toggle-option/button-toggle-option.module';
@@ -17,7 +17,7 @@ import {TimeSeriesEdit} from './time-series-edit';
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatButtonModule,
     ReactiveFormsModule,
     DateOptionModule,
     ButtonToggleGroupOptionModule,

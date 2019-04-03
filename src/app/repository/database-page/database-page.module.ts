@@ -1,8 +1,8 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material';
 import {RouterModule, Routes} from '@angular/router';
-import {MaterialModule} from 'app/material.module';
 import {
   DeleteConfirmationModule
 } from '../shared/dialog/delete-confirmation/delete-confirmation.module';
@@ -22,7 +22,7 @@ export class DatabasePageRoutingModule {
 @NgModule({
   imports: [
     CommonModule,
-    MaterialModule,
+    MatButtonModule,
     LoadingModule,
     ReactiveFormsModule,
     DeleteConfirmationModule,
