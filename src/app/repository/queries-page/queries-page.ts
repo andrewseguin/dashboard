@@ -85,8 +85,7 @@ export class QueriesPage {
     const filterer = dataSourceProvider.filterer(query.filtererState);
     const provider = dataSourceProvider.dataSource();
 
-    return provider.getData().pipe(
-        filterer.filter(), delay(250), map(result => result.reduce((prev, curr) => curr += prev)));
+    return provider.getData().pipe(filterer.filter(), delay(250), map(result => result.length));
   }
 
   private getSortedGroups(queries: Query[]) {
