@@ -22,9 +22,6 @@ export class DataSource<T> {
   /** Provider for the items to be filtered, grouped, and sorted. */
   provider = new Provider<T>(new Map(), of([]));
 
-  /** The filterer takes filter and search query information to filter items. */
-  filterer: Filterer<T> = new Filterer(new Map(), of((_item: T) => null));
-
   /** The grouper is responsible for grouping the filtered data into ItemGroups */
   grouper: Grouper<T, any, any> = new Grouper(DefaultGrouperMetadata, of(null));
 

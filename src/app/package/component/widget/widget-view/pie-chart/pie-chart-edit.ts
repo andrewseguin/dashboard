@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { Filterer } from 'app/package/data-source/filterer';
-import { Grouper } from 'app/package/data-source/grouper';
-import { take } from 'rxjs/operators';
-import { ButtonToggleOption } from '../../edit-widget/button-toggle-option/button-toggle-option';
-import { SavedFiltererState } from '../../edit-widget/edit-widget';
-import { EditWidgetData2, EDIT_WIDGET_DATA } from '../../widget';
-import { PieChartDisplayTypeOptions } from './pie-chart';
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {Filterer} from 'app/package/data-source/filterer';
+import {Grouper} from 'app/package/data-source/grouper';
+import {Provider} from 'app/package/data-source/provider';
+import {take} from 'rxjs/operators';
 
+import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
+import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
 
+import {PieChartDisplayTypeOptions} from './pie-chart';
 
 
 @Component({
@@ -20,7 +21,8 @@ export class PieChartEdit {
   dataOptions: ButtonToggleOption[] = [];
 
   grouper: Grouper<any, any, any>;
-  filterer: Filterer<any, any, any>;
+  filterer: Filterer<any, any>;
+  provider: Provider<any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),
@@ -41,9 +43,11 @@ export class PieChartEdit {
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
 
     // TODO: Add in a datasource type selector
-    const datasource = data.dataSources.get(initialDataSourceType)!.factory();
-    this.grouper = datasource.grouper;
-    this.filterer = datasource.filterer;
+    const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
+    const dataSource = dataSourceProvider.factory();
+    this.grouper = dataSource.grouper;
+    this.filterer = dataSourceProvider.filterer();
+    this.provider = dataSource.provider;
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

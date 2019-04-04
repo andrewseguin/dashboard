@@ -1,6 +1,6 @@
 import {Item} from 'app/github/app-types/item';
 import {DataSource} from 'app/package/data-source/data-source';
-import {Filterer, FiltererContextProvider} from 'app/package/data-source/filterer';
+import {FiltererContextProvider} from 'app/package/data-source/filterer';
 import {Grouper, GrouperContextProvider} from 'app/package/data-source/grouper';
 import {Provider} from 'app/package/data-source/provider';
 import {Sorter} from 'app/package/data-source/sorter';
@@ -10,8 +10,7 @@ import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {combineLatest, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Label} from '../app-types/label';
-import {tokenizeItem} from '../utility/tokenize-item';
-import {AutocompleteContext, ItemsFilterMetadata, MatcherContext} from './item-filter-metadata';
+import {MatcherContext} from './item-filter-metadata';
 import {
   GithubItemGroupingContextProvider as GithubItemGroupingContext,
   GithubItemGroupingMetadata
@@ -21,9 +20,7 @@ import {GithubItemSortingMetadata} from './item-sorter-metadata';
 import {ViewContext} from './item-viewer-metadata';
 
 export class GithubItemDataSource extends DataSource<Item> {
-  constructor(
-      items: Observable<Item[]>, recommendations: Observable<Recommendation[]>,
-      labels: Observable<Label[]>) {
+  constructor(items: Observable<Item[]>, labels: Observable<Label[]>) {
     super();
 
     // Create data source components
@@ -34,12 +31,6 @@ export class GithubItemDataSource extends DataSource<Item> {
     // Set initial state
     this.sorter.setState({sort: 'created', reverse: true});
     this.grouper.setState({group: 'all'});
-
-    // Customize filterer properties
-    this.filterer =
-    new Filterer(ItemsFilterMetadata, createFiltererContextProvider(labels, recommendations));
-    this.filterer.tokenizeItem = tokenizeItem;
-    this.filterer.autocompleteContext = ({items, labels} as AutocompleteContext);
   }
 }
 
@@ -60,12 +51,12 @@ export function createViewerContextProvider(
 
 export function createFiltererContextProvider(
     labels: Observable<Label[]>,
-    recommendations: Observable<Recommendation[]>): FiltererContextProvider<Item, MatcherContext> {
+    recommendations: Observable<Recommendation[]>): FiltererContextProvider<MatcherContext> {
   return combineLatest(recommendations, labels).pipe(map(results => {
     const labelsMap = createLabelsMap(results[1]);
-    return (item: Item) => {
-      const recommendations = getRecommendations(item, results[0], labelsMap);
-      return {item, labelsMap, recommendations};
+    return {
+      labelsMap,
+      getRecommendations: (item: Item) => getRecommendations(item, results[0], labelsMap)
     };
   }));
 }

@@ -1,4 +1,4 @@
-<advanced-search [filterer]="dataSource.filterer"></advanced-search>
+<advanced-search [filterer]="filterer" [provider]="dataSource.provider"></advanced-search>
 <display-options-header [grouper]="dataSource.grouper"
                         [sorter]="dataSource.sorter" [viewer]="viewer"
                         [itemCount]="itemCount | async">

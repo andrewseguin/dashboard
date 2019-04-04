@@ -4,6 +4,7 @@ import {MatDialog, MatSnackBar} from '@angular/material';
 import {Item} from 'app/github/app-types/item';
 import {GithubItemDataSource} from 'app/github/data-source/github-item-groups-data-source';
 import {Filterer} from 'app/package/data-source/filterer';
+import {Provider} from 'app/package/data-source/provider';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {DATA_SOURCES} from 'app/repository/repository';
 import {ActiveStore} from 'app/repository/services/active-store';
@@ -35,6 +36,8 @@ export class EditableRecommendation {
   queryChanged = new Subject<void>();
 
   itemsFilterer: Filterer<Item>;
+
+  provider: Provider<any>;
 
   @Input() recommendation: Recommendation;
 
@@ -82,7 +85,9 @@ export class EditableRecommendation {
     });
 
     // TODO: This should be set by the recommendation
-    this.itemsFilterer = this.dataSources.get('issue')!.factory().filterer;
+    this.itemsFilterer = this.dataSources.get('issue')!.filterer();
+    this.provider = this.dataSources.get('issue')!.factory().provider;
+
 
     const filtererState = this.recommendation.filtererState ||
         {filters: [{query: {equality: 'is', state: 'open'}, type: 'state'}], search: ''};

@@ -42,13 +42,12 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           const filterer = new Filterer(
               ItemsFilterMetadata, createFiltererContextProvider(labels, recommendations));
           filterer.tokenizeItem = tokenizeItem;
-          // filterer.autocompleteContext = ({items, labels} as AutocompleteContext);
           return filterer;
         },
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
-          return new GithubItemDataSource(data, recommendations, labels);
+          return new GithubItemDataSource(data, labels);
         }
       }
     ],
@@ -66,13 +65,12 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           const filterer = new Filterer(
               ItemsFilterMetadata, createFiltererContextProvider(labels, recommendations));
           filterer.tokenizeItem = tokenizeItem;
-          // filterer.autocompleteContext = ({items, labels} as AutocompleteContext);
           return filterer;
         },
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
-          return new GithubItemDataSource(data, recommendations, labels);
+          return new GithubItemDataSource(data, labels);
         }
       }
     ],

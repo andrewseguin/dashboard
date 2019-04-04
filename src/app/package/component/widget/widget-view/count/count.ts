@@ -30,9 +30,11 @@ export class Count {
   count: Observable<number>;
 
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions, null>) {
-    const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
-    dataSource.filterer.setState(this.data.options.filtererState);
-    this.count = dataSource.connect().pipe(map(result => {
+    const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
+    const dataSource = dataSourceProvider.factory();
+    const filterer = dataSourceProvider.filterer();
+    filterer.setState(this.data.options.filtererState);
+    this.count = dataSource.connect(filterer).pipe(map(result => {
       return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
     }));
   }

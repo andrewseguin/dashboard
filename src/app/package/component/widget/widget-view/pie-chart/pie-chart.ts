@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { FiltererState } from 'app/package/data-source/filterer';
-import { Group, GrouperState } from 'app/package/data-source/grouper';
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
+import {FiltererState} from 'app/package/data-source/filterer';
+import {Group, GrouperState} from 'app/package/data-source/grouper';
 import * as Chart from 'chart.js';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { WidgetData, WIDGET_DATA } from '../../widget';
-import { MaterialColors } from '../widget-view';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
+import {WIDGET_DATA, WidgetData} from '../../widget';
+import {MaterialColors} from '../widget-view';
 
 
 export interface PieChartDisplayTypeOptions<G> {
@@ -32,10 +32,13 @@ export class PieChart<T, G> {
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<PieChartDisplayTypeOptions<G>, null>) {}
 
   ngOnInit() {
-    const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
+    const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
+
+    const dataSource = dataSourceProvider.factory();
     dataSource.grouper.setState(this.data.options.grouperState);
-    dataSource.filterer.setState(this.data.options.filtererState);
-    dataSource.connect()
+    const filterer = dataSourceProvider.filterer();
+    filterer.setState(this.data.options.filtererState);
+    dataSource.connect(filterer)
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result));
   }

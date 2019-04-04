@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { Filterer } from 'app/package/data-source/filterer';
-import { take } from 'rxjs/operators';
-import { ButtonToggleOption } from '../../edit-widget/button-toggle-option/button-toggle-option';
-import { SavedFiltererState } from '../../edit-widget/edit-widget';
-import { EditWidgetData2, EDIT_WIDGET_DATA } from '../../widget';
-import { CountDisplayTypeOptions } from './count.module';
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {Filterer} from 'app/package/data-source/filterer';
+import {take} from 'rxjs/operators';
 
+import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
+import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
+
+import {CountDisplayTypeOptions} from './count.module';
+import { Provider } from 'app/package/data-source/provider';
 
 
 @Component({
@@ -17,7 +19,9 @@ import { CountDisplayTypeOptions } from './count.module';
 export class EditCount {
   dataOptions: ButtonToggleOption[] = [];
 
-  filterer: Filterer<any, any, any>;
+  filterer: Filterer<any, any>;
+
+  provider: Provider<any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),
@@ -35,8 +39,9 @@ export class EditCount {
     const initialDataSourceType = this.dataOptions[0].id;
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
 
-    const datasource = data.dataSources.get(initialDataSourceType)!.factory();
-    this.filterer = datasource.filterer;
+    const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
+    this.filterer = dataSourceProvider.filterer();
+    this.provider = dataSourceProvider.factory().provider;
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

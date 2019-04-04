@@ -37,12 +37,16 @@ export class List<S, V> {
   constructor(@Inject(WIDGET_DATA) public data:
                   WidgetData<ListDisplayTypeOptions<S, V>, ListWidgetConfig>) {
     this.options = data.options;
-    const dataSource = this.data.dataSources.get(this.data.options.dataSourceType)!.factory();
+    const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
+    const dataSource = dataSourceProvider.factory();
     dataSource.sorter.setState(this.options.sorterState);
-    dataSource.filterer.setState(this.options.filtererState);
-    this.items = dataSource.connect().pipe(map(result => result[0].items));
 
-    this.viewer = this.data.dataSources.get(this.data.options.dataSourceType)!.viewer();
+    const filterer = dataSourceProvider.filterer();
+    filterer.setState(this.options.filtererState);
+
+    this.items = dataSource.connect(filterer).pipe(map(result => result[0].items));
+
+    this.viewer = dataSourceProvider.viewer();
     this.viewer.setState(this.options.viewerState);
   }
 }

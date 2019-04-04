@@ -86,7 +86,7 @@ export class QueriesPage {
     const filterer = dataSourceProvider.filterer();
 
     if (query.filtererState) {
-      dataSource.filterer.setState(query.filtererState!);
+      filterer.setState(query.filtererState!);
     }
 
     return dataSource.connect(filterer).pipe(

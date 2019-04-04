@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Item} from 'app/github/app-types/item';
 import {Widget} from 'app/package/component/widget/widget';
 import {DataSource} from 'app/package/data-source/data-source';
+import {Filterer} from 'app/package/data-source/filterer';
 import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {isMobile} from 'app/utility/media-matcher';
@@ -23,6 +23,7 @@ import {Query} from '../services/dao/config/query';
 import {Header} from '../services/header';
 import {ItemDetailDialog} from '../shared/dialog/item-detail-dialog/item-detail-dialog';
 import {QueryDialog} from '../shared/dialog/query/query-dialog';
+import { Item } from 'app/github/app-types/item';
 
 @Component({
   styleUrls: ['query-page.scss'],
@@ -30,36 +31,40 @@ import {QueryDialog} from '../shared/dialog/query/query-dialog';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {'[class.is-mobile]': 'isMobile()'}
 })
-export class QueryPage {
+export class QueryPage<T> {
   isMobile = isMobile;
 
-  viewer: Viewer<any, any, any>;
+  filterer: Filterer<T>;
+
+  viewer: Viewer<T, any, any>;
 
   set query(query: Query) {
     this._query = query;
 
     const type = this._query.dataSourceType!;
-    this.dataSource = this.dataSources.get(type)!.factory();
-
-    this.viewer = this.dataSources.get(type)!.viewer();
+    const dataSourceProvider = this.dataSources.get(type)!;
+    this.dataSource = dataSourceProvider.factory();
+    this.viewer = dataSourceProvider.viewer();
+    this.filterer = dataSourceProvider.filterer();
 
 
     // TODO: Needs to be unsubscribed when query switches
     this.canSave = combineLatest(
-                       this.dataSource.filterer.state, this.dataSource.grouper.state,
+                       this.filterer.state, this.dataSource.grouper.state,
                        this.dataSource.sorter.state, this.viewer.state)
                        .pipe(map(() => !this.areStatesEquivalent()));
-    this.activeItem = combineLatest(this.dataSource.connect(this.dataSource.filterer), this.itemId)
-                          .pipe(map(results => {
-                            for (let group of results[0]) {
-                              for (let item of group.items) {
-                                if (item.id === results[1]) {
-                                  return item;
-                                }
-                              }
-                            }
-                            return null;
-                          }));
+    this.activeItem =
+        combineLatest(this.dataSource.connect(this.filterer), this.itemId).pipe(map(results => {
+          for (let group of results[0]) {
+            for (let item of group.items) {
+              // TODO: Cannot assume this is item, need another way to equate
+              if ((item as any as Item).id === results[1]) {
+                return item;
+              }
+            }
+          }
+          return null;
+        }));
 
     this.updateQueryStates();
 
@@ -77,11 +82,11 @@ export class QueryPage {
   private destroyed = new Subject();
   private getSubscription: Subscription;
 
-  public dataSource: DataSource<Item>;
+  public dataSource: DataSource<T>;
 
   public canSave: Observable<boolean>;
 
-  public activeItem: Observable<Item|null>;
+  public activeItem: Observable<T|null>;
 
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
@@ -108,7 +113,7 @@ export class QueryPage {
           const widget: Widget = JSON.parse(widgetJson);
           this.query = createNewQuery(widget.title || 'Widget', widget.dataSourceType || 'issue');
           if (widget.filtererState) {
-            this.dataSource.filterer.setState(widget.filtererState);
+            this.filterer.setState(widget.filtererState);
           }
         } else {
           const type = queryParamMap.get('type') || '';
@@ -151,7 +156,7 @@ export class QueryPage {
 
   saveState() {
     const queryState = {
-      filtererState: this.dataSource.filterer.getState(),
+      filtererState: this.filterer.getState(),
       grouperState: this.dataSource.grouper.getState(),
       sorterState: this.dataSource.sorter.getState(),
       viewerState: this.viewer.getState(),
@@ -191,7 +196,7 @@ export class QueryPage {
         if (r.id === id) {
           this.query = createNewQuery('New Query', 'issue');
           if (r.filtererState) {
-            this.dataSource.filterer.setState(r.filtererState);
+            this.filterer.setState(r.filtererState);
           }
           this.cd.markForCheck();
         }
@@ -212,7 +217,7 @@ export class QueryPage {
 
     const filtererState = this.query.filtererState;
     if (filtererState) {
-      this.dataSource.filterer.setState(filtererState);
+      this.filterer.setState(filtererState);
     }
 
     const viewerState = this.query.viewerState;
@@ -223,7 +228,7 @@ export class QueryPage {
 
   private areStatesEquivalent() {
     const filtererStatesEquivalent =
-        this.query.filtererState && this.dataSource.filterer.isEquivalent(this.query.filtererState);
+        this.query.filtererState && this.filterer.isEquivalent(this.query.filtererState);
     const grouperStatesEquivalent =
         this.query.grouperState && this.dataSource.grouper.isEquivalent(this.query.grouperState);
     const sorterStatesEquivalent =

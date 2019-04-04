@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Filterer} from 'app/package/data-source/filterer';
+import {Provider} from 'app/package/data-source/provider';
 import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {take} from 'rxjs/operators';
@@ -22,7 +23,8 @@ export class ListEdit {
 
   viewer: Viewer<any, any, any>;
   sorter: Sorter<any, any, any>;
-  filterer: Filterer<any, any, any>;
+  filterer: Filterer<any, any>;
+  provider: Provider<any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),
@@ -43,10 +45,13 @@ export class ListEdit {
     const initialDataSourceType = this.dataOptions[0].id;
 
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
-    const datasource = data.dataSources.get(initialDataSourceType)!.factory();
-    this.sorter = datasource.sorter;
-    this.viewer = data.dataSources.get(initialDataSourceType)!.viewer();
-    this.filterer = datasource.filterer;
+    const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
+
+    const dataSource = dataSourceProvider.factory();
+    this.sorter = dataSource.sorter;
+    this.viewer = dataSourceProvider.viewer();
+    this.filterer = dataSourceProvider.filterer();
+    this.provider = dataSource.provider;
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

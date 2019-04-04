@@ -70,8 +70,8 @@ export class TimeSeries<T> {
       const dataSourceProvider = this.data.dataSources.get(datasetConfig.dataSourceType)!;
       const dataSource = dataSourceProvider.factory();
       const filterer = dataSourceProvider.filterer();
+      filterer.setState(datasetConfig.filtererState);
       this.dataSources.set(datasetConfig, dataSource);
-      dataSource.filterer.setState(datasetConfig.filtererState);
       return dataSource.connect(filterer);
     });
 

@@ -8,12 +8,12 @@ export interface Filter {
   isImplicit?: boolean;
 }
 
-export interface FiltererMetadata<M, A> {
+export interface FiltererMetadata<T, M> {
   label?: string;
   queryType?: string;
   queryTypeData?: any;
-  matcher?: (c: M, q: Query) => boolean;
-  autocomplete?: (c: A) => Observable<string[]>;
+  matcher?: (item: T, q: Query, c: M) => boolean;
+  autocomplete?: (items: T[], c: M) => string[];
 }
 
 export interface FiltererState {
@@ -21,15 +21,10 @@ export interface FiltererState {
   search: string;
 }
 
-export type FiltererContextProvider<T, M> = Observable<(item: T) => M>;
+export type FiltererContextProvider<M> = Observable<M>;
 
-export class Filterer<T = any, M = any, A = any> {
+export class Filterer<T = any, M = any> {
   state = new BehaviorSubject<FiltererState>({filters: [], search: ''});
-
-  /**
-   * Context given to a filters to provide autocomplete suggestions. Probably should be a stream?
-   */
-  autocompleteContext: A;
 
   /** Default and naive tokenize function that combines the item's property values into a string. */
   tokenizeItem =
@@ -47,8 +42,8 @@ export class Filterer<T = any, M = any, A = any> {
   // listens for the data given by the provider, else the context will fire simultaneously with the
   // data provider and way too many events will emit
   constructor(
-      public metadata: Map<string, FiltererMetadata<M, any>>,
-      private contextProvider: FiltererContextProvider<T, M>) {}
+      public metadata: Map<string, FiltererMetadata<T, M>>,
+      private contextProvider: Observable<M>) {}
 
   /** Gets a stream that returns the items and updates whenever the filters or search changes. */
   filter(): (items: Observable<T[]>) => Observable<T[]> {
@@ -64,6 +59,19 @@ export class Filterer<T = any, M = any, A = any> {
       }));
     };
   }
+
+  autocomplete(filtererMetadata: FiltererMetadata<T, M>):
+      (items: Observable<T[]>) => Observable<string[]> {
+    return (items: Observable<T[]>) => {
+      return combineLatest(items, this.contextProvider).pipe(map(results => {
+        if (!filtererMetadata.autocomplete) {
+          return [];
+        }
+        return filtererMetadata.autocomplete(results[0], results[1]);
+      }));
+    };
+  }
+
 
   getState(): FiltererState {
     return this.state.value;
@@ -87,19 +95,17 @@ export class Filterer<T = any, M = any, A = any> {
 
 /** Utility function to filter the items. May be used to synchronously filter items. */
 export function filterItems<T, M>(
-    items: T[], filters: Filter[] = [], contextProvider: (item: T) => M,
-    metadata: Map<string, FiltererMetadata<M, any>>) {
+    items: T[], filters: Filter[] = [], context: M, metadata: Map<string, FiltererMetadata<T, M>>) {
   return items.filter(item => {
     return filters.every(filter => {
       if (!filter.query) {
         return true;
       }
 
-      const context = contextProvider(item);
       const filterConfig = metadata.get(filter.type);
 
       if (filterConfig && filterConfig.matcher) {
-        return filterConfig.matcher(context, filter.query);
+        return filterConfig.matcher(item, filter.query, context);
       } else {
         throw Error('Missing matcher for ' + filter.type);
       }

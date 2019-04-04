@@ -33,7 +33,7 @@ export class DatasetOption {
     {id: 'decrement', label: 'Decrement'},
   ];
 
-  filterer: Filterer<any, any, any>;
+  filterer: Filterer<any, any>;
 
   provider: Provider<any>;
 
@@ -64,9 +64,10 @@ export class DatasetOption {
     dataSourceTypeControl.valueChanges
         .pipe(takeUntil(this.destroyed), startWith(dataSourceTypeControl.value))
         .subscribe(value => {
-          const datasource = this.dataSources.get(value)!.factory();
+          const dataSourceProvider = this.dataSources.get(value)!;
+          const datasource = dataSourceProvider.factory();
           this.provider = datasource.provider;
-          this.filterer = datasource.filterer;
+          this.filterer = dataSourceProvider.filterer();
         });
   }
 

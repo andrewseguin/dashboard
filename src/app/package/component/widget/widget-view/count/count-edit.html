@@ -5,6 +5,7 @@
   <input-option formControlName="fontSize" label="Font size" type="number">
   </input-option>
   <filter-state-option formControlName="filtererState" [filterer]="filterer"
+                        [provider]="provider"
                        [savedFiltererStates]="savedFiltererStates">
   </filter-state-option>
 </ng-container>

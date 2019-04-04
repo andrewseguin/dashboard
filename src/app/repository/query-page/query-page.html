@@ -1,6 +1,6 @@
 <div class="master theme-border">
   <items-list *ngIf="dataSource" [dataSource]="dataSource" [viewer]="viewer"
-              [activeItem]="activeItem | async"
+              [filterer]="filterer" [activeItem]="activeItem | async"
               (itemSelected)="navigateToItem($event.number)">
   </items-list>
 </div>

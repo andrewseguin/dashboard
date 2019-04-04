@@ -8,8 +8,9 @@ import {
   OnInit
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {Query} from 'app/package/data-source/query';
 import {Filterer} from 'app/package/data-source/filterer';
+import {Provider} from 'app/package/data-source/provider';
+import {Query} from 'app/package/data-source/query';
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, takeUntil} from 'rxjs/operators';
 
@@ -54,7 +55,9 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = (i: number) => i;
 
-  @Input() filterer: Filterer<any, any, any>;
+  @Input() provider: Provider<any>;
+
+  @Input() filterer: Filterer<any, any>;
 
   hasDisplayedFilters: boolean;
 
@@ -63,7 +66,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
     metadata.forEach((value, key) => {
       if (value.autocomplete) {
-        this.autocomplete.set(key, value.autocomplete(this.filterer.autocompleteContext));
+        this.autocomplete.set(key, this.provider.getData().pipe(this.filterer.autocomplete(value)));
       }
     });
 

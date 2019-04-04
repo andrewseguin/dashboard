@@ -13,12 +13,10 @@ export function getRecommendations(
   }
 
   return recommendations.filter(recommendation => {
-    const contextProvider = (item: Item) => {
-      return {
-        item,
-        labelsMap,
-        recommendations: [],
-      };
+    const contextProvider = {
+      labelsMap,
+      // Cannot create recommendations based on recommendations (circular loop)
+      getRecommendations: (_item: Item) => [],
     };
 
     const filters = recommendation.filtererState ? recommendation.filtererState.filters : [];
