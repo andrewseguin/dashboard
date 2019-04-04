@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {DataSource} from 'app/package/data-source/data-source';
 import {Group} from 'app/package/data-source/grouper';
-import {ItemGroupsRenderer, RendererState} from 'app/package/utility/renderer';
+import {RendererState, renderItemGroups} from 'app/package/utility/renderer';
 import {fromEvent, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
@@ -28,13 +28,13 @@ export class ItemsList<T> {
                     .pipe(takeUntil(this.destroyed))
                     .subscribe(observer)));
 
-  itemCount: Observable<number>;
-
   @Input() activeItem: T;
 
   @Input() dataSource: DataSource<T>;
 
   @Output() itemSelected = new EventEmitter<T>();
+
+  itemCount: Observable<number>;
 
   trackByIndex = (i: number) => i;
 
@@ -45,14 +45,14 @@ export class ItemsList<T> {
   constructor(public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    const renderer = new ItemGroupsRenderer(this.dataSource, this.elementScrolled);
-    renderer.renderedItemGroups.pipe(takeUntil(this.destroyed)).subscribe(result => {
-      this.ngZone.run(() => this.renderState.next(result));
-    });
+    this.itemCount = this.dataSource.connect().pipe(map(
+        itemGroups => itemGroups.map(g => g.items.length).reduce((prev, curr) => curr += prev)));
 
-    this.itemCount = this.dataSource.connect().pipe(map(result => {
-      return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
-    }));
+    this.dataSource.connect()
+        .pipe(renderItemGroups(this.elementScrolled), takeUntil(this.destroyed))
+        .subscribe(result => {
+          this.ngZone.run(() => this.renderState.next(result));
+        });
   }
 
   ngOnDestroy() {
