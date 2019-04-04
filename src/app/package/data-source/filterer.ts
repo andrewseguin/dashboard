@@ -51,15 +51,18 @@ export class Filterer<T, M = any, A = any> {
       private contextProvider: FiltererContextProvider<T, M>) {}
 
   /** Gets a stream that returns the items and updates whenever the filters or search changes. */
-  filter(items: T[]): Observable<T[]> {
-    return combineLatest(this.state, this.contextProvider).pipe(map(results => {
-      const filters = results[0].filters;
-      const search = results[0].search;
-      const contextProvider = results[1];
+  filter(): (items: Observable<T[]>) => Observable<T[]> {
+    return (items: Observable<T[]>) => {
+      return combineLatest(items, this.state, this.contextProvider).pipe(map(results => {
+        const items = results[0];
+        const filters = results[1].filters;
+        const search = results[1].search;
+        const contextProvider = results[2];
 
-      const filteredItems = filterItems(items, filters, contextProvider, this.metadata);
-      return searchItems(filteredItems, search, this.tokenizeItem);
-    }));
+        const filteredItems = filterItems(items, filters, contextProvider, this.metadata);
+        return searchItems(filteredItems, search, this.tokenizeItem);
+      }));
+    };
   }
 
   getState(): FiltererState {

@@ -22,33 +22,36 @@ export class Sorter<T, S, C> {
       public metadata: Map<S, SortingMetadata<T, S, C>>,
       private contextProvider: SorterContextProvider<C>) {}
 
-  sort(itemGroups: Group<T>[]): Observable<Group<T>[]> {
-    return combineLatest(this.state, this.contextProvider).pipe(map(results => {
-      const sort = results[0].sort;
-      const reverse = results[0].reverse;
-      const context = results[1];
+  sort(): (itemGroups: Observable<Group<T>[]>) => Observable<Group<T>[]> {
+    return (itemGroups: Observable<Group<T>[]>) => {
+      return combineLatest(itemGroups, this.state, this.contextProvider).pipe(map(results => {
+        const itemGroups = results[0];
+        const sort = results[1].sort;
+        const reverse = results[1].reverse;
+        const context = results[2];
 
-      if (!sort) {
+        if (!sort) {
+          return itemGroups;
+        }
+
+        const itemSort = this.metadata.get(sort);
+        if (!itemSort) {
+          throw new Error(`No configuration set up for sort ${sort}`);
+        }
+
+        if (itemSort.comparator) {
+          itemGroups.forEach(itemGroup => {
+            itemGroup.items.sort(itemSort.comparator(context));
+
+            if (reverse) {
+              itemGroup.items.reverse();
+            }
+          });
+        }
+
         return itemGroups;
-      }
-
-      const itemSort = this.metadata.get(sort);
-      if (!itemSort) {
-        throw new Error(`No configuration set up for sort ${sort}`);
-      }
-
-      if (itemSort.comparator) {
-        itemGroups.forEach(itemGroup => {
-          itemGroup.items.sort(itemSort.comparator(context));
-
-          if (reverse) {
-            itemGroup.items.reverse();
-          }
-        });
-      }
-
-      return itemGroups;
-    }));
+      }));
+    };
   }
 
   getSorts(): SortingMetadata<T, S, C>[] {

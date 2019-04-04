@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {mergeMap, shareReplay} from 'rxjs/operators';
+import {shareReplay} from 'rxjs/operators';
 import {Filterer} from './filterer';
 import {Group, Grouper, GrouperMetadata} from './grouper';
 import {Provider} from './provider';
@@ -40,15 +40,10 @@ export class DataSource<T> {
 
   connect(): Observable<Group<T>[]> {
     if (!this.results) {
-      this.initialize();
+      this.results = this.provider.getData().pipe(
+          this.filterer.filter(), this.grouper.group(), this.sorter.sort(), shareReplay());
     }
 
     return this.results;
-  }
-
-  private initialize() {
-    this.results = this.provider.getData().pipe(
-        mergeMap(data => this.filterer.filter(data)), mergeMap(data => this.grouper.group(data)),
-        mergeMap(data => this.sorter.sort(data)), shareReplay());
   }
 }

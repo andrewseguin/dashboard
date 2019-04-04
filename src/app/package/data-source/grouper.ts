@@ -1,4 +1,4 @@
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
 export interface GrouperState<G> {
@@ -27,36 +27,41 @@ export class Grouper<T, G, C> {
       public metadata: Map<G, GrouperMetadata<T, G, C>>,
       private contextProvider: GrouperContextProvider<C>) {}
 
-  group(items: T[]): Observable<Group<T>[]> {
+  group(): (items: Observable<T[]>) => Observable<Group<T>[]> {
     let config: GrouperMetadata<T, G, C>|null;
-    return this.state.pipe(
-        map(state => {
-          const group = state.group!;
+    return (items: Observable<T[]>) => {
+      return combineLatest(items, this.state)
+          .pipe(
+              map(results => {
+                const items = results[0];
+                const state = results[1];
+                const group = state.group!;
 
-          if (this.metadata.has(group)) {
-            config = this.metadata.get(group) || null;
-          }
+                if (this.metadata.has(group)) {
+                  config = this.metadata.get(group) || null;
+                }
 
-          if (!config) {
-            throw Error(`Missing config for group ${group}`);
-          }
+                if (!config) {
+                  throw Error(`Missing config for group ${group}`);
+                }
 
-          return config.groupingFunction(items);
-        }),
-        mergeMap(itemGroups => {
-          const titleTransform = config!.titleTransform || ((title: string) => title);
+                return config.groupingFunction(items);
+              }),
+              mergeMap(itemGroups => {
+                const titleTransform = config!.titleTransform || ((title: string) => title);
 
-          return this.contextProvider.pipe(map(context => {
-            itemGroups.forEach(itemGroup => {
-              itemGroup.title = titleTransform(itemGroup.title, context);
-            });
-            return itemGroups;
-          }));
-        }),
-        map(itemGroups => {
-          // TODO: Move sort function to the metadata
-          return itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
-        }));
+                return this.contextProvider.pipe(map(context => {
+                  itemGroups.forEach(itemGroup => {
+                    itemGroup.title = titleTransform(itemGroup.title, context);
+                  });
+                  return itemGroups;
+                }));
+              }),
+              map(itemGroups => {
+                // TODO: Move sort function to the metadata
+                return itemGroups.sort((a, b) => a.title < b.title ? -1 : 1);
+              }));
+    };
   }
 
   getGroups(): GrouperMetadata<T, G, C>[] {
