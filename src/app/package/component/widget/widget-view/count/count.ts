@@ -32,7 +32,7 @@ export class Count {
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions, null>) {
     const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
-    const provider = dataSourceProvider.provider();
+    const provider = dataSourceProvider.dataSource();
     this.count = provider.getData().pipe(filterer.filter(), map(result => result.length));
   }
 }

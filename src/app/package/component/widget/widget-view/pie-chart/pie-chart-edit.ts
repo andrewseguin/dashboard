@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
-import {Provider} from 'app/package/data-source/provider';
+import {DataSource} from 'app/package/data-source/data-source';
 import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
@@ -22,7 +22,7 @@ export class PieChartEdit {
 
   grouper: Grouper<any, any, any>;
   filterer: Filterer<any, any>;
-  provider: Provider<any>;
+  provider: DataSource<any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),
@@ -46,7 +46,7 @@ export class PieChartEdit {
     const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
     this.grouper = dataSourceProvider.grouper();
     this.filterer = dataSourceProvider.filterer();
-    this.provider = dataSourceProvider.provider();
+    this.provider = dataSourceProvider.dataSource();
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

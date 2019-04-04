@@ -1,9 +1,18 @@
-import {SortingMetadata} from 'app/package/data-source/sorter';
+import {SortingMetadata, SorterState, Sorter} from 'app/package/data-source/sorter';
 import {Item} from '../app-types/item';
+import { of } from 'rxjs';
 
-export type Sort = 'created'|'updated'|'title'|'plusOneReactions'|'minusOneReactions';
+export function getSorterProvider() {
+  return (initialState?: SorterState) => {
+    const sorter = new Sorter(GithubItemSortingMetadata, of(null));
+    sorter.setState(initialState || {sort: 'created', reverse: true});
+    return sorter;
+  };
+}
 
-export const GithubItemSortingMetadata = new Map<Sort, SortingMetadata<Item, Sort, null>>([
+type Sort = 'created'|'updated'|'title'|'plusOneReactions'|'minusOneReactions';
+
+const GithubItemSortingMetadata = new Map<Sort, SortingMetadata<Item, Sort, null>>([
   [
     'created', {
       id: 'created',

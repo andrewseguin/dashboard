@@ -66,7 +66,7 @@ export class TimeSeries<T> {
     const datasetData = this.data.options.datasets.map(datasetConfig => {
       const dataSourceProvider = this.data.dataSources.get(datasetConfig.dataSourceType)!;
       const filterer = dataSourceProvider.filterer(datasetConfig.filtererState);
-      const provider = dataSourceProvider.provider();
+      const provider = dataSourceProvider.dataSource();
       return provider.getData().pipe(filterer.filter());
     });
 
@@ -187,7 +187,7 @@ export class TimeSeries<T> {
     const dateActions: DateActionPair[] = [];
     items.forEach(item => {
       datasetConfig.actions.forEach(action => {
-        const provider = this.data.dataSources.get(datasetConfig.dataSourceType)!.provider();
+        const provider = this.data.dataSources.get(datasetConfig.dataSourceType)!.dataSource();
         const dates = provider.getMetadataMapForType('date');
         // TODO: Error handling if the property does not exist
         const date = dates.get(action.datePropertyId)!.accessor(item);

@@ -4,7 +4,7 @@ import { Filterer } from 'app/package/data-source/filterer';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SavedFiltererState } from '../edit-widget';
-import { Provider } from 'app/package/data-source/provider';
+import { DataSource } from 'app/package/data-source/data-source';
 
 interface SavedFiltererStateGroup {
   name: string;
@@ -25,7 +25,7 @@ export class FilterStateOption implements ControlValueAccessor {
 
   @Input() filterer: Filterer<any, any>;
 
-  @Input() provider: Provider<any>;
+  @Input() provider: DataSource<any>;
 
   @Input() savedFiltererStates: SavedFiltererState[];
 

@@ -3,7 +3,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Item} from 'app/github/app-types/item';
 import {Filterer} from 'app/package/data-source/filterer';
-import {Provider} from 'app/package/data-source/provider';
+import {DataSource} from 'app/package/data-source/data-source';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {DATA_SOURCES} from 'app/repository/repository';
 import {ActiveStore} from 'app/repository/services/active-store';
@@ -36,7 +36,7 @@ export class EditableRecommendation {
 
   itemsFilterer: Filterer<Item>;
 
-  provider: Provider<any>;
+  provider: DataSource<any>;
 
   @Input() recommendation: Recommendation;
 
@@ -83,7 +83,7 @@ export class EditableRecommendation {
 
     // TODO: This should be set by the recommendation
     this.itemsFilterer = this.dataSources.get('issue')!.filterer();
-    this.provider = this.dataSources.get('issue')!.provider();
+    this.provider = this.dataSources.get('issue')!.dataSource();
 
 
     const filtererState = this.recommendation.filtererState ||

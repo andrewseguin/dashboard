@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Filter, Filterer} from 'app/package/data-source/filterer';
-import {Provider} from 'app/package/data-source/provider';
+import {DataSource} from 'app/package/data-source/data-source';
 import {Query} from 'app/package/data-source/query';
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, take, takeUntil} from 'rxjs/operators';
@@ -55,7 +55,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = (i: number) => i;
 
-  @Input() provider: Provider<any>;
+  @Input() provider: DataSource<any>;
 
   @Input() filterer: Filterer<any, any>;
 

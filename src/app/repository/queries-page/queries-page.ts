@@ -83,7 +83,7 @@ export class QueriesPage {
   private getQueryCount(query: Query): Observable<number> {
     const dataSourceProvider = this.dataSources.get(query.dataSourceType!)!;
     const filterer = dataSourceProvider.filterer(query.filtererState);
-    const provider = dataSourceProvider.provider();
+    const provider = dataSourceProvider.dataSource();
 
     return provider.getData().pipe(
         filterer.filter(), delay(250), map(result => result.reduce((prev, curr) => curr += prev)));

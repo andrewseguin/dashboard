@@ -1,4 +1,9 @@
-import {FiltererContextProvider, FiltererMetadata} from 'app/package/data-source/filterer';
+import {
+  Filterer,
+  FiltererContextProvider,
+  FiltererMetadata,
+  FiltererState
+} from 'app/package/data-source/filterer';
 import {DateQuery, InputQuery, NumberQuery, Query, StateQuery} from 'app/package/data-source/query';
 import {
   arrayContainsQuery,
@@ -13,13 +18,29 @@ import {map} from 'rxjs/operators';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
 import {createLabelsMap} from '../utility/create-labels-map';
+import {tokenizeItem} from '../utility/tokenize-item';
 
-export interface MatcherContext {
+export function getFiltererProvider(
+    labels: Observable<Label[]>, recommendations: Observable<Recommendation[]>,
+    getRecommendations:
+        (item: Item, recommendations: Recommendation[], labelsMap: Map<string, Label>) =>
+            Recommendation[]): (initialState?: FiltererState) => Filterer<Item, MatcherContext> {
+  return (initialState?: FiltererState) => {
+    const filterer = new Filterer(
+        ItemsFilterMetadata,
+        createFiltererContextProvider(labels, recommendations, getRecommendations));
+    filterer.setState(initialState || {filters: [], search: ''});
+    filterer.tokenizeItem = tokenizeItem;
+    return filterer;
+  };
+}
+
+interface MatcherContext {
   labelsMap: Map<string, Label>;
   getRecommendations: (item: Item) => Recommendation[];
 }
 
-export function createFiltererContextProvider(
+function createFiltererContextProvider(
     labels: Observable<Label[]>, recommendations: Observable<Recommendation[]>,
     getRecommendations:
         (item: Item, recommendations: Recommendation[], labelsMap: Map<string, Label>) =>

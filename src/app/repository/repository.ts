@@ -1,29 +1,14 @@
 import {ChangeDetectionStrategy, Component, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
-import {
-  createFiltererContextProvider,
-  ItemsFilterMetadata
-} from 'app/github/data-source/item-filter-metadata';
-import {
-  createGrouperContextProvider,
-  GithubItemGroupingMetadata
-} from 'app/github/data-source/item-grouper-metadata';
-import {GithubItemDataMetadata} from 'app/github/data-source/item-provider-metadata';
-import {GithubItemSortingMetadata} from 'app/github/data-source/item-sorter-metadata';
-import {
-  createViewerContextProvider,
-  GithubItemViewerMetadata
-} from 'app/github/data-source/item-viewer-metadata';
-import {tokenizeItem} from 'app/github/utility/tokenize-item';
-import {Filterer, FiltererState} from 'app/package/data-source/filterer';
-import {Grouper, GrouperState} from 'app/package/data-source/grouper';
-import {Provider} from 'app/package/data-source/provider';
-import {Sorter, SorterState} from 'app/package/data-source/sorter';
-import {Viewer, ViewerState} from 'app/package/data-source/viewer';
+import {getDataSourceProvider} from 'app/github/data-source/item-data-source-metadata';
+import {getFiltererProvider} from 'app/github/data-source/item-filter-metadata';
+import {getGrouperProvider} from 'app/github/data-source/item-grouper-metadata';
+import {getSorterProvider} from 'app/github/data-source/item-sorter-metadata';
+import {getViewerProvider} from 'app/github/data-source/item-viewer-metadata';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
-import {interval, of} from 'rxjs';
+import {interval} from 'rxjs';
 import {filter, map, mergeMap, take} from 'rxjs/operators';
 import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data-dao';
@@ -38,77 +23,32 @@ export const provideDataSources = (activeStore: ActiveStore) => {
   const recommendations = activeStore.activeConfig.recommendations.list;
   const labels = activeStore.activeData.labels.list;
 
+  const issues =
+      activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
+
+  const prs = activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
+
   return new Map<string, DataSourceProvider>([
     [
       'issue', {
         id: 'issue',
         label: 'Issues',
-        viewer: (initialState?: ViewerState) => {
-          const viewer = new Viewer(
-              GithubItemViewerMetadata, createViewerContextProvider(labels, recommendations));
-          viewer.setState(initialState || {views: viewer.getViews().map(v => v.id)});
-          return viewer;
-        },
-        filterer: (initialState?: FiltererState) => {
-          const filterer = new Filterer(
-              ItemsFilterMetadata,
-              createFiltererContextProvider(labels, recommendations, getRecommendations));
-          filterer.setState(initialState || {filters: [], search: ''});
-          filterer.tokenizeItem = tokenizeItem;
-          return filterer;
-        },
-        grouper: (initialState?: GrouperState) => {
-          const grouper =
-              new Grouper(GithubItemGroupingMetadata, createGrouperContextProvider(labels));
-          grouper.setState(initialState || {group: 'all'});
-          return grouper;
-        },
-        sorter: (initialState?: SorterState) => {
-          const sorter = new Sorter(GithubItemSortingMetadata, of(null));
-          sorter.setState(initialState || {sort: 'created', reverse: true});
-          return sorter;
-        },
-        provider: () => {
-          const data =
-              activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
-          return new Provider(GithubItemDataMetadata, data);
-        },
+        viewer: getViewerProvider(labels, recommendations),
+        filterer: getFiltererProvider(labels, recommendations, getRecommendations),
+        grouper: getGrouperProvider(labels),
+        sorter: getSorterProvider(),
+        dataSource: getDataSourceProvider(issues)
       }
     ],
     [
       'pr', {
         id: 'pr',
         label: 'Pull Requests',
-        viewer: (initialState?: ViewerState) => {
-          const viewer = new Viewer(
-              GithubItemViewerMetadata, createViewerContextProvider(labels, recommendations));
-          viewer.setState(initialState || {views: viewer.getViews().map(v => v.id)});
-          return viewer;
-        },
-        filterer: (initialState?: FiltererState) => {
-          const filterer = new Filterer(
-              ItemsFilterMetadata,
-              createFiltererContextProvider(labels, recommendations, getRecommendations));
-          filterer.setState(initialState || {filters: [], search: ''});
-          filterer.tokenizeItem = tokenizeItem;
-          return filterer;
-        },
-        grouper: (initialState?: GrouperState) => {
-          const grouper =
-              new Grouper(GithubItemGroupingMetadata, createGrouperContextProvider(labels));
-          grouper.setState(initialState || {group: 'all'});
-          return grouper;
-        },
-        sorter: (initialState?: SorterState) => {
-          const sorter = new Sorter(GithubItemSortingMetadata, of(null));
-          sorter.setState(initialState || {sort: 'created', reverse: true});
-          return sorter;
-        },
-        provider: () => {
-          const data =
-              activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
-          return new Provider(GithubItemDataMetadata, data);
-        },
+        viewer: getViewerProvider(labels, recommendations),
+        filterer: getFiltererProvider(labels, recommendations, getRecommendations),
+        grouper: getGrouperProvider(labels),
+        sorter: getSorterProvider(),
+        dataSource: getDataSourceProvider(prs)
       }
     ],
   ]);

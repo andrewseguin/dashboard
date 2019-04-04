@@ -1,26 +1,27 @@
 import {DatePipe} from '@angular/common';
-import {ViewerMetadata, ViewerContextProvider} from 'app/package/data-source/viewer';
+import {Viewer, ViewerMetadata, ViewerState} from 'app/package/data-source/viewer';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {getRecommendations} from 'app/repository/utility/get-recommendations';
+import {combineLatest, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
+import {createLabelsMap} from '../utility/create-labels-map';
 import {getBorderColor, getTextColor} from '../utility/label-colors';
-import { Observable, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { createLabelsMap } from '../utility/create-labels-map';
 
-export type GithubItemView =
-    'title'|'reporter'|'assignees'|'labels'|'warnings'|'suggestions'|'creationDate'|'updatedDate';
-
-export interface ViewContext {
-  item: Item;
-  labelsMap: Map<string, Label>;
-  recommendations: Recommendation[];
+export function getViewerProvider(
+    labels: Observable<Label[]>, recommendations: Observable<Recommendation[]>):
+    (initialState?: ViewerState) => Viewer<Item, GithubItemView, ViewContext> {
+  return (initialState?: ViewerState) => {
+    const contextProvider = createContextProvider(labels, recommendations);
+    const viewer = new Viewer(GithubItemViewerMetadata, contextProvider);
+    viewer.setState(initialState || {views: viewer.getViews().map(v => v.id)});
+    return viewer;
+  };
 }
 
-export function createViewerContextProvider(
-    labels: Observable<Label[]>,
-    recommendations: Observable<Recommendation[]>): ViewerContextProvider<Item, ViewContext> {
+function createContextProvider(
+    labels: Observable<Label[]>, recommendations: Observable<Recommendation[]>) {
   return combineLatest(recommendations, labels).pipe(map(results => {
     const recommendations = results[0];
     const labelsMap = createLabelsMap(results[1]);
@@ -28,7 +29,16 @@ export function createViewerContextProvider(
   }));
 }
 
-export const GithubItemViewerMetadata =
+type GithubItemView =
+    'title'|'reporter'|'assignees'|'labels'|'warnings'|'suggestions'|'creationDate'|'updatedDate';
+
+interface ViewContext {
+  item: Item;
+  labelsMap: Map<string, Label>;
+  recommendations: Recommendation[];
+}
+
+const GithubItemViewerMetadata =
     new Map<GithubItemView, ViewerMetadata<GithubItemView, ViewContext>>([
       [
         'title',

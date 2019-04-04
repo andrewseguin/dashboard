@@ -8,7 +8,7 @@ import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
 
 import {CountDisplayTypeOptions} from './count.module';
-import { Provider } from 'app/package/data-source/provider';
+import { DataSource } from 'app/package/data-source/data-source';
 
 
 @Component({
@@ -21,7 +21,7 @@ export class EditCount {
 
   filterer: Filterer<any, any>;
 
-  provider: Provider<any>;
+  provider: DataSource<any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),
@@ -41,7 +41,7 @@ export class EditCount {
 
     const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
     this.filterer = dataSourceProvider.filterer();
-    this.provider = dataSourceProvider.provider();
+    this.provider = dataSourceProvider.dataSource();
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Group, Grouper} from 'app/package/data-source/grouper';
-import {Provider} from 'app/package/data-source/provider';
+import {DataSource} from 'app/package/data-source/data-source';
 import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {RendererState, renderItemGroups} from 'app/package/utility/renderer';
@@ -39,7 +39,7 @@ export class ItemsList<T> {
 
   @Input() filterer: Filterer<T>;
 
-  @Input() provider: Provider<T>;
+  @Input() provider: DataSource<T>;
 
   @Input() viewer: Viewer<T>;
 

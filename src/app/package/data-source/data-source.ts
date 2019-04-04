@@ -1,22 +1,22 @@
 import {Observable} from 'rxjs';
 
-export interface ProviderMetadata<T> {
+export interface DataSourceMetadata<T> {
   id: string;
   label: string;
   type: string;
   accessor: (item: T) => any;
 }
 
-export class Provider<T = any> {
-  constructor(public metadata: Map<string, ProviderMetadata<T>>, private data: Observable<T[]>) {}
+export class DataSource<T = any> {
+  constructor(public metadata: Map<string, DataSourceMetadata<T>>, private data: Observable<T[]>) {}
 
   /** Gets a stream that provides the list of items. */
   getData(): Observable<T[]> {
     return this.data;
   }
 
-  getMetadataListForType(type: string): ProviderMetadata<T>[] {
-    const metadataListForType: ProviderMetadata<T>[] = [];
+  getMetadataListForType(type: string): DataSourceMetadata<T>[] {
+    const metadataListForType: DataSourceMetadata<T>[] = [];
     this.metadata.forEach(metadata => {
       if (metadata.type === type) {
         metadataListForType.push(metadata);
@@ -25,8 +25,8 @@ export class Provider<T = any> {
     return metadataListForType;
   }
 
-  getMetadataMapForType(type: string): Map<string, ProviderMetadata<T>> {
-    const metadataMapForType = new Map<string, ProviderMetadata<T>>();
+  getMetadataMapForType(type: string): Map<string, DataSourceMetadata<T>> {
+    const metadataMapForType = new Map<string, DataSourceMetadata<T>>();
     this.getMetadataListForType(type).forEach(metadata => {
       metadataMapForType.set(metadata.id, metadata);
     });

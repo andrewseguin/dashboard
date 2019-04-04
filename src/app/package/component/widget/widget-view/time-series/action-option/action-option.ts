@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { ControlContainer } from '@angular/forms';
-import { ProviderMetadata } from 'app/package/data-source/provider';
+import { DataSourceMetadata } from 'app/package/data-source/data-source';
 import { ButtonToggleOption } from '../../../edit-widget/button-toggle-option/button-toggle-option';
 
 @Component({
@@ -19,7 +19,7 @@ export class ActionOption {
     {id: 'decrement', label: 'Decrement'},
   ];
 
-  @Input() providerMetadata: Map<string, ProviderMetadata<any>>;
+  @Input() providerMetadata: Map<string, DataSourceMetadata<any>>;
 
   @Input() canRemove: boolean;
 

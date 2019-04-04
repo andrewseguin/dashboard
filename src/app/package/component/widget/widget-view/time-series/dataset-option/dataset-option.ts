@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ControlContainer, FormArray} from '@angular/forms';
 import {Filterer} from 'app/package/data-source/filterer';
-import {Provider} from 'app/package/data-source/provider';
+import {DataSource} from 'app/package/data-source/data-source';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Subject} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
@@ -35,7 +35,7 @@ export class DatasetOption {
 
   filterer: Filterer<any, any>;
 
-  provider: Provider<any>;
+  provider: DataSource<any>;
 
   private destroyed = new Subject();
 
@@ -65,7 +65,7 @@ export class DatasetOption {
         .pipe(takeUntil(this.destroyed), startWith(dataSourceTypeControl.value))
         .subscribe(value => {
           const dataSourceProvider = this.dataSources.get(value)!;
-          this.provider = dataSourceProvider.provider();
+          this.provider = dataSourceProvider.dataSource();
           this.filterer = dataSourceProvider.filterer();
         });
   }

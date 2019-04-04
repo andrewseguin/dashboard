@@ -12,7 +12,7 @@ import {Item} from 'app/github/app-types/item';
 import {Widget} from 'app/package/component/widget/widget';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
-import {Provider} from 'app/package/data-source/provider';
+import {DataSource} from 'app/package/data-source/data-source';
 import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
@@ -42,7 +42,7 @@ export class QueryPage<T> {
 
   sorter: Sorter<T>;
 
-  provider: Provider<T>;
+  provider: DataSource<T>;
 
   viewer: Viewer<T, any, any>;
 
@@ -55,7 +55,7 @@ export class QueryPage<T> {
     this.filterer = dataSourceProvider.filterer(this.query.filtererState);
     this.grouper = dataSourceProvider.grouper(this.query.grouperState);
     this.sorter = dataSourceProvider.sorter(this.query.sorterState);
-    this.provider = dataSourceProvider.provider();
+    this.provider = dataSourceProvider.dataSource();
 
     this.canSave = combineLatest(
                        this.viewer.isEquivalent(query.viewerState),

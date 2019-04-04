@@ -38,7 +38,7 @@ export class List<S, V> {
     const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
     const sorter = dataSourceProvider.sorter(this.data.options.sorterState);
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
-    const provider = dataSourceProvider.provider();
+    const provider = dataSourceProvider.dataSource();
 
     this.items = provider.getData().pipe(filterer.filter(), sorter.sort());
 

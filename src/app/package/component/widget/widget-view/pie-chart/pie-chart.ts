@@ -35,7 +35,7 @@ export class PieChart<T, G> {
     const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
     const grouper = dataSourceProvider.grouper(this.data.options.grouperState);
-    const provider = dataSourceProvider.provider();
+    const provider = dataSourceProvider.dataSource();
 
     provider.getData()
         .pipe(filterer.filter(), grouper.group(), takeUntil(this.destroyed))
