@@ -1,9 +1,11 @@
 import {ChangeDetectionStrategy, Component, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
 import {ItemsFilterMetadata} from 'app/github/data-source/item-filter-metadata';
+import {GithubItemGroupingMetadata} from 'app/github/data-source/item-grouper-metadata';
 import {GithubItemViewerMetadata} from 'app/github/data-source/item-viewer-metadata';
 import {tokenizeItem} from 'app/github/utility/tokenize-item';
 import {Filterer} from 'app/package/data-source/filterer';
+import {Grouper} from 'app/package/data-source/grouper';
 import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Auth} from 'app/service/auth';
@@ -12,6 +14,7 @@ import {interval} from 'rxjs';
 import {filter, map, mergeMap, take} from 'rxjs/operators';
 import {
   createFiltererContextProvider,
+  createGrouperContextProvider,
   createViewerContextProvider,
   GithubItemDataSource
 } from '../github/data-source/github-item-groups-data-source';
@@ -44,10 +47,16 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           filterer.tokenizeItem = tokenizeItem;
           return filterer;
         },
+        grouper: () => {
+          const grouper =
+              new Grouper(GithubItemGroupingMetadata, createGrouperContextProvider(labels));
+          grouper.setState({group: 'all'});
+          return grouper;
+        },
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
-          return new GithubItemDataSource(data, labels);
+          return new GithubItemDataSource(data);
         }
       }
     ],
@@ -67,10 +76,16 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           filterer.tokenizeItem = tokenizeItem;
           return filterer;
         },
+        grouper: () => {
+          const grouper =
+              new Grouper(GithubItemGroupingMetadata, createGrouperContextProvider(labels));
+          grouper.setState({group: 'all'});
+          return grouper;
+        },
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
-          return new GithubItemDataSource(data, labels);
+          return new GithubItemDataSource(data);
         }
       }
     ],

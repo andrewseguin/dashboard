@@ -2,34 +2,20 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {shareReplay} from 'rxjs/operators';
 import {Filterer} from './filterer';
-import {Group, Grouper, GrouperMetadata} from './grouper';
+import {Group, Grouper} from './grouper';
 import {Provider} from './provider';
 import {Sorter} from './sorter';
-
-const DefaultGrouperMetadata = new Map<'all', GrouperMetadata<any, 'all', null>>([
-  [
-    'all', {
-      id: 'all',
-      label: 'All',
-      groupingFunction: (items: any[]) => [{id: 'all', title: 'All', items}],
-      titleTransform: () => '',
-    }
-  ],
-]);
 
 @Injectable()
 export class DataSource<T> {
   /** Provider for the items to be filtered, grouped, and sorted. */
   provider = new Provider<T>(new Map(), of([]));
 
-  /** The grouper is responsible for grouping the filtered data into ItemGroups */
-  grouper: Grouper<T, any, any> = new Grouper(DefaultGrouperMetadata, of(null));
-
   /** The sorter handles the sorting of items within each group. */
   sorter: Sorter<T, any, any> = new Sorter<T, '', null>(new Map(), of(null));
 
-  connect(filterer: Filterer<T>): Observable<Group<T>[]> {
+  connect(filterer: Filterer<T>, grouper: Grouper<T>): Observable<Group<T>[]> {
     return this.provider.getData().pipe(
-        filterer.filter(), this.grouper.group(), this.sorter.sort(), shareReplay());
+        filterer.filter(), grouper.group(), this.sorter.sort(), shareReplay());
   }
 }

@@ -33,8 +33,9 @@ export class Count {
     const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
     const dataSource = dataSourceProvider.factory();
     const filterer = dataSourceProvider.filterer();
+    const grouper = dataSourceProvider.grouper();
     filterer.setState(this.data.options.filtererState);
-    this.count = dataSource.connect(filterer).pipe(map(result => {
+    this.count = dataSource.connect(filterer, grouper).pipe(map(result => {
       return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
     }));
   }

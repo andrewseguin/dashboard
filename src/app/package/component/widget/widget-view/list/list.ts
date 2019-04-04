@@ -44,7 +44,9 @@ export class List<S, V> {
     const filterer = dataSourceProvider.filterer();
     filterer.setState(this.options.filtererState);
 
-    this.items = dataSource.connect(filterer).pipe(map(result => result[0].items));
+    const grouper = dataSourceProvider.grouper();
+
+    this.items = dataSource.connect(filterer, grouper).pipe(map(result => result[0].items));
 
     this.viewer = dataSourceProvider.viewer();
     this.viewer.setState(this.options.viewerState);

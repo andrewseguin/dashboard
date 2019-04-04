@@ -20,7 +20,7 @@ export interface GrouperMetadata<T, G, C> {
 
 export type GrouperContextProvider<C> = Observable<C>;
 
-export class Grouper<T, G, C> {
+export class Grouper<T=any, G = any, C = any> {
   state = new BehaviorSubject<GrouperState<G>>({group: null});
 
   constructor(

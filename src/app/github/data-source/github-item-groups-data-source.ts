@@ -1,7 +1,7 @@
 import {Item} from 'app/github/app-types/item';
 import {DataSource} from 'app/package/data-source/data-source';
 import {FiltererContextProvider} from 'app/package/data-source/filterer';
-import {Grouper, GrouperContextProvider} from 'app/package/data-source/grouper';
+import {GrouperContextProvider} from 'app/package/data-source/grouper';
 import {Provider} from 'app/package/data-source/provider';
 import {Sorter} from 'app/package/data-source/sorter';
 import {ViewerContextProvider} from 'app/package/data-source/viewer';
@@ -12,25 +12,22 @@ import {map} from 'rxjs/operators';
 import {Label} from '../app-types/label';
 import {MatcherContext} from './item-filter-metadata';
 import {
-  GithubItemGroupingContextProvider as GithubItemGroupingContext,
-  GithubItemGroupingMetadata
+  GithubItemGroupingContextProvider as GithubItemGroupingContext
 } from './item-grouper-metadata';
 import {GithubItemDataMetadata} from './item-provider-metadata';
 import {GithubItemSortingMetadata} from './item-sorter-metadata';
 import {ViewContext} from './item-viewer-metadata';
 
 export class GithubItemDataSource extends DataSource<Item> {
-  constructor(items: Observable<Item[]>, labels: Observable<Label[]>) {
+  constructor(items: Observable<Item[]>) {
     super();
 
     // Create data source components
     this.provider = new Provider(GithubItemDataMetadata, items);
-    this.grouper = new Grouper(GithubItemGroupingMetadata, createGrouperContextProvider(labels));
     this.sorter = new Sorter(GithubItemSortingMetadata, of(null));
 
     // Set initial state
     this.sorter.setState({sort: 'created', reverse: true});
-    this.grouper.setState({group: 'all'});
   }
 }
 
