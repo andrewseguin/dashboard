@@ -10,7 +10,7 @@ import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
-import {interval} from 'rxjs';
+import {interval, of} from 'rxjs';
 import {filter, map, mergeMap, take} from 'rxjs/operators';
 import {
   createFiltererContextProvider,
@@ -23,6 +23,8 @@ import {DataStore} from './services/dao/data-dao';
 import {Remover} from './services/remover';
 import {Updater} from './services/updater';
 import {isRepoStoreEmpty} from './utility/is-repo-store-empty';
+import { Sorter } from 'app/package/data-source/sorter';
+import { GithubItemSortingMetadata } from 'app/github/data-source/item-sorter-metadata';
 
 export const DATA_SOURCES = new InjectionToken<Map<string, DataSourceProvider>>('data-sources');
 
@@ -53,6 +55,11 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           grouper.setState({group: 'all'});
           return grouper;
         },
+        sorter: () => {
+          const sorter = new Sorter(GithubItemSortingMetadata, of(null));
+          sorter.setState({sort: 'created', reverse: true});
+          return sorter;
+        },
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
@@ -81,6 +88,11 @@ export const provideDataSources = (activeStore: ActiveStore) => {
               new Grouper(GithubItemGroupingMetadata, createGrouperContextProvider(labels));
           grouper.setState({group: 'all'});
           return grouper;
+        },
+        sorter: () => {
+          const sorter = new Sorter(GithubItemSortingMetadata, of(null));
+          sorter.setState({sort: 'created', reverse: true});
+          return sorter;
         },
         factory: () => {
           const data =

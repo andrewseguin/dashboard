@@ -15,7 +15,7 @@ export interface SortingMetadata<T, S, C> {
 
 export type SorterContextProvider<C> = Observable<C>;
 
-export class Sorter<T, S, C> {
+export class Sorter<T = any, S = any, C = any> {
   state = new BehaviorSubject<SorterState<S>>({sort: null, reverse: false});
 
   constructor(

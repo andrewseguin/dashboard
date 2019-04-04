@@ -39,14 +39,16 @@ export class List<S, V> {
     this.options = data.options;
     const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
     const dataSource = dataSourceProvider.factory();
-    dataSource.sorter.setState(this.options.sorterState);
+
+    const sorter = dataSourceProvider.sorter();
+    sorter.setState(this.options.sorterState);
 
     const filterer = dataSourceProvider.filterer();
     filterer.setState(this.options.filtererState);
 
     const grouper = dataSourceProvider.grouper();
 
-    this.items = dataSource.connect(filterer, grouper).pipe(map(result => result[0].items));
+    this.items = dataSource.connect(filterer, grouper, sorter).pipe(map(result => result[0].items));
 
     this.viewer = dataSourceProvider.viewer();
     this.viewer.setState(this.options.viewerState);

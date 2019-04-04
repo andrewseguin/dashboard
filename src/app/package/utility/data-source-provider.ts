@@ -1,7 +1,8 @@
 import {DataSource} from '../data-source/data-source';
 import {Filterer} from '../data-source/filterer';
+import {Grouper} from '../data-source/grouper';
+import {Sorter} from '../data-source/sorter';
 import {Viewer} from '../data-source/viewer';
-import { Grouper } from '../data-source/grouper';
 
 export type DataSourceFactory = () => DataSource<any>;
 export interface DataSourceProvider {
@@ -11,4 +12,5 @@ export interface DataSourceProvider {
   viewer: () => Viewer<any, any, any>;
   filterer: () => Filterer;
   grouper: () => Grouper;
+  sorter: () => Sorter;
 }

@@ -3,11 +3,10 @@ import {DataSource} from 'app/package/data-source/data-source';
 import {FiltererContextProvider} from 'app/package/data-source/filterer';
 import {GrouperContextProvider} from 'app/package/data-source/grouper';
 import {Provider} from 'app/package/data-source/provider';
-import {Sorter} from 'app/package/data-source/sorter';
 import {ViewerContextProvider} from 'app/package/data-source/viewer';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {getRecommendations} from 'app/repository/utility/get-recommendations';
-import {combineLatest, Observable, of} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Label} from '../app-types/label';
 import {MatcherContext} from './item-filter-metadata';
@@ -15,7 +14,6 @@ import {
   GithubItemGroupingContextProvider as GithubItemGroupingContext
 } from './item-grouper-metadata';
 import {GithubItemDataMetadata} from './item-provider-metadata';
-import {GithubItemSortingMetadata} from './item-sorter-metadata';
 import {ViewContext} from './item-viewer-metadata';
 
 export class GithubItemDataSource extends DataSource<Item> {
@@ -24,10 +22,6 @@ export class GithubItemDataSource extends DataSource<Item> {
 
     // Create data source components
     this.provider = new Provider(GithubItemDataMetadata, items);
-    this.sorter = new Sorter(GithubItemSortingMetadata, of(null));
-
-    // Set initial state
-    this.sorter.setState({sort: 'created', reverse: true});
   }
 }
 

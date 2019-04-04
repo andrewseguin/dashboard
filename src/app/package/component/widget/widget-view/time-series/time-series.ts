@@ -71,9 +71,10 @@ export class TimeSeries<T> {
       const dataSource = dataSourceProvider.factory();
       const filterer = dataSourceProvider.filterer();
       const grouper = dataSourceProvider.grouper();
+      const sorter = dataSourceProvider.sorter();
       filterer.setState(datasetConfig.filtererState);
       this.dataSources.set(datasetConfig, dataSource);
-      return dataSource.connect(filterer, grouper);
+      return dataSource.connect(filterer, grouper, sorter);
     });
 
     combineLatest(dataSourceConnects).pipe(takeUntil(this.destroyed)).subscribe(results => {

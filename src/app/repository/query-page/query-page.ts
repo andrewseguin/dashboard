@@ -13,6 +13,7 @@ import {Widget} from 'app/package/component/widget/widget';
 import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
+import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {isMobile} from 'app/utility/media-matcher';
@@ -39,6 +40,8 @@ export class QueryPage<T> {
 
   grouper: Grouper<T>;
 
+  sorter: Sorter<T>;
+
   viewer: Viewer<T, any, any>;
 
   set query(query: Query) {
@@ -50,15 +53,16 @@ export class QueryPage<T> {
     this.viewer = dataSourceProvider.viewer();
     this.filterer = dataSourceProvider.filterer();
     this.grouper = dataSourceProvider.grouper();
+    this.sorter = dataSourceProvider.sorter();
 
 
     // TODO: Needs to be unsubscribed when query switches
-    this.canSave = combineLatest(
-                       this.filterer.state, this.grouper.state, this.dataSource.sorter.state,
-                       this.viewer.state)
-                       .pipe(map(() => !this.areStatesEquivalent()));
+    this.canSave =
+        combineLatest(this.filterer.state, this.grouper.state, this.sorter.state, this.viewer.state)
+            .pipe(map(() => !this.areStatesEquivalent()));
     this.activeItem =
-        combineLatest(this.dataSource.connect(this.filterer, this.grouper), this.itemId)
+        combineLatest(
+            this.dataSource.connect(this.filterer, this.grouper, this.sorter), this.itemId)
             .pipe(map(results => {
               for (let group of results[0]) {
                 for (let item of group.items) {
@@ -163,7 +167,7 @@ export class QueryPage<T> {
     const queryState = {
       filtererState: this.filterer.getState(),
       grouperState: this.grouper.getState(),
-      sorterState: this.dataSource.sorter.getState(),
+      sorterState: this.sorter.getState(),
       viewerState: this.viewer.getState(),
     };
 
@@ -217,7 +221,7 @@ export class QueryPage<T> {
 
     const sorterState = this.query.sorterState;
     if (sorterState) {
-      this.dataSource.sorter.setState(sorterState);
+      this.sorter.setState(sorterState);
     }
 
     const filtererState = this.query.filtererState;
@@ -237,7 +241,7 @@ export class QueryPage<T> {
     const grouperStatesEquivalent =
         this.query.grouperState && this.grouper.isEquivalent(this.query.grouperState);
     const sorterStatesEquivalent =
-        this.query.sorterState && this.dataSource.sorter.isEquivalent(this.query.sorterState);
+        this.query.sorterState && this.sorter.isEquivalent(this.query.sorterState);
     const viewerStatesEquivalent =
         this.query.viewerState && this.viewer.isEquivalent(this.query.viewerState);
 

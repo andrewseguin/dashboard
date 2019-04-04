@@ -10,6 +10,7 @@ import {
 import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Group, Grouper} from 'app/package/data-source/grouper';
+import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {RendererState, renderItemGroups} from 'app/package/utility/renderer';
 import {fromEvent, Observable, Subject} from 'rxjs';
@@ -31,6 +32,8 @@ export class ItemsList<T> {
                     .subscribe(observer)));
 
   @Input() activeItem: T;
+
+  @Input() sorter: Sorter<T>;
 
   @Input() grouper: Grouper<T>;
 
@@ -54,12 +57,12 @@ export class ItemsList<T> {
 
   ngOnInit() {
     this.itemCount =
-        this.dataSource.connect(this.filterer, this.grouper)
+        this.dataSource.connect(this.filterer, this.grouper, this.sorter)
             .pipe(
                 map(itemGroups =>
                         itemGroups.map(g => g.items.length).reduce((prev, curr) => curr += prev)));
 
-    this.dataSource.connect(this.filterer, this.grouper)
+    this.dataSource.connect(this.filterer, this.grouper, this.sorter)
         .pipe(renderItemGroups(this.elementScrolled), takeUntil(this.destroyed))
         .subscribe(result => {
           this.ngZone.run(() => this.renderState.next(result));

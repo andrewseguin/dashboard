@@ -48,7 +48,7 @@ export class ListEdit {
     const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
 
     const dataSource = dataSourceProvider.factory();
-    this.sorter = dataSource.sorter;
+    this.sorter = dataSourceProvider.sorter();
     this.viewer = dataSourceProvider.viewer();
     this.filterer = dataSourceProvider.filterer();
     this.provider = dataSource.provider;

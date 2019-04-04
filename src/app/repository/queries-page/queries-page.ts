@@ -84,16 +84,17 @@ export class QueriesPage {
     const dataSourceProvider = this.dataSources.get(query.dataSourceType!)!;
     const dataSource = dataSourceProvider.factory();
     const filterer = dataSourceProvider.filterer();
+    const sorter = dataSourceProvider.sorter();
     const grouper = dataSourceProvider.grouper();
 
     if (query.filtererState) {
       filterer.setState(query.filtererState!);
     }
 
-    return dataSource.connect(filterer, grouper).pipe(delay(250), map(result => {
-                                                        return result.map(g => g.items.length)
-                                                            .reduce((prev, curr) => curr += prev);
-                                                      }));
+    return dataSource.connect(filterer, grouper, sorter)
+        .pipe(delay(250), map(result => {
+                return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
+              }));
   }
 
   private getSortedGroups(queries: Query[]) {
