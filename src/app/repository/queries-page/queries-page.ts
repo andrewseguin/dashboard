@@ -86,12 +86,13 @@ export class QueriesPage {
     const filterer = dataSourceProvider.filterer();
     const sorter = dataSourceProvider.sorter();
     const grouper = dataSourceProvider.grouper();
+    const provider = dataSourceProvider.provider();
 
     if (query.filtererState) {
       filterer.setState(query.filtererState!);
     }
 
-    return dataSource.connect(filterer, grouper, sorter)
+    return dataSource.connect(provider, filterer, grouper, sorter)
         .pipe(delay(250), map(result => {
                 return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
               }));

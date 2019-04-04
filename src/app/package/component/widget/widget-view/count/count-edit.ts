@@ -41,7 +41,7 @@ export class EditCount {
 
     const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
     this.filterer = dataSourceProvider.filterer();
-    this.provider = dataSourceProvider.factory().provider;
+    this.provider = dataSourceProvider.provider();
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

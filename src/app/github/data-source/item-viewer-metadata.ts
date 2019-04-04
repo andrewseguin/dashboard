@@ -1,10 +1,13 @@
 import {DatePipe} from '@angular/common';
-import {ViewerMetadata} from 'app/package/data-source/viewer';
+import {ViewerMetadata, ViewerContextProvider} from 'app/package/data-source/viewer';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {getRecommendations} from 'app/repository/utility/get-recommendations';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
 import {getBorderColor, getTextColor} from '../utility/label-colors';
+import { Observable, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { createLabelsMap } from '../utility/create-labels-map';
 
 export type GithubItemView =
     'title'|'reporter'|'assignees'|'labels'|'warnings'|'suggestions'|'creationDate'|'updatedDate';
@@ -13,6 +16,16 @@ export interface ViewContext {
   item: Item;
   labelsMap: Map<string, Label>;
   recommendations: Recommendation[];
+}
+
+export function createViewerContextProvider(
+    labels: Observable<Label[]>,
+    recommendations: Observable<Recommendation[]>): ViewerContextProvider<Item, ViewContext> {
+  return combineLatest(recommendations, labels).pipe(map(results => {
+    const recommendations = results[0];
+    const labelsMap = createLabelsMap(results[1]);
+    return (item: Item) => ({item, labelsMap, recommendations});
+  }));
 }
 
 export const GithubItemViewerMetadata =

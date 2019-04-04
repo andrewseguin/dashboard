@@ -44,10 +44,9 @@ export class PieChartEdit {
 
     // TODO: Add in a datasource type selector
     const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
-    const dataSource = dataSourceProvider.factory();
     this.grouper = dataSourceProvider.grouper();
     this.filterer = dataSourceProvider.filterer();
-    this.provider = dataSource.provider;
+    this.provider = dataSourceProvider.provider();
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

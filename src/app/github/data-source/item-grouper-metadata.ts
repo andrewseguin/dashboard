@@ -1,19 +1,28 @@
 import {
   getGroupByListValues,
   getGroupByValue,
+  GrouperContextProvider,
   GrouperMetadata
 } from 'app/package/data-source/grouper';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
+import {createLabelsMap} from '../utility/create-labels-map';
 
 export type Group = 'all'|'reporter'|'label'|'assignee';
 
-export interface GithubItemGroupingContextProvider {
+interface ContextProvider {
   labelsMap: Map<string, Label>;
 }
 
+export function createGrouperContextProvider(labels: Observable<Label[]>):
+    GrouperContextProvider<ContextProvider> {
+  return labels.pipe(map(labels => ({labelsMap: createLabelsMap(labels)})));
+}
+
 export const GithubItemGroupingMetadata =
-    new Map<Group, GrouperMetadata<Item, Group, GithubItemGroupingContextProvider>>([
+    new Map<Group, GrouperMetadata<Item, Group, ContextProvider>>([
       [
         'all', {
           id: 'all',
@@ -34,7 +43,7 @@ export const GithubItemGroupingMetadata =
           id: 'label',
           label: 'Label',
           groupingFunction: (items: Item[]) => getGroupByListValues(items, 'labels'),
-          titleTransform: (title: string, c: GithubItemGroupingContextProvider) => {
+          titleTransform: (title: string, c: ContextProvider) => {
             if (!title) {
               return 'No labels';
             }

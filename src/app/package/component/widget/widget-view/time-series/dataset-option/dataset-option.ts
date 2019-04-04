@@ -65,8 +65,7 @@ export class DatasetOption {
         .pipe(takeUntil(this.destroyed), startWith(dataSourceTypeControl.value))
         .subscribe(value => {
           const dataSourceProvider = this.dataSources.get(value)!;
-          const datasource = dataSourceProvider.factory();
-          this.provider = datasource.provider;
+          this.provider = dataSourceProvider.provider();
           this.filterer = dataSourceProvider.filterer();
         });
   }

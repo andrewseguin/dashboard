@@ -72,9 +72,10 @@ export class TimeSeries<T> {
       const filterer = dataSourceProvider.filterer();
       const grouper = dataSourceProvider.grouper();
       const sorter = dataSourceProvider.sorter();
+      const provider = dataSourceProvider.provider();
       filterer.setState(datasetConfig.filtererState);
       this.dataSources.set(datasetConfig, dataSource);
-      return dataSource.connect(filterer, grouper, sorter);
+      return dataSource.connect(provider, filterer, grouper, sorter);
     });
 
     combineLatest(dataSourceConnects).pipe(takeUntil(this.destroyed)).subscribe(results => {
@@ -194,7 +195,8 @@ export class TimeSeries<T> {
     const dateActions: DateActionPair[] = [];
     items.forEach(item => {
       datasetConfig.actions.forEach(action => {
-        const dates = this.dataSources.get(datasetConfig)!.provider.getMetadataMapForType('date');
+        const provider = this.data.dataSources.get(datasetConfig.dataSourceType)!.provider();
+        const dates = provider.getMetadataMapForType('date');
         // TODO: Error handling if the property does not exist
         const date = dates.get(action.datePropertyId)!.accessor(item);
         if (date) {

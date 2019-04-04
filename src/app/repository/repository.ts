@@ -1,30 +1,37 @@
 import {ChangeDetectionStrategy, Component, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
-import {ItemsFilterMetadata} from 'app/github/data-source/item-filter-metadata';
-import {GithubItemGroupingMetadata} from 'app/github/data-source/item-grouper-metadata';
-import {GithubItemViewerMetadata} from 'app/github/data-source/item-viewer-metadata';
+import {
+  createFiltererContextProvider,
+  ItemsFilterMetadata
+} from 'app/github/data-source/item-filter-metadata';
+import {
+  createGrouperContextProvider,
+  GithubItemGroupingMetadata
+} from 'app/github/data-source/item-grouper-metadata';
+import {GithubItemDataMetadata} from 'app/github/data-source/item-provider-metadata';
+import {GithubItemSortingMetadata} from 'app/github/data-source/item-sorter-metadata';
+import {
+  createViewerContextProvider,
+  GithubItemViewerMetadata
+} from 'app/github/data-source/item-viewer-metadata';
 import {tokenizeItem} from 'app/github/utility/tokenize-item';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
+import {Provider} from 'app/package/data-source/provider';
+import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval, of} from 'rxjs';
 import {filter, map, mergeMap, take} from 'rxjs/operators';
-import {
-  createFiltererContextProvider,
-  createGrouperContextProvider,
-  createViewerContextProvider,
-  GithubItemDataSource
-} from '../github/data-source/github-item-groups-data-source';
+import {GithubItemDataSource} from '../github/data-source/github-item-groups-data-source';
 import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data-dao';
 import {Remover} from './services/remover';
 import {Updater} from './services/updater';
+import {getRecommendations} from './utility/get-recommendations';
 import {isRepoStoreEmpty} from './utility/is-repo-store-empty';
-import { Sorter } from 'app/package/data-source/sorter';
-import { GithubItemSortingMetadata } from 'app/github/data-source/item-sorter-metadata';
 
 export const DATA_SOURCES = new InjectionToken<Map<string, DataSourceProvider>>('data-sources');
 
@@ -45,7 +52,8 @@ export const provideDataSources = (activeStore: ActiveStore) => {
         },
         filterer: () => {
           const filterer = new Filterer(
-              ItemsFilterMetadata, createFiltererContextProvider(labels, recommendations));
+              ItemsFilterMetadata,
+              createFiltererContextProvider(labels, recommendations, getRecommendations));
           filterer.tokenizeItem = tokenizeItem;
           return filterer;
         },
@@ -60,10 +68,13 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           sorter.setState({sort: 'created', reverse: true});
           return sorter;
         },
-        factory: () => {
+        provider: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
-          return new GithubItemDataSource(data);
+          return new Provider(GithubItemDataMetadata, data);
+        },
+        factory: () => {
+          return new GithubItemDataSource();
         }
       }
     ],
@@ -79,7 +90,8 @@ export const provideDataSources = (activeStore: ActiveStore) => {
         },
         filterer: () => {
           const filterer = new Filterer(
-              ItemsFilterMetadata, createFiltererContextProvider(labels, recommendations));
+              ItemsFilterMetadata,
+              createFiltererContextProvider(labels, recommendations, getRecommendations));
           filterer.tokenizeItem = tokenizeItem;
           return filterer;
         },
@@ -94,10 +106,13 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           sorter.setState({sort: 'created', reverse: true});
           return sorter;
         },
-        factory: () => {
+        provider: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
-          return new GithubItemDataSource(data);
+          return new Provider(GithubItemDataMetadata, data);
+        },
+        factory: () => {
+          return new GithubItemDataSource();
         }
       }
     ],

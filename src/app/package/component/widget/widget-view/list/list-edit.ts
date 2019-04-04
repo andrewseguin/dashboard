@@ -47,11 +47,10 @@ export class ListEdit {
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
     const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
 
-    const dataSource = dataSourceProvider.factory();
     this.sorter = dataSourceProvider.sorter();
     this.viewer = dataSourceProvider.viewer();
     this.filterer = dataSourceProvider.filterer();
-    this.provider = dataSource.provider;
+    this.provider = dataSourceProvider.provider();
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

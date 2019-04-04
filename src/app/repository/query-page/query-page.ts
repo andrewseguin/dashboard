@@ -13,6 +13,7 @@ import {Widget} from 'app/package/component/widget/widget';
 import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
+import {Provider} from 'app/package/data-source/provider';
 import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
@@ -42,6 +43,8 @@ export class QueryPage<T> {
 
   sorter: Sorter<T>;
 
+  provider: Provider<T>;
+
   viewer: Viewer<T, any, any>;
 
   set query(query: Query) {
@@ -54,6 +57,7 @@ export class QueryPage<T> {
     this.filterer = dataSourceProvider.filterer();
     this.grouper = dataSourceProvider.grouper();
     this.sorter = dataSourceProvider.sorter();
+    this.provider = dataSourceProvider.provider();
 
 
     // TODO: Needs to be unsubscribed when query switches
@@ -62,7 +66,8 @@ export class QueryPage<T> {
             .pipe(map(() => !this.areStatesEquivalent()));
     this.activeItem =
         combineLatest(
-            this.dataSource.connect(this.filterer, this.grouper, this.sorter), this.itemId)
+            this.dataSource.connect(this.provider, this.filterer, this.grouper, this.sorter),
+            this.itemId)
             .pipe(map(results => {
               for (let group of results[0]) {
                 for (let item of group.items) {

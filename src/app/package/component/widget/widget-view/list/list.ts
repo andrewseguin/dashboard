@@ -47,8 +47,10 @@ export class List<S, V> {
     filterer.setState(this.options.filtererState);
 
     const grouper = dataSourceProvider.grouper();
+    const provider = dataSourceProvider.provider();
 
-    this.items = dataSource.connect(filterer, grouper, sorter).pipe(map(result => result[0].items));
+    this.items = dataSource.connect(provider, filterer, grouper, sorter)
+                     .pipe(map(result => result[0].items));
 
     this.viewer = dataSourceProvider.viewer();
     this.viewer.setState(this.options.viewerState);

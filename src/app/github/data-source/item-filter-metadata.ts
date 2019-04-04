@@ -1,4 +1,4 @@
-import {FiltererMetadata} from 'app/package/data-source/filterer';
+import {FiltererContextProvider, FiltererMetadata} from 'app/package/data-source/filterer';
 import {DateQuery, InputQuery, NumberQuery, Query, StateQuery} from 'app/package/data-source/query';
 import {
   arrayContainsQuery,
@@ -8,12 +8,29 @@ import {
   stringContainsQuery
 } from 'app/package/utility/query-matcher';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
+import {combineLatest, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Item} from '../app-types/item';
 import {Label} from '../app-types/label';
+import {createLabelsMap} from '../utility/create-labels-map';
 
 export interface MatcherContext {
   labelsMap: Map<string, Label>;
   getRecommendations: (item: Item) => Recommendation[];
+}
+
+export function createFiltererContextProvider(
+    labels: Observable<Label[]>, recommendations: Observable<Recommendation[]>,
+    getRecommendations:
+        (item: Item, recommendations: Recommendation[], labelsMap: Map<string, Label>) =>
+            Recommendation[]): FiltererContextProvider<MatcherContext> {
+  return combineLatest(recommendations, labels).pipe(map(results => {
+    const labelsMap = createLabelsMap(results[1]);
+    return {
+      labelsMap,
+      getRecommendations: (item: Item) => getRecommendations(item, results[0], labelsMap)
+    };
+  }));
 }
 
 export const ItemsFilterMetadata = new Map<string, FiltererMetadata<Item, MatcherContext>>([

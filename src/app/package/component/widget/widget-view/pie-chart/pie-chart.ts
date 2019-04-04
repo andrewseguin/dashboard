@@ -43,8 +43,9 @@ export class PieChart<T, G> {
     grouper.setState(this.data.options.grouperState);
 
     const sorter = dataSourceProvider.sorter();
+    const provider = dataSourceProvider.provider();
 
-    dataSource.connect(filterer, grouper, sorter)
+    dataSource.connect(provider, filterer, grouper, sorter)
         .pipe(takeUntil(this.destroyed))
         .subscribe(result => this.render(result));
   }

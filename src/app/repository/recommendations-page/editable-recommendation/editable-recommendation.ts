@@ -86,7 +86,7 @@ export class EditableRecommendation {
 
     // TODO: This should be set by the recommendation
     this.itemsFilterer = this.dataSources.get('issue')!.filterer();
-    this.provider = this.dataSources.get('issue')!.factory().provider;
+    this.provider = this.dataSources.get('issue')!.provider();
 
 
     const filtererState = this.recommendation.filtererState ||
