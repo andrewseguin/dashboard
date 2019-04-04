@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {mergeMap} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {mergeMap, shareReplay} from 'rxjs/operators';
 import {Filterer} from './filterer';
 import {Group, Grouper, GrouperMetadata} from './grouper';
 import {Provider} from './provider';
@@ -36,22 +36,10 @@ export class DataSource<T> {
   viewer: Viewer<T, any, any> = new Viewer<T, null, any>(new Map(), of(() => null));
 
   /** Stream emitting the grouped data. */
-  private readonly results = new ReplaySubject<Group<T>[]>(1);
-
-  /**
-   * Subscription to the changes that should trigger an update to the table's rendered rows, such
-   * as filtering, sorting, pagination, or base data changes.
-   */
-  private subscription: Subscription;
-
-  ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
+  private results: Observable<Group<T>[]>;
 
   connect(): Observable<Group<T>[]> {
-    if (!this.subscription) {
+    if (!this.results) {
       this.initialize();
     }
 
@@ -59,11 +47,8 @@ export class DataSource<T> {
   }
 
   private initialize() {
-    this.subscription = this.provider.getData()
-                            .pipe(
-                                mergeMap(data => this.filterer.filter(data)),
-                                mergeMap(data => this.grouper.group(data)),
-                                mergeMap(data => this.sorter.sort(data)))
-                            .subscribe(data => this.results.next(data));
+    this.results = this.provider.getData().pipe(
+        mergeMap(data => this.filterer.filter(data)), mergeMap(data => this.grouper.group(data)),
+        mergeMap(data => this.sorter.sort(data)), shareReplay());
   }
 }
