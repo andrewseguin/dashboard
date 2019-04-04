@@ -1,11 +1,20 @@
 import {ChangeDetectionStrategy, Component, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
+import {ItemsFilterMetadata} from 'app/github/data-source/item-filter-metadata';
+import {GithubItemViewerMetadata} from 'app/github/data-source/item-viewer-metadata';
+import {tokenizeItem} from 'app/github/utility/tokenize-item';
+import {Filterer} from 'app/package/data-source/filterer';
+import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval} from 'rxjs';
 import {filter, map, mergeMap, take} from 'rxjs/operators';
-import {GithubItemDataSource} from '../github/data-source/github-item-groups-data-source';
+import {
+  createFiltererContextProvider,
+  createViewerContextProvider,
+  GithubItemDataSource
+} from '../github/data-source/github-item-groups-data-source';
 import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data-dao';
 import {Remover} from './services/remover';
@@ -23,6 +32,19 @@ export const provideDataSources = (activeStore: ActiveStore) => {
       'issue', {
         id: 'issue',
         label: 'Issues',
+        viewer: () => {
+          const viewer = new Viewer(
+              GithubItemViewerMetadata, createViewerContextProvider(labels, recommendations));
+          viewer.setState({views: viewer.getViews().map(v => v.id)});
+          return viewer;
+        },
+        filterer: () => {
+          const filterer = new Filterer(
+              ItemsFilterMetadata, createFiltererContextProvider(labels, recommendations));
+          filterer.tokenizeItem = tokenizeItem;
+          // filterer.autocompleteContext = ({items, labels} as AutocompleteContext);
+          return filterer;
+        },
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
@@ -34,6 +56,19 @@ export const provideDataSources = (activeStore: ActiveStore) => {
       'pr', {
         id: 'pr',
         label: 'Pull Requests',
+        viewer: () => {
+          const viewer = new Viewer(
+              GithubItemViewerMetadata, createViewerContextProvider(labels, recommendations));
+          viewer.setState({views: viewer.getViews().map(v => v.id)});
+          return viewer;
+        },
+        filterer: () => {
+          const filterer = new Filterer(
+              ItemsFilterMetadata, createFiltererContextProvider(labels, recommendations));
+          filterer.tokenizeItem = tokenizeItem;
+          // filterer.autocompleteContext = ({items, labels} as AutocompleteContext);
+          return filterer;
+        },
         factory: () => {
           const data =
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));

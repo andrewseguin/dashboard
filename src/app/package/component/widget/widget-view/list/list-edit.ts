@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { Filterer } from 'app/package/data-source/filterer';
-import { Sorter } from 'app/package/data-source/sorter';
-import { Viewer } from 'app/package/data-source/viewer';
-import { take } from 'rxjs/operators';
-import { ButtonToggleOption } from '../../edit-widget/button-toggle-option/button-toggle-option';
-import { SavedFiltererState } from '../../edit-widget/edit-widget';
-import { EditWidgetData2, EDIT_WIDGET_DATA } from '../../widget';
-import { ListDisplayTypeOptions } from './list';
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {Filterer} from 'app/package/data-source/filterer';
+import {Sorter} from 'app/package/data-source/sorter';
+import {Viewer} from 'app/package/data-source/viewer';
+import {take} from 'rxjs/operators';
 
+import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
+import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
 
+import {ListDisplayTypeOptions} from './list';
 
 
 @Component({
@@ -36,8 +36,8 @@ export class ListEdit {
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
                   EditWidgetData2<ListDisplayTypeOptions<any, any>>) {
-                    // TODO: Filter based on datasource type
-                    this.savedFiltererStates = data.savedFiltererStates;
+    // TODO: Filter based on datasource type
+    this.savedFiltererStates = data.savedFiltererStates;
     this.data.dataSources.forEach(
         dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;
@@ -45,7 +45,7 @@ export class ListEdit {
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
     const datasource = data.dataSources.get(initialDataSourceType)!.factory();
     this.sorter = datasource.sorter;
-    this.viewer = datasource.viewer;
+    this.viewer = data.dataSources.get(initialDataSourceType)!.viewer();
     this.filterer = datasource.filterer;
 
     data.options.pipe(take(1)).subscribe(value => {

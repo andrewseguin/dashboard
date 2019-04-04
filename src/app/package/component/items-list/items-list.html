@@ -1,7 +1,6 @@
 <advanced-search [filterer]="dataSource.filterer"></advanced-search>
 <display-options-header [grouper]="dataSource.grouper"
-                        [sorter]="dataSource.sorter"
-                        [viewer]="dataSource.viewer"
+                        [sorter]="dataSource.sorter" [viewer]="viewer"
                         [itemCount]="itemCount | async">
 </display-options-header>
 
@@ -14,10 +13,8 @@
 
     <ng-container *ngFor="let item of itemGroup.items; trackBy:trackByIndex">
       <mat-divider></mat-divider>
-      <item-summary [item]="item"
-                    [active]="activeItem === item"
-                    [viewer]="dataSource.viewer"
-                    (select)="itemSelected.emit($event)">
+      <item-summary [item]="item" [active]="activeItem === item"
+                    [viewer]="viewer" (select)="itemSelected.emit($event)">
       </item-summary>
     </ng-container>
   </div>

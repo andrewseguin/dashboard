@@ -67,10 +67,12 @@ export class TimeSeries<T> {
 
   ngOnInit() {
     const dataSourceConnects = this.data.options.datasets.map(datasetConfig => {
-      const dataSource = this.data.dataSources.get(datasetConfig.dataSourceType)!.factory();
+      const dataSourceProvider = this.data.dataSources.get(datasetConfig.dataSourceType)!;
+      const dataSource = dataSourceProvider.factory();
+      const filterer = dataSourceProvider.filterer();
       this.dataSources.set(datasetConfig, dataSource);
       dataSource.filterer.setState(datasetConfig.filtererState);
-      return dataSource.connect();
+      return dataSource.connect(filterer);
     });
 
     combineLatest(dataSourceConnects).pipe(takeUntil(this.destroyed)).subscribe(results => {

@@ -11,6 +11,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Item} from 'app/github/app-types/item';
 import {Widget} from 'app/package/component/widget/widget';
 import {DataSource} from 'app/package/data-source/data-source';
+import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
@@ -32,27 +33,33 @@ import {QueryDialog} from '../shared/dialog/query/query-dialog';
 export class QueryPage {
   isMobile = isMobile;
 
+  viewer: Viewer<any, any, any>;
+
   set query(query: Query) {
     this._query = query;
 
     const type = this._query.dataSourceType!;
     this.dataSource = this.dataSources.get(type)!.factory();
 
+    this.viewer = this.dataSources.get(type)!.viewer();
+
+
     // TODO: Needs to be unsubscribed when query switches
     this.canSave = combineLatest(
                        this.dataSource.filterer.state, this.dataSource.grouper.state,
-                       this.dataSource.sorter.state, this.dataSource.viewer.state)
+                       this.dataSource.sorter.state, this.viewer.state)
                        .pipe(map(() => !this.areStatesEquivalent()));
-    this.activeItem = combineLatest(this.dataSource.connect(), this.itemId).pipe(map(results => {
-      for (let group of results[0]) {
-        for (let item of group.items) {
-          if (item.id === results[1]) {
-            return item;
-          }
-        }
-      }
-      return null;
-    }));
+    this.activeItem = combineLatest(this.dataSource.connect(this.dataSource.filterer), this.itemId)
+                          .pipe(map(results => {
+                            for (let group of results[0]) {
+                              for (let item of group.items) {
+                                if (item.id === results[1]) {
+                                  return item;
+                                }
+                              }
+                            }
+                            return null;
+                          }));
 
     this.updateQueryStates();
 
@@ -147,7 +154,7 @@ export class QueryPage {
       filtererState: this.dataSource.filterer.getState(),
       grouperState: this.dataSource.grouper.getState(),
       sorterState: this.dataSource.sorter.getState(),
-      viewerState: this.dataSource.viewer.getState(),
+      viewerState: this.viewer.getState(),
     };
 
     this.activeRepo.activeConfig.queries.update({...this.query, ...queryState});
@@ -210,7 +217,7 @@ export class QueryPage {
 
     const viewerState = this.query.viewerState;
     if (viewerState) {
-      this.dataSource.viewer.setState(viewerState);
+      this.viewer.setState(viewerState);
     }
   }
 
@@ -222,7 +229,7 @@ export class QueryPage {
     const sorterStatesEquivalent =
         this.query.sorterState && this.dataSource.sorter.isEquivalent(this.query.sorterState);
     const viewerStatesEquivalent =
-        this.query.viewerState && this.dataSource.viewer.isEquivalent(this.query.viewerState);
+        this.query.viewerState && this.viewer.isEquivalent(this.query.viewerState);
 
     return filtererStatesEquivalent && grouperStatesEquivalent && sorterStatesEquivalent &&
         viewerStatesEquivalent;

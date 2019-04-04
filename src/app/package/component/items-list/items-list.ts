@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {DataSource} from 'app/package/data-source/data-source';
 import {Group} from 'app/package/data-source/grouper';
+import {Viewer} from 'app/package/data-source/viewer';
 import {RendererState, renderItemGroups} from 'app/package/utility/renderer';
 import {fromEvent, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
@@ -31,6 +32,8 @@ export class ItemsList<T> {
   @Input() activeItem: T;
 
   @Input() dataSource: DataSource<T>;
+
+  @Input() viewer: Viewer<T, any, any>;
 
   @Output() itemSelected = new EventEmitter<T>();
 

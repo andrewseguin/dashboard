@@ -1,5 +1,5 @@
 <div class="master theme-border">
-  <items-list *ngIf="dataSource" [dataSource]="dataSource"
+  <items-list *ngIf="dataSource" [dataSource]="dataSource" [viewer]="viewer"
               [activeItem]="activeItem | async"
               (itemSelected)="navigateToItem($event.number)">
   </items-list>

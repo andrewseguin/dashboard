@@ -28,6 +28,7 @@ export interface ViewerMetadata<V, C> {
 
 export type ViewerContextProvider<T, C> = Observable<(item: T) => C>;
 
+/** The viewer carries information to render the items to the view. */
 export class Viewer<T, V, C> {
   state = new BehaviorSubject<ViewerState<V>>({views: []});
 

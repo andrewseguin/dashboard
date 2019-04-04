@@ -23,7 +23,7 @@ export interface FiltererState {
 
 export type FiltererContextProvider<T, M> = Observable<(item: T) => M>;
 
-export class Filterer<T, M = any, A = any> {
+export class Filterer<T = any, M = any, A = any> {
   state = new BehaviorSubject<FiltererState>({filters: [], search: ''});
 
   /**

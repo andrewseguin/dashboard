@@ -1,14 +1,14 @@
-import {CdkPortal} from '@angular/cdk/portal';
-import {ChangeDetectionStrategy, Component, Inject, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
-import {Observable, Subject} from 'rxjs';
-import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
-import {DATA_SOURCES} from '../repository';
-import {ActiveStore} from '../services/active-store';
-import {Query} from '../services/dao/config/query';
-import {Recommendation} from '../services/dao/config/recommendation';
-import {Header} from '../services/header';
+import { CdkPortal } from '@angular/cdk/portal';
+import { ChangeDetectionStrategy, Component, Inject, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { DataSourceProvider } from 'app/package/utility/data-source-provider';
+import { Observable, Subject } from 'rxjs';
+import { delay, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { DATA_SOURCES } from '../repository';
+import { ActiveStore } from '../services/active-store';
+import { Query } from '../services/dao/config/query';
+import { Recommendation } from '../services/dao/config/recommendation';
+import { Header } from '../services/header';
 
 interface QueryListItem {
   id: string;
@@ -81,13 +81,15 @@ export class QueriesPage {
   }
 
   private getQueryCount(query: Query): Observable<number> {
-    const dataSource = this.dataSources.get(query.dataSourceType!)!.factory();
+    const dataSourceProvider = this.dataSources.get(query.dataSourceType!)!;
+    const dataSource = dataSourceProvider.factory();
+    const filterer = dataSourceProvider.filterer();
 
     if (query.filtererState) {
       dataSource.filterer.setState(query.filtererState!);
     }
 
-    return dataSource.connect().pipe(
+    return dataSource.connect(filterer).pipe(
         delay(250), map(result => {
           return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
         }));
