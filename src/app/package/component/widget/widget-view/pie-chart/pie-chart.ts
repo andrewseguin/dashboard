@@ -33,20 +33,12 @@ export class PieChart<T, G> {
 
   ngOnInit() {
     const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
-
-    const dataSource = dataSourceProvider.factory();
-
-    const filterer = dataSourceProvider.filterer();
-    filterer.setState(this.data.options.filtererState);
-
-    const grouper = dataSourceProvider.grouper();
-    grouper.setState(this.data.options.grouperState);
-
-    const sorter = dataSourceProvider.sorter();
+    const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
+    const grouper = dataSourceProvider.grouper(this.data.options.grouperState);
     const provider = dataSourceProvider.provider();
 
-    dataSource.connect(provider, filterer, grouper, sorter)
-        .pipe(takeUntil(this.destroyed))
+    provider.getData()
+        .pipe(filterer.filter(), grouper.group(), takeUntil(this.destroyed))
         .subscribe(result => this.render(result));
   }
 

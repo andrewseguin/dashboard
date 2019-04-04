@@ -10,7 +10,6 @@ import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Item} from 'app/github/app-types/item';
 import {Widget} from 'app/package/component/widget/widget';
-import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
 import {Provider} from 'app/package/data-source/provider';
@@ -52,11 +51,10 @@ export class QueryPage<T> {
 
     const type = this._query.dataSourceType!;
     const dataSourceProvider = this.dataSources.get(type)!;
-    this.dataSource = dataSourceProvider.factory();
-    this.viewer = dataSourceProvider.viewer();
-    this.filterer = dataSourceProvider.filterer();
-    this.grouper = dataSourceProvider.grouper();
-    this.sorter = dataSourceProvider.sorter();
+    this.viewer = dataSourceProvider.viewer(this.query.viewerState);
+    this.filterer = dataSourceProvider.filterer(this.query.filtererState);
+    this.grouper = dataSourceProvider.grouper(this.query.grouperState);
+    this.sorter = dataSourceProvider.sorter(this.query.sorterState);
     this.provider = dataSourceProvider.provider();
 
     this.canSave = combineLatest(
@@ -66,23 +64,15 @@ export class QueryPage<T> {
                        this.sorter.isEquivalent(query.sorterState))
                        .pipe(map(results => results.some(result => !result)));
 
-    this.activeItem =
-        combineLatest(
-            this.dataSource.connect(this.provider, this.filterer, this.grouper, this.sorter),
-            this.itemId)
-            .pipe(map(results => {
-              for (let group of results[0]) {
-                for (let item of group.items) {
-                  // TODO: Cannot assume this is item, need another way to equate
-                  if ((item as any as Item).id === results[1]) {
-                    return item;
-                  }
-                }
-              }
-              return null;
-            }));
-
-    this.updateQueryStates();
+    this.activeItem = combineLatest(this.provider.getData(), this.itemId).pipe(map(results => {
+      // TODO: Cannot assume this is Item
+      for (let item of results[0]) {
+        if ((item as any as Item).id === results[1]) {
+          return item;
+        }
+      }
+      return null;
+    }));
 
     this.header.title.next(this.query.name || '');
     this.header.goBack = true;
@@ -97,8 +87,6 @@ export class QueryPage<T> {
 
   private destroyed = new Subject();
   private getSubscription: Subscription;
-
-  public dataSource: DataSource<T>;
 
   public canSave: Observable<boolean>;
 
@@ -222,28 +210,6 @@ export class QueryPage<T> {
         }
       });
     });
-  }
-
-  private updateQueryStates() {
-    const grouperState = this.query.grouperState;
-    if (grouperState) {
-      this.grouper.setState(grouperState);
-    }
-
-    const sorterState = this.query.sorterState;
-    if (sorterState) {
-      this.sorter.setState(sorterState);
-    }
-
-    const filtererState = this.query.filtererState;
-    if (filtererState) {
-      this.filterer.setState(filtererState);
-    }
-
-    const viewerState = this.query.viewerState;
-    if (viewerState) {
-      this.viewer.setState(viewerState);
-    }
   }
 }
 

@@ -1,12 +1,11 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {DataSource} from 'app/package/data-source/data-source';
-import {FiltererState} from 'app/package/data-source/filterer';
+import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { FiltererState } from 'app/package/data-source/filterer';
 import * as Chart from 'chart.js';
-import {combineLatest, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import { combineLatest, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { WidgetData, WIDGET_DATA } from '../../widget';
+import { MaterialColors } from '../widget-view';
 
-import {WIDGET_DATA, WidgetData} from '../../widget';
-import {MaterialColors} from '../widget-view';
 
 
 interface DateCount {
@@ -59,26 +58,19 @@ export class TimeSeries<T> {
 
   @ViewChild('canvas') canvas: ElementRef;
 
-  dataSources = new Map<DatasetConfig, DataSource<any>>();
-
   private destroyed = new Subject();
 
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions, null>) {}
 
   ngOnInit() {
-    const dataSourceConnects = this.data.options.datasets.map(datasetConfig => {
+    const datasetData = this.data.options.datasets.map(datasetConfig => {
       const dataSourceProvider = this.data.dataSources.get(datasetConfig.dataSourceType)!;
-      const dataSource = dataSourceProvider.factory();
-      const filterer = dataSourceProvider.filterer();
-      const grouper = dataSourceProvider.grouper();
-      const sorter = dataSourceProvider.sorter();
+      const filterer = dataSourceProvider.filterer(datasetConfig.filtererState);
       const provider = dataSourceProvider.provider();
-      filterer.setState(datasetConfig.filtererState);
-      this.dataSources.set(datasetConfig, dataSource);
-      return dataSource.connect(provider, filterer, grouper, sorter);
+      return provider.getData().pipe(filterer.filter());
     });
 
-    combineLatest(dataSourceConnects).pipe(takeUntil(this.destroyed)).subscribe(results => {
+    combineLatest(datasetData).pipe(takeUntil(this.destroyed)).subscribe(results => {
       const itemsResults = results.map(result => {
         const items: T[] = [];
         result.forEach(g => items.push(...g.items));

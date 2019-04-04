@@ -15,17 +15,16 @@ import {
   GithubItemViewerMetadata
 } from 'app/github/data-source/item-viewer-metadata';
 import {tokenizeItem} from 'app/github/utility/tokenize-item';
-import {Filterer} from 'app/package/data-source/filterer';
-import {Grouper} from 'app/package/data-source/grouper';
+import {Filterer, FiltererState} from 'app/package/data-source/filterer';
+import {Grouper, GrouperState} from 'app/package/data-source/grouper';
 import {Provider} from 'app/package/data-source/provider';
-import {Sorter} from 'app/package/data-source/sorter';
-import {Viewer} from 'app/package/data-source/viewer';
+import {Sorter, SorterState} from 'app/package/data-source/sorter';
+import {Viewer, ViewerState} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval, of} from 'rxjs';
 import {filter, map, mergeMap, take} from 'rxjs/operators';
-import {GithubItemDataSource} from '../github/data-source/github-item-groups-data-source';
 import {ActiveStore} from './services/active-store';
 import {DataStore} from './services/dao/data-dao';
 import {Remover} from './services/remover';
@@ -44,29 +43,29 @@ export const provideDataSources = (activeStore: ActiveStore) => {
       'issue', {
         id: 'issue',
         label: 'Issues',
-        viewer: () => {
+        viewer: (initialState?: ViewerState) => {
           const viewer = new Viewer(
               GithubItemViewerMetadata, createViewerContextProvider(labels, recommendations));
-          viewer.setState({views: viewer.getViews().map(v => v.id)});
+          viewer.setState(initialState || {views: viewer.getViews().map(v => v.id)});
           return viewer;
         },
-        filterer: () => {
+        filterer: (initialState?: FiltererState) => {
           const filterer = new Filterer(
               ItemsFilterMetadata,
               createFiltererContextProvider(labels, recommendations, getRecommendations));
-          filterer.setState({filters: [], search: ''});
+          filterer.setState(initialState || {filters: [], search: ''});
           filterer.tokenizeItem = tokenizeItem;
           return filterer;
         },
-        grouper: () => {
+        grouper: (initialState?: GrouperState) => {
           const grouper =
               new Grouper(GithubItemGroupingMetadata, createGrouperContextProvider(labels));
-          grouper.setState({group: 'all'});
+          grouper.setState(initialState || {group: 'all'});
           return grouper;
         },
-        sorter: () => {
+        sorter: (initialState?: SorterState) => {
           const sorter = new Sorter(GithubItemSortingMetadata, of(null));
-          sorter.setState({sort: 'created', reverse: true});
+          sorter.setState(initialState || {sort: 'created', reverse: true});
           return sorter;
         },
         provider: () => {
@@ -74,38 +73,35 @@ export const provideDataSources = (activeStore: ActiveStore) => {
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !item.pr)));
           return new Provider(GithubItemDataMetadata, data);
         },
-        factory: () => {
-          return new GithubItemDataSource();
-        }
       }
     ],
     [
       'pr', {
         id: 'pr',
         label: 'Pull Requests',
-        viewer: () => {
+        viewer: (initialState?: ViewerState) => {
           const viewer = new Viewer(
               GithubItemViewerMetadata, createViewerContextProvider(labels, recommendations));
-          viewer.setState({views: viewer.getViews().map(v => v.id)});
+          viewer.setState(initialState || {views: viewer.getViews().map(v => v.id)});
           return viewer;
         },
-        filterer: () => {
+        filterer: (initialState?: FiltererState) => {
           const filterer = new Filterer(
               ItemsFilterMetadata,
               createFiltererContextProvider(labels, recommendations, getRecommendations));
-          filterer.setState({filters: [], search: ''});
+          filterer.setState(initialState || {filters: [], search: ''});
           filterer.tokenizeItem = tokenizeItem;
           return filterer;
         },
-        grouper: () => {
+        grouper: (initialState?: GrouperState) => {
           const grouper =
               new Grouper(GithubItemGroupingMetadata, createGrouperContextProvider(labels));
-          grouper.setState({group: 'all'});
+          grouper.setState(initialState || {group: 'all'});
           return grouper;
         },
-        sorter: () => {
+        sorter: (initialState?: SorterState) => {
           const sorter = new Sorter(GithubItemSortingMetadata, of(null));
-          sorter.setState({sort: 'created', reverse: true});
+          sorter.setState(initialState || {sort: 'created', reverse: true});
           return sorter;
         },
         provider: () => {
@@ -113,9 +109,6 @@ export const provideDataSources = (activeStore: ActiveStore) => {
               activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
           return new Provider(GithubItemDataMetadata, data);
         },
-        factory: () => {
-          return new GithubItemDataSource();
-        }
       }
     ],
   ]);

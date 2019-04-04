@@ -1,7 +1,7 @@
 import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
-export interface GrouperState<G> {
+export interface GrouperState<G = any> {
   group: G;
 }
 

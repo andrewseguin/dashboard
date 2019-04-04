@@ -7,7 +7,6 @@ import {
   NgZone,
   Output
 } from '@angular/core';
-import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Group, Grouper} from 'app/package/data-source/grouper';
 import {Provider} from 'app/package/data-source/provider';
@@ -40,15 +39,15 @@ export class ItemsList<T> {
 
   @Input() filterer: Filterer<T>;
 
-  @Input() dataSource: DataSource<T>;
-
   @Input() provider: Provider<T>;
 
-  @Input() viewer: Viewer<T, any, any>;
+  @Input() viewer: Viewer<T>;
 
   @Output() itemSelected = new EventEmitter<T>();
 
   itemCount: Observable<number>;
+
+  itemGroups: Observable<Group<T>[]>;
 
   trackByIndex = (i: number) => i;
 
@@ -59,14 +58,13 @@ export class ItemsList<T> {
   constructor(public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    this.itemCount =
-        this.dataSource.connect(this.provider, this.filterer, this.grouper, this.sorter)
-            .pipe(
-                map(itemGroups =>
-                        itemGroups.map(g => g.items.length).reduce((prev, curr) => curr += prev)));
+    this.itemGroups = this.provider.getData().pipe(
+        this.filterer.filter(), this.grouper.group(), this.sorter.sortGroupedItems());
 
-    this.dataSource.connect(this.provider, this.filterer, this.grouper, this.sorter)
-        .pipe(renderItemGroups(this.elementScrolled), takeUntil(this.destroyed))
+    this.itemCount = this.itemGroups.pipe(map(
+        itemGroups => itemGroups.map(g => g.items.length).reduce((prev, curr) => curr += prev)));
+
+    this.itemGroups.pipe(renderItemGroups(this.elementScrolled), takeUntil(this.destroyed))
         .subscribe(result => {
           this.ngZone.run(() => this.renderState.next(result));
         });

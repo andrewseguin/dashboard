@@ -2,7 +2,7 @@ import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Group} from './grouper';
 
-export interface SorterState<S> {
+export interface SorterState<S = any> {
   sort: S;
   reverse: boolean;
 }
@@ -48,7 +48,7 @@ export class Sorter<T = any, S = any, C = any> {
     };
   }
 
-  sortGroups(): (items: Observable<Group<T>[]>) => Observable<Group<T>[]> {
+  sortGroupedItems(): (items: Observable<Group<T>[]>) => Observable<Group<T>[]> {
     return (itemGroups: Observable<Group<T>[]>) => {
       return combineLatest(itemGroups, this.state, this.contextProvider).pipe(map(results => {
         const sortMetadata = this.metadata.get(results[1].sort);

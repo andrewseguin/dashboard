@@ -1,7 +1,7 @@
 import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map, take} from 'rxjs/operators';
 
-export interface ViewerState<V> {
+export interface ViewerState<V = any> {
   views: V[];
 }
 
@@ -29,7 +29,7 @@ export interface ViewerMetadata<V, C> {
 export type ViewerContextProvider<T, C> = Observable<(item: T) => C>;
 
 /** The viewer carries information to render the items to the view. */
-export class Viewer<T, V, C> {
+export class Viewer<T = any, V = any, C = any> {
   state = new ReplaySubject<ViewerState<V>>(1);
 
   constructor(

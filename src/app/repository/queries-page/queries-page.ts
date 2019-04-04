@@ -82,20 +82,11 @@ export class QueriesPage {
 
   private getQueryCount(query: Query): Observable<number> {
     const dataSourceProvider = this.dataSources.get(query.dataSourceType!)!;
-    const dataSource = dataSourceProvider.factory();
-    const filterer = dataSourceProvider.filterer();
-    const sorter = dataSourceProvider.sorter();
-    const grouper = dataSourceProvider.grouper();
+    const filterer = dataSourceProvider.filterer(query.filtererState);
     const provider = dataSourceProvider.provider();
 
-    if (query.filtererState) {
-      filterer.setState(query.filtererState!);
-    }
-
-    return dataSource.connect(provider, filterer, grouper, sorter)
-        .pipe(delay(250), map(result => {
-                return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
-              }));
+    return provider.getData().pipe(
+        filterer.filter(), delay(250), map(result => result.reduce((prev, curr) => curr += prev)));
   }
 
   private getSortedGroups(queries: Query[]) {

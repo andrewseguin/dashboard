@@ -31,14 +31,8 @@ export class Count {
 
   constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions, null>) {
     const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
-    const dataSource = dataSourceProvider.factory();
-    const filterer = dataSourceProvider.filterer();
-    const grouper = dataSourceProvider.grouper();
-    const sorter = dataSourceProvider.sorter();
+    const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
     const provider = dataSourceProvider.provider();
-    filterer.setState(this.data.options.filtererState);
-    this.count = dataSource.connect(provider, filterer, grouper, sorter).pipe(map(result => {
-      return result.map(g => g.items.length).reduce((prev, curr) => curr += prev);
-    }));
+    this.count = provider.getData().pipe(filterer.filter(), map(result => result.length));
   }
 }
