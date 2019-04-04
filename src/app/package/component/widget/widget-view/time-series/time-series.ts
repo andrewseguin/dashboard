@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { FiltererState } from 'app/package/data-source/filterer';
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
+import {FiltererState} from 'app/package/data-source/filterer';
 import * as Chart from 'chart.js';
-import { combineLatest, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { WidgetData, WIDGET_DATA } from '../../widget';
-import { MaterialColors } from '../widget-view';
+import {combineLatest, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
+import {WIDGET_DATA, WidgetData} from '../../widget';
+import {MaterialColors} from '../widget-view';
 
 
 interface DateCount {
@@ -71,12 +71,7 @@ export class TimeSeries<T> {
     });
 
     combineLatest(datasetData).pipe(takeUntil(this.destroyed)).subscribe(results => {
-      const itemsResults = results.map(result => {
-        const items: T[] = [];
-        result.forEach(g => items.push(...g.items));
-        return items;
-      });
-      return this.render(itemsResults);
+      return this.render(results);
     });
   }
 
