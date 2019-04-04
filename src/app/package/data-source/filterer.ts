@@ -1,4 +1,4 @@
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Query} from './query';
 
@@ -24,7 +24,7 @@ export interface FiltererState {
 export type FiltererContextProvider<M> = Observable<M>;
 
 export class Filterer<T = any, M = any> {
-  state = new BehaviorSubject<FiltererState>({filters: [], search: ''});
+  state = new ReplaySubject<FiltererState>(1);
 
   /** Default and naive tokenize function that combines the item's property values into a string. */
   tokenizeItem =
@@ -72,23 +72,22 @@ export class Filterer<T = any, M = any> {
     };
   }
 
-
-  getState(): FiltererState {
-    return this.state.value;
-  }
-
   setState(state: FiltererState) {
     this.state.next({...state});
   }
 
-  isEquivalent(otherState: FiltererState) {
-    const thisState = this.getState();
+  isEquivalent(otherState?: FiltererState): Observable<boolean> {
+    return this.state.pipe(map(state => {
+      if (!otherState) {
+        return false;
+      }
 
-    const filtersEquivalent =
-        JSON.stringify(thisState.filters.sort()) === JSON.stringify(otherState.filters.sort());
-    const searchEquivalent = thisState.search === otherState.search;
+      const filtersEquivalent =
+          JSON.stringify(state.filters.sort()) === JSON.stringify(otherState.filters.sort());
+      const searchEquivalent = state.search === otherState.search;
 
-    return filtersEquivalent && searchEquivalent;
+      return filtersEquivalent && searchEquivalent;
+    }));
   }
 }
 

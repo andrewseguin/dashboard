@@ -11,6 +11,6 @@ export class DataSource<T> {
   connect(provider: Provider, filterer: Filterer<T>, grouper: Grouper<T>, sorter: Sorter<any>):
       Observable<Group<T>[]> {
     return provider.getData().pipe(
-        filterer.filter(), grouper.group(), sorter.sort(), shareReplay());
+        filterer.filter(), grouper.group(), sorter.sortGroups(), shareReplay());
   }
 }

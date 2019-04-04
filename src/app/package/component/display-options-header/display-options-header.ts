@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Grouper, GrouperMetadata } from 'app/package/data-source/grouper';
-import { Sorter, SortingMetadata } from 'app/package/data-source/sorter';
-import { Viewer, ViewerMetadata } from 'app/package/data-source/viewer';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Grouper, GrouperMetadata} from 'app/package/data-source/grouper';
+import {Sorter, SortingMetadata} from 'app/package/data-source/sorter';
+import {Viewer, ViewerMetadata} from 'app/package/data-source/viewer';
+import {take} from 'rxjs/operators';
 
 @Component({
   selector: 'display-options-header',
@@ -63,20 +64,22 @@ export class DisplayOptionsHeader<G, S, V> {
   _viewer: Viewer<V, any, any>;
 
   setGroup(group: G) {
-    const grouperState = this.grouper.getState();
-    this.grouper.setState({...grouperState, group});
+    this.grouper.state.pipe(take(1)).subscribe(state => {
+      this.grouper.setState({...state, group});
+    });
   }
 
   setSort(sort: S) {
-    const sorterState = this.sorter.getState();
-    let reverse = sorterState.reverse;
-    if (sorterState.sort === sort) {
-      reverse = !reverse;
-    } else {
-      reverse = false;
-    }
+    this.sorter.state.pipe(take(1)).subscribe(state => {
+      let reverse = state.reverse;
+      if (state.sort === sort) {
+        reverse = !reverse;
+      } else {
+        reverse = false;
+      }
 
-    this.sorter.setState({...sorterState, sort, reverse});
+      this.sorter.setState({...state, sort, reverse});
+    });
   }
 
   toggleViewKey(view: V) {

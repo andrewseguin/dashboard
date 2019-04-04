@@ -1,55 +1,66 @@
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Group} from './grouper';
 
 export interface SorterState<S> {
-  sort: S|null;
+  sort: S;
   reverse: boolean;
 }
 
-export interface SortingMetadata<T, S, C> {
+export type SortComparator<T, C> = (context: C) => ((a: T, b: T) => number);
+
+export interface SortingMetadata<T = any, S = any, C = any> {
   id: S;
   label: string;
-  comparator: (context: C) => ((a: T, b: T) => number);
+  comparator: SortComparator<T, C>;
 }
 
 export type SorterContextProvider<C> = Observable<C>;
 
+function sortItems<T, C>(
+    items: T[], comparator: SortComparator<T, C>, reverse: boolean, context: C) {
+  items.sort(comparator(context));
+
+  if (reverse) {
+    items.reverse();
+  }
+
+  return items;
+}
+
 export class Sorter<T = any, S = any, C = any> {
-  state = new BehaviorSubject<SorterState<S>>({sort: null, reverse: false});
+  state = new ReplaySubject<SorterState<S>>(1);
 
   constructor(
       public metadata: Map<S, SortingMetadata<T, S, C>>,
       private contextProvider: SorterContextProvider<C>) {}
 
-  sort(): (itemGroups: Observable<Group<T>[]>) => Observable<Group<T>[]> {
+  sort(): (items: Observable<T[]>) => Observable<T[]> {
+    return (items: Observable<T[]>) => {
+      return combineLatest(items, this.state, this.contextProvider).pipe(map(results => {
+        const sortMetadata = this.metadata.get(results[1].sort);
+        if (!sortMetadata) {
+          throw new Error(`No configuration set up for sort ${results[1].sort}`);
+        }
+
+        return sortItems(results[0], sortMetadata.comparator, results[1].reverse, results[2]);
+      }));
+    };
+  }
+
+  sortGroups(): (items: Observable<Group<T>[]>) => Observable<Group<T>[]> {
     return (itemGroups: Observable<Group<T>[]>) => {
       return combineLatest(itemGroups, this.state, this.contextProvider).pipe(map(results => {
-        const itemGroups = results[0];
-        const sort = results[1].sort;
-        const reverse = results[1].reverse;
-        const context = results[2];
-
-        if (!sort) {
-          return itemGroups;
+        const sortMetadata = this.metadata.get(results[1].sort);
+        if (!sortMetadata) {
+          throw new Error(`No configuration set up for sort ${results[1].sort}`);
         }
 
-        const itemSort = this.metadata.get(sort);
-        if (!itemSort) {
-          throw new Error(`No configuration set up for sort ${sort}`);
-        }
+        results[0].forEach(itemGroup => {
+          sortItems(itemGroup.items, sortMetadata.comparator, results[1].reverse, results[2]);
+        });
 
-        if (itemSort.comparator) {
-          itemGroups.forEach(itemGroup => {
-            itemGroup.items.sort(itemSort.comparator(context));
-
-            if (reverse) {
-              itemGroup.items.reverse();
-            }
-          });
-        }
-
-        return itemGroups;
+        return results[0];
       }));
     };
   }
@@ -60,16 +71,16 @@ export class Sorter<T = any, S = any, C = any> {
     return sorts;
   }
 
-  getState(): SorterState<S> {
-    return this.state.value;
-  }
-
   setState(state: SorterState<S>) {
     this.state.next({...state});
   }
 
-  isEquivalent(otherState: SorterState<S>) {
-    const thisState = this.getState();
-    return thisState.sort === otherState.sort && thisState.reverse === otherState.reverse;
+  isEquivalent(otherState?: SorterState<any>): Observable<boolean> {
+    return this.state.pipe(map(state => {
+      if (!otherState) {
+        return false;
+      }
+      return state.sort === otherState.sort && state.reverse === otherState.reverse;
+    }));
   }
 }

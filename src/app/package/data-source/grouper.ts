@@ -1,8 +1,8 @@
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
 export interface GrouperState<G> {
-  group: G|null;
+  group: G;
 }
 
 export class Group<T> {
@@ -20,8 +20,8 @@ export interface GrouperMetadata<T, G, C> {
 
 export type GrouperContextProvider<C> = Observable<C>;
 
-export class Grouper<T=any, G = any, C = any> {
-  state = new BehaviorSubject<GrouperState<G>>({group: null});
+export class Grouper<T = any, G = any, C = any> {
+  state = new ReplaySubject<GrouperState<G>>(1);
 
   constructor(
       public metadata: Map<G, GrouperMetadata<T, G, C>>,
@@ -70,16 +70,18 @@ export class Grouper<T=any, G = any, C = any> {
     return groups;
   }
 
-  getState(): GrouperState<G> {
-    return this.state.value;
-  }
-
   setState(state: GrouperState<G>) {
     this.state.next({...state});
   }
 
-  isEquivalent(otherState: GrouperState<G>) {
-    return this.getState().group === otherState.group;
+  isEquivalent(otherState?: GrouperState<G>): Observable<boolean> {
+    return this.state.pipe(map(state => {
+      if (!otherState) {
+        return false;
+      }
+
+      return state.group === otherState.group;
+    }));
   }
 }
 

@@ -13,7 +13,7 @@ import {
   DeleteConfirmation
 } from 'app/repository/shared/dialog/delete-confirmation/delete-confirmation';
 import {EXPANSION_ANIMATION} from 'app/utility/animations';
-import {merge, of, Subject} from 'rxjs';
+import {combineLatest, of, Subject} from 'rxjs';
 import {debounceTime, map, mergeMap, take, takeUntil} from 'rxjs/operators';
 
 
@@ -100,16 +100,16 @@ export class EditableRecommendation {
 
   ngAfterViewInit() {
     const configStore = this.activeRepo.activeConfig;
-    merge(this.form.valueChanges, this.itemsFilterer.state)
+    combineLatest(this.form.valueChanges, this.itemsFilterer.state)
         .pipe(debounceTime(100), takeUntil(this._destroyed))
-        .subscribe(() => {
+        .subscribe(results => {
           configStore.recommendations.update({
             ...this.recommendation,
-            message: this.form.value.message,
-            type: this.form.value.type,
-            actionType: this.form.value.actionType,
-            action: this.form.value.action,
-            filtererState: this.itemsFilterer.getState()
+            message: results[0].message,
+            type: results[0].type,
+            actionType: results[0].actionType,
+            action: results[0].action,
+            filtererState: results[1]
           });
         });
   }

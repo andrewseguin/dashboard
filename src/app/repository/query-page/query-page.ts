@@ -59,11 +59,9 @@ export class QueryPage<T> {
     this.sorter = dataSourceProvider.sorter();
     this.provider = dataSourceProvider.provider();
 
+    this.canSave = combineLatest(this.sorter.isEquivalent(query.sorterState))
+                       .pipe(map(results => results.some(result => !result)));
 
-    // TODO: Needs to be unsubscribed when query switches
-    this.canSave =
-        combineLatest(this.filterer.state, this.grouper.state, this.sorter.state, this.viewer.state)
-            .pipe(map(() => !this.areStatesEquivalent()));
     this.activeItem =
         combineLatest(
             this.dataSource.connect(this.provider, this.filterer, this.grouper, this.sorter),
@@ -169,14 +167,18 @@ export class QueryPage<T> {
   }
 
   saveState() {
-    const queryState = {
-      filtererState: this.filterer.getState(),
-      grouperState: this.grouper.getState(),
-      sorterState: this.sorter.getState(),
-      viewerState: this.viewer.getState(),
-    };
+    combineLatest(this.filterer.state, this.grouper.state, this.sorter.state, this.viewer.state)
+        .pipe(take(1))
+        .subscribe(results => {
+          const queryState = {
+            filtererState: results[0],
+            grouperState: results[1],
+            sorterState: results[2],
+            viewerState: results[3],
+          };
 
-    this.activeRepo.activeConfig.queries.update({...this.query, ...queryState});
+          this.activeRepo.activeConfig.queries.update({...this.query, ...queryState});
+        });
   }
 
   saveAs(name: string, group: string) {
@@ -238,20 +240,6 @@ export class QueryPage<T> {
     if (viewerState) {
       this.viewer.setState(viewerState);
     }
-  }
-
-  private areStatesEquivalent() {
-    const filtererStatesEquivalent =
-        this.query.filtererState && this.filterer.isEquivalent(this.query.filtererState);
-    const grouperStatesEquivalent =
-        this.query.grouperState && this.grouper.isEquivalent(this.query.grouperState);
-    const sorterStatesEquivalent =
-        this.query.sorterState && this.sorter.isEquivalent(this.query.sorterState);
-    const viewerStatesEquivalent =
-        this.query.viewerState && this.viewer.isEquivalent(this.query.viewerState);
-
-    return filtererStatesEquivalent && grouperStatesEquivalent && sorterStatesEquivalent &&
-        viewerStatesEquivalent;
   }
 }
 

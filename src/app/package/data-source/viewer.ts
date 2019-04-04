@@ -1,5 +1,5 @@
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {combineLatest, Observable, ReplaySubject} from 'rxjs';
+import {map, take} from 'rxjs/operators';
 
 export interface ViewerState<V> {
   views: V[];
@@ -30,7 +30,7 @@ export type ViewerContextProvider<T, C> = Observable<(item: T) => C>;
 
 /** The viewer carries information to render the items to the view. */
 export class Viewer<T, V, C> {
-  state = new BehaviorSubject<ViewerState<V>>({views: []});
+  state = new ReplaySubject<ViewerState<V>>(1);
 
   constructor(
       public metadata: Map<V, ViewerMetadata<V, C>>,
@@ -43,32 +43,36 @@ export class Viewer<T, V, C> {
   }
 
   toggle(view: V) {
-    const views = this.getState().views;
+    this.state.pipe(take(1)).subscribe(state => {
+      const views = state.views;
 
-    const newViews = [...views];
-    const index = views.indexOf(view);
-    if (index !== -1) {
-      newViews.splice(index, 1);
-    } else {
-      newViews.push(view);
-    }
+      const newViews = [...views];
+      const index = views.indexOf(view);
+      if (index !== -1) {
+        newViews.splice(index, 1);
+      } else {
+        newViews.push(view);
+      }
 
-    this.setState({views: newViews});
-  }
-
-  getState(): ViewerState<V> {
-    return this.state.value;
+      this.setState({views: newViews});
+    });
   }
 
   setState(state: ViewerState<V>) {
     this.state.next({...state});
   }
 
-  isEquivalent(otherState: ViewerState<V>) {
-    const thisViews = this.getState().views.slice().sort();
-    const otherViews = otherState.views.slice().sort();
+  isEquivalent(otherState?: ViewerState<V>): Observable<boolean> {
+    return this.state.pipe(map(state => {
+      if (!otherState) {
+        return false;
+      }
+      const thisViews = state.views.slice().sort();
+      const otherViews = otherState.views.slice().sort();
 
-    return thisViews.length === otherViews.length && thisViews.every((v, i) => otherViews[i] === v);
+      return thisViews.length === otherViews.length &&
+          thisViews.every((v, i) => otherViews[i] === v);
+    }));
   }
 
   getRenderedViews(item: T): Observable<RenderedView[]> {

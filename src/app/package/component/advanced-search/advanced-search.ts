@@ -11,8 +11,8 @@ import {FormControl} from '@angular/forms';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Provider} from 'app/package/data-source/provider';
 import {Query} from 'app/package/data-source/query';
-import {Observable, Subject} from 'rxjs';
-import {debounceTime, takeUntil} from 'rxjs/operators';
+import {combineLatest, Observable, Subject} from 'rxjs';
+import {debounceTime, take, takeUntil} from 'rxjs/operators';
 
 export const ANIMATION_DURATION = '250ms cubic-bezier(0.35, 0, 0.25, 1)';
 
@@ -75,10 +75,10 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
       this.searchFormControl.setValue(state.search, {emitEvent: false});
     });
 
-    this.searchFormControl.valueChanges.pipe(debounceTime(100), takeUntil(this.destroyed))
-        .subscribe(search => {
-          const filtererState = this.filterer.getState();
-          this.filterer.setState({...filtererState, search});
+    combineLatest(this.searchFormControl.valueChanges.pipe(debounceTime(100)), this.filterer.state)
+        .pipe(takeUntil(this.destroyed))
+        .subscribe(results => {
+          this.filterer.setState({...results[1], search: results[0]});
         });
 
     this.displayedFilterTypes = Array.from(metadata.keys())
@@ -100,30 +100,30 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addFilter(type: string) {
-    const filtererState = this.filterer.getState();
+    this.filterer.state.pipe(take(1)).subscribe(state => {
+      this.focusInput = true;
+      const filters = state.filters.slice();
+      filters.push({type});
 
-    this.focusInput = true;
-    const filters = filtererState.filters.slice();
-    filters.push({type});
-
-    this.filterer.setState({...filtererState, filters});
+      this.filterer.setState({...state, filters});
+    });
   }
 
   removeFilter(index: number) {
-    const filtererState = this.filterer.getState();
+    this.filterer.state.pipe(take(1)).subscribe(state => {
+      const filters = state.filters.slice();
+      filters.splice(index, 1);
 
-    const filters = filtererState.filters.slice();
-    filters.splice(index, 1);
-
-    this.filterer.setState({...filtererState, filters});
+      this.filterer.setState({...state, filters});
+    });
   }
 
   queryChange(index: number, query: Query) {
-    const filtererState = this.filterer.getState();
+    this.filterer.state.pipe(take(1)).subscribe(state => {
+      const filters = state.filters.slice();
+      filters[index] = {...filters[index], query};
 
-    const filters = filtererState.filters.slice();
-    filters[index] = {...filters[index], query};
-
-    this.filterer.setState({...filtererState, filters});
+      this.filterer.setState({...state, filters});
+    });
   }
 }
