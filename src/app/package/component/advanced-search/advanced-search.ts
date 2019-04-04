@@ -8,10 +8,10 @@ import {
   OnInit
 } from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {Filterer} from 'app/package/data-source/filterer';
+import {Filter, Filterer} from 'app/package/data-source/filterer';
 import {Provider} from 'app/package/data-source/provider';
 import {Query} from 'app/package/data-source/query';
-import {combineLatest, Observable, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {debounceTime, take, takeUntil} from 'rxjs/operators';
 
 export const ANIMATION_DURATION = '250ms cubic-bezier(0.35, 0, 0.25, 1)';
@@ -75,10 +75,12 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
       this.searchFormControl.setValue(state.search, {emitEvent: false});
     });
 
-    combineLatest(this.searchFormControl.valueChanges.pipe(debounceTime(100)), this.filterer.state)
+    this.searchFormControl.valueChanges.pipe(debounceTime(100))
         .pipe(takeUntil(this.destroyed))
-        .subscribe(results => {
-          this.filterer.setState({...results[1], search: results[0]});
+        .subscribe(search => {
+          this.filterer.state.pipe(take(1)).subscribe(state => {
+            this.filterer.setState({filters: state.filters, search});
+          });
         });
 
     this.displayedFilterTypes = Array.from(metadata.keys())
@@ -109,12 +111,15 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  removeFilter(index: number) {
+  removeFilter(filter: Filter) {
     this.filterer.state.pipe(take(1)).subscribe(state => {
       const filters = state.filters.slice();
-      filters.splice(index, 1);
+      const index = state.filters.indexOf(filter);
 
-      this.filterer.setState({...state, filters});
+      if (index !== -1) {
+        filters.splice(index, 1);
+        this.filterer.setState({...state, filters});
+      }
     });
   }
 

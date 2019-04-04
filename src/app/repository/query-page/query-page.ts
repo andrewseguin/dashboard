@@ -59,7 +59,11 @@ export class QueryPage<T> {
     this.sorter = dataSourceProvider.sorter();
     this.provider = dataSourceProvider.provider();
 
-    this.canSave = combineLatest(this.sorter.isEquivalent(query.sorterState))
+    this.canSave = combineLatest(
+                       this.viewer.isEquivalent(query.viewerState),
+                       this.filterer.isEquivalent(query.filtererState),
+                       this.grouper.isEquivalent(query.grouperState),
+                       this.sorter.isEquivalent(query.sorterState))
                        .pipe(map(results => results.some(result => !result)));
 
     this.activeItem =

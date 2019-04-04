@@ -54,6 +54,7 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           const filterer = new Filterer(
               ItemsFilterMetadata,
               createFiltererContextProvider(labels, recommendations, getRecommendations));
+          filterer.setState({filters: [], search: ''});
           filterer.tokenizeItem = tokenizeItem;
           return filterer;
         },
@@ -92,6 +93,7 @@ export const provideDataSources = (activeStore: ActiveStore) => {
           const filterer = new Filterer(
               ItemsFilterMetadata,
               createFiltererContextProvider(labels, recommendations, getRecommendations));
+          filterer.setState({filters: [], search: ''});
           filterer.tokenizeItem = tokenizeItem;
           return filterer;
         },
