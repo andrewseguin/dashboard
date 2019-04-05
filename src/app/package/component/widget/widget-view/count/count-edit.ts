@@ -39,14 +39,14 @@ export class EditCount {
                   EditWidgetData<CountDisplayTypeOptions, CountWidgetDataConfig>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.config.savedFiltererStates;
-    this.data.config.dataSources.forEach(
+    this.data.config.dataResourcesMap.forEach(
         (dataSource, type) => this.dataOptions.push({id: type, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
 
-    const dataSourceProvider = data.config.dataSources.get(initialDataSourceType)!;
-    this.filterer = dataSourceProvider.filterer();
-    this.dataSource = dataSourceProvider.dataSource();
+    const dataResource = data.config.dataResourcesMap.get(initialDataSourceType)!;
+    this.filterer = dataResource.filterer();
+    this.dataSource = dataResource.dataSource();
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {

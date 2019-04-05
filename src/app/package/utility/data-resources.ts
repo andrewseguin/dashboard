@@ -4,7 +4,7 @@ import {DataSource} from '../data-source/data-source';
 import {Sorter, SorterState} from '../data-source/sorter';
 import {Viewer, ViewerState} from '../data-source/viewer';
 
-export interface DataSourceProvider {
+export interface DataResources {
   id: string;
   label: string;
   viewer: (initialState?: ViewerState) => Viewer<any, any, any>;

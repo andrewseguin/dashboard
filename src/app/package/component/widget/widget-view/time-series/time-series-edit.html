@@ -13,7 +13,7 @@
 
     <dataset-option [formGroupName]="index"
                     [savedFiltererStates]="data.config.savedFiltererStates | async"
-                    [dataSources]="data.config.dataSources"
+                    [dataResources]="data.config.dataResources"
                     (remove)="removeDataset(index)"
                     (duplicate)="duplicateDataset(dataset)"
                     (addAction)="addAction(dataset)">

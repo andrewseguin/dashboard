@@ -38,13 +38,13 @@ export class PieChartEdit {
                   EditWidgetData<PieChartDisplayTypeOptions<any>, PieChartWidgetDataConfig>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.config.savedFiltererStates;
-    this.data.config.dataSources.forEach(
+    this.data.config.dataResourcesMap.forEach(
         dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
 
     // TODO: Add in a datasource type selector
-    const dataSourceProvider = data.config.dataSources.get(initialDataSourceType)!;
+    const dataSourceProvider = data.config.dataResourcesMap.get(initialDataSourceType)!;
     this.grouper = dataSourceProvider.grouper();
     this.filterer = dataSourceProvider.filterer();
     this.dataSource = dataSourceProvider.dataSource();

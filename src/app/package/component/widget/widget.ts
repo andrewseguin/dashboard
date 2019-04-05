@@ -22,10 +22,10 @@ export interface Widget {
   displayTypeOptions?: any;
 }
 
-export interface WidgetConfig {
+export interface WidgetConfig<C> {
   id: string;
   label: string;
   component: ComponentType<any>;
   editComponent: ComponentType<any>;
-  config: any;
+  config: C;
 }

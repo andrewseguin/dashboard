@@ -25,7 +25,7 @@
 
           <div class="end">
             <div class="query-type theme-secondary-text">
-              {{dataSources.get(query.type).label}}
+              {{dataResourcesMap.get(query.type).label}}
             </div>
             <query-menu [query]="query" icon="more_vert"
                         (click)="$event.stopPropagation()">
@@ -39,7 +39,7 @@
 </ng-container>
 
 <ng-template cdkPortal #newButton>
-  <ng-container *ngIf="dataSourceTypes.length === 1; else createMenu">
+  <ng-container *ngIf="dataResourcesIds.length === 1; else createMenu">
     <button mat-raised-button color="primary" class="create"
             (click)="createQuery(queryTypes[0])">
       Create New Query
@@ -57,7 +57,7 @@
 
     <mat-menu #createQueryMenu="matMenu" xPosition="before">
       <button mat-menu-item (click)="createQuery(queryType)"
-              *ngFor="let queryType of dataSourceTypes">{{dataSources.get(queryType).label}}</button>
+              *ngFor="let queryType of dataResourcesIds">{{dataResourcesMap.get(queryType).label}}</button>
       <button mat-menu-item [matMenuTriggerFor]="recommendations"
               *ngIf="(recommendationsList | async)?.length">
         From recommendations

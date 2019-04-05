@@ -21,11 +21,11 @@ import {
 import {
   getTimeSeriesWidgetConfig
 } from 'app/package/component/widget/widget-view/time-series/time-series';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {DataResources} from 'app/package/utility/data-resources';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
-import {DATA_SOURCES} from '../repository';
+import {DATA_RESOURCES_MAP as DATA_RESOURCES_MAP} from '../repository';
 import {ActiveStore} from '../services/active-store';
 import {Header} from '../services/header';
 import {Theme} from '../services/theme';
@@ -63,16 +63,16 @@ export class DashboardPage {
         return savedFiltererStates;
       }));
 
-  widgetConfigs: {[key in string]: WidgetConfig} = {
-    count: getCountWidgetConfig(this.dataSources, this.savedFiltererStates),
+  widgetConfigs: {[key in string]: WidgetConfig<any>} = {
+    count: getCountWidgetConfig(this.dataResourcesMap, this.savedFiltererStates),
     list: getListWidgetConfig(
-        this.dataSources,
+        this.dataResourcesMap,
         (item: Item) => {
           this.dialog.open(ItemDetailDialog, {data: {itemId: item.id}, width: '80vw'});
         },
         this.savedFiltererStates),
-    pie: getPieChartWidgetConfig(this.dataSources, this.savedFiltererStates),
-    timeSeries: getTimeSeriesWidgetConfig(this.dataSources, this.savedFiltererStates),
+    pie: getPieChartWidgetConfig(this.dataResourcesMap, this.savedFiltererStates),
+    timeSeries: getTimeSeriesWidgetConfig(this.dataResourcesMap, this.savedFiltererStates),
   };
 
   private destroyed = new Subject();
@@ -83,7 +83,7 @@ export class DashboardPage {
 
   constructor(
       private dialog: MatDialog, private elementRef: ElementRef,
-      @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
+      @Inject(DATA_RESOURCES_MAP) public dataResourcesMap: Map<string, DataResources>,
       private router: Router, private activatedRoute: ActivatedRoute, private theme: Theme,
       private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
     // TODO: Needs to listen for theme changes to know when this should change

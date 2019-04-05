@@ -5,7 +5,7 @@ import {getFiltererProvider} from 'app/github/data-source/item-filter-metadata';
 import {getGrouperProvider} from 'app/github/data-source/item-grouper-metadata';
 import {getSorterProvider} from 'app/github/data-source/item-sorter-metadata';
 import {getViewerProvider} from 'app/github/data-source/item-viewer-metadata';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {DataResources} from 'app/package/utility/data-resources';
 import {Auth} from 'app/service/auth';
 import {LoadedRepos} from 'app/service/loaded-repos';
 import {interval} from 'rxjs';
@@ -17,9 +17,10 @@ import {Updater} from './services/updater';
 import {getRecommendations} from './utility/get-recommendations';
 import {isRepoStoreEmpty} from './utility/is-repo-store-empty';
 
-export const DATA_SOURCES = new InjectionToken<Map<string, DataSourceProvider>>('data-sources');
+export const DATA_RESOURCES_MAP =
+    new InjectionToken<Map<string, DataResources>>('data-resources-map');
 
-export const provideDataSources = (activeStore: ActiveStore) => {
+export const provideDataResourcesMap = (activeStore: ActiveStore) => {
   const recommendations = activeStore.activeConfig.recommendations.list;
   const labels = activeStore.activeData.labels.list;
 
@@ -28,27 +29,27 @@ export const provideDataSources = (activeStore: ActiveStore) => {
 
   const prs = activeStore.activeData.items.list.pipe(map(items => items.filter(item => !!item.pr)));
 
-  return new Map<string, DataSourceProvider>([
+  return new Map<string, DataResources>([
     [
       'issue', {
         id: 'issue',
         label: 'Issues',
+        dataSource: getDataSourceProvider(issues),
         viewer: getViewerProvider(labels, recommendations),
         filterer: getFiltererProvider(labels, recommendations, getRecommendations),
         grouper: getGrouperProvider(labels),
         sorter: getSorterProvider(),
-        dataSource: getDataSourceProvider(issues)
       }
     ],
     [
       'pr', {
         id: 'pr',
         label: 'Pull Requests',
+        dataSource: getDataSourceProvider(prs),
         viewer: getViewerProvider(labels, recommendations),
         filterer: getFiltererProvider(labels, recommendations, getRecommendations),
         grouper: getGrouperProvider(labels),
         sorter: getSorterProvider(),
-        dataSource: getDataSourceProvider(prs)
       }
     ],
   ]);
@@ -58,7 +59,8 @@ export const provideDataSources = (activeStore: ActiveStore) => {
   templateUrl: 'repository.html',
   styleUrls: ['repository.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [{provide: DATA_SOURCES, useFactory: provideDataSources, deps: [ActiveStore]}]
+  providers:
+      [{provide: DATA_RESOURCES_MAP, useFactory: provideDataResourcesMap, deps: [ActiveStore]}]
 })
 export class Repository {
   constructor(

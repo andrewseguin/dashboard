@@ -15,11 +15,11 @@ import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
 import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {DataResources} from 'app/package/utility/data-resources';
 import {isMobile} from 'app/utility/media-matcher';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {map, take, takeUntil} from 'rxjs/operators';
-import {DATA_SOURCES} from '../repository';
+import {DATA_RESOURCES_MAP} from '../repository';
 import {ActiveStore} from '../services/active-store';
 import {ConfigStore} from '../services/dao/config/config-dao';
 import {Query} from '../services/dao/config/query';
@@ -50,12 +50,12 @@ export class QueryPage<T> {
     this._query = query;
 
     const type = this._query.dataSourceType!;
-    const dataSourceProvider = this.dataSources.get(type)!;
-    this.viewer = dataSourceProvider.viewer(this.query.viewerState);
-    this.filterer = dataSourceProvider.filterer(this.query.filtererState);
-    this.grouper = dataSourceProvider.grouper(this.query.grouperState);
-    this.sorter = dataSourceProvider.sorter(this.query.sorterState);
-    this.dataSource = dataSourceProvider.dataSource();
+    const dataResource = this.dataResourcesMap.get(type)!;
+    this.viewer = dataResource.viewer(this.query.viewerState);
+    this.filterer = dataResource.filterer(this.query.filtererState);
+    this.grouper = dataResource.grouper(this.query.grouperState);
+    this.sorter = dataResource.sorter(this.query.sorterState);
+    this.dataSource = dataResource.dataSource();
 
     this.canSave = combineLatest(
                        this.viewer.isEquivalent(query.viewerState),
@@ -95,7 +95,7 @@ export class QueryPage<T> {
   @ViewChild(CdkPortal) toolbarActions: CdkPortal;
 
   constructor(
-      @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
+      @Inject(DATA_RESOURCES_MAP) public dataResourcesMap: Map<string, DataResources>,
       private dialog: MatDialog, private router: Router, private activatedRoute: ActivatedRoute,
       private activeRepo: ActiveStore, private header: Header, private queryDialog: QueryDialog,
       private cd: ChangeDetectorRef) {

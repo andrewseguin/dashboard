@@ -6,13 +6,13 @@ import {combineLatest, Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
-import {WIDGET_DATA, WidgetData} from '../../widget';
+import {WIDGET_DATA, WidgetConfig, WidgetData} from '../../widget';
 import {MaterialColors} from '../widget-view';
 
 import {TimeSeriesEdit} from './time-series-edit';
 
 
-export type TimeSeriesDataSources = Map<string, {
+export type TimeSeriesDataResourcesMap = Map<string, {
   id: string,
   label: string,
   filterer: (initialValue?: FiltererState) => Filterer,
@@ -20,18 +20,20 @@ export type TimeSeriesDataSources = Map<string, {
 }>;
 
 export interface TimeSeriesWidgetDataConfig {
-  dataSources: TimeSeriesDataSources;
+  dataResourcesMap: TimeSeriesDataResourcesMap;
   savedFiltererStates: Observable<SavedFiltererState[]>;
 }
 
 export function getTimeSeriesWidgetConfig(
-    dataSources: TimeSeriesDataSources, savedFiltererStates: Observable<SavedFiltererState[]>) {
+    dataResourcesMap: TimeSeriesDataResourcesMap,
+    savedFiltererStates: Observable<SavedFiltererState[]>):
+    WidgetConfig<TimeSeriesWidgetDataConfig> {
   return {
     id: 'timeSeries',
     label: 'Time Series',
     component: TimeSeries,
     editComponent: TimeSeriesEdit,
-    config: {dataSources, savedFiltererStates}
+    config: {dataResourcesMap, savedFiltererStates}
   };
 }
 
@@ -91,7 +93,8 @@ export class TimeSeries<T> {
 
   ngOnInit() {
     const datasetData = this.data.options.datasets.map(datasetConfig => {
-      const dataSourceProvider = this.data.config.dataSources.get(datasetConfig.dataSourceType)!;
+      const dataSourceProvider =
+          this.data.config.dataResourcesMap.get(datasetConfig.dataSourceType)!;
       const filterer = dataSourceProvider.filterer(datasetConfig.filtererState);
       const dataSource = dataSourceProvider.dataSource();
       return dataSource.data.pipe(filterer.filter());
@@ -210,7 +213,7 @@ export class TimeSeries<T> {
     items.forEach(item => {
       datasetConfig.actions.forEach(action => {
         const provider =
-            this.data.config.dataSources.get(datasetConfig.dataSourceType)!.dataSource();
+            this.data.config.dataResourcesMap.get(datasetConfig.dataSourceType)!.dataSource();
         const dates = provider.getMetadataMapForType('date');
         // TODO: Error handling if the property does not exist
         const date = dates.get(action.datePropertyId)!.accessor(item);

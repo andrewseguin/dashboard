@@ -18,7 +18,7 @@ export interface SavedFiltererState {
 
 export interface EditWidgetDialogData {
   widget?: Widget;
-  widgetConfigs: {[key in string]: WidgetConfig};
+  widgetConfigs: {[key in string]: WidgetConfig<any>};
 }
 @Component({
   templateUrl: 'edit-widget.html',
@@ -31,7 +31,7 @@ export class EditWidget<S, V, G> {
     displayType: new FormControl(''),
   });
 
-  widgetConfigs: WidgetConfig[] = [];
+  widgetConfigs: WidgetConfig<any>[] = [];
 
   optionsPortal: ComponentPortal<any>;
 

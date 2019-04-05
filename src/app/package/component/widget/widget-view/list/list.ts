@@ -6,12 +6,12 @@ import {Viewer, ViewerState} from 'app/package/data-source/viewer';
 import {Observable} from 'rxjs';
 
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
-import {WIDGET_DATA, WidgetData} from '../../widget';
+import {WIDGET_DATA, WidgetConfig, WidgetData} from '../../widget';
 
 import {ListEdit} from './list-edit';
 
 
-export type ListDataSources = Map<string, {
+export type ListDataResourcesMap = Map<string, {
   id: string,
   label: string,
   filterer: (initialValue?: FiltererState) => Filterer,
@@ -21,20 +21,20 @@ export type ListDataSources = Map<string, {
 }>;
 
 export interface ListWidgetDataConfig {
-  dataSources: ListDataSources;
+  dataResourcesMap: ListDataResourcesMap;
   onSelect: (item: any) => void;
   savedFiltererStates: Observable<SavedFiltererState[]>;
 }
 
 export function getListWidgetConfig(
-    dataSources: ListDataSources, onSelect: (item: any) => void,
-    savedFiltererStates: Observable<SavedFiltererState[]>) {
+    dataResourcesMap: ListDataResourcesMap, onSelect: (item: any) => void,
+    savedFiltererStates: Observable<SavedFiltererState[]>): WidgetConfig<ListWidgetDataConfig> {
   return {
     id: 'list',
     label: 'List',
     component: List,
     editComponent: ListEdit,
-    config: {dataSources, onSelect, savedFiltererStates}
+    config: {dataResourcesMap, onSelect, savedFiltererStates}
   };
 }
 
@@ -62,7 +62,8 @@ export class List<S, V> {
 
   constructor(@Inject(WIDGET_DATA) public data:
                   WidgetData<ListDisplayTypeOptions<S, V>, ListWidgetDataConfig>) {
-    const dataSourceProvider = this.data.config.dataSources.get(this.data.options.dataSourceType)!;
+    const dataSourceProvider =
+        this.data.config.dataResourcesMap.get(this.data.options.dataSourceType)!;
     const sorter = dataSourceProvider.sorter(this.data.options.sorterState);
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
     const dataSource = dataSourceProvider.dataSource();

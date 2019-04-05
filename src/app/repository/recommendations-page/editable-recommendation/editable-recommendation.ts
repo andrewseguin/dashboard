@@ -4,8 +4,8 @@ import {MatDialog, MatSnackBar} from '@angular/material';
 import {Item} from 'app/github/app-types/item';
 import {Filterer} from 'app/package/data-source/filterer';
 import {DataSource} from 'app/package/data-source/data-source';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
-import {DATA_SOURCES} from 'app/repository/repository';
+import {DataResources} from 'app/package/utility/data-resources';
+import {DATA_RESOURCES_MAP} from 'app/repository/repository';
 import {ActiveStore} from 'app/repository/services/active-store';
 import {Recommendation} from 'app/repository/services/dao/config/recommendation';
 import {
@@ -69,7 +69,7 @@ export class EditableRecommendation {
   private _destroyed = new Subject();
 
   constructor(
-      @Inject(DATA_SOURCES) public dataSources: Map<string, DataSourceProvider>,
+      @Inject(DATA_RESOURCES_MAP) public dataResourcesMap: Map<string, DataResources>,
       private cd: ChangeDetectorRef, private activeRepo: ActiveStore, private snackbar: MatSnackBar,
       private dialog: MatDialog) {}
 
@@ -82,8 +82,8 @@ export class EditableRecommendation {
     });
 
     // TODO: This should be set by the recommendation
-    this.itemsFilterer = this.dataSources.get('issue')!.filterer();
-    this.dataSource = this.dataSources.get('issue')!.dataSource();
+    this.itemsFilterer = this.dataResourcesMap.get('issue')!.filterer();
+    this.dataSource = this.dataResourcesMap.get('issue')!.dataSource();
 
 
     const filtererState = this.recommendation.filtererState ||

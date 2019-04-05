@@ -7,13 +7,13 @@ import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
-import {WIDGET_DATA, WidgetData} from '../../widget';
+import {WIDGET_DATA, WidgetConfig, WidgetData} from '../../widget';
 import {MaterialColors} from '../widget-view';
 
 import {PieChartEdit} from './pie-chart-edit';
 
 
-export type PieChartDataSources = Map<string, {
+export type PieChartDataResourcesMap = Map<string, {
   id: string,
   label: string,
   filterer: (initialValue?: FiltererState) => Filterer,
@@ -22,18 +22,19 @@ export type PieChartDataSources = Map<string, {
 }>;
 
 export interface PieChartWidgetDataConfig {
-  dataSources: PieChartDataSources;
+  dataResourcesMap: PieChartDataResourcesMap;
   savedFiltererStates: Observable<SavedFiltererState[]>;
 }
 
 export function getPieChartWidgetConfig(
-    dataSources: PieChartDataSources, savedFiltererStates: Observable<SavedFiltererState[]>) {
+    dataResourcesMap: PieChartDataResourcesMap,
+    savedFiltererStates: Observable<SavedFiltererState[]>): WidgetConfig<PieChartWidgetDataConfig> {
   return {
     id: 'pie',
     label: 'Pie Chart',
     component: PieChart,
     editComponent: PieChartEdit,
-    config: {dataSources, savedFiltererStates}
+    config: {dataResourcesMap, savedFiltererStates}
   };
 }
 
@@ -61,13 +62,13 @@ export class PieChart<T, G> {
                   WidgetData<PieChartDisplayTypeOptions<G>, PieChartWidgetDataConfig>) {}
 
   ngOnInit() {
-    const dataSourceProvider = this.data.config.dataSources.get(this.data.options.dataSourceType)!;
+    const dataSourceProvider =
+        this.data.config.dataResourcesMap.get(this.data.options.dataSourceType)!;
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
     const grouper = dataSourceProvider.grouper(this.data.options.grouperState);
     const dataSource = dataSourceProvider.dataSource();
 
-    dataSource.data
-        .pipe(filterer.filter(), grouper.group(), takeUntil(this.destroyed))
+    dataSource.data.pipe(filterer.filter(), grouper.group(), takeUntil(this.destroyed))
         .subscribe(result => this.render(result));
   }
 

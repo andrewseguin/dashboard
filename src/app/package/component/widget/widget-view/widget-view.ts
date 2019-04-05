@@ -8,7 +8,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {DataResources} from 'app/package/utility/data-resources';
 
 import {Widget, WIDGET_DATA, WidgetConfig, WidgetData} from '../widget';
 
@@ -23,13 +23,13 @@ import {Widget, WIDGET_DATA, WidgetConfig, WidgetData} from '../widget';
   },
 })
 export class WidgetView {
-  @Input() widgetConfig: WidgetConfig;
+  @Input() widgetConfig: WidgetConfig<any>;
 
   @Input() widget: Widget;
 
   @Input() editMode: boolean;
 
-  @Input() dataSources: Map<string, DataSourceProvider>;
+  @Input() dataResourcesMap: Map<string, DataResources>;
 
   @Output() edit = new EventEmitter<void>();
 

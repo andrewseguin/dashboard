@@ -41,12 +41,12 @@ export class ListEdit {
                   EditWidgetData<ListDisplayTypeOptions<any, any>, ListWidgetDataConfig>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.config.savedFiltererStates;
-    this.data.config.dataSources.forEach(
+    this.data.config.dataResourcesMap.forEach(
         dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;
 
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
-    const dataSourceProvider = data.config.dataSources.get(initialDataSourceType)!;
+    const dataSourceProvider = data.config.dataResourcesMap.get(initialDataSourceType)!;
 
     this.sorter = dataSourceProvider.sorter();
     this.viewer = dataSourceProvider.viewer();

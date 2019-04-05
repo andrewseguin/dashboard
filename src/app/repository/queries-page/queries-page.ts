@@ -1,10 +1,10 @@
 import {CdkPortal} from '@angular/cdk/portal';
 import {ChangeDetectionStrategy, Component, Inject, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {DataResources} from 'app/package/utility/data-resources';
 import {Observable, Subject} from 'rxjs';
 import {delay, map, mergeMap, takeUntil} from 'rxjs/operators';
-import {DATA_SOURCES} from '../repository';
+import {DATA_RESOURCES_MAP} from '../repository';
 import {ActiveStore} from '../services/active-store';
 import {Query} from '../services/dao/config/query';
 import {Recommendation} from '../services/dao/config/recommendation';
@@ -28,7 +28,7 @@ interface QueryGroup {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class QueriesPage {
-  dataSourceTypes: string[] = [];
+  dataResourcesIds: string[] = [];
 
   recommendationsList =
       this.activeRepo.config.pipe(mergeMap(configStore => configStore.recommendations.list));
@@ -45,9 +45,9 @@ export class QueriesPage {
   private destroyed = new Subject();
 
   constructor(
-      @Inject(DATA_SOURCES) private dataSources: Map<string, DataSourceProvider>,
+      @Inject(DATA_RESOURCES_MAP) private dataResourcesMap: Map<string, DataResources>,
       private header: Header, private router: Router, private activeRepo: ActiveStore) {
-    this.dataSources.forEach(dataSource => this.dataSourceTypes.push(dataSource.id));
+    this.dataResourcesMap.forEach(dataResources => this.dataResourcesIds.push(dataResources.id));
   }
 
   ngOnInit() {
@@ -81,7 +81,7 @@ export class QueriesPage {
   }
 
   private getQueryCount(query: Query): Observable<number> {
-    const dataSourceProvider = this.dataSources.get(query.dataSourceType!)!;
+    const dataSourceProvider = this.dataResourcesMap.get(query.dataSourceType!)!;
     const filterer = dataSourceProvider.filterer(query.filtererState);
     const dataSource = dataSourceProvider.dataSource();
 

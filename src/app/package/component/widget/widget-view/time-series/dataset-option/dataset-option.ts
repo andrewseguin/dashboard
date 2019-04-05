@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
 import { ButtonToggleOption } from '../../../edit-widget/button-toggle-option/button-toggle-option';
 import { SavedFiltererState } from '../../../edit-widget/edit-widget';
-import { TimeSeriesDataSources } from '../time-series';
+import { TimeSeriesDataResourcesMap } from '../time-series';
 
 @Component({
   selector: 'dataset-option',
@@ -41,7 +41,7 @@ export class DatasetOption {
 
   @Input() savedFiltererStates: SavedFiltererState[];
 
-  @Input() dataSources: TimeSeriesDataSources;
+  @Input() dataResources: TimeSeriesDataResourcesMap;
 
   @Output() remove = new EventEmitter();
 
@@ -52,7 +52,7 @@ export class DatasetOption {
   constructor(public controlContainer: ControlContainer) {}
 
   ngOnInit() {
-    this.dataSources.forEach(
+    this.dataResources.forEach(
         dataSource =>
             this.dataSourceTypeOptions.push({id: dataSource.id, label: dataSource.label}));
 
@@ -64,7 +64,7 @@ export class DatasetOption {
     dataSourceTypeControl.valueChanges
         .pipe(takeUntil(this.destroyed), startWith(dataSourceTypeControl.value))
         .subscribe(value => {
-          const dataSourceProvider = this.dataSources.get(value)!;
+          const dataSourceProvider = this.dataResources.get(value)!;
           this.dataSource = dataSourceProvider.dataSource();
           this.filterer = dataSourceProvider.filterer();
         });

@@ -1,7 +1,7 @@
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {DataResources} from 'app/package/utility/data-resources';
 import {take} from 'rxjs/operators';
 import {
   EditWidget,
@@ -23,9 +23,9 @@ export class DashboardView {
 
   @Input() edit: boolean;
 
-  @Input() dataSources: Map<string, DataSourceProvider>;
+  @Input() dataResourcesMap: Map<string, DataResources>;
 
-  @Input() widgetConfigs: {[key in string]: WidgetConfig};
+  @Input() widgetConfigs: {[key in string]: WidgetConfig<any>};
 
   @Input() savedFiltererStates: SavedFiltererState[] = [];
 
