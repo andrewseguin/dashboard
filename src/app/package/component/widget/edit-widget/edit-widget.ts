@@ -6,7 +6,7 @@ import { DataSourceProvider } from 'app/package/utility/data-source-provider';
 import { FiltererState } from 'app/package/data-source/filterer';
 import { ReplaySubject } from 'rxjs';
 import { startWith, take } from 'rxjs/operators';
-import { EditWidgetData2, EDIT_WIDGET_DATA, Widget, WidgetConfig } from '../../widget/widget';
+import { EditWidgetData, EDIT_WIDGET_DATA, Widget, WidgetConfig } from '../../widget/widget';
 
 
 
@@ -17,7 +17,7 @@ export interface SavedFiltererState {
   dataSourceType: string;
 }
 
-export interface EditWidgetData {
+export interface EditWidgetDialogData {
   widget?: Widget;
   dataSources: Map<string, DataSourceProvider>;
   widgetConfigs: {[key in string]: WidgetConfig};
@@ -42,7 +42,7 @@ export class EditWidget<S, V, G> {
 
   constructor(
       private dialogRef: MatDialogRef<EditWidget<S, V, G>, Widget>,
-      @Inject(MAT_DIALOG_DATA) public data: EditWidgetData) {
+      @Inject(MAT_DIALOG_DATA) public data: EditWidgetDialogData) {
     for (let id of Object.keys(data.widgetConfigs)) {
       this.widgetConfigs.push(data.widgetConfigs[id]);
     }
@@ -76,7 +76,7 @@ export class EditWidget<S, V, G> {
 
   private createEditWidget(type: string) {
     this.options.next(this.data.widget ? this.data.widget.displayTypeOptions : null);
-    const widgetData: EditWidgetData2<any> = {
+    const widgetData: EditWidgetData<any> = {
       options: this.options,
       dataSources: this.data.dataSources,
       savedFiltererStates: this.data.savedFiltererStates,

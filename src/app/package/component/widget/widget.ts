@@ -1,23 +1,23 @@
-import { ComponentType } from '@angular/cdk/overlay/index';
-import { InjectionToken } from '@angular/core';
-import { DataSourceProvider } from 'app/package/utility/data-source-provider';
-import { FiltererState } from 'app/package/data-source/filterer';
-import { Subject } from 'rxjs';
-import { SavedFiltererState } from './edit-widget/edit-widget';
+import {ComponentType} from '@angular/cdk/overlay/index';
+import {InjectionToken} from '@angular/core';
+import {FiltererState} from 'app/package/data-source/filterer';
+import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {Subject} from 'rxjs';
+import {SavedFiltererState} from './edit-widget/edit-widget';
 
 export const WIDGET_DATA = new InjectionToken<any>('WidgetData');
 
-export interface WidgetData<O, C> {
+export interface WidgetData<T, C> {
   dataSources: Map<string, DataSourceProvider>;
-  options: O;
+  options: T;
   config?: C;
 }
 
 export const EDIT_WIDGET_DATA = new InjectionToken<any>('EditWidgetData');
 
-export interface EditWidgetData2<O> {
+export interface EditWidgetData<T> {
   dataSources: Map<string, DataSourceProvider>;
-  options: Subject<O>;
+  options: Subject<T>;
   savedFiltererStates: SavedFiltererState[];
 }
 

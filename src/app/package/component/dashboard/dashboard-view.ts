@@ -3,7 +3,11 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {take} from 'rxjs/operators';
-import {EditWidget, EditWidgetData, SavedFiltererState} from '../widget/edit-widget/edit-widget';
+import {
+  EditWidget,
+  EditWidgetDialogData,
+  SavedFiltererState
+} from '../widget/edit-widget/edit-widget';
 import {Widget, WidgetConfig} from '../widget/widget';
 import {Column, ColumnGroup, Dashboard} from './dashboard';
 
@@ -55,14 +59,14 @@ export class DashboardView {
   }
 
   editWidget(column: Column, index: number, widget?: Widget) {
-    const data: EditWidgetData = {
+    const data: EditWidgetDialogData = {
       widget: widget,
       dataSources: this.dataSources,
       widgetConfigs: this.widgetConfigs,
       savedFiltererStates: this.savedFiltererStates,
     };
 
-    const config: MatDialogConfig<EditWidgetData> = {data, width: '650px'};
+    const config: MatDialogConfig<EditWidgetDialogData> = {data, width: '650px'};
 
     this.dialog.open(EditWidget, config).afterClosed().pipe(take(1)).subscribe((result: Widget) => {
       if (result) {

@@ -8,7 +8,7 @@ import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
-import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
+import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
 import {ListDisplayTypeOptions} from './list';
 
@@ -37,7 +37,7 @@ export class ListEdit {
   savedFiltererStates: SavedFiltererState[];
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
-                  EditWidgetData2<ListDisplayTypeOptions<any, any>>) {
+                  EditWidgetData<ListDisplayTypeOptions<any, any>>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.savedFiltererStates;
     this.data.dataSources.forEach(

@@ -5,7 +5,7 @@ import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
-import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
+import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
 import {CountDisplayTypeOptions} from './count.module';
 import { DataSource } from 'app/package/data-source/data-source';
@@ -31,7 +31,7 @@ export class EditCount {
 
   savedFiltererStates: SavedFiltererState[];
 
-  constructor(@Inject(EDIT_WIDGET_DATA) public data: EditWidgetData2<CountDisplayTypeOptions>) {
+  constructor(@Inject(EDIT_WIDGET_DATA) public data: EditWidgetData<CountDisplayTypeOptions>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.savedFiltererStates;
     this.data.dataSources.forEach(

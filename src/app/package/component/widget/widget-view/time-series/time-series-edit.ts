@@ -3,7 +3,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms
 import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
-import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
+import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
 import {TimeSeriesDisplayTypeOptions} from './time-series';
 
@@ -30,7 +30,7 @@ export class TimeSeriesEdit {
   });
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
-                  EditWidgetData2<TimeSeriesDisplayTypeOptions>) {
+                  EditWidgetData<TimeSeriesDisplayTypeOptions>) {
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {
         this.initializeForm(value);

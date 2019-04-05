@@ -7,7 +7,7 @@ import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
-import {EDIT_WIDGET_DATA, EditWidgetData2} from '../../widget';
+import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
 import {PieChartDisplayTypeOptions} from './pie-chart';
 
@@ -34,7 +34,7 @@ export class PieChartEdit {
   savedFiltererStates: SavedFiltererState[];
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
-                  EditWidgetData2<PieChartDisplayTypeOptions<any>>) {
+                  EditWidgetData<PieChartDisplayTypeOptions<any>>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.savedFiltererStates;
     this.data.dataSources.forEach(
