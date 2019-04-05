@@ -1,13 +1,12 @@
-import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
-import { ChangeDetectionStrategy, Component, Inject, Injector } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { DataSourceProvider } from 'app/package/utility/data-source-provider';
-import { FiltererState } from 'app/package/data-source/filterer';
-import { ReplaySubject } from 'rxjs';
-import { startWith, take } from 'rxjs/operators';
-import { EditWidgetData, EDIT_WIDGET_DATA, Widget, WidgetConfig } from '../../widget/widget';
+import {ComponentPortal, PortalInjector} from '@angular/cdk/portal';
+import {ChangeDetectionStrategy, Component, Inject, Injector} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {FiltererState} from 'app/package/data-source/filterer';
+import {ReplaySubject} from 'rxjs';
+import {startWith, take} from 'rxjs/operators';
 
+import {EDIT_WIDGET_DATA, EditWidgetData, Widget, WidgetConfig} from '../../widget/widget';
 
 
 export interface SavedFiltererState {
@@ -19,7 +18,6 @@ export interface SavedFiltererState {
 
 export interface EditWidgetDialogData {
   widget?: Widget;
-  dataSources: Map<string, DataSourceProvider>;
   widgetConfigs: {[key in string]: WidgetConfig};
   savedFiltererStates: SavedFiltererState[];
 }
@@ -76,10 +74,10 @@ export class EditWidget<S, V, G> {
 
   private createEditWidget(type: string) {
     this.options.next(this.data.widget ? this.data.widget.displayTypeOptions : null);
-    const widgetData: EditWidgetData<any> = {
+    const widgetData: EditWidgetData<any, any> = {
       options: this.options,
-      dataSources: this.data.dataSources,
       savedFiltererStates: this.data.savedFiltererStates,
+      config: this.data.widgetConfigs[type].config,
     };
 
     const injectionTokens = new WeakMap<any, any>([[EDIT_WIDGET_DATA, widgetData]]);

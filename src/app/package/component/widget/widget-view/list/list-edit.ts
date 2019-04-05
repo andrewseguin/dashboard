@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {Filterer} from 'app/package/data-source/filterer';
 import {DataSource} from 'app/package/data-source/data-source';
+import {Filterer} from 'app/package/data-source/filterer';
 import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {take} from 'rxjs/operators';
@@ -10,7 +10,7 @@ import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
-import {ListDisplayTypeOptions} from './list';
+import {ListDisplayTypeOptions, ListWidgetDataConfig} from './list';
 
 
 @Component({
@@ -37,15 +37,15 @@ export class ListEdit {
   savedFiltererStates: SavedFiltererState[];
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
-                  EditWidgetData<ListDisplayTypeOptions<any, any>>) {
+                  EditWidgetData<ListDisplayTypeOptions<any, any>, ListWidgetDataConfig>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.savedFiltererStates;
-    this.data.dataSources.forEach(
+    this.data.config.dataSources.forEach(
         dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;
 
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
-    const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
+    const dataSourceProvider = data.config.dataSources.get(initialDataSourceType)!;
 
     this.sorter = dataSourceProvider.sorter();
     this.viewer = dataSourceProvider.viewer();

@@ -1,4 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {DataSource} from 'app/package/data-source/data-source';
+import {Filterer, FiltererState} from 'app/package/data-source/filterer';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -7,6 +9,27 @@ import {WIDGET_DATA, WidgetData} from '../../widget';
 import {EditCount} from './count-edit';
 import {CountDisplayTypeOptions} from './count.module';
 
+
+export type CountDataSources = Map<string, {
+  id: string,
+  label: string,
+  filterer: (initialValue?: FiltererState) => Filterer,
+  dataSource: () => DataSource,
+}>;
+
+export type CountWidgetDataConfig = {
+  dataSources: CountDataSources;
+};
+
+export function getCountWidgetConfig(dataSources: CountDataSources) {
+  return {
+    id: 'count',
+    label: 'Count',
+    component: Count,
+    editComponent: EditCount,
+    config: {dataSources}
+  };
+}
 
 @Component({
   selector: 'count',
@@ -25,12 +48,11 @@ import {CountDisplayTypeOptions} from './count.module';
   }
 })
 export class Count {
-  static editComponent = EditCount;
-
   count: Observable<number>;
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<CountDisplayTypeOptions, null>) {
-    const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
+  constructor(@Inject(WIDGET_DATA) public data:
+                  WidgetData<CountDisplayTypeOptions, CountWidgetDataConfig>) {
+    const dataSourceProvider = this.data.config.dataSources.get(this.data.options.dataSourceType)!;
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
     const provider = dataSourceProvider.dataSource();
     this.count = provider.getData().pipe(filterer.filter(), map(result => result.length));

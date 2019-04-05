@@ -1,14 +1,16 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
+import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
-import {take} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {startWith, take, takeUntil} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
+import {CountWidgetDataConfig} from './count';
 import {CountDisplayTypeOptions} from './count.module';
-import { DataSource } from 'app/package/data-source/data-source';
 
 
 @Component({
@@ -31,15 +33,18 @@ export class EditCount {
 
   savedFiltererStates: SavedFiltererState[];
 
-  constructor(@Inject(EDIT_WIDGET_DATA) public data: EditWidgetData<CountDisplayTypeOptions>) {
+  destroyed = new Subject();
+
+  constructor(@Inject(EDIT_WIDGET_DATA) public data:
+                  EditWidgetData<CountDisplayTypeOptions, CountWidgetDataConfig>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.savedFiltererStates;
-    this.data.dataSources.forEach(
-        dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
+    this.data.config.dataSources.forEach(
+        (dataSource, type) => this.dataOptions.push({id: type, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
 
-    const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
+    const dataSourceProvider = data.config.dataSources.get(initialDataSourceType)!;
     this.filterer = dataSourceProvider.filterer();
     this.provider = dataSourceProvider.dataSource();
 
@@ -57,10 +62,16 @@ export class EditCount {
       }
     });
 
-    this.form.valueChanges.subscribe(value => {
-      if (value) {
-        data.options.next(value);
-      }
-    });
+    this.form.valueChanges.pipe(startWith(this.form.value), takeUntil(this.destroyed))
+        .subscribe(value => {
+          if (value) {
+            data.options.next(value);
+          }
+        });
+  }
+
+  ngOnDestroy() {
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 }

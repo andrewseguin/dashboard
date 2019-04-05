@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {FiltererState} from 'app/package/data-source/filterer';
-import {Group, GrouperState} from 'app/package/data-source/grouper';
+import {DataSource} from 'app/package/data-source/data-source';
+import {Filterer, FiltererState} from 'app/package/data-source/filterer';
+import {Group, Grouper, GrouperState} from 'app/package/data-source/grouper';
 import * as Chart from 'chart.js';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -8,6 +9,29 @@ import {takeUntil} from 'rxjs/operators';
 import {WIDGET_DATA, WidgetData} from '../../widget';
 import {MaterialColors} from '../widget-view';
 
+import {PieChartEdit} from './pie-chart-edit';
+
+export type PieChartDataSources = Map<string, {
+  id: string,
+  label: string,
+  filterer: (initialValue?: FiltererState) => Filterer,
+  grouper: (initialValue?: GrouperState) => Grouper,
+  dataSource: () => DataSource,
+}>;
+
+export interface PieChartWidgetDataConfig {
+  dataSources: PieChartDataSources;
+}
+
+export function getPieChartWidgetConfig(dataSources: PieChartDataSources) {
+  return {
+    id: 'pie',
+    label: 'Pie Chart',
+    component: PieChart,
+    editComponent: PieChartEdit,
+    config: {dataSources}
+  };
+}
 
 export interface PieChartDisplayTypeOptions<G> {
   dataSourceType: string;
@@ -29,10 +53,11 @@ export class PieChart<T, G> {
 
   private destroyed = new Subject();
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<PieChartDisplayTypeOptions<G>, null>) {}
+  constructor(@Inject(WIDGET_DATA) public data:
+                  WidgetData<PieChartDisplayTypeOptions<G>, PieChartWidgetDataConfig>) {}
 
   ngOnInit() {
-    const dataSourceProvider = this.data.dataSources.get(this.data.options.dataSourceType)!;
+    const dataSourceProvider = this.data.config.dataSources.get(this.data.options.dataSourceType)!;
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
     const grouper = dataSourceProvider.grouper(this.data.options.grouperState);
     const provider = dataSourceProvider.dataSource();

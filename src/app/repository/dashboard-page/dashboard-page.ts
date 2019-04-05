@@ -13,16 +13,14 @@ import {Item} from 'app/github/app-types/item';
 import {Column, Dashboard, hasWidgets} from 'app/package/component/dashboard/dashboard';
 import {SavedFiltererState} from 'app/package/component/widget/edit-widget/edit-widget';
 import {Widget, WidgetConfig} from 'app/package/component/widget/widget';
-import {Count} from 'app/package/component/widget/widget-view/count/count';
-import {EditCount} from 'app/package/component/widget/widget-view/count/count-edit';
-import {List} from 'app/package/component/widget/widget-view/list/list';
-import {ListEdit} from 'app/package/component/widget/widget-view/list/list-edit';
-import {PieChart} from 'app/package/component/widget/widget-view/pie-chart/pie-chart';
-import {PieChartEdit} from 'app/package/component/widget/widget-view/pie-chart/pie-chart-edit';
-import {TimeSeries} from 'app/package/component/widget/widget-view/time-series/time-series';
+import {getCountWidgetConfig} from 'app/package/component/widget/widget-view/count/count';
+import {getListWidgetConfig} from 'app/package/component/widget/widget-view/list/list';
 import {
-  TimeSeriesEdit
-} from 'app/package/component/widget/widget-view/time-series/time-series-edit';
+  getPieChartWidgetConfig
+} from 'app/package/component/widget/widget-view/pie-chart/pie-chart';
+import {
+  getTimeSeriesWidgetConfig
+} from 'app/package/component/widget/widget-view/time-series/time-series';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import * as Chart from 'chart.js';
 import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
@@ -66,36 +64,14 @@ export class DashboardPage {
       }));
 
   widgetConfigs: {[key in string]: WidgetConfig} = {
-    count: {
-      id: 'count',
-      label: 'Count',
-      component: Count,
-      editComponent: EditCount,
-    },
-    list: {
-      id: 'list',
-      label: 'List',
-      component: List,
-      editComponent: ListEdit,
-      config: {
-        onSelect:
-            (item: Item) => {
-              this.dialog.open(ItemDetailDialog, {data: {itemId: item.id}, width: '80vw'});
-            }
-      }
-    },
-    pie: {
-      id: 'pie',
-      label: 'Pie',
-      component: PieChart,
-      editComponent: PieChartEdit,
-    },
-    timeSeries: {
-      id: 'timeSeries',
-      label: 'Time Series',
-      component: TimeSeries,
-      editComponent: TimeSeriesEdit,
-    },
+    count: getCountWidgetConfig(this.dataSources),
+    list: getListWidgetConfig(
+        this.dataSources,
+        (item: Item) => {
+          this.dialog.open(ItemDetailDialog, {data: {itemId: item.id}, width: '80vw'});
+        }),
+    pie: getPieChartWidgetConfig(this.dataSources),
+    timeSeries: getTimeSeriesWidgetConfig(this.dataSources),
   };
 
   private destroyed = new Subject();
@@ -111,7 +87,6 @@ export class DashboardPage {
       private activeRepo: ActiveStore, private header: Header, private cd: ChangeDetectorRef) {
     // TODO: Needs to listen for theme changes to know when this should change
     Chart.defaults.global.defaultFontColor = this.theme.isLight ? 'black' : 'white';
-
 
     this.activatedRoute.params.pipe(takeUntil(this.destroyed)).subscribe(params => {
       const id = params['id'];

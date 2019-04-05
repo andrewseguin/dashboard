@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ControlContainer, FormArray} from '@angular/forms';
-import {Filterer} from 'app/package/data-source/filterer';
 import {DataSource} from 'app/package/data-source/data-source';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
+import {Filterer} from 'app/package/data-source/filterer';
 import {Subject} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {ButtonToggleOption} from '../../../edit-widget/button-toggle-option/button-toggle-option';
 import {SavedFiltererState} from '../../../edit-widget/edit-widget';
+import {TimeSeriesDataSources} from '../time-series';
 
 @Component({
   selector: 'dataset-option',
@@ -41,7 +41,7 @@ export class DatasetOption {
 
   @Input() savedFiltererStates: SavedFiltererState[];
 
-  @Input() dataSources: Map<string, DataSourceProvider>;
+  @Input() dataSources: TimeSeriesDataSources;
 
   @Output() remove = new EventEmitter();
 

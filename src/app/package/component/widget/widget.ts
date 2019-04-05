@@ -1,30 +1,25 @@
 import {ComponentType} from '@angular/cdk/overlay/index';
 import {InjectionToken} from '@angular/core';
-import {FiltererState} from 'app/package/data-source/filterer';
-import {DataSourceProvider} from 'app/package/utility/data-source-provider';
 import {Subject} from 'rxjs';
 import {SavedFiltererState} from './edit-widget/edit-widget';
 
 export const WIDGET_DATA = new InjectionToken<any>('WidgetData');
 
 export interface WidgetData<T, C> {
-  dataSources: Map<string, DataSourceProvider>;
   options: T;
-  config?: C;
+  config: C;
 }
 
 export const EDIT_WIDGET_DATA = new InjectionToken<any>('EditWidgetData');
 
-export interface EditWidgetData<T> {
-  dataSources: Map<string, DataSourceProvider>;
+export interface EditWidgetData<T, C> {
   options: Subject<T>;
   savedFiltererStates: SavedFiltererState[];
+  config: C;
 }
 
 export interface Widget {
   title?: string;
-  dataSourceType?: string;
-  filtererState?: FiltererState;
   displayType?: string;
   displayTypeOptions?: any;
 }
@@ -34,5 +29,5 @@ export interface WidgetConfig {
   label: string;
   component: ComponentType<any>;
   editComponent: ComponentType<any>;
-  config?: any;
+  config: any;
 }

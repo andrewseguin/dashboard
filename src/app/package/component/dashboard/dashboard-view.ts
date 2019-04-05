@@ -61,7 +61,6 @@ export class DashboardView {
   editWidget(column: Column, index: number, widget?: Widget) {
     const data: EditWidgetDialogData = {
       widget: widget,
-      dataSources: this.dataSources,
       widgetConfigs: this.widgetConfigs,
       savedFiltererStates: this.savedFiltererStates,
     };

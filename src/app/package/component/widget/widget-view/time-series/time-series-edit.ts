@@ -5,7 +5,7 @@ import {take} from 'rxjs/operators';
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
 import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
-import {TimeSeriesDisplayTypeOptions} from './time-series';
+import {TimeSeriesDisplayTypeOptions, TimeSeriesWidgetDataConfig} from './time-series';
 
 
 @Component({
@@ -30,7 +30,7 @@ export class TimeSeriesEdit {
   });
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
-                  EditWidgetData<TimeSeriesDisplayTypeOptions>) {
+                  EditWidgetData<TimeSeriesDisplayTypeOptions, TimeSeriesWidgetDataConfig>) {
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {
         this.initializeForm(value);

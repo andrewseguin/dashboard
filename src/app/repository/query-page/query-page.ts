@@ -10,9 +10,9 @@ import {MatDialog} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Item} from 'app/github/app-types/item';
 import {Widget} from 'app/package/component/widget/widget';
+import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
-import {DataSource} from 'app/package/data-source/data-source';
 import {Sorter} from 'app/package/data-source/sorter';
 import {Viewer} from 'app/package/data-source/viewer';
 import {DataSourceProvider} from 'app/package/utility/data-source-provider';
@@ -114,11 +114,9 @@ export class QueryPage<T> {
         if (recommendationId) {
           this.createNewQueryFromRecommendation(this.activeRepo.activeConfig, recommendationId);
         } else if (widgetJson) {
+          // TODO: Figure out how to convert widget into query again
           const widget: Widget = JSON.parse(widgetJson);
-          this.query = createNewQuery(widget.title || 'Widget', widget.dataSourceType || 'issue');
-          if (widget.filtererState) {
-            this.filterer.setState(widget.filtererState);
-          }
+          this.query = createNewQuery(widget.title || 'Widget', 'issue');
         } else {
           const type = queryParamMap.get('type') || '';
           this.query = createNewQuery('New Query', type);

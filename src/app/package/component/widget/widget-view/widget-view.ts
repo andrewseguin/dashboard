@@ -52,7 +52,6 @@ export class WidgetView {
   private createWidget() {
     const widgetData: WidgetData<any, any> = {
       options: this.widget.displayTypeOptions,
-      dataSources: this.dataSources,
       config: this.widgetConfig.config,
     };
 

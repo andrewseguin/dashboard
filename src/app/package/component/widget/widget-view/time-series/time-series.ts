@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from '@angular/core';
-import {FiltererState} from 'app/package/data-source/filterer';
+import {DataSource} from 'app/package/data-source/data-source';
+import {Filterer, FiltererState} from 'app/package/data-source/filterer';
 import * as Chart from 'chart.js';
 import {combineLatest, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -7,6 +8,29 @@ import {takeUntil} from 'rxjs/operators';
 import {WIDGET_DATA, WidgetData} from '../../widget';
 import {MaterialColors} from '../widget-view';
 
+import {TimeSeriesEdit} from './time-series-edit';
+
+
+export type TimeSeriesDataSources = Map<string, {
+  id: string,
+  label: string,
+  filterer: (initialValue?: FiltererState) => Filterer,
+  dataSource: () => DataSource,
+}>;
+
+export interface TimeSeriesWidgetDataConfig {
+  dataSources: TimeSeriesDataSources;
+}
+
+export function getTimeSeriesWidgetConfig(dataSources: TimeSeriesDataSources) {
+  return {
+    id: 'timeSeries',
+    label: 'Time Series',
+    component: TimeSeries,
+    editComponent: TimeSeriesEdit,
+    config: {dataSources}
+  };
+}
 
 interface DateCount {
   date: string;
@@ -17,7 +41,6 @@ interface TimeSeriesData {
   x: string;
   y: number;
 }
-
 
 type ActionType = 'increment'|'decrement';
 
@@ -60,11 +83,12 @@ export class TimeSeries<T> {
 
   private destroyed = new Subject();
 
-  constructor(@Inject(WIDGET_DATA) public data: WidgetData<TimeSeriesDisplayTypeOptions, null>) {}
+  constructor(@Inject(WIDGET_DATA) public data:
+                  WidgetData<TimeSeriesDisplayTypeOptions, TimeSeriesWidgetDataConfig>) {}
 
   ngOnInit() {
     const datasetData = this.data.options.datasets.map(datasetConfig => {
-      const dataSourceProvider = this.data.dataSources.get(datasetConfig.dataSourceType)!;
+      const dataSourceProvider = this.data.config.dataSources.get(datasetConfig.dataSourceType)!;
       const filterer = dataSourceProvider.filterer(datasetConfig.filtererState);
       const provider = dataSourceProvider.dataSource();
       return provider.getData().pipe(filterer.filter());
@@ -182,7 +206,8 @@ export class TimeSeries<T> {
     const dateActions: DateActionPair[] = [];
     items.forEach(item => {
       datasetConfig.actions.forEach(action => {
-        const provider = this.data.dataSources.get(datasetConfig.dataSourceType)!.dataSource();
+        const provider =
+            this.data.config.dataSources.get(datasetConfig.dataSourceType)!.dataSource();
         const dates = provider.getMetadataMapForType('date');
         // TODO: Error handling if the property does not exist
         const date = dates.get(action.datePropertyId)!.accessor(item);

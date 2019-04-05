@@ -1,15 +1,15 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
+import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
 import {Grouper} from 'app/package/data-source/grouper';
-import {DataSource} from 'app/package/data-source/data-source';
 import {take} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
 import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
-import {PieChartDisplayTypeOptions} from './pie-chart';
+import {PieChartDisplayTypeOptions, PieChartWidgetDataConfig} from './pie-chart';
 
 
 @Component({
@@ -34,16 +34,16 @@ export class PieChartEdit {
   savedFiltererStates: SavedFiltererState[];
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
-                  EditWidgetData<PieChartDisplayTypeOptions<any>>) {
+                  EditWidgetData<PieChartDisplayTypeOptions<any>, PieChartWidgetDataConfig>) {
     // TODO: Filter based on datasource type
     this.savedFiltererStates = data.savedFiltererStates;
-    this.data.dataSources.forEach(
+    this.data.config.dataSources.forEach(
         dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;
     this.form.get('dataSourceType')!.setValue(initialDataSourceType);
 
     // TODO: Add in a datasource type selector
-    const dataSourceProvider = data.dataSources.get(initialDataSourceType)!;
+    const dataSourceProvider = data.config.dataSources.get(initialDataSourceType)!;
     this.grouper = dataSourceProvider.grouper();
     this.filterer = dataSourceProvider.filterer();
     this.provider = dataSourceProvider.dataSource();
