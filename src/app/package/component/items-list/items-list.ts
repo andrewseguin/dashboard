@@ -39,7 +39,7 @@ export class ItemsList<T> {
 
   @Input() filterer: Filterer<T>;
 
-  @Input() provider: DataSource<T>;
+  @Input() dataSource: DataSource<T>;
 
   @Input() viewer: Viewer<T>;
 
@@ -58,7 +58,7 @@ export class ItemsList<T> {
   constructor(public ngZone: NgZone, public elementRef: ElementRef) {}
 
   ngOnInit() {
-    this.itemGroups = this.provider.getData().pipe(
+    this.itemGroups = this.dataSource.data.pipe(
         this.filterer.filter(), this.grouper.group(), this.sorter.sortGroupedItems());
 
     this.itemCount = this.itemGroups.pipe(map(

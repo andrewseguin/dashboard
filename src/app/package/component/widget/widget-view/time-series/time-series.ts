@@ -93,8 +93,8 @@ export class TimeSeries<T> {
     const datasetData = this.data.options.datasets.map(datasetConfig => {
       const dataSourceProvider = this.data.config.dataSources.get(datasetConfig.dataSourceType)!;
       const filterer = dataSourceProvider.filterer(datasetConfig.filtererState);
-      const provider = dataSourceProvider.dataSource();
-      return provider.getData().pipe(filterer.filter());
+      const dataSource = dataSourceProvider.dataSource();
+      return dataSource.data.pipe(filterer.filter());
     });
 
     combineLatest(datasetData).pipe(takeUntil(this.destroyed)).subscribe(results => {

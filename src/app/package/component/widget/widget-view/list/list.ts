@@ -65,9 +65,9 @@ export class List<S, V> {
     const dataSourceProvider = this.data.config.dataSources.get(this.data.options.dataSourceType)!;
     const sorter = dataSourceProvider.sorter(this.data.options.sorterState);
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
-    const provider = dataSourceProvider.dataSource();
+    const dataSource = dataSourceProvider.dataSource();
 
-    this.items = provider.getData().pipe(filterer.filter(), sorter.sort());
+    this.items = dataSource.data.pipe(filterer.filter(), sorter.sort());
 
     this.viewer = dataSourceProvider.viewer(this.data.options.viewerState);
   }

@@ -42,7 +42,7 @@ export class QueryPage<T> {
 
   sorter: Sorter<T>;
 
-  provider: DataSource<T>;
+  dataSource: DataSource<T>;
 
   viewer: Viewer<T, any, any>;
 
@@ -55,7 +55,7 @@ export class QueryPage<T> {
     this.filterer = dataSourceProvider.filterer(this.query.filtererState);
     this.grouper = dataSourceProvider.grouper(this.query.grouperState);
     this.sorter = dataSourceProvider.sorter(this.query.sorterState);
-    this.provider = dataSourceProvider.dataSource();
+    this.dataSource = dataSourceProvider.dataSource();
 
     this.canSave = combineLatest(
                        this.viewer.isEquivalent(query.viewerState),
@@ -64,7 +64,7 @@ export class QueryPage<T> {
                        this.sorter.isEquivalent(query.sorterState))
                        .pipe(map(results => results.some(result => !result)));
 
-    this.activeItem = combineLatest(this.provider.getData(), this.itemId).pipe(map(results => {
+    this.activeItem = combineLatest(this.dataSource.data, this.itemId).pipe(map(results => {
       // TODO: Cannot assume this is Item
       for (let item of results[0]) {
         if ((item as any as Item).id === results[1]) {

@@ -56,7 +56,7 @@ export class Count {
                   WidgetData<CountDisplayTypeOptions, CountWidgetDataConfig>) {
     const dataSourceProvider = this.data.config.dataSources.get(this.data.options.dataSourceType)!;
     const filterer = dataSourceProvider.filterer(this.data.options.filtererState);
-    const provider = dataSourceProvider.dataSource();
-    this.count = provider.getData().pipe(filterer.filter(), map(result => result.length));
+    const dataSource = dataSourceProvider.dataSource();
+    this.count = dataSource.data.pipe(filterer.filter(), map(result => result.length));
   }
 }

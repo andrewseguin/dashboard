@@ -36,7 +36,7 @@ export class EditableRecommendation {
 
   itemsFilterer: Filterer<Item>;
 
-  provider: DataSource<any>;
+  dataSource: DataSource<any>;
 
   @Input() recommendation: Recommendation;
 
@@ -83,7 +83,7 @@ export class EditableRecommendation {
 
     // TODO: This should be set by the recommendation
     this.itemsFilterer = this.dataSources.get('issue')!.filterer();
-    this.provider = this.dataSources.get('issue')!.dataSource();
+    this.dataSource = this.dataSources.get('issue')!.dataSource();
 
 
     const filtererState = this.recommendation.filtererState ||

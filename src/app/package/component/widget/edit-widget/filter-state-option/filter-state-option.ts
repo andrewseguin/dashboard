@@ -25,7 +25,7 @@ export class FilterStateOption implements ControlValueAccessor {
 
   @Input() filterer: Filterer<any, any>;
 
-  @Input() provider: DataSource<any>;
+  @Input() dataSource: DataSource<any>;
 
   @Input() savedFiltererStates: SavedFiltererState[];
 

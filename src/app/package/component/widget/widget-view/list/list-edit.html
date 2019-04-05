@@ -12,7 +12,8 @@
   <view-state-option formControlName="viewerState" label="Views"
                      [viewer]="viewer"></view-state-option>
 
-  <filter-state-option formControlName="filtererState" [filterer]="filterer" [provider]="provider"
+  <filter-state-option formControlName="filtererState" [filterer]="filterer"
+                       [dataSource]="dataSource"
                        [savedFiltererStates]="savedFiltererStates | async">
   </filter-state-option>
 </ng-container>

@@ -55,7 +55,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
   trackByIndex = (i: number) => i;
 
-  @Input() provider: DataSource<any>;
+  @Input() dataSource: DataSource<any>;
 
   @Input() filterer: Filterer<any, any>;
 
@@ -66,7 +66,7 @@ export class AdvancedSearch implements OnInit, AfterViewInit, OnDestroy {
 
     metadata.forEach((value, key) => {
       if (value.autocomplete) {
-        this.autocomplete.set(key, this.provider.getData().pipe(this.filterer.autocomplete(value)));
+        this.autocomplete.set(key, this.dataSource.data.pipe(this.filterer.autocomplete(value)));
       }
     });
 

@@ -8,12 +8,7 @@ export interface DataSourceMetadata<T> {
 }
 
 export class DataSource<T = any> {
-  constructor(public metadata: Map<string, DataSourceMetadata<T>>, private data: Observable<T[]>) {}
-
-  /** Gets a stream that provides the list of items. */
-  getData(): Observable<T[]> {
-    return this.data;
-  }
+  constructor(public metadata: Map<string, DataSourceMetadata<T>>, public data: Observable<T[]>) {}
 
   getMetadataListForType(type: string): DataSourceMetadata<T>[] {
     const metadataListForType: DataSourceMetadata<T>[] = [];

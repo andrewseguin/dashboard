@@ -23,7 +23,7 @@ export class PieChartEdit {
 
   grouper: Grouper<any, any, any>;
   filterer: Filterer<any, any>;
-  provider: DataSource<any>;
+  dataSource: DataSource<any>;
 
   form = new FormGroup({
     dataSourceType: new FormControl(null),
@@ -47,7 +47,7 @@ export class PieChartEdit {
     const dataSourceProvider = data.config.dataSources.get(initialDataSourceType)!;
     this.grouper = dataSourceProvider.grouper();
     this.filterer = dataSourceProvider.filterer();
-    this.provider = dataSourceProvider.dataSource();
+    this.dataSource = dataSourceProvider.dataSource();
 
     data.options.pipe(take(1)).subscribe(value => {
       if (value) {
