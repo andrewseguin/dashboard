@@ -2,9 +2,10 @@ import {ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild} from 
 import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer, FiltererState} from 'app/package/data-source/filterer';
 import * as Chart from 'chart.js';
-import {combineLatest, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {WIDGET_DATA, WidgetData} from '../../widget';
 import {MaterialColors} from '../widget-view';
 
@@ -20,15 +21,17 @@ export type TimeSeriesDataSources = Map<string, {
 
 export interface TimeSeriesWidgetDataConfig {
   dataSources: TimeSeriesDataSources;
+  savedFiltererStates: Observable<SavedFiltererState[]>;
 }
 
-export function getTimeSeriesWidgetConfig(dataSources: TimeSeriesDataSources) {
+export function getTimeSeriesWidgetConfig(
+    dataSources: TimeSeriesDataSources, savedFiltererStates: Observable<SavedFiltererState[]>) {
   return {
     id: 'timeSeries',
     label: 'Time Series',
     component: TimeSeries,
     editComponent: TimeSeriesEdit,
-    config: {dataSources}
+    config: {dataSources, savedFiltererStates}
   };
 }
 

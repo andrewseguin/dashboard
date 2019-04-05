@@ -4,6 +4,7 @@ import {Filterer, FiltererState} from 'app/package/data-source/filterer';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {WIDGET_DATA, WidgetData} from '../../widget';
 
 import {EditCount} from './count-edit';
@@ -18,16 +19,17 @@ export type CountDataSources = Map<string, {
 }>;
 
 export type CountWidgetDataConfig = {
-  dataSources: CountDataSources;
+  dataSources: CountDataSources; savedFiltererStates: Observable<SavedFiltererState[]>;
 };
 
-export function getCountWidgetConfig(dataSources: CountDataSources) {
+export function getCountWidgetConfig(
+    dataSources: CountDataSources, savedFiltererStates: Observable<SavedFiltererState[]>) {
   return {
     id: 'count',
     label: 'Count',
     component: Count,
     editComponent: EditCount,
-    config: {dataSources}
+    config: {dataSources, savedFiltererStates}
   };
 }
 

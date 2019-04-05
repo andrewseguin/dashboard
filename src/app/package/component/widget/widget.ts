@@ -1,7 +1,6 @@
 import {ComponentType} from '@angular/cdk/overlay/index';
 import {InjectionToken} from '@angular/core';
 import {Subject} from 'rxjs';
-import {SavedFiltererState} from './edit-widget/edit-widget';
 
 export const WIDGET_DATA = new InjectionToken<any>('WidgetData');
 
@@ -14,7 +13,6 @@ export const EDIT_WIDGET_DATA = new InjectionToken<any>('EditWidgetData');
 
 export interface EditWidgetData<T, C> {
   options: Subject<T>;
-  savedFiltererStates: SavedFiltererState[];
   config: C;
 }
 

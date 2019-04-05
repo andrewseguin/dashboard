@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer} from 'app/package/data-source/filterer';
-import {Subject} from 'rxjs';
+import {Subject, Observable} from 'rxjs';
 import {startWith, take, takeUntil} from 'rxjs/operators';
 
 import {ButtonToggleOption} from '../../edit-widget/button-toggle-option/button-toggle-option';
@@ -31,14 +31,14 @@ export class EditCount {
     filtererState: new FormControl(null),
   });
 
-  savedFiltererStates: SavedFiltererState[];
+  savedFiltererStates: Observable<SavedFiltererState[]>;
 
   destroyed = new Subject();
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
                   EditWidgetData<CountDisplayTypeOptions, CountWidgetDataConfig>) {
     // TODO: Filter based on datasource type
-    this.savedFiltererStates = data.savedFiltererStates;
+    this.savedFiltererStates = data.config.savedFiltererStates;
     this.data.config.dataSources.forEach(
         (dataSource, type) => this.dataOptions.push({id: type, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;

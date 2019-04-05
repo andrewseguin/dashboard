@@ -19,7 +19,6 @@ export interface SavedFiltererState {
 export interface EditWidgetDialogData {
   widget?: Widget;
   widgetConfigs: {[key in string]: WidgetConfig};
-  savedFiltererStates: SavedFiltererState[];
 }
 @Component({
   templateUrl: 'edit-widget.html',
@@ -76,7 +75,6 @@ export class EditWidget<S, V, G> {
     this.options.next(this.data.widget ? this.data.widget.displayTypeOptions : null);
     const widgetData: EditWidgetData<any, any> = {
       options: this.options,
-      savedFiltererStates: this.data.savedFiltererStates,
       config: this.data.widgetConfigs[type].config,
     };
 

@@ -11,6 +11,7 @@ import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {EDIT_WIDGET_DATA, EditWidgetData} from '../../widget';
 
 import {ListDisplayTypeOptions, ListWidgetDataConfig} from './list';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -34,12 +35,12 @@ export class ListEdit {
     filtererState: new FormControl(null),
   });
 
-  savedFiltererStates: SavedFiltererState[];
+  savedFiltererStates: Observable<SavedFiltererState[]>;
 
   constructor(@Inject(EDIT_WIDGET_DATA) public data:
                   EditWidgetData<ListDisplayTypeOptions<any, any>, ListWidgetDataConfig>) {
     // TODO: Filter based on datasource type
-    this.savedFiltererStates = data.savedFiltererStates;
+    this.savedFiltererStates = data.config.savedFiltererStates;
     this.data.config.dataSources.forEach(
         dataSource => this.dataOptions.push({id: dataSource.id, label: dataSource.label}));
     const initialDataSourceType = this.dataOptions[0].id;

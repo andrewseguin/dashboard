@@ -5,9 +5,11 @@ import {Sorter, SorterState} from 'app/package/data-source/sorter';
 import {Viewer, ViewerState} from 'app/package/data-source/viewer';
 import {Observable} from 'rxjs';
 
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {WIDGET_DATA, WidgetData} from '../../widget';
 
 import {ListEdit} from './list-edit';
+
 
 export type ListDataSources = Map<string, {
   id: string,
@@ -21,15 +23,18 @@ export type ListDataSources = Map<string, {
 export interface ListWidgetDataConfig {
   dataSources: ListDataSources;
   onSelect: (item: any) => void;
+  savedFiltererStates: Observable<SavedFiltererState[]>;
 }
 
-export function getListWidgetConfig(dataSources: ListDataSources, onSelect: (item: any) => void) {
+export function getListWidgetConfig(
+    dataSources: ListDataSources, onSelect: (item: any) => void,
+    savedFiltererStates: Observable<SavedFiltererState[]>) {
   return {
     id: 'list',
     label: 'List',
     component: List,
     editComponent: ListEdit,
-    config: {dataSources, onSelect}
+    config: {dataSources, onSelect, savedFiltererStates}
   };
 }
 

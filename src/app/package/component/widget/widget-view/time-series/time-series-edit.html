@@ -12,7 +12,7 @@
        formArrayName="datasets">
 
     <dataset-option [formGroupName]="index"
-                    [savedFiltererStates]="data.savedFiltererStates"
+                    [savedFiltererStates]="data.config.savedFiltererStates | async"
                     [dataSources]="data.config.dataSources"
                     (remove)="removeDataset(index)"
                     (duplicate)="duplicateDataset(dataset)"

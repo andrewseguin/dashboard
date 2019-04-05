@@ -62,7 +62,6 @@ export class DashboardView {
     const data: EditWidgetDialogData = {
       widget: widget,
       widgetConfigs: this.widgetConfigs,
-      savedFiltererStates: this.savedFiltererStates,
     };
 
     const config: MatDialogConfig<EditWidgetDialogData> = {data, width: '650px'};

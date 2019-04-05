@@ -6,6 +6,6 @@
   </input-option>
   <filter-state-option formControlName="filtererState" [filterer]="filterer"
                         [provider]="provider"
-                       [savedFiltererStates]="savedFiltererStates">
+                       [savedFiltererStates]="savedFiltererStates | async">
   </filter-state-option>
 </ng-container>

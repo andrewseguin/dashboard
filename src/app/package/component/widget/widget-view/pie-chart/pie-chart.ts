@@ -3,13 +3,15 @@ import {DataSource} from 'app/package/data-source/data-source';
 import {Filterer, FiltererState} from 'app/package/data-source/filterer';
 import {Group, Grouper, GrouperState} from 'app/package/data-source/grouper';
 import * as Chart from 'chart.js';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
+import {SavedFiltererState} from '../../edit-widget/edit-widget';
 import {WIDGET_DATA, WidgetData} from '../../widget';
 import {MaterialColors} from '../widget-view';
 
 import {PieChartEdit} from './pie-chart-edit';
+
 
 export type PieChartDataSources = Map<string, {
   id: string,
@@ -21,15 +23,17 @@ export type PieChartDataSources = Map<string, {
 
 export interface PieChartWidgetDataConfig {
   dataSources: PieChartDataSources;
+  savedFiltererStates: Observable<SavedFiltererState[]>;
 }
 
-export function getPieChartWidgetConfig(dataSources: PieChartDataSources) {
+export function getPieChartWidgetConfig(
+    dataSources: PieChartDataSources, savedFiltererStates: Observable<SavedFiltererState[]>) {
   return {
     id: 'pie',
     label: 'Pie Chart',
     component: PieChart,
     editComponent: PieChartEdit,
-    config: {dataSources}
+    config: {dataSources, savedFiltererStates}
   };
 }
 

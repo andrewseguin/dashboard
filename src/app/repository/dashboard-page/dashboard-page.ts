@@ -64,14 +64,15 @@ export class DashboardPage {
       }));
 
   widgetConfigs: {[key in string]: WidgetConfig} = {
-    count: getCountWidgetConfig(this.dataSources),
+    count: getCountWidgetConfig(this.dataSources, this.savedFiltererStates),
     list: getListWidgetConfig(
         this.dataSources,
         (item: Item) => {
           this.dialog.open(ItemDetailDialog, {data: {itemId: item.id}, width: '80vw'});
-        }),
-    pie: getPieChartWidgetConfig(this.dataSources),
-    timeSeries: getTimeSeriesWidgetConfig(this.dataSources),
+        },
+        this.savedFiltererStates),
+    pie: getPieChartWidgetConfig(this.dataSources, this.savedFiltererStates),
+    timeSeries: getTimeSeriesWidgetConfig(this.dataSources, this.savedFiltererStates),
   };
 
   private destroyed = new Subject();

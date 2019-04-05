@@ -11,7 +11,7 @@
                       [grouper]="grouper"></group-state-option>
 
   <filter-state-option formControlName="filtererState" [filterer]="filterer"
-  [provider]="provider"
-                       [savedFiltererStates]="savedFiltererStates">
+                       [provider]="provider"
+                       [savedFiltererStates]="savedFiltererStates | async">
   </filter-state-option>
 </ng-container>
